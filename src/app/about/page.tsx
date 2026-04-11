@@ -88,10 +88,10 @@ export default function AboutPage() {
             <tbody>
               {[
                 ["会社名", "マルチック株式会社"],
-                ["所在地", "東京都"],
+                ["所在地", "神奈川県"],
                 ["事業内容", "防犯カメラ・セキュリティソリューションの導入支援"],
                 ["ウェブサイト", "multik.jp"],
-                ["お問い合わせ", "info@multik.jp"],
+                ["お問い合わせ", "contact@multik.jp"],
               ].map(([key, value]) => (
                 <tr key={key} className="border-b border-border last:border-b-0">
                   <th className="py-3 pr-4 text-left font-medium text-text2 whitespace-nowrap w-32">{key}</th>
