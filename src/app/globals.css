@@ -1,26 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap');
 @import "tailwindcss";
 
+/* ============================================
+   CSS Variables — STYLE_GUIDE.md 準拠
+   prefix: --portal-*
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand Colors */
+  --portal-primary: #0D9488;
+  --portal-secondary: #1E3A5F;
+  --portal-accent: #D97706;
+
+  /* Semantic Colors */
+  --portal-success: #16A34A;
+  --portal-warning: #CA8A04;
+  --portal-error: #DC2626;
+
+  /* Neutral Colors */
+  --portal-bg: #FFFFFF;
+  --portal-bg-card: #F7F7F8;
+  --portal-bg-surface: #ECECF1;
+  --portal-text: #1A1A1A;
+  --portal-text2: #6B6B7B;
+  --portal-border: #E5E5E5;
+
+  /* Elevation */
+  --portal-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.08);
+  --portal-shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 0 2px rgba(0,0,0,0.06);
+  --portal-focus-ring: 0 0 0 2px rgba(13,148,136,0.2);
 }
 
+/* Tailwind @theme — CSS変数をTailwindユーティリティに公開 */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--portal-primary);
+  --color-secondary: var(--portal-secondary);
+  --color-accent: var(--portal-accent);
+  --color-success: var(--portal-success);
+  --color-warning: var(--portal-warning);
+  --color-error: var(--portal-error);
+  --color-bg: var(--portal-bg);
+  --color-bg-card: var(--portal-bg-card);
+  --color-bg-surface: var(--portal-bg-surface);
+  --color-text: var(--portal-text);
+  --color-text2: var(--portal-text2);
+  --color-border: var(--portal-border);
+  --font-sans: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--portal-bg);
+  color: var(--portal-text);
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+}
+
+/* Typography — weight 500 max（700多用禁止） */
+h1 { font-size: 1.75rem; line-height: 1.3; font-weight: 500; }
+h2 { font-size: 1.375rem; line-height: 1.4; font-weight: 500; }
+h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
+
+@media (min-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+}
+
+/* ============================================
+   Components
+   ============================================ */
+
+/* Card — border-radius: 10px, STYLE_GUIDE.md準拠 */
+.card {
+  background: var(--portal-bg-card);
+  border-radius: 10px;
+  box-shadow: var(--portal-shadow);
+  padding: 16px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  box-shadow: var(--portal-shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Primary CTA Button */
+.btn-primary {
+  background: var(--portal-primary);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.2s, transform 0.15s;
+  display: inline-block;
+  text-align: center;
+}
+.btn-primary:hover {
+  background: #0B7F74;
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary / Outline Button */
+.btn-secondary {
+  background: transparent;
+  color: var(--portal-text);
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--portal-border);
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.2s;
+  display: inline-block;
+  text-align: center;
+}
+.btn-secondary:hover {
+  background: var(--portal-bg-surface);
+}
+
+/* Accent Button（工事業者向け） */
+.btn-accent {
+  background: var(--portal-accent);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.2s, transform 0.15s;
+  display: inline-block;
+  text-align: center;
+}
+.btn-accent:hover {
+  background: #B45309;
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   Focus States
+   ============================================ */
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: var(--portal-focus-ring);
+  border-color: var(--portal-primary);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--portal-primary);
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--portal-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-slide-in {
+  animation: fadeSlideIn 0.35s ease-out;
+}
+
+@keyframes pulse-accent {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-accent {
+  animation: pulse-accent 1.5s ease-in-out infinite;
+}
+
+@keyframes progressFill {
+  from { width: 0; }
+}
+.animate-progress-fill {
+  animation: progressFill 0.4s ease-out;
+}
+
+@keyframes scoreFill {
+  from { width: 0; }
+}
+.animate-score-fill {
+  animation: scoreFill 0.6s ease-out forwards;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+
+.header-portal {
+  background: var(--portal-bg);
+  border-bottom: 1px solid var(--portal-border);
+}
+
+/* ============================================
+   Utilities
+   ============================================ */
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, var(--portal-border) 25%, var(--portal-bg-surface) 50%, var(--portal-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 10px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Link underline animation */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: var(--portal-primary);
+  transition: width 0.3s ease;
+}
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Glass card */
+.card-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, var(--portal-primary) 0%, #14B8A6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* FAQ accordion */
+.accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.accordion-content.open {
+  grid-template-rows: 1fr;
+}
+.accordion-inner {
+  overflow: hidden;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 640px) {
+  .card {
+    padding: 16px;
+    border-radius: 10px;
+  }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-fade-slide-in,
+  .animate-pulse-accent,
+  .animate-progress-fill,
+  .animate-score-fill,
+  .animate-float,
+  .skeleton {
+    animation: none;
+  }
+  .accordion-content {
+    transition: none;
+  }
+}
+
+/* ============================================
+   Print
+   ============================================ */
+
+@media print {
+  .header-portal, footer, button { display: none !important; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
 }
