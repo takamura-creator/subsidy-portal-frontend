@@ -1,0 +1,42 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Step icon: AI Diagnosis / Magnifying glass + document + light effect
+       Primary #0D9488, Accent #D97706
+       Style: outline 2px, clean lines
+  -->
+
+  <!-- Document (back layer) -->
+  <g stroke="#0D9488" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="16" y="12" width="18" height="24" rx="2"/>
+
+    <!-- Document fold (top right) -->
+    <path d="M 32 12 L 32 16 L 28 16" fill="none"/>
+
+    <!-- Document lines -->
+    <line x1="20" y1="18" x2="28" y2="18"/>
+    <line x1="20" y1="23" x2="28" y2="23"/>
+    <line x1="20" y1="28" x2="26" y2="28"/>
+  </g>
+
+  <!-- Magnifying glass (front layer) - Primary -->
+  <g stroke="#0D9488" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Glass circle -->
+    <circle cx="20" cy="24" r="10"/>
+
+    <!-- Handle -->
+    <line x1="27" y1="31" x2="33" y2="37" stroke-width="2"/>
+  </g>
+
+  <!-- Light effect / glow (Accent) -->
+  <g fill="none" stroke="#D97706" stroke-width="1.5" opacity="0.8">
+    <!-- Small sparkles around glass -->
+    <circle cx="18" cy="14" r="2"/>
+    <circle cx="28" cy="20" r="1.5"/>
+  </g>
+
+  <!-- Accent light rays -->
+  <g stroke="#D97706" stroke-width="1.5" opacity="0.6">
+    <line x1="16" y1="12" x2="14" y2="10"/>
+    <line x1="30" y1="16" x2="33" y2="13"/>
+  </g>
+
+</svg>

@@ -26,12 +26,12 @@ export function FaqSection() {
                 aria-controls={`faq-${i}`}
               >
                 <span>{item.q}</span>
-                <svg
-                  className={`w-5 h-5 shrink-0 text-primary transition-transform duration-300 ${openIdx === i ? "rotate-180" : ""}`}
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <img
+                  src="/svg/chevron_down.svg"
+                  alt=""
+                  className={`w-5 h-5 shrink-0 transition-transform duration-300 ${openIdx === i ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
               </button>
               <div
                 id={`faq-${i}`}

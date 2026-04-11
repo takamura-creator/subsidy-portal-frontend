@@ -84,10 +84,10 @@ export default function MatchPage() {
         {/* Page Title */}
         <div className="text-center mb-8">
           <h1 className="text-2xl md:text-3xl font-medium text-text mb-2">
-            AI<span className="text-primary">補助金</span>診断
+            あなたの会社に合う<span className="text-primary">補助金</span>を診断
           </h1>
           <p className="text-sm text-text2">
-            業種・規模・所在地を入力するだけで、最適な補助金をAIが提案します
+            3つの質問に答えるだけで、最適な補助金が見つかります
           </p>
         </div>
 
@@ -97,9 +97,9 @@ export default function MatchPage() {
           {/* Step 1: 基本情報 */}
           {step === 1 && (
             <div className="card border border-border animate-fade-slide-in">
-              <h2 className="text-lg font-medium mb-6">基本情報を入力してください</h2>
+              <h2 className="text-lg font-medium mb-6">3つの情報を教えてください</h2>
               <div className="mb-5">
-                <label className="block text-sm font-medium mb-2 text-text">業種</label>
+                <label className="block text-sm font-medium mb-2 text-text">業種を選んでください</label>
                 <select
                   className="w-full border-[1.5px] border-border rounded-[10px] px-4 py-3 bg-bg-card text-[16px] focus:outline-none focus:border-primary transition"
                   value={industry}
@@ -110,7 +110,7 @@ export default function MatchPage() {
                 </select>
               </div>
               <div className="mb-5">
-                <label className="block text-sm font-medium mb-2 text-text">従業員数</label>
+                <label className="block text-sm font-medium mb-2 text-text">会社の規模を選んでください</label>
                 <div className="grid grid-cols-2 gap-3">
                   {EMPLOYEE_RANGES.map((r) => (
                     <label
@@ -135,7 +135,7 @@ export default function MatchPage() {
                 </div>
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-medium mb-2 text-text">都道府県</label>
+                <label className="block text-sm font-medium mb-2 text-text">お住まいの地域を選んでください</label>
                 <select
                   className="w-full border-[1.5px] border-border rounded-[10px] px-4 py-3 bg-bg-card text-[16px] focus:outline-none focus:border-primary transition"
                   value={prefecture}
@@ -158,7 +158,7 @@ export default function MatchPage() {
           {/* Step 2: 導入目的 */}
           {step === 2 && (
             <div className="card border border-border animate-fade-slide-in">
-              <h2 className="text-lg font-medium mb-6">導入目的を選択してください</h2>
+              <h2 className="text-lg font-medium mb-6">カメラの使い方を選んでください</h2>
               <div className="flex flex-col gap-3 mb-6">
                 {PURPOSES.map((p) => (
                   <label
@@ -193,7 +193,7 @@ export default function MatchPage() {
                   disabled={!purpose}
                   onClick={handleDiagnose}
                 >
-                  AI診断を開始
+                  診断を開始
                 </button>
               </div>
             </div>
@@ -202,7 +202,7 @@ export default function MatchPage() {
           {/* Step 3: Results */}
           {step === 3 && (
             <div className="animate-fade-slide-in" aria-live="polite">
-              <h2 className="text-xl font-medium mb-6 text-center">診断結果</h2>
+              <h2 className="text-xl font-medium mb-6 text-center">あなたの会社に合う補助金</h2>
 
               {/* Loading */}
               {loading && (
@@ -242,10 +242,19 @@ export default function MatchPage() {
                   {result.matches.slice(0, 3).map((m, i) => {
                     const score = SCORE_STYLE[m.match_score] ?? SCORE_STYLE["低"];
                     return (
-                      <div key={i} className="card border border-border hover:shadow-lg transition">
+                      <div key={i} className="card border border-border" style={{
+                        boxShadow: "rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px",
+                        transition: "box-shadow 0.25s ease, transform 0.25s ease"
+                      }} onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = "rgba(13,82,95,0.12) 0px 16px 36px -16px, rgba(0,0,0,0.06) 0px 6px 16px -6px";
+                        e.currentTarget.style.transform = "translateY(-3px)";
+                      }} onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = "rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px";
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}>
                         <div className="flex items-start justify-between mb-3 gap-3">
                           <div className="min-w-0">
-                            <span className="text-xs text-primary font-medium">おすすめ {i + 1}</span>
+                            <span className="text-xs text-primary font-medium">マッチ度{i + 1}位</span>
                             <h3 className="font-medium text-lg leading-tight">{m.subsidy.name}</h3>
                           </div>
                           <span
@@ -298,12 +307,23 @@ export default function MatchPage() {
                           <p className="text-sm text-text2 mb-4">{m.application_advice}</p>
                         )}
 
-                        <Link
-                          href={`/subsidies/${m.subsidy.id}`}
-                          className="block btn-primary text-center py-3"
-                        >
-                          この補助金の詳細を見る
-                        </Link>
+                        <div className="flex gap-3">
+                          <Link
+                            href={`/subsidies/${m.subsidy.id}`}
+                            className="flex-1 btn-secondary text-center py-3"
+                          >
+                            詳しく確認する
+                          </Link>
+                          <Link
+                            href={`/auth/login?redirect=/my/applications/new?subsidy_id=${m.subsidy.id}`}
+                            className="flex-1 block text-center py-3 rounded-[6px] font-medium text-white transition hover:opacity-90"
+                            style={{
+                              background: "#D97706",
+                            }}
+                          >
+                            申請書を作成する
+                          </Link>
+                        </div>
                       </div>
                     );
                   })}
@@ -318,7 +338,7 @@ export default function MatchPage() {
                     className="btn-secondary py-3"
                     onClick={resetWizard}
                   >
-                    最初からやり直す
+                    もう一度診断する
                   </button>
                 </div>
               )}

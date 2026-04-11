@@ -1,0 +1,28 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Step icon: Input form / Clipboard with pen
+       Primary #0D9488, Accent #D97706
+       Style: outline 2px, clean lines
+  -->
+
+  <!-- Clipboard body -->
+  <g stroke="#0D9488" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="8" y="10" width="28" height="32" rx="2"/>
+
+    <!-- Clipboard clip (top) -->
+    <rect x="18" y="6" width="12" height="6" rx="1"/>
+
+    <!-- Horizontal lines (form fields) -->
+    <line x1="14" y1="20" x2="34" y2="20"/>
+    <line x1="14" y1="27" x2="34" y2="27"/>
+    <line x1="14" y1="34" x2="28" y2="34"/>
+  </g>
+
+  <!-- Pen/Pencil accent (Accent color) -->
+  <g stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Pen body -->
+    <line x1="32" y1="28" x2="40" y2="20"/>
+    <!-- Pen tip -->
+    <path d="M 40 20 L 43 23 L 41 25 Z" fill="#D97706" stroke="none"/>
+  </g>
+
+</svg>

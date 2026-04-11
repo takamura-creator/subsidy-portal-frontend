@@ -1,0 +1,19 @@
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <!-- Trust badge: Nationwide / Japan map silhouette
+       Primary #0D9488
+       Style: simple filled shape
+  -->
+
+  <!-- Simplified Japan island silhouette -->
+  <g fill="#0D9488" opacity="0.85">
+    <!-- Main island (Honshu - simplified) -->
+    <path d="M 8 4 L 11 3 L 13 5 L 12 8 L 14 10 L 11 11 L 9 13 L 6 12 L 5 9 L 6 6 Z"/>
+
+    <!-- North island (Hokkaido - dot) -->
+    <circle cx="10" cy="2" r="1.2"/>
+
+    <!-- South island (Kyushu - small shape) -->
+    <path d="M 5 14 L 7 13 L 7 15 L 5 16 Z"/>
+  </g>
+
+</svg>

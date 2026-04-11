@@ -24,11 +24,14 @@
   --portal-text: #1A1A1A;
   --portal-text2: #6B6B7B;
   --portal-border: #E5E5E5;
+  --border-whisper: rgba(0,0,0,0.08);
+  --border-interactive: rgba(0,0,0,0.12);
 
-  /* Elevation */
-  --portal-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.08);
-  --portal-shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 0 2px rgba(0,0,0,0.06);
-  --portal-focus-ring: 0 0 0 2px rgba(13,148,136,0.2);
+  /* Elevation & Shadows — DESIGN.md §6 準拠 */
+  --portal-shadow: rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px;
+  --portal-shadow-md: rgba(13,82,95,0.12) 0px 16px 36px -16px, rgba(0,0,0,0.06) 0px 6px 16px -6px;
+  --shadow-brand: rgba(13,82,95,0.15);
+  --portal-focus-ring: 0 0 0 3px rgba(13,148,136,0.12);
 }
 
 /* Tailwind @theme — CSS変数をTailwindユーティリティに公開 */
@@ -77,17 +80,17 @@ h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
    Components
    ============================================ */
 
-/* Card — border-radius: 10px, STYLE_GUIDE.md準拠 */
+/* Card — border-radius: 12px, DESIGN.md §4準拠 */
 .card {
   background: var(--portal-bg-card);
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: var(--portal-shadow);
   padding: 16px;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 .card:hover {
   box-shadow: var(--portal-shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 /* Primary CTA Button */
@@ -95,7 +98,7 @@ h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
   background: var(--portal-primary);
   color: white;
   padding: 12px 20px;
-  border-radius: 10px;
+  border-radius: 6px;
   font-weight: 500;
   font-size: 15px;
   transition: background 0.2s, transform 0.15s;
@@ -104,7 +107,7 @@ h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
 }
 .btn-primary:hover {
   background: #0B7F74;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 .btn-primary:active {
   transform: translateY(0);
@@ -113,18 +116,19 @@ h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
 /* Secondary / Outline Button */
 .btn-secondary {
   background: transparent;
-  color: var(--portal-text);
+  color: var(--portal-primary);
   padding: 12px 20px;
-  border-radius: 10px;
-  border: 1px solid var(--portal-border);
+  border-radius: 6px;
+  border: 1px solid var(--border-interactive);
   font-weight: 500;
   font-size: 15px;
-  transition: background 0.2s;
+  transition: background 0.2s, border-color 0.2s;
   display: inline-block;
   text-align: center;
 }
 .btn-secondary:hover {
-  background: var(--portal-bg-surface);
+  background: rgba(13,148,136,0.04);
+  border-color: #0D9488;
 }
 
 /* Accent Button（工事業者向け） */
@@ -132,7 +136,7 @@ h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
   background: var(--portal-accent);
   color: white;
   padding: 12px 20px;
-  border-radius: 10px;
+  border-radius: 6px;
   font-weight: 500;
   font-size: 15px;
   transition: background 0.2s, transform 0.15s;
@@ -140,8 +144,8 @@ h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
   text-align: center;
 }
 .btn-accent:hover {
-  background: #B45309;
-  transform: translateY(-1px);
+  background: #b86305;
+  transform: translateY(-2px);
 }
 
 /* ============================================
@@ -293,7 +297,7 @@ a:focus-visible {
 @media (max-width: 640px) {
   .card {
     padding: 16px;
-    border-radius: 10px;
+    border-radius: 12px;
   }
 }
 

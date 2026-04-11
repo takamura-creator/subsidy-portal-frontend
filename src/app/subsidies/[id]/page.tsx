@@ -56,9 +56,11 @@ export default async function SubsidyDetailPage({
           </section>
 
           {/* 基本情報テーブル */}
-          <section className="rounded-[10px] border border-border bg-bg-card shadow-[var(--portal-shadow)] overflow-hidden">
-            <h2 className="text-lg font-medium text-secondary px-4 pt-4 pb-3">基本情報</h2>
-            <table className="w-full text-sm">
+          <section className="rounded-[10px] border border-border shadow-[var(--portal-shadow)] overflow-hidden">
+            <div className="bg-secondary text-white px-4 py-3">
+              <h2 className="text-lg font-medium">基本情報</h2>
+            </div>
+            <table className="w-full text-sm bg-bg-card">
               <tbody>
                 {([
                   ["管轄省庁", s.ministry],
@@ -122,10 +124,10 @@ export default async function SubsidyDetailPage({
 
           {/* CTAボタン */}
           <Link
-            href={`/match?subsidy_id=${s.id}`}
+            href={`/auth/login?redirect=/my/applications/new?subsidy_id=${s.id}`}
             className="btn-primary block w-full text-center"
           >
-            この補助金で診断する
+            この補助金で申請書を作成する
           </Link>
 
           {s.source_url && (

@@ -1,0 +1,24 @@
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <!-- Trust badge: Track Record / Trophy or upward graph
+       Primary #0D9488
+       Style: outline 1.5px, small clean icons
+  -->
+
+  <!-- Trophy/Cup body -->
+  <g stroke="#0D9488" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cup -->
+    <path d="M 6 5 L 5 8 Q 5 12 10 13 Q 15 12 15 8 L 14 5 Z" stroke-width="1.5"/>
+
+    <!-- Handle -->
+    <path d="M 14 7 Q 18 7 18 10 Q 18 12 14 12" stroke-width="1.5"/>
+
+    <!-- Base -->
+    <rect x="7" y="13" width="6" height="2" rx="0.5" stroke="none" fill="#0D9488" opacity="0.6"/>
+  </g>
+
+  <!-- Upward arrow accent (success) -->
+  <g fill="#0D9488" opacity="0.7">
+    <path d="M 10 2 L 9 4 L 11 4 Z" stroke="none"/>
+  </g>
+
+</svg>

@@ -1,0 +1,14 @@
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Chevron down: FAQ accordion toggle icon
+       Primary #0D9488
+       Style: outline 2px, clean stroke
+  -->
+
+  <path d="M 3 5 L 8 10 L 13 5"
+        stroke="#0D9488"
+        stroke-width="2"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+</svg>

@@ -1,0 +1,33 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Step icon: Matching / Handshake or converging arrows
+       Primary #0D9488, Accent #D97706
+       Style: outline 2px, clean lines
+  -->
+
+  <!-- Left arrow -->
+  <g stroke="#0D9488" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 8 18 L 22 18" stroke-width="2.5"/>
+    <!-- Arrow head -->
+    <path d="M 18 14 L 22 18 L 18 22" fill="none" stroke-width="2.5"/>
+  </g>
+
+  <!-- Right arrow -->
+  <g stroke="#0D9488" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 40 18 L 26 18" stroke-width="2.5"/>
+    <!-- Arrow head -->
+    <path d="M 30 14 L 26 18 L 30 22" fill="none" stroke-width="2.5"/>
+  </g>
+
+  <!-- Center meeting point (circle with gradient effect) -->
+  <circle cx="24" cy="18" r="6" fill="none" stroke="#0D9488" stroke-width="2"/>
+
+  <!-- Accent accent points (merge effect) -->
+  <g fill="#D97706">
+    <circle cx="22" cy="16" r="1.5"/>
+    <circle cx="26" cy="16" r="1.5"/>
+  </g>
+
+  <!-- Accent line below for connection/merge -->
+  <path d="M 20 28 Q 24 32 28 28" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+</svg>

@@ -1,0 +1,15 @@
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <!-- Trust badge: Free / ¥0 + Shield
+       Primary #0D9488
+       Style: outline 2px, small clean icons
+  -->
+
+  <!-- Shield outline -->
+  <g stroke="#0D9488" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 10 2 L 10 2 L 5 5 L 5 10 Q 5 15 10 18 Q 15 15 15 10 L 15 5 Z" stroke-width="1.5"/>
+  </g>
+
+  <!-- ¥ symbol (Zero cost) -->
+  <text x="10" y="12" font-size="8" font-weight="bold" fill="#0D9488" text-anchor="middle" font-family="sans-serif">¥0</text>
+
+</svg>

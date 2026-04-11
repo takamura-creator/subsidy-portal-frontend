@@ -1,0 +1,80 @@
+<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- CTA background: Abstract building silhouettes (factory/office/store)
+       Primary color #0D9488 with ultra-low opacity (0.05-0.08)
+       Style: semi-transparent outlines, peaceful rhythm
+  -->
+
+  <!-- Building 1: Factory with tall structure -->
+  <g fill="none" stroke="#0D9488" stroke-width="2" opacity="0.06">
+    <rect x="80" y="120" width="80" height="140" rx="3"/>
+    <polygon points="100,110 120,90 140,110" fill="none" stroke="#0D9488" stroke-width="2" opacity="0.08"/>
+    <!-- Chimney -->
+    <rect x="115" y="60" width="10" height="50" rx="2"/>
+    <!-- Windows grid -->
+    <rect x="95" y="140" width="12" height="12"/>
+    <rect x="125" y="140" width="12" height="12"/>
+    <rect x="95" y="165" width="12" height="12"/>
+    <rect x="125" y="165" width="12" height="12"/>
+    <rect x="95" y="190" width="12" height="12"/>
+    <rect x="125" y="190" width="12" height="12"/>
+    <rect x="95" y="215" width="12" height="12"/>
+    <rect x="125" y="215" width="12" height="12"/>
+  </g>
+
+  <!-- Building 2: Office block (mid-size) -->
+  <g fill="none" stroke="#0D9488" stroke-width="2" opacity="0.05">
+    <rect x="280" y="140" width="100" height="120" rx="4"/>
+    <!-- Window grid 3x3 -->
+    <rect x="295" y="155" width="15" height="15"/>
+    <rect x="320" y="155" width="15" height="15"/>
+    <rect x="345" y="155" width="15" height="15"/>
+    <rect x="295" y="180" width="15" height="15"/>
+    <rect x="320" y="180" width="15" height="15"/>
+    <rect x="345" y="180" width="15" height="15"/>
+    <rect x="295" y="205" width="15" height="15"/>
+    <rect x="320" y="205" width="15" height="15"/>
+    <rect x="345" y="205" width="15" height="15"/>
+    <!-- Door -->
+    <rect x="320" y="235" width="20" height="25" rx="2"/>
+  </g>
+
+  <!-- Building 3: Store/Small retail -->
+  <g fill="none" stroke="#0D9488" stroke-width="2" opacity="0.06">
+    <rect x="500" y="160" width="70" height="100" rx="2"/>
+    <!-- Large window/storefront -->
+    <rect x="510" y="170" width="50" height="50" rx="2"/>
+    <!-- Door -->
+    <rect x="520" y="230" width="30" height="30" rx="2"/>
+  </g>
+
+  <!-- Building 4: Factory (tall with sloped roof) -->
+  <g fill="none" stroke="#0D9488" stroke-width="2" opacity="0.07">
+    <polygon points="700,130 750,100 800,130 800,240 700,240" fill="none" stroke="#0D9488" stroke-width="2"/>
+    <!-- Window grid -->
+    <rect x="715" y="150" width="14" height="14"/>
+    <rect x="750" y="150" width="14" height="14"/>
+    <rect x="715" y="180" width="14" height="14"/>
+    <rect x="750" y="180" width="14" height="14"/>
+    <rect x="715" y="210" width="14" height="14"/>
+    <rect x="750" y="210" width="14" height="14"/>
+  </g>
+
+  <!-- Building 5: Modern office (geometric) -->
+  <g fill="none" stroke="#0D9488" stroke-width="2" opacity="0.05">
+    <rect x="920" y="130" width="110" height="110" rx="5"/>
+    <!-- Vertical division -->
+    <line x1="975" y1="130" x2="975" y2="240" stroke="#0D9488" stroke-width="2" opacity="0.05"/>
+    <!-- Left side windows -->
+    <rect x="935" y="150" width="16" height="16"/>
+    <rect x="935" y="175" width="16" height="16"/>
+    <rect x="935" y="200" width="16" height="16"/>
+    <!-- Right side windows -->
+    <rect x="985" y="150" width="16" height="16"/>
+    <rect x="985" y="175" width="16" height="16"/>
+    <rect x="985" y="200" width="16" height="16"/>
+  </g>
+
+  <!-- Subtle connecting line at base -->
+  <line x1="50" y1="250" x2="1150" y2="250" stroke="#0D9488" stroke-width="1.5" opacity="0.03"/>
+
+</svg>

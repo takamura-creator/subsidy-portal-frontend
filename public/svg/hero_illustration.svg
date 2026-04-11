@@ -1,0 +1,71 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hero illustration: surveillance camera + building + checkmark + subsidy badge
+       Colors: Primary #0D9488 (camera), Gray #6B7B7B (building), Accent #D97706 (badge)
+       Style: 2px-2.5px outline, dots decoration (opacity 0.2-0.3)
+  -->
+
+  <!-- Background decoration dots -->
+  <g opacity="0.2">
+    <circle cx="50" cy="60" r="2"/>
+    <circle cx="320" cy="80" r="2.5"/>
+    <circle cx="100" cy="340" r="2"/>
+    <circle cx="350" cy="200" r="1.5"/>
+    <circle cx="30" cy="280" r="2"/>
+    <circle cx="370" cy="320" r="2"/>
+  </g>
+
+  <!-- Building silhouette (Factory/Office) - Gray -->
+  <g stroke="#6B6B7B" stroke-width="2.5" fill="none">
+    <!-- Main building body -->
+    <rect x="120" y="140" width="160" height="140" rx="4"/>
+
+    <!-- Building entrance -->
+    <rect x="160" y="260" width="40" height="20" rx="2"/>
+
+    <!-- Windows grid -->
+    <g stroke-width="2">
+      <rect x="140" y="160" width="20" height="20"/>
+      <rect x="175" y="160" width="20" height="20"/>
+      <rect x="210" y="160" width="20" height="20"/>
+
+      <rect x="140" y="200" width="20" height="20"/>
+      <rect x="175" y="200" width="20" height="20"/>
+      <rect x="210" y="200" width="20" height="20"/>
+    </g>
+  </g>
+
+  <!-- Surveillance Camera - Primary color -->
+  <g stroke="#0D9488" stroke-width="2.5" fill="none">
+    <!-- Camera body (rounded square on top) -->
+    <rect x="220" y="70" width="60" height="50" rx="6"/>
+
+    <!-- Camera lens (circle) -->
+    <circle cx="250" cy="95" r="15" fill="none" stroke="#0D9488" stroke-width="2.5"/>
+    <circle cx="250" cy="95" r="10" fill="#0D9488" opacity="0.3"/>
+
+    <!-- Mounting bracket -->
+    <line x1="250" y1="120" x2="250" y2="140" stroke-width="2.5"/>
+  </g>
+
+  <!-- Checkmark - Primary color (overlay on building) -->
+  <g stroke="#0D9488" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Checkmark -->
+    <path d="M 175 195 L 190 210 L 215 175" stroke-width="3"/>
+  </g>
+
+  <!-- Subsidy Badge (circular) - Accent color -->
+  <g>
+    <!-- Badge circle -->
+    <circle cx="290" cy="240" r="35" fill="none" stroke="#D97706" stroke-width="2.5"/>
+
+    <!-- Badge text indicator (as dots/pattern) -->
+    <circle cx="290" cy="220" r="3" fill="#D97706"/>
+    <circle cx="285" cy="250" r="2.5" fill="#D97706"/>
+    <circle cx="295" cy="250" r="2.5" fill="#D97706"/>
+  </g>
+
+  <!-- Decorative elements: subtle glow around camera -->
+  <circle cx="250" cy="95" r="25" fill="none" stroke="#0D9488" stroke-width="1.5" opacity="0.15"/>
+  <circle cx="250" cy="95" r="32" fill="none" stroke="#0D9488" stroke-width="1" opacity="0.08"/>
+
+</svg>

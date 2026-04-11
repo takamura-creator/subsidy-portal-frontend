@@ -119,22 +119,45 @@ export default function Home() {
       />
 
       {/* ヒーロー */}
-      <section className="bg-secondary text-white py-20 px-4">
-        <div className="max-w-[1200px] mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-medium mb-4 leading-tight">
-            補助金を使って
-            <br />
-            <span className="text-primary">防犯カメラ</span>を導入しよう
-          </h1>
-          <p className="text-lg md:text-xl opacity-90 mb-8 font-light">
-            AIが最適な補助金を無料診断。導入費用を最大75%削減。
-          </p>
-          <Link
-            href="/match"
-            className="inline-block bg-primary hover:bg-primary/90 text-white text-lg font-medium px-10 py-4 rounded-[10px] transition shadow-lg"
-          >
-            今すぐ無料診断する
-          </Link>
+      <section
+        className="py-20 px-4"
+        style={{
+          background: `linear-gradient(135deg, rgba(13,148,136,0.03) 0%, rgba(30,58,95,0.02) 100%)`,
+          backgroundColor: '#FFFFFF'
+        }}
+      >
+        <div className="max-w-[1200px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* テキストカラム */}
+            <div>
+              <h1 className="text-4xl md:text-5xl font-medium mb-6 leading-tight text-secondary" style={{ letterSpacing: '-0.5px' }}>
+                工事費補助金で、
+                <br />
+                <span className="text-primary">設備導入</span>をもっと身近に
+              </h1>
+              <p className="text-xl font-normal mb-8 leading-relaxed" style={{ color: 'rgba(0,0,0,0.85)' }}>
+                業種・規模・地域を3つの質問に答えるだけで、AIが最適な補助金を無料で提案。申請書作成も支援します。
+              </p>
+              <Link
+                href="/match"
+                className="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-10 py-4 rounded-md transition shadow-lg hover:-translate-y-0.5"
+                style={{
+                  boxShadow: 'rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px'
+                }}
+              >
+                無料で診断を始める
+              </Link>
+            </div>
+
+            {/* イラストカラム */}
+            <div className="flex justify-center items-center mt-8 md:mt-0">
+              <img
+                src="/svg/hero_illustration.svg"
+                alt="設備導入イメージ"
+                className="w-full max-w-xs md:max-w-md h-auto"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -156,54 +179,76 @@ export default function Home() {
       <section className="pb-8 px-4">
         <div className="max-w-[1200px] mx-auto flex flex-wrap justify-center gap-3">
           {[
-            "全47都道府県対応",
-            "日本語サポート",
-            "申請書自動生成",
-            "完全無料診断",
-          ].map((badge) => (
+            { badge: "全国対応・地域別補助金に対応", svg: "/svg/badge_nationwide.svg", alt: "全国対応" },
+            { badge: "完全無料で診断・申請書作成", svg: "/svg/badge_free.svg", alt: "完全無料" },
+            { badge: "業者の実績から最適なパートナーが見つかる", svg: "/svg/badge_track_record.svg", alt: "実績" },
+            { badge: "中立的な立場で多数の補助金から比較提案", svg: "/svg/badge_fast.svg", alt: "高速" },
+          ].map((item) => (
             <span
-              key={badge}
-              className="inline-flex items-center gap-1 bg-primary/5 border border-primary/10 text-text text-sm font-medium px-4 py-2 rounded-full"
+              key={item.badge}
+              className="inline-flex items-center gap-2 bg-primary/5 border border-primary/10 text-text text-sm font-medium px-4 py-2 rounded-full"
+              style={{
+                backgroundColor: 'rgba(13,148,136,0.08)',
+                borderColor: 'rgba(13,148,136,0.15)',
+                color: '#0D9488'
+              }}
             >
-              <svg className="w-4 h-4 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              {badge}
+              <img src={item.svg} alt={item.alt} className="w-4 h-4 shrink-0" />
+              {item.badge}
             </span>
           ))}
         </div>
       </section>
 
       {/* 3ステップ紹介 */}
-      <section className="py-16 px-4 bg-bg">
+      <section className="py-16 px-4" style={{ backgroundColor: '#F6F5F4' }}>
         <div className="max-w-[1200px] mx-auto">
-          <h2 className="text-xl md:text-2xl font-medium text-center mb-10">
-            かんたん<span className="text-primary">3ステップ</span>で補助金診断
+          <h2 className="text-xl md:text-2xl font-medium text-center mb-10 text-secondary">
+            <span className="text-primary">3ステップ</span>で、あなたの会社に合う補助金が見つかる
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: "1", title: "基本情報入力", desc: "業種・従業員数・都道府県を選択" },
-              { icon: "2", title: "導入目的選択", desc: "防犯・見守り・入退場管理など" },
-              { icon: "3", title: "AI診断結果", desc: "最適な補助金をスコア付きで提案" },
+              { svg: "/svg/step_icon_input.svg", title: "業種と規模を3つの選択肢から選ぶ", desc: "業種・企業規模・お住まいの地域を選ぶだけ", step: 1 },
+              { svg: "/svg/step_icon_diagnosis.svg", title: "導入目的を選んで、AIが診断へ", desc: "防犯・見守り・作業管理など、カメラの使い方を選択", step: 2 },
+              { svg: "/svg/step_icon_matching.svg", title: "あなたの会社にぴったりな補助金が見つかる", desc: "マッチ度の高い順に3つまで提案。申請のアドバイス付き", step: 3 },
             ].map((s, i) => (
-              <div key={i} className="card text-center border border-border group hover:border-primary/30 transition">
-                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary font-medium text-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-primary group-hover:text-white transition">
-                  {s.icon}
+              <div
+                key={i}
+                className="card text-center border group hover:shadow-lg transition relative"
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderColor: 'rgba(0,0,0,0.08)',
+                  boxShadow: 'rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px'
+                }}
+              >
+                {/* ステップアイコン */}
+                <div className="flex justify-center mb-4">
+                  <img src={s.svg} alt={`ステップ${s.step}`} className="w-10 h-10 md:w-12 md:h-12" />
                 </div>
-                <div className="text-xs text-primary font-medium mb-1">STEP {i + 1}</div>
-                <h3 className="font-medium mb-2">{s.title}</h3>
-                <p className="text-sm text-text2">{s.desc}</p>
+
+                {/* ステップバッジ */}
+                <div
+                  className="text-xs font-medium mb-3 px-3 py-1 rounded-full inline-block"
+                  style={{
+                    backgroundColor: 'rgba(217,119,6,0.10)',
+                    color: '#D97706'
+                  }}
+                >
+                  STEP {s.step}
+                </div>
+
+                <h3 className="font-medium mb-2 text-primary text-lg">{s.title}</h3>
+                <p className="text-sm" style={{ color: '#6B6B7B' }}>{s.desc}</p>
               </div>
             ))}
           </div>
           <div className="text-center mt-8">
             <Link
               href="/match"
-              className="btn-primary inline-block px-8 py-3"
+              className="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 rounded-md transition"
+              style={{
+                boxShadow: 'rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px'
+              }}
             >
               無料診断を始める
             </Link>
@@ -211,7 +256,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 導入企業の声 */}
+      {/* 導入企業の声（案A: 非表示） */}
+      {false && (
       <section className="py-16 px-4 bg-bg-card">
         <div className="max-w-[1200px] mx-auto">
           <h2 className="text-xl md:text-2xl font-medium text-center mb-10">
@@ -239,11 +285,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* 都道府県LP リンク */}
       <section className="py-16 px-4">
         <div className="max-w-[1200px] mx-auto">
-          <h2 className="text-xl md:text-2xl font-medium text-center mb-8">お住まいの地域から探す</h2>
+          <h2 className="text-xl md:text-2xl font-medium text-center mb-8">お住まいの地域の補助金を診断</h2>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {["東京都","大阪府","神奈川県","愛知県","埼玉県","兵庫県","北海道","福岡県","千葉県","京都府"].map((p) => (
               <Link
@@ -257,7 +304,7 @@ export default function Home() {
           </div>
           <p className="text-center text-sm text-text2 mt-4">
             <Link href="/subsidies" className="text-primary hover:underline">
-              全47都道府県の補助金一覧を見る →
+              全都道府県の補助金制度を比較する →
             </Link>
           </p>
         </div>
@@ -267,19 +314,40 @@ export default function Home() {
       <FaqSection />
 
       {/* Final CTA */}
-      <section className="py-16 px-4 bg-secondary text-white">
-        <div className="max-w-[1200px] mx-auto text-center">
+      <section
+        className="py-16 px-4 text-white relative overflow-hidden"
+        style={{
+          backgroundColor: '#1E3A5F',
+          backgroundImage: `url('/svg/cta_background.svg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* グラデーションオーバーレイ */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(30,58,95,0.04) 100%)`,
+            pointerEvents: 'none'
+          }}
+        />
+
+        <div className="max-w-[1200px] mx-auto text-center relative z-10">
           <h2 className="text-xl md:text-2xl font-medium mb-4">
-            補助金の活用で、防犯カメラ導入をもっと身近に
+            工事・設備導入を補助金で実現。今が決断のとき。
           </h2>
           <p className="text-white/70 mb-8 font-light">
-            まずは無料診断で、あなたの会社に合う補助金を見つけましょう
+            業種・規模を3つ選ぶだけで、最適な補助金が見つかります。一度の診断で複数の選択肢から比較できます。
           </p>
           <Link
             href="/match"
-            className="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-10 py-4 rounded-[10px] transition shadow-lg text-lg"
+            className="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-10 py-4 rounded-md transition shadow-lg text-lg"
+            style={{
+              boxShadow: 'rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px'
+            }}
           >
-            無料で補助金診断する
+            今すぐ診断を始める
           </Link>
         </div>
       </section>

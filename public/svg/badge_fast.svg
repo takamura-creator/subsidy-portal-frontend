@@ -1,0 +1,24 @@
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <!-- Trust badge: Fast / Clock + Lightning
+       Primary #0D9488, Accent #D97706
+       Style: outline 1.5px, small clean icons
+  -->
+
+  <!-- Clock body -->
+  <g stroke="#0D9488" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Circle -->
+    <circle cx="8" cy="10" r="6"/>
+
+    <!-- Hour hand -->
+    <line x1="8" y1="10" x2="8" y2="7"/>
+
+    <!-- Minute hand -->
+    <line x1="8" y1="10" x2="11" y2="10"/>
+  </g>
+
+  <!-- Lightning bolt (Accent) -->
+  <g fill="#D97706" stroke="#D97706" stroke-width="1" stroke-linejoin="round">
+    <path d="M 14 3 L 12 8 L 15 8 L 12 16 L 14 9 L 11 9 Z"/>
+  </g>
+
+</svg>
