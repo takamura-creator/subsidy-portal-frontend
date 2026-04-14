@@ -8,8 +8,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyo-came.jp";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "HOJYO CAME | 工事費補助金をAIが無料診断",
-    template: "%s | HOJYO CAME",
+    default: "HOJYO CAME — 防犯カメラ導入×補助金活用ポータル",
+    template: "%s — HOJYO CAME",
   },
   description:
     "防犯カメラ・設備導入に使える補助金をAIが無料診断。全47都道府県対応。業種・規模に合わせた最適な補助金をご提案します。",

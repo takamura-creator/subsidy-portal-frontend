@@ -4,7 +4,7 @@ import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 
 export const metadata: Metadata = {
   title: "運営者情報",
-  description: "補助金ポータルの運営会社・サービスの趣旨についてご案内します。",
+  description: "HOJYO CAMEの運営会社情報。マルチック株式会社が中立的な立場で補助金情報と工事業者情報を提供します。",
   alternates: { canonical: "/about" },
 };
 

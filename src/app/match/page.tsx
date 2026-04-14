@@ -133,7 +133,7 @@ function WizardContent() {
                 </div>
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-medium mb-2 text-text">お住まいの地域を選んでください</label>
+                <label className="block text-sm font-medium mb-2 text-text">都道府県（事業所所在地）を選んでください</label>
                 <select
                   className="w-full border-[1.5px] border-border rounded-[10px] px-4 py-3 bg-bg-card text-[16px] focus:outline-none focus:border-primary transition"
                   value={prefecture}
@@ -339,7 +339,7 @@ export default function MatchPage() {
       >
         診断ステップ
       </p>
-      {["業種・規模・地域を選択", "カメラの用途を選択", "AIが補助金をマッチング"].map((label, i) => (
+      {["基本情報", "導入目的", "AI診断"].map((label, i) => (
         <div key={i} className="flex items-start gap-2 mb-2">
           <span
             className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"

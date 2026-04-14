@@ -4,13 +4,13 @@ import Image from "next/image";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 
 export const metadata: Metadata = {
-  title: "防犯カメラの補助金診断 | 補助金ポータル",
+  title: "HOJYO CAME — 防犯カメラ導入×補助金活用ポータル",
   description:
-    "業種と地域を入力するだけで、あなたの会社が使える防犯カメラの補助金をAIが無料で自動判定。全国47都道府県対応。",
+    "監視カメラ・防犯カメラの導入を補助金で実現。全国の補助金から最適なものを無料診断。認定設置業者を比較・選定できます。",
   openGraph: {
-    title: "防犯カメラの補助金診断 | 補助金ポータル",
+    title: "HOJYO CAME — 防犯カメラ導入×補助金活用ポータル",
     description:
-      "業種と地域を入力するだけで、あなたの会社が使える防犯カメラの補助金をAIが無料で自動判定。全国47都道府県対応。",
+      "監視カメラ・防犯カメラの導入を補助金で実現。全国の補助金から最適なものを無料診断。認定設置業者を比較・選定できます。",
     type: "website",
   },
   twitter: { card: "summary_large_image" },
@@ -39,16 +39,7 @@ function HomeLeftPanel() {
 
   return (
     <div className="space-y-5">
-      <h2
-        className="text-sm font-bold"
-        style={{
-          fontFamily: "'Sora', sans-serif",
-          color: "var(--hc-navy)",
-          letterSpacing: "-0.3px",
-        }}
-      >
-        選ばれる3つの理由
-      </h2>
+      <span className="section-title">選ばれる3つの理由</span>
 
       {features.map((f) => (
         <div key={f.title}>
@@ -64,21 +55,20 @@ function HomeLeftPanel() {
         </div>
       ))}
 
-      <div className="pt-4 border-t" style={{ borderColor: "var(--hc-border)" }}>
-        <Link
-          href="/about"
-          className="text-xs font-medium transition-colors"
-          style={{ color: "var(--hc-primary)" }}
-        >
-          運営者情報を見る →
-        </Link>
-      </div>
+      <div className="divider" />
+      <Link
+        href="/about"
+        className="text-xs font-medium no-underline transition-colors"
+        style={{ color: "var(--hc-primary)" }}
+      >
+        運営者情報を見る →
+      </Link>
     </div>
   );
 }
 
 /* ============================================
-   Right Column — 3ステップ利用ガイド
+   Right Column — 3ステップ利用ガイド（CTAなし）
    ============================================ */
 
 function HomeRightPanel() {
@@ -102,16 +92,7 @@ function HomeRightPanel() {
 
   return (
     <div className="space-y-4">
-      <h2
-        className="text-sm font-bold"
-        style={{
-          fontFamily: "'Sora', sans-serif",
-          color: "var(--hc-navy)",
-          letterSpacing: "-0.3px",
-        }}
-      >
-        補助金活用の流れ
-      </h2>
+      <span className="section-title">補助金活用の流れ</span>
 
       {steps.map((s) => (
         <div key={s.num} className="flex gap-3">
@@ -131,30 +112,19 @@ function HomeRightPanel() {
           </div>
         </div>
       ))}
-
-      <div className="pt-3">
-        <Link
-          href="/match"
-          className="btn-primary block text-center text-xs py-3"
-        >
-          無料で補助金を診断する
-        </Link>
-      </div>
     </div>
   );
 }
 
 /* ============================================
-   Center Column — ヒーロー（secondary系ダーク背景）
+   Center Column — ヒーロー（透過背景・モックアップ準拠）
    ============================================ */
 
 function HomeCenterHero() {
   return (
     <div
-      className="flex flex-col items-center justify-center text-center rounded-xl -mx-4 -mt-4 px-6 py-16"
+      className="flex flex-col items-center justify-center text-center"
       style={{
-        background:
-          "linear-gradient(160deg, var(--hc-navy) 0%, #1a2e1a 60%, var(--hc-navy) 100%)",
         minHeight: "calc(100vh - var(--hc-header-h) - var(--hc-status-h) - 64px)",
       }}
     >
@@ -162,65 +132,61 @@ function HomeCenterHero() {
       <Image
         src="/images/turtle_wave.png"
         alt="HOJYO CAME マスコット"
-        width={80}
-        height={80}
-        className="mb-5 drop-shadow-lg"
+        width={240}
+        height={240}
+        className="mb-6"
+        style={{ objectFit: "contain" }}
       />
 
-      {/* ロゴ */}
-      <p
-        className="text-lg font-bold mb-3"
+      {/* ブランドロゴ H1 */}
+      <h1
         style={{
           fontFamily: "'Sora', sans-serif",
-          letterSpacing: "-0.5px",
-          color: "#fff",
+          fontSize: "clamp(2rem, 5vw, 3.5rem)",
+          fontWeight: 700,
+          letterSpacing: "-1px",
+          lineHeight: 1.1,
+          marginBottom: 16,
+          color: "var(--hc-navy)",
         }}
       >
-        <span className="opacity-80">HOJYO</span>
-        <span style={{ color: "var(--hc-success)" }}>CAME</span>
-      </p>
-
-      {/* キャッチコピー H1 */}
-      <h1
-        className="text-xl font-bold mb-4 leading-snug"
-        style={{
-          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
-          color: "#fff",
-          letterSpacing: "-0.3px",
-          maxWidth: 420,
-        }}
-      >
-        防犯カメラの補助金、
-        <br />
-        まだ見落としていませんか
+        HOJYO <span style={{ color: "var(--hc-primary)" }}>CAME</span>
       </h1>
 
-      {/* サブコピー */}
+      {/* キャッチコピー（サブ見出し） */}
       <p
-        className="text-sm leading-relaxed mb-8"
-        style={{ color: "rgba(255,255,255,0.7)", maxWidth: 380 }}
+        style={{
+          fontSize: "1rem",
+          color: "var(--hc-text-muted)",
+          maxWidth: 500,
+          lineHeight: 1.8,
+          marginBottom: 24,
+        }}
       >
-        業種と地域を入力するだけで、あなたの会社が使える補助金をAIが自動判定。
-        全国の補助金・助成金データベースから最適なプランを無料でご提案します。
+        監視カメラ導入を、補助金でもっと手軽に。
+        <br />
+        診断から業者選定まで、ワンストップで。
       </p>
 
-      {/* メインCTA */}
+      {/* メインCTA 1個のみ */}
       <Link
         href="/match"
-        className="inline-block px-8 py-4 rounded-lg font-bold text-base transition-opacity hover:opacity-90 mb-4"
-        style={{ background: "var(--hc-primary)", color: "#fff" }}
+        className="btn-primary inline-block no-underline"
+        style={{
+          width: "auto",
+          padding: "16px 40px",
+          fontSize: 16,
+        }}
       >
         無料で補助金を診断する
       </Link>
 
-      {/* サブCTA */}
-      <Link
-        href="/subsidies"
-        className="text-sm transition-opacity hover:opacity-70"
-        style={{ color: "rgba(255,255,255,0.6)" }}
+      <p
+        className="mt-3"
+        style={{ fontSize: 13, color: "var(--hc-text-muted)" }}
       >
-        補助金一覧を見る →
-      </Link>
+        登録不要・営業電話なし・全国対応
+      </p>
     </div>
   );
 }
