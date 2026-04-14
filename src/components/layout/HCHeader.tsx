@@ -27,12 +27,17 @@ export default function HCHeader() {
       }}
     >
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-1.5 no-underline">
+      <Link
+        href="/"
+        className="flex items-center gap-1.5"
+        style={{ textDecoration: "none", background: "none", border: "none", boxShadow: "none", outline: "none" }}
+      >
         <Image
           src="/images/turtle_logo.png"
           alt="HOJYO CAME"
           width={22}
           height={22}
+          style={{ objectFit: "contain" }}
         />
         <span
           style={{

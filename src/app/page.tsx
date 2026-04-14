@@ -49,7 +49,7 @@ function HomeLeftPanel() {
           >
             {f.title}
           </h3>
-          <p className="text-xs leading-relaxed" style={{ color: "var(--hc-text-muted)" }}>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--hc-text)" }}>
             {f.desc}
           </p>
         </div>
@@ -106,7 +106,7 @@ function HomeRightPanel() {
             <h3 className="text-xs font-bold" style={{ color: "var(--hc-navy)" }}>
               {s.title}
             </h3>
-            <p className="text-[11px] leading-relaxed mt-0.5" style={{ color: "var(--hc-text-muted)" }}>
+            <p className="text-[11px] leading-relaxed mt-0.5" style={{ color: "var(--hc-text)" }}>
               {s.desc}
             </p>
           </div>
