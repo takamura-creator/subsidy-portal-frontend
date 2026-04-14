@@ -19,8 +19,14 @@ export default function ThreeColumnLayout({
 }: Props) {
   const [mobilePanel, setMobilePanel] = useState<"left" | "right" | null>(null);
 
+  const cols =
+    showLeft && showRight ? "3" :
+    !showLeft && showRight ? "center-right" :
+    showLeft && !showRight ? "left-center" :
+    "center-only";
+
   return (
-    <div className="hc-columns">
+    <div className="hc-columns" data-cols={cols}>
       {/* Left column — desktop only (or mobile overlay) */}
       {showLeft && left && (
         <>
