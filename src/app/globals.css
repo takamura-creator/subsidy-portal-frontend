@@ -15,6 +15,7 @@
 
   /* Semantic Colors */
   --hc-success: #16A34A;
+  --hc-warning: #EAB308;
   --hc-error: #DC2626;
 
   /* Neutral Colors */
@@ -43,6 +44,7 @@
   --portal-secondary: var(--hc-navy);
   --portal-accent: var(--hc-accent);
   --portal-success: var(--hc-success);
+  --portal-warning: var(--hc-warning);
   --portal-error: var(--hc-error);
 
   /* Layout */
@@ -59,6 +61,7 @@
   --color-accent: var(--hc-accent);
   --color-accent-light: var(--hc-accent-light);
   --color-success: var(--hc-success);
+  --color-warning: var(--hc-warning);
   --color-error: var(--hc-error);
   --color-bg: var(--hc-bg);
   --color-bg-dark: var(--hc-bg-dark);
