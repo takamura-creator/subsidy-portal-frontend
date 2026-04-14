@@ -19,7 +19,7 @@ export default function HCHeader() {
       className="flex items-center justify-between px-5 flex-shrink-0 relative"
       style={{
         height: "var(--hc-header-h)",
-        background: "rgba(240,253,244,0.85)",
+        background: "rgba(228,238,228,0.95)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         borderBottom: "1px solid rgba(21,128,61,0.08)",
