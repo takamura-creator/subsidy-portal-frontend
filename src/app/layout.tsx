@@ -39,11 +39,9 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <div className="hc-app">
-          <HCHeader />
-          {children}
-          <StatusBar />
-        </div>
+        <HCHeader />
+        {children}
+        <StatusBar />
       </body>
     </html>
   );

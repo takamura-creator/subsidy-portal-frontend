@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { login, ApiError } from "@/lib/api";
 
 function decodeJwtRole(token: string): string | null {
@@ -16,7 +15,7 @@ function decodeJwtRole(token: string): string | null {
   }
 }
 
-function LoginForm() {
+export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,9 +52,17 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-full py-12">
-      <div style={{ width: "100%", maxWidth: 400 }}>
-        <div className="card" style={{ padding: 32 }}>
+    <div className="hc-center-only">
+      <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
+        <div
+          style={{
+            background: "var(--hc-white)",
+            border: "1px solid var(--hc-border)",
+            borderRadius: 12,
+            padding: 32,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
+          }}
+        >
           <h1
             style={{
               fontFamily: "'Sora', sans-serif",
@@ -119,6 +126,7 @@ function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="mail@example.com"
+                style={{ borderRadius: 6, fontSize: 14 }}
               />
             </div>
 
@@ -144,10 +152,11 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="パスワードを入力"
+                style={{ borderRadius: 6, fontSize: 14 }}
               />
               <div style={{ textAlign: "right", marginTop: 4 }}>
                 <Link
-                  href="/auth/forgot-password"
+                  href="#"
                   style={{ fontSize: 12, color: "var(--hc-primary)", textDecoration: "none" }}
                 >
                   パスワードを忘れた方
@@ -160,8 +169,6 @@ function LoginForm() {
               disabled={loading}
               className="btn-primary"
               style={{
-                display: "block",
-                width: "100%",
                 marginTop: 20,
                 opacity: loading ? 0.6 : 1,
                 cursor: loading ? "not-allowed" : "pointer",
@@ -190,15 +197,5 @@ function LoginForm() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <ThreeColumnLayout
-      showLeft={false}
-      showRight={false}
-      center={<LoginForm />}
-    />
   );
 }
