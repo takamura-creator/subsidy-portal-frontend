@@ -41,25 +41,63 @@ function RoleGuide() {
       </h2>
 
       <div
-        className="card"
-        style={{ marginBottom: 12, cursor: "default" }}
+        style={{
+          marginBottom: 20,
+          padding: 14,
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 8,
+        }}
       >
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}>
+        <h3
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: "var(--hc-navy)",
+            marginBottom: 4,
+          }}
+        >
           🏢 企業ユーザー
         </h3>
-        <p style={{ fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.5 }}>
+        <p
+          style={{
+            fontSize: 12,
+            color: "var(--hc-text-muted)",
+            lineHeight: 1.5,
+            marginBottom: 0,
+          }}
+        >
           補助金を活用して防犯カメラを導入したい中小企業の方。補助金診断・申請書作成・業者マッチングを利用できます。
         </p>
       </div>
 
       <div
-        className="card"
-        style={{ cursor: "default" }}
+        style={{
+          marginBottom: 20,
+          padding: 14,
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 8,
+        }}
       >
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}>
+        <h3
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: "var(--hc-navy)",
+            marginBottom: 4,
+          }}
+        >
           🔧 工事業者
         </h3>
-        <p style={{ fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.5 }}>
+        <p
+          style={{
+            fontSize: 12,
+            color: "var(--hc-text-muted)",
+            lineHeight: 1.5,
+            marginBottom: 0,
+          }}
+        >
           補助金活用の導入・工事を請け負う設置業者の方。案件マッチング・見積もり対応を利用できます。
         </p>
       </div>
@@ -70,18 +108,25 @@ function RoleGuide() {
 /* ---- Step indicator ---- */
 function StepIndicator({ step }: { step: 1 | 2 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginBottom: 20 }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 0,
+        marginBottom: 20,
+      }}
+    >
+      <div className={`step-dot${step >= 1 ? " active" : ""}`}>1</div>
       <div
-        className={`step-dot${step >= 1 ? " active" : ""}`}
-      >
-        1
-      </div>
-      <div style={{ width: 32, height: 2, background: "var(--hc-border)", margin: "0 4px" }} />
-      <div
-        className={`step-dot${step >= 2 ? " active" : ""}`}
-      >
-        2
-      </div>
+        style={{
+          width: 24,
+          height: 2,
+          background: "var(--hc-border)",
+          margin: "0 4px",
+        }}
+      />
+      <div className={`step-dot${step >= 2 ? " active" : ""}`}>2</div>
     </div>
   );
 }
@@ -133,7 +178,7 @@ function RegisterForm() {
             ? "このメールアドレスは既に登録されています。"
             : err.status === 429
               ? "しばらく時間をおいてから再度お試しください。"
-              : err.message
+              : err.message,
         );
       } else {
         setError("登録に失敗しました。しばらくしてから再度お試しください。");
@@ -144,9 +189,17 @@ function RegisterForm() {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100%", padding: "24px 0" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100%",
+        padding: 24,
+      }}
+    >
       <div style={{ width: "100%", maxWidth: 440 }}>
-        <div className="card" style={{ padding: 28 }}>
+        <div className="form-card">
           <h1
             style={{
               fontFamily: "'Sora', sans-serif",
@@ -191,7 +244,14 @@ function RegisterForm() {
           {/* Step 1: Role selection */}
           {step === 1 && (
             <div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 10,
+                  marginBottom: 20,
+                }}
+              >
                 {ROLES.map((r) => (
                   <button
                     key={r.value}
@@ -203,27 +263,101 @@ function RegisterForm() {
                       borderRadius: 8,
                       textAlign: "center",
                       cursor: "pointer",
-                      background: role === r.value ? "rgba(21,128,61,0.04)" : "var(--hc-white)",
+                      background:
+                        role === r.value
+                          ? "rgba(21,128,61,0.04)"
+                          : "var(--hc-white)",
                       transition: "all 0.2s",
                     }}
                   >
-                    <div style={{ fontSize: 24, marginBottom: 6 }}>{r.icon}</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--hc-navy)" }}>{r.label}</div>
-                    <div style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 4 }}>{r.desc}</div>
+                    <div style={{ fontSize: 24, marginBottom: 6 }}>
+                      {r.icon}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: "var(--hc-navy)",
+                      }}
+                    >
+                      {r.label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: "var(--hc-text-muted)",
+                        marginTop: 4,
+                      }}
+                    >
+                      {r.desc}
+                    </div>
                   </button>
                 ))}
+              </div>
+
+              <div className="field">
+                <label htmlFor="email-s1">メールアドレス</label>
+                <input
+                  id="email-s1"
+                  type="email"
+                  className="form-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="mail@example.com"
+                />
+              </div>
+
+              <div className="field">
+                <label htmlFor="password-s1">パスワード</label>
+                <input
+                  id="password-s1"
+                  type="password"
+                  className="form-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="8文字以上"
+                />
+              </div>
+
+              <div className="field">
+                <label htmlFor="company-s1">会社名</label>
+                <input
+                  id="company-s1"
+                  type="text"
+                  className="form-input"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="株式会社〇〇"
+                />
+              </div>
+
+              <div className="field">
+                <label htmlFor="prefecture-s1">都道府県</label>
+                <select
+                  id="prefecture-s1"
+                  className="form-select"
+                  value={prefCode}
+                  onChange={(e) => setPrefCode(e.target.value)}
+                >
+                  <option value="">選択してください</option>
+                  {PREFECTURES.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <button
                 type="button"
                 className="btn-primary"
                 onClick={handleNext}
-                style={{ display: "block", width: "100%" }}
+                style={{ marginTop: 16 }}
               >
-                次へ
+                アカウントを作成
               </button>
 
-              <p
+              <div
                 style={{
                   textAlign: "center",
                   marginTop: 14,
@@ -234,15 +368,19 @@ function RegisterForm() {
                 すでにアカウントをお持ちの方は{" "}
                 <Link
                   href="/auth/login"
-                  style={{ color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none" }}
+                  style={{
+                    color: "var(--hc-primary)",
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
                 >
                   ログイン
                 </Link>
-              </p>
+              </div>
             </div>
           )}
 
-          {/* Step 2: Account info */}
+          {/* Step 2: Confirmation & submit */}
           {step === 2 && (
             <form onSubmit={handleSubmit}>
               {/* Selected role badge + change button */}
@@ -258,28 +396,38 @@ function RegisterForm() {
                   background: "var(--hc-white)",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    fontSize: 13,
+                  }}
+                >
                   <span>{ROLES.find((r) => r.value === role)?.icon}</span>
-                  <span style={{ fontWeight: 600, color: "var(--hc-navy)" }}>
+                  <span
+                    style={{ fontWeight: 600, color: "var(--hc-navy)" }}
+                  >
                     {ROLES.find((r) => r.value === role)?.label}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={handleBack}
-                  style={{ fontSize: 12, color: "var(--hc-primary)", background: "none", border: "none", cursor: "pointer" }}
+                  style={{
+                    fontSize: 12,
+                    color: "var(--hc-primary)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
                 >
                   変更
                 </button>
               </div>
 
-              <div style={{ marginBottom: 14 }}>
-                <label
-                  htmlFor="email"
-                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
-                >
-                  メールアドレス
-                </label>
+              <div className="field">
+                <label htmlFor="email">メールアドレス</label>
                 <input
                   id="email"
                   type="email"
@@ -292,13 +440,8 @@ function RegisterForm() {
                 />
               </div>
 
-              <div style={{ marginBottom: 14 }}>
-                <label
-                  htmlFor="password"
-                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
-                >
-                  パスワード
-                </label>
+              <div className="field">
+                <label htmlFor="password">パスワード</label>
                 <input
                   id="password"
                   type="password"
@@ -312,11 +455,8 @@ function RegisterForm() {
                 />
               </div>
 
-              <div style={{ marginBottom: 14 }}>
-                <label
-                  htmlFor="company"
-                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
-                >
+              <div className="field">
+                <label htmlFor="company">
                   {role === "owner" ? "会社名" : "屋号・事業者名"}
                 </label>
                 <input
@@ -326,17 +466,14 @@ function RegisterForm() {
                   required
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder={role === "owner" ? "株式会社〇〇" : "〇〇設備工業"}
+                  placeholder={
+                    role === "owner" ? "株式会社〇〇" : "〇〇設備工業"
+                  }
                 />
               </div>
 
-              <div style={{ marginBottom: 14 }}>
-                <label
-                  htmlFor="prefecture"
-                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
-                >
-                  都道府県
-                </label>
+              <div className="field">
+                <label htmlFor="prefecture">都道府県</label>
                 <select
                   id="prefecture"
                   className="form-select"
@@ -358,8 +495,6 @@ function RegisterForm() {
                 disabled={loading}
                 className="btn-primary"
                 style={{
-                  display: "block",
-                  width: "100%",
                   marginTop: 16,
                   opacity: loading ? 0.6 : 1,
                   cursor: loading ? "not-allowed" : "pointer",
@@ -368,7 +503,7 @@ function RegisterForm() {
                 {loading ? "登録中..." : "アカウントを作成"}
               </button>
 
-              <p
+              <div
                 style={{
                   textAlign: "center",
                   marginTop: 14,
@@ -379,11 +514,15 @@ function RegisterForm() {
                 すでにアカウントをお持ちの方は{" "}
                 <Link
                   href="/auth/login"
-                  style={{ color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none" }}
+                  style={{
+                    color: "var(--hc-primary)",
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
                 >
                   ログイン
                 </Link>
-              </p>
+              </div>
             </form>
           )}
         </div>
@@ -395,6 +534,7 @@ function RegisterForm() {
 export default function RegisterPage() {
   return (
     <ThreeColumnLayout
+      gridCols="280px 1fr"
       showLeft={true}
       showRight={false}
       left={<RoleGuide />}

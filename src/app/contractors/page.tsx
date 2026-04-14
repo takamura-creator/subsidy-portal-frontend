@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { fetchContractors, type Contractor } from "@/lib/api";
-import { PREFECTURES } from "@/lib/constants";
 
 const MOCK_CONTRACTORS: Contractor[] = [
-  { id: "1", company_name: "セキュアテック株式会社", description: "関東を中心に監視カメラ設置の豊富な実績を持ちます。", areas: ["東京都", "神奈川県", "埼玉県", "千葉県"], qualifications: ["IT導入支援事業者", "防犯設備士", "電気工事士（第一種）"], project_count: 142, rating: 4.8, review_count: 32 },
-  { id: "2", company_name: "西日本カメラサービス", description: "大阪・関西エリアに特化した防犯カメラ専門業者です。", areas: ["大阪府", "兵庫県", "京都府", "奈良県"], qualifications: ["IT導入支援事業者", "防犯設備士"], project_count: 98, rating: 4.6, review_count: 24 },
-  { id: "3", company_name: "全国セキュリティ工業", description: "全国対応の防犯システム専門業者。大規模案件も対応可。", areas: ["全国対応"], qualifications: ["電気工事士（第一種）", "防犯設備士"], project_count: 210, rating: 4.5, review_count: 48 },
-  { id: "4", company_name: "北海道防犯カメラセンター", description: "北海道の防犯カメラ設置に特化した地域密着型業者です。", areas: ["北海道"], qualifications: ["防犯設備士"], project_count: 45, rating: 4.3, review_count: 12 },
-  { id: "5", company_name: "九州セキュリティサポート", description: "九州・沖縄エリアの防犯カメラ設置・保守を担当します。", areas: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県"], qualifications: ["IT導入支援事業者"], project_count: 67, rating: 4.2, review_count: 18 },
+  { id: "1", company_name: "セキュアテック株式会社", description: "関東を中心に監視カメラ設置の豊富な実績を持ちます。", areas: ["東京都", "神奈川県", "埼玉県", "千葉県"], qualifications: ["IT導入補助金", "ものづくり補助金"], project_count: 142, rating: 4.8, review_count: 32 },
+  { id: "2", company_name: "西日本カメラサービス", description: "大阪・関西エリアに特化した防犯カメラ専門業者です。", areas: ["大阪府", "兵庫県", "京都府", "奈良県"], qualifications: ["持続化補助金", "IT導入補助金"], project_count: 98, rating: 4.6, review_count: 24 },
+  { id: "3", company_name: "全国セキュリティ工業", description: "全国対応の防犯システム専門業者。大規模案件も対応可。", areas: ["全国対応"], qualifications: ["ものづくり補助金"], project_count: 210, rating: 4.5, review_count: 48 },
+  { id: "4", company_name: "北海道防犯カメラセンター", description: "北海道の防犯カメラ設置に特化した地域密着型業者です。", areas: ["北海道"], qualifications: ["持続化補助金"], project_count: 45, rating: 4.3, review_count: 12 },
+  { id: "5", company_name: "九州セキュリティサポート", description: "九州・沖縄エリアの防犯カメラ設置・保守を担当します。", areas: ["福岡県", "佐賀県", "長崎県", "熊本県"], qualifications: ["IT導入補助金"], project_count: 67, rating: 4.2, review_count: 18 },
 ];
 
 const AREA_OPTIONS = [
@@ -20,33 +19,25 @@ const AREA_OPTIONS = [
   { label: "関東", value: "東京都" },
   { label: "中部", value: "愛知県" },
   { label: "関西", value: "大阪府" },
+  { label: "中国・四国", value: "広島県" },
   { label: "九州・沖縄", value: "福岡県" },
 ];
 
+const SUBSIDY_OPTIONS = ["すべて", "IT導入補助金", "ものづくり補助金", "持続化補助金"];
+const RESULTS_OPTIONS = ["すべて", "10件以上", "50件以上", "100件以上"];
 const RATING_OPTIONS = [
   { label: "すべて", value: "" },
   { label: "★4以上", value: "4" },
   { label: "★3以上", value: "3" },
 ];
 
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <span className="inline-flex items-center gap-0.5" aria-label={`評価 ${rating.toFixed(1)}`}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <svg
-          key={i}
-          className="w-3.5 h-3.5"
-          fill={i <= Math.round(rating) ? "var(--hc-accent)" : "var(--hc-border)"}
-          viewBox="0 0 20 20"
-          aria-hidden="true"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.176 0l-3.37 2.448c-.784.57-1.838-.197-1.539-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.063 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" />
-        </svg>
-      ))}
-      <span className="text-xs ml-1 font-bold" style={{ color: "var(--hc-accent)" }}>{rating.toFixed(1)}</span>
-    </span>
-  );
-}
+const AREA_LABELS: Record<string, string> = {
+  "1": "東京・関東",
+  "2": "大阪・関西",
+  "3": "全国対応",
+  "4": "北海道",
+  "5": "福岡・九州",
+};
 
 export default function ContractorsPage() {
   const [contractors, setContractors] = useState<Contractor[]>(MOCK_CONTRACTORS);
@@ -56,6 +47,7 @@ export default function ContractorsPage() {
   const [keyword, setKeyword] = useState("");
   const [ratingFilter, setRatingFilter] = useState("");
   const [compareList, setCompareList] = useState<string[]>([]);
+  const [sortOrder, setSortOrder] = useState("rating");
 
   useEffect(() => {
     setLoading(true);
@@ -65,10 +57,15 @@ export default function ContractorsPage() {
       .finally(() => setLoading(false));
   }, [prefecture, keyword]);
 
-  const filtered = contractors.filter((c) => {
-    if (ratingFilter && c.rating < parseFloat(ratingFilter)) return false;
-    return true;
-  });
+  const filtered = contractors
+    .filter((c) => {
+      if (ratingFilter && c.rating < parseFloat(ratingFilter)) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortOrder === "results") return b.project_count - a.project_count;
+      return b.rating - a.rating;
+    });
 
   const toggleCompare = (id: string) => {
     setCompareList((prev) =>
@@ -76,34 +73,63 @@ export default function ContractorsPage() {
     );
   };
 
+  const compareContractors = contractors.filter((c) => compareList.includes(c.id));
+
   const left = (
     <div>
-      <p
-        className="text-xs font-bold uppercase mb-3"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        フィルター
-      </p>
+      <span className="section-title">フィルター</span>
 
-      <div className="mb-3">
-        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>エリア</label>
-        <select className="form-select text-xs w-full" value={prefecture} onChange={(e) => setPrefecture(e.target.value)}>
-          {AREA_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          エリア
+        </label>
+        <select
+          className="form-select"
+          style={{ fontSize: 13, padding: "8px 10px" }}
+          value={prefecture}
+          onChange={(e) => setPrefecture(e.target.value)}
+        >
+          {AREA_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>都道府県（詳細）</label>
-        <select className="form-select text-xs w-full" value={prefecture} onChange={(e) => setPrefecture(e.target.value)}>
-          <option value="">すべて</option>
-          {PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          対応補助金
+        </label>
+        <select className="form-select" style={{ fontSize: 13, padding: "8px 10px" }}>
+          {SUBSIDY_OPTIONS.map((o) => (
+            <option key={o}>{o}</option>
+          ))}
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>評価</label>
-        <select className="form-select text-xs w-full" value={ratingFilter} onChange={(e) => setRatingFilter(e.target.value)}>
-          {RATING_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          実績数
+        </label>
+        <select className="form-select" style={{ fontSize: 13, padding: "8px 10px" }}>
+          {RESULTS_OPTIONS.map((o) => (
+            <option key={o}>{o}</option>
+          ))}
+        </select>
+      </div>
+
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          評価
+        </label>
+        <select
+          className="form-select"
+          style={{ fontSize: 13, padding: "8px 10px" }}
+          value={ratingFilter}
+          onChange={(e) => setRatingFilter(e.target.value)}
+        >
+          {RATING_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
         </select>
       </div>
     </div>
@@ -111,170 +137,242 @@ export default function ContractorsPage() {
 
   const center = (
     <div>
-      <div className="flex gap-2 mb-3">
+      {/* Search bar */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
         <input
           type="text"
-          className="form-input flex-1 text-sm"
+          className="form-input"
+          style={{ flex: 1, padding: "10px 14px", fontSize: 14 }}
           placeholder="業者名、エリアで検索..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && setKeyword(searchInput)}
         />
-        <button className="btn-primary text-sm px-4" onClick={() => setKeyword(searchInput)}>
+        <button
+          className="btn-primary"
+          style={{ width: "auto", padding: "10px 18px", fontSize: 13, borderRadius: 6 }}
+          onClick={() => setKeyword(searchInput)}
+        >
           検索
         </button>
       </div>
 
-      <div className="flex justify-between items-center mb-3">
-        <span className="text-xs" style={{ color: "var(--hc-text-muted)" }}>
-          {loading ? "読み込み中..." : `${filtered.length}社の登録業者`}
-        </span>
+      {/* Sort row */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, fontSize: 12, color: "var(--hc-text-muted)" }}>
+        <span>{loading ? "読み込み中..." : `${filtered.length}社の登録業者`}</span>
         <select
-          className="text-xs border rounded px-2 py-1"
-          style={{ borderColor: "var(--hc-border)", color: "var(--hc-text-muted)" }}
+          style={{
+            padding: "4px 8px",
+            border: "1px solid var(--hc-border)",
+            borderRadius: 4,
+            fontSize: 11,
+            fontFamily: "inherit",
+            color: "var(--hc-text-muted)",
+            background: "var(--hc-white)",
+          }}
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
         >
-          <option>評価が高い順</option>
-          <option>実績が多い順</option>
-          <option>新着順</option>
+          <option value="rating">評価が高い順</option>
+          <option value="results">実績が多い順</option>
+          <option value="new">新着順</option>
         </select>
       </div>
 
-      <div className="space-y-2">
+      {/* Contractor cards */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {filtered.length === 0 && (
-          <div className="text-center py-10 text-sm" style={{ color: "var(--hc-text-muted)" }}>
+          <div style={{ textAlign: "center", padding: "40px 0", fontSize: 14, color: "var(--hc-text-muted)" }}>
             条件に合う業者が見つかりませんでした
           </div>
         )}
         {filtered.map((c) => (
           <div
             key={c.id}
-            className="rounded-lg border p-3 transition-shadow"
-            style={{ borderColor: "var(--hc-border)", background: "#fff" }}
+            style={{
+              background: "var(--hc-white)",
+              border: "1px solid var(--hc-border)",
+              borderRadius: 8,
+              padding: 14,
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              gap: 12,
+              alignItems: "center",
+              cursor: "pointer",
+              transition: "box-shadow 0.15s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.04)")}
+            onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-semibold text-sm mb-1" style={{ color: "var(--hc-navy)" }}>
-                  {c.company_name}
-                  {c.rating >= 4.5 && (
-                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#FEF9C3", color: "var(--hc-accent)" }}>
-                      認定業者
-                    </span>
-                  )}
-                </p>
-                <div className="flex items-center gap-3 mb-1.5">
-                  <StarRating rating={c.rating} />
-                  <span className="text-xs" style={{ color: "var(--hc-text-muted)" }}>
-                    {c.areas.slice(0, 2).join("・")}
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--hc-navy)" }}>
+                {c.company_name}
+                {c.rating >= 4.5 && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      background: "var(--hc-accent-light)",
+                      color: "var(--hc-accent)",
+                      padding: "2px 8px",
+                      borderRadius: 9999,
+                      fontWeight: 600,
+                      marginLeft: 8,
+                    }}
+                  >
+                    認定業者
                   </span>
-                  <span className="text-xs" style={{ color: "var(--hc-text-muted)" }}>
-                    実績 {c.project_count}件
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {c.qualifications.slice(0, 3).map((q) => (
-                    <span
-                      key={q}
-                      className="text-xs px-2 py-0.5 rounded font-medium"
-                      style={{ background: "rgba(21,128,61,0.06)", color: "var(--hc-primary)" }}
-                    >
-                      {q}
-                    </span>
-                  ))}
-                </div>
+                )}
               </div>
-              <div className="flex flex-col gap-1.5 shrink-0">
-                <Link
-                  href={`/contractors/${c.id}`}
-                  className="text-xs font-semibold px-2.5 py-1.5 rounded border text-center transition-colors"
-                  style={{ color: "var(--hc-primary)", borderColor: "var(--hc-border)" }}
-                >
-                  詳しく見る
-                </Link>
-                <button
-                  onClick={() => toggleCompare(c.id)}
-                  className="text-xs px-2.5 py-1.5 rounded border text-center transition-colors"
-                  style={{
-                    color: compareList.includes(c.id) ? "var(--hc-primary)" : "var(--hc-text-muted)",
-                    borderColor: compareList.includes(c.id) ? "var(--hc-primary)" : "var(--hc-border)",
-                    background: compareList.includes(c.id) ? "rgba(21,128,61,0.04)" : "#fff",
-                  }}
-                >
-                  {compareList.includes(c.id) ? "✓ 比較中" : "+ 比較"}
-                </button>
+              <div style={{ fontSize: 12, color: "var(--hc-text-muted)", display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  ★ {c.rating.toFixed(1)}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  {AREA_LABELS[c.id] || c.areas.slice(0, 2).join("・")}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  実績 {c.project_count}件
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
+                {c.qualifications.slice(0, 3).map((q) => (
+                  <span
+                    key={q}
+                    style={{
+                      fontSize: 10,
+                      padding: "2px 8px",
+                      borderRadius: 4,
+                      background: "rgba(21,128,61,0.06)",
+                      color: "var(--hc-primary)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {q}
+                  </span>
+                ))}
               </div>
             </div>
+            <Link
+              href={`/contractors/${c.id}`}
+              style={{
+                padding: "4px 10px",
+                border: "1px solid var(--hc-border)",
+                borderRadius: 4,
+                fontSize: 11,
+                fontWeight: 600,
+                color: "var(--hc-primary)",
+                background: "none",
+                textDecoration: "none",
+                transition: "all 0.15s",
+              }}
+            >
+              詳しく見る
+            </Link>
           </div>
         ))}
       </div>
     </div>
   );
 
-  const compareContractors = contractors.filter((c) => compareList.includes(c.id));
-
   const right = (
     <div>
-      <p
-        className="text-xs font-bold uppercase mb-3"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        クイックアクション
-      </p>
+      <span className="section-title">クイックアクション</span>
       <Link
         href="/match"
-        className="block w-full text-center text-xs font-bold px-3 py-2.5 rounded mb-2"
-        style={{ background: "var(--hc-primary)", color: "#fff" }}
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "10px 12px",
+          marginBottom: 6,
+          background: "var(--hc-primary)",
+          color: "#fff",
+          border: "1px solid var(--hc-primary)",
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 600,
+          textAlign: "center",
+          textDecoration: "none",
+          fontFamily: "inherit",
+          transition: "all 0.15s",
+        }}
       >
         ⚡ AI補助金診断
       </Link>
       <Link
-        href="/auth/login?redirect=/my/applications/new"
-        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
-        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+        href="#"
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "10px 12px",
+          marginBottom: 6,
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 500,
+          color: "var(--hc-text)",
+          textAlign: "left",
+          textDecoration: "none",
+          fontFamily: "inherit",
+          transition: "all 0.15s",
+        }}
       >
         📄 見積もり依頼
       </Link>
 
-      <hr style={{ borderColor: "var(--hc-border)", margin: "14px 0" }} />
+      <div className="divider" />
 
-      <div className="rounded-lg border p-3" style={{ borderColor: "var(--hc-border)", background: "#fff" }}>
-        <p className="text-xs font-bold mb-2" style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)" }}>
+      {/* Compare panel */}
+      <div
+        style={{
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 8,
+          padding: 14,
+        }}
+      >
+        <h3 style={{ fontSize: 12, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
           比較リスト（最大3社）
-        </p>
+        </h3>
         {compareContractors.length === 0 ? (
-          <p className="text-xs text-center py-4" style={{ color: "var(--hc-text-muted)" }}>
+          <div style={{ fontSize: 11, color: "var(--hc-text-muted)", textAlign: "center", padding: "16px 0" }}>
             業者を選択して比較できます
-          </p>
+          </div>
         ) : (
-          <div className="space-y-1.5">
+          <div>
             {compareContractors.map((c) => (
               <div
                 key={c.id}
-                className="flex justify-between items-center py-1.5 border-b last:border-0 text-xs"
-                style={{ borderColor: "var(--hc-border)" }}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "6px 0",
+                  borderBottom: "1px solid var(--hc-border)",
+                  fontSize: 12,
+                }}
               >
-                <span style={{ color: "var(--hc-navy)" }}>{c.company_name}</span>
-                <button
+                <span>{c.company_name}</span>
+                <span
+                  style={{ fontSize: 10, color: "var(--hc-text-muted)", cursor: "pointer" }}
                   onClick={() => toggleCompare(c.id)}
-                  className="text-xs hover:underline"
-                  style={{ color: "var(--hc-text-muted)" }}
                 >
                   削除
-                </button>
+                </span>
               </div>
             ))}
-            {compareContractors.length >= 2 && (
-              <button
-                className="block w-full text-xs font-medium text-center py-2 rounded mt-2 transition-colors"
-                style={{ background: "rgba(21,128,61,0.06)", color: "var(--hc-primary)" }}
-              >
-                比較する
-              </button>
-            )}
           </div>
         )}
+      </div>
+
+      {/* Hint illustration area */}
+      <div style={{ textAlign: "center", marginTop: 20, padding: 12, background: "rgba(21,128,61,0.03)", borderRadius: 6 }}>
+        <p style={{ fontSize: 10, color: "var(--hc-text-muted)", margin: 0 }}>
+          エリアや実績で<br />絞り込めます
+        </p>
       </div>
     </div>
   );
 
-  return <ThreeColumnLayout left={left} center={center} right={right} />;
+  return <ThreeColumnLayout left={left} center={center} right={right} gridCols="220px 1fr 260px" />;
 }

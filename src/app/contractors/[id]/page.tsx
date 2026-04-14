@@ -7,6 +7,10 @@ const MOCK_REVIEWS = [
   { stars: 4, text: "工期の見積もりが正確で、予定通りに完了しました。アフターサポートも充実しています。", author: "製造業 M様（埼玉県）" },
 ];
 
+function starsDisplay(count: number): string {
+  return "★".repeat(count) + "☆".repeat(5 - count);
+}
+
 export default async function ContractorDetailPage({
   params,
 }: {
@@ -21,7 +25,7 @@ export default async function ContractorDetailPage({
     c = {
       id,
       company_name: "セキュアテック株式会社",
-      description: "関東を中心に、監視カメラ・防犯カメラ設置の豊富な実績を持つ専門業者です。補助金申請のサポートも行っており、IT導入補助金やものづくり補助金の活用実績が多数あります。",
+      description: "関東を中心に、監視カメラ・防犯カメラ設置の豊富な実績を持つ専門業者です。",
       areas: ["東京都", "神奈川県", "埼玉県", "千葉県", "茨城県", "栃木県", "群馬県"],
       qualifications: ["電気工事士（第一種）", "防犯設備士", "HOJYO CAME 認定業者"],
       project_count: 142,
@@ -30,197 +34,167 @@ export default async function ContractorDetailPage({
     };
   }
 
-  function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) {
-    const sz = size === "md" ? "w-5 h-5" : "w-4 h-4";
-    return (
-      <span className="inline-flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <svg
-            key={i}
-            className={sz}
-            fill={i <= Math.round(rating) ? "var(--hc-accent)" : "var(--hc-border)"}
-            viewBox="0 0 20 20"
-            aria-hidden="true"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.176 0l-3.37 2.448c-.784.57-1.838-.197-1.539-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.063 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" />
-          </svg>
-        ))}
-      </span>
-    );
-  }
+  const tocItems = [
+    { href: "#profile", label: "プロフィール" },
+    { href: "#results", label: "施工実績" },
+    { href: "#area", label: "対応エリア" },
+    { href: "#reviews", label: "評価・レビュー" },
+    { href: "#certs", label: "資格・認定" },
+  ];
 
   const left = (
     <div>
       <Link
         href="/contractors"
-        className="flex items-center gap-1 text-xs mb-4 transition-colors"
-        style={{ color: "var(--hc-text-muted)" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+          fontSize: 12,
+          color: "var(--hc-text-muted)",
+          textDecoration: "none",
+          marginBottom: 16,
+        }}
       >
         ← 業者一覧
       </Link>
 
-      <p
-        className="text-xs font-bold uppercase mb-2"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        目次
-      </p>
-      {[
-        { href: "#profile", label: "プロフィール" },
-        { href: "#results", label: "施工実績" },
-        { href: "#area", label: "対応エリア" },
-        { href: "#reviews", label: "評価・レビュー" },
-        { href: "#certs", label: "資格・認定" },
-      ].map((item) => (
-        <a
-          key={item.href}
-          href={item.href}
-          className="block px-2.5 py-2 mb-0.5 rounded text-xs transition-colors"
-          style={{ color: "var(--hc-text-muted)" }}
-        >
-          {item.label}
-        </a>
-      ))}
+      <span className="section-title">目次</span>
+
+      <div className="link-list">
+        {tocItems.map((item, i) => (
+          <a
+            key={item.href}
+            href={item.href}
+            style={
+              i === 0
+                ? {
+                    background: "rgba(21,128,61,0.06)",
+                    color: "var(--hc-primary)",
+                    fontWeight: 500,
+                    borderLeft: "3px solid var(--hc-primary)",
+                    paddingLeft: 7,
+                  }
+                : undefined
+            }
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
     </div>
   );
 
   const center = (
     <div>
-      <nav className="text-xs mb-4" style={{ color: "var(--hc-text-muted)" }}>
-        <Link href="/contractors" style={{ color: "var(--hc-primary)" }} className="hover:underline">工事業者一覧</Link>
+      {/* Breadcrumb */}
+      <div style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 16 }}>
+        <Link href="/contractors" style={{ color: "var(--hc-primary)", textDecoration: "none" }}>
+          工事業者一覧
+        </Link>
         {" > "}
         {c.company_name}
-      </nav>
+      </div>
 
-      <h1
-        className="text-xl font-bold mb-2"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
+      {/* Title */}
+      <h1 style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--hc-navy)", letterSpacing: "-0.5px", marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
         {c.company_name}
       </h1>
 
-      <div className="flex flex-wrap gap-2 mb-5">
-        <span
-          className="text-xs px-2.5 py-1 rounded-full font-semibold"
-          style={{ background: "rgba(21,128,61,0.08)", color: "var(--hc-primary)" }}
-        >
+      {/* Tags */}
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+        <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 9999, fontWeight: 600, background: "rgba(21,128,61,0.08)", color: "var(--hc-primary)" }}>
           ★ {c.rating.toFixed(1)}（{c.review_count}件）
         </span>
         {c.rating >= 4.5 && (
-          <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: "#FEF9C3", color: "var(--hc-accent)" }}>
+          <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 9999, fontWeight: 600, background: "var(--hc-accent-light)", color: "var(--hc-accent)" }}>
             認定業者
           </span>
         )}
-        <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: "rgba(0,0,0,0.04)", color: "var(--hc-text-muted)" }}>
-          {c.areas[0]}
+        <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 9999, fontWeight: 600, background: "rgba(0,0,0,0.04)", color: "var(--hc-text-muted)" }}>
+          {c.areas[0] === "東京都" ? "東京・関東" : c.areas[0]}
         </span>
       </div>
 
-      {/* プロフィール */}
-      <section id="profile" className="mb-6">
-        <h2
-          className="text-base font-bold mb-2 pb-1.5 border-b"
-          style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px", borderColor: "var(--hc-border)" }}
-        >
+      {/* Profile section */}
+      <section id="profile" style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)", fontFamily: "'Sora', sans-serif" }}>
           会社概要
         </h2>
-        <p className="text-sm leading-relaxed mb-3" style={{ color: "var(--hc-text-muted)" }}>
-          {c.description}
-        </p>
-        <table className="w-full border-collapse text-sm">
+        <table className="info-table">
           <tbody>
-            {[
-              ["実績件数", `${c.project_count}件`],
-              ["レビュー数", `${c.review_count}件`],
-              ["評価", `★ ${c.rating.toFixed(1)}`],
-            ].map(([label, value]) => (
-              <tr key={label}>
-                <th
-                  className="text-left px-3 py-2 text-xs font-semibold w-1/3"
-                  style={{ background: "rgba(21,128,61,0.03)", border: "1px solid var(--hc-border)", color: "var(--hc-navy)" }}
-                >
-                  {label}
-                </th>
-                <td
-                  className="px-3 py-2 text-xs"
-                  style={{ border: "1px solid var(--hc-border)", color: "var(--hc-text-muted)" }}
-                >
-                  {value}
-                </td>
-              </tr>
-            ))}
+            <tr><th>設立</th><td>2015年</td></tr>
+            <tr><th>代表者</th><td>鈴木 一郎</td></tr>
+            <tr><th>従業員数</th><td>24名</td></tr>
+            <tr><th>所在地</th><td>東京都品川区大崎2-1-1</td></tr>
+            <tr><th>対応補助金</th><td>IT導入補助金、ものづくり補助金、持続化補助金</td></tr>
           </tbody>
         </table>
       </section>
 
-      {/* 施工実績 */}
-      <section id="results" className="mb-6">
-        <h2
-          className="text-base font-bold mb-2 pb-1.5 border-b"
-          style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px", borderColor: "var(--hc-border)" }}
-        >
+      {/* Results section */}
+      <section id="results" style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)", fontFamily: "'Sora', sans-serif" }}>
           施工実績
         </h2>
-        <p className="text-sm mb-2" style={{ color: "var(--hc-text-muted)" }}>
-          累計施工実績 <strong style={{ color: "var(--hc-primary)" }}>{c.project_count}件</strong>
+        <p style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
+          累計施工実績 <strong style={{ color: "var(--hc-primary)" }}>{c.project_count}件</strong>（2023年〜2026年）
         </p>
-        <ul className="text-sm space-y-1 pl-4 list-disc" style={{ color: "var(--hc-text-muted)" }}>
-          <li>小売店舗 防犯カメラシステム導入（IT導入補助金活用）</li>
-          <li>製造工場 監視カメラ8台設置（ものづくり補助金活用）</li>
-          <li>飲食チェーン 全5店舗一括導入</li>
+        <ul style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
+          <li style={{ marginBottom: 6 }}>小売店舗 防犯カメラシステム導入（IT導入補助金活用）— 東京都新宿区</li>
+          <li style={{ marginBottom: 6 }}>製造工場 監視カメラ8台設置（ものづくり補助金活用）— 埼玉県川口市</li>
+          <li style={{ marginBottom: 6 }}>飲食チェーン 全5店舗一括導入 — 東京都・神奈川県</li>
         </ul>
       </section>
 
-      {/* 対応エリア */}
-      <section id="area" className="mb-6">
-        <h2
-          className="text-base font-bold mb-2 pb-1.5 border-b"
-          style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px", borderColor: "var(--hc-border)" }}
-        >
+      {/* Area section */}
+      <section id="area" style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)", fontFamily: "'Sora', sans-serif" }}>
           対応エリア
         </h2>
-        <p className="text-sm" style={{ color: "var(--hc-text-muted)" }}>
+        <p style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
           {c.areas.join("、")}
         </p>
       </section>
 
-      {/* レビュー */}
-      <section id="reviews" className="mb-6">
-        <h2
-          className="text-base font-bold mb-2 pb-1.5 border-b"
-          style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px", borderColor: "var(--hc-border)" }}
-        >
+      {/* Reviews section */}
+      <section id="reviews" style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)", fontFamily: "'Sora', sans-serif" }}>
           評価・レビュー
         </h2>
-        <div className="space-y-3">
-          {MOCK_REVIEWS.map((review, i) => (
-            <div
-              key={i}
-              className="rounded-lg border p-3"
-              style={{ borderColor: "var(--hc-border)", background: "#fff" }}
-            >
-              <StarRating rating={review.stars} />
-              <p className="text-sm italic mt-1 leading-relaxed" style={{ color: "var(--hc-text-muted)" }}>
-                「{review.text}」
-              </p>
-              <p className="text-xs mt-2" style={{ color: "var(--hc-text-muted)" }}>
-                — {review.author}
-              </p>
+        {MOCK_REVIEWS.map((review, i) => (
+          <div
+            key={i}
+            style={{
+              background: "var(--hc-white)",
+              border: "1px solid var(--hc-border)",
+              borderRadius: 8,
+              padding: 14,
+              marginBottom: 10,
+            }}
+          >
+            <div style={{ color: "var(--hc-accent)", fontSize: 13, marginBottom: 4 }}>
+              {starsDisplay(review.stars)}
             </div>
-          ))}
-        </div>
+            <div style={{ fontSize: 13, color: "var(--hc-text-muted)", lineHeight: 1.6, fontStyle: "italic" }}>
+              「{review.text}」
+            </div>
+            <div style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 6 }}>
+              — {review.author}
+            </div>
+          </div>
+        ))}
       </section>
 
-      {/* 資格・認定 */}
-      <section id="certs" className="mb-6">
-        <h2
-          className="text-base font-bold mb-2 pb-1.5 border-b"
-          style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px", borderColor: "var(--hc-border)" }}
-        >
+      {/* Certifications section */}
+      <section id="certs" style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)", fontFamily: "'Sora', sans-serif" }}>
           資格・認定
         </h2>
-        <ul className="text-sm space-y-1 pl-4 list-disc" style={{ color: "var(--hc-text-muted)" }}>
-          {c.qualifications.map((q) => <li key={q}>{q}</li>)}
+        <ul style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
+          {c.qualifications.map((q) => (
+            <li key={q} style={{ marginBottom: 6 }}>{q}</li>
+          ))}
         </ul>
       </section>
     </div>
@@ -228,60 +202,87 @@ export default async function ContractorDetailPage({
 
   const right = (
     <div>
-      <p
-        className="text-xs font-bold uppercase mb-3"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        アクション
-      </p>
+      <span className="section-title">アクション</span>
 
       <Link
-        href="/auth/login?redirect=/my/applications/new"
-        className="block w-full text-center font-bold px-3 py-3 rounded-lg mb-3 border-2 transition-all text-sm"
-        style={{ background: "var(--hc-primary)", color: "#fff", borderColor: "var(--hc-primary)" }}
+        href="#"
+        style={{
+          display: "block",
+          width: "100%",
+          padding: 12,
+          marginBottom: 8,
+          borderRadius: 8,
+          fontSize: 14,
+          fontWeight: 700,
+          textAlign: "center",
+          textDecoration: "none",
+          fontFamily: "inherit",
+          transition: "all 0.3s",
+          background: "var(--hc-primary)",
+          color: "#fff",
+          border: "2px solid var(--hc-primary)",
+        }}
       >
         見積もりを依頼する
       </Link>
-      <button
-        className="block w-full text-center font-bold px-3 py-3 rounded-lg mb-3 border-2 transition-all text-sm"
-        style={{ background: "#fff", color: "var(--hc-primary)", borderColor: "var(--hc-primary)" }}
+      <Link
+        href="#"
+        style={{
+          display: "block",
+          width: "100%",
+          padding: 12,
+          marginBottom: 8,
+          borderRadius: 8,
+          fontSize: 14,
+          fontWeight: 700,
+          textAlign: "center",
+          textDecoration: "none",
+          fontFamily: "inherit",
+          transition: "all 0.3s",
+          background: "var(--hc-white)",
+          color: "var(--hc-primary)",
+          border: "2px solid var(--hc-primary)",
+        }}
       >
         比較リストに追加
-      </button>
+      </Link>
 
+      {/* Info box */}
       <div
-        className="rounded-lg border p-3 mt-3"
-        style={{ borderColor: "var(--hc-border)", background: "#fff" }}
+        style={{
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 8,
+          padding: 14,
+          marginTop: 12,
+        }}
       >
-        <p
-          className="text-xs font-bold mb-2"
-          style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)" }}
-        >
+        <h3 style={{ fontSize: 13, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
           基本情報
-        </p>
+        </h3>
         {[
-          ["評価", `★ ${c.rating.toFixed(1)}`],
-          ["実績", `${c.project_count}件`],
-          ["エリア", c.areas[0]],
-          ["認定", c.rating >= 4.5 ? "認定業者" : "—"],
-        ].map(([label, value]) => (
+          { label: "評価", value: `★ ${c.rating.toFixed(1)}`, color: "var(--hc-accent)" },
+          { label: "実績", value: `${c.project_count}件`, color: "var(--hc-text)" },
+          { label: "エリア", value: c.areas[0] === "東京都" ? "東京・関東" : c.areas[0], color: "var(--hc-text)" },
+          { label: "認定", value: c.rating >= 4.5 ? "認定業者" : "—", color: c.rating >= 4.5 ? "var(--hc-primary)" : "var(--hc-text)" },
+        ].map((item) => (
           <div
-            key={label}
-            className="flex justify-between py-1.5 border-b last:border-0 text-xs"
-            style={{ borderColor: "var(--hc-border)" }}
+            key={item.label}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "6px 0",
+              borderBottom: "1px solid var(--hc-border)",
+              fontSize: 12,
+            }}
           >
-            <span style={{ color: "var(--hc-text-muted)" }}>{label}</span>
-            <span
-              className="font-medium"
-              style={{ color: label === "評価" ? "var(--hc-accent)" : label === "認定" && c.rating >= 4.5 ? "var(--hc-primary)" : "var(--hc-navy)" }}
-            >
-              {value}
-            </span>
+            <span style={{ color: "var(--hc-text-muted)" }}>{item.label}</span>
+            <span style={{ fontWeight: 600, color: item.color }}>{item.value}</span>
           </div>
         ))}
       </div>
     </div>
   );
 
-  return <ThreeColumnLayout left={left} center={center} right={right} />;
+  return <ThreeColumnLayout left={left} center={center} right={right} gridCols="200px 1fr 260px" />;
 }

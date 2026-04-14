@@ -13,18 +13,10 @@ import {
 // ステータスラベル・バッジ
 const STATUS_LABEL: Record<string, string> = {
   new: "新着",
-  estimating: "見積中",
+  estimating: "対応中",
   working: "施工中",
   completed: "完了",
   declined: "辞退",
-};
-
-const STATUS_CLASS: Record<string, string> = {
-  new: "bg-[var(--hc-accent)]/10 text-[var(--hc-accent)]",
-  estimating: "bg-[var(--hc-primary)]/10 text-[var(--hc-primary)]",
-  working: "bg-[var(--hc-primary)]/10 text-[var(--hc-primary)]",
-  completed: "bg-gray-100 text-gray-500",
-  declined: "bg-red-50 text-red-500",
 };
 
 // モックデータ（APIフォールバック用）
@@ -53,34 +45,47 @@ const MONTHLY_DATA = [
   { label: "4月", value: 5, pct: 75 },
 ];
 
+const MOCK_META: Record<string, string> = {
+  "1": "小売業 / カメラ8台 / 2026/4/12受信",
+  "2": "飲食業 / カメラ4台 / 2026/4/11受信",
+  "3": "製造業 / カメラ12台 / 2026/4/10受信",
+  "4": "サービス業 / 見積もり作成中",
+};
+
 // 共有サイドバー
 function BizSidebar({ active }: { active: string }) {
   const links = [
-    { href: "/biz", label: "ダッシュボード", icon: "📊" },
-    { href: "/biz/projects", label: "案件一覧", icon: "📋" },
-    { href: "/biz/profile", label: "プロフィール", icon: "👤" },
-    { href: "/biz/settings", label: "設定", icon: "⚙" },
+    { href: "/biz", label: "ダッシュボード", icon: "📋", badge: null },
+    { href: "/biz/projects", label: "案件一覧", icon: "📁", badge: "3" },
+    { href: "/biz/profile", label: "プロフィール編集", icon: "👤", badge: null },
+    { href: "/biz/settings", label: "アカウント設定", icon: "⚙", badge: null },
   ];
   return (
     <div>
-      <p
-        style={{ fontFamily: "'Sora', sans-serif" }}
-        className="text-[11px] font-bold text-[var(--hc-navy)] tracking-wider uppercase mb-3"
-      >
-        業者ポータル
-      </p>
+      <span className="section-title">業者ポータル</span>
       {links.map((l) => (
         <Link
           key={l.href}
           href={l.href}
-          className={`flex items-center gap-2 px-3 py-2 rounded-md text-[13px] mb-1 transition-colors ${
+          className={`flex items-center justify-between px-[10px] py-2 rounded-md text-[13px] mb-[2px] transition-colors no-underline ${
             active === l.href
-              ? "bg-[var(--hc-primary)]/8 text-[var(--hc-primary)] font-medium"
-              : "text-[var(--hc-text-muted)] hover:bg-[var(--hc-primary)]/5 hover:text-[var(--hc-primary)]"
+              ? "font-medium"
+              : "hover:text-[var(--hc-primary)]"
           }`}
+          style={{
+            background: active === l.href ? "rgba(21,128,61,0.06)" : undefined,
+            color: active === l.href ? "var(--hc-primary)" : "var(--hc-text-muted)",
+          }}
         >
-          <span>{l.icon}</span>
-          <span>{l.label}</span>
+          <span>{l.icon} {l.label}</span>
+          {l.badge && (
+            <span
+              className="text-[11px] px-1.5 py-[1px] rounded-full"
+              style={{ background: "var(--hc-accent-light)", color: "var(--hc-accent)" }}
+            >
+              {l.badge}
+            </span>
+          )}
         </Link>
       ))}
     </div>
@@ -115,64 +120,72 @@ export default function BizDashboardPage() {
   const center = (
     <div>
       <h1
-        style={{ fontFamily: "'Sora', sans-serif" }}
-        className="text-[1.1rem] font-bold text-[var(--hc-navy)] tracking-tight mb-4"
+        style={{ fontFamily: "'Sora', sans-serif", fontSize: "1.1rem", letterSpacing: "-0.3px", marginBottom: 16 }}
       >
         セキュアテック株式会社
       </h1>
 
-      {/* サマリーカード */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+      {/* サマリーカード 4列 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-[10px] mb-5">
         {[
           { num: stats.new_count, label: "新着案件", color: "var(--hc-accent)" },
           { num: stats.active_count, label: "対応中", color: "var(--hc-primary)" },
-          { num: stats.monthly_completed, label: "完了", color: "#16a34a" },
+          { num: stats.monthly_completed, label: "完了", color: "var(--hc-success)" },
           { num: "4.8", label: "評価", color: "var(--hc-navy)" },
         ].map((c) => (
-          <div key={c.label} className="card text-center py-4">
+          <div key={c.label} className="summary-card text-center">
             <div
               style={{ fontFamily: "'Sora', sans-serif", color: c.color }}
-              className="text-2xl font-bold mb-1"
+              className="text-[22px] font-bold mb-[2px]"
             >
               {c.num}
             </div>
-            <div className="text-[11px] text-[var(--hc-text-muted)]">{c.label}</div>
+            <div className="text-[11px]" style={{ color: "var(--hc-text-muted)" }}>{c.label}</div>
           </div>
         ))}
       </div>
 
       {/* アラートバナー */}
       {stats.new_count > 0 && (
-        <div className="flex items-center gap-3 bg-[#FEF9C3] border border-[var(--hc-accent)]/20 rounded-lg px-4 py-3 mb-5 text-[13px] text-[var(--hc-accent)]">
+        <div
+          className="flex items-center gap-[10px] rounded-lg px-3 py-3 mb-4 text-[13px]"
+          style={{
+            background: "var(--hc-accent-light)",
+            border: "1px solid rgba(202,138,4,0.2)",
+            color: "var(--hc-accent)",
+          }}
+        >
           <span>🔔</span>
-          <span>
-            <strong className="text-[var(--hc-navy)]">{stats.new_count}件</strong>
+          <div>
+            <strong style={{ color: "var(--hc-navy)" }}>{stats.new_count}件</strong>
             の新着案件があります。24時間以内にご対応ください。
-          </span>
+          </div>
         </div>
       )}
 
       {/* 新着案件 */}
-      <p
-        style={{ fontFamily: "'Sora', sans-serif" }}
-        className="text-[11px] font-bold text-[var(--hc-navy)] tracking-wider uppercase mb-3"
-      >
-        新着案件
-      </p>
-      <div className="space-y-2 mb-5">
+      <span className="section-title">新着案件</span>
+      <div className="flex flex-col gap-1.5">
         {newProjects.map((p) => (
-          <Link key={p.id} href={`/biz/projects/${p.id}`}>
-            <div className="card flex items-center justify-between hover:shadow-md transition-shadow cursor-pointer mb-2">
+          <Link key={p.id} href={`/biz/projects/${p.id}`} className="no-underline">
+            <div
+              className="flex items-center justify-between rounded-lg px-3 py-3 cursor-pointer transition-shadow hover:shadow-md"
+              style={{
+                background: "var(--hc-white)",
+                border: "1px solid var(--hc-border)",
+              }}
+            >
               <div>
-                <div className="text-[13px] font-semibold text-[var(--hc-navy)]">
+                <div className="text-[13px] font-semibold" style={{ color: "var(--hc-navy)" }}>
                   {p.company_name} — {p.subsidy_name}
                 </div>
-                <div className="text-[11px] text-[var(--hc-text-muted)] mt-0.5">
-                  期限: {p.deadline}
+                <div className="text-[11px] mt-[2px]" style={{ color: "var(--hc-text-muted)" }}>
+                  {MOCK_META[p.id] || `期限: ${p.deadline}`}
                 </div>
               </div>
               <span
-                className={`text-[10px] font-semibold px-3 py-1 rounded-full ${STATUS_CLASS[p.status]}`}
+                className="text-[10px] font-semibold px-[10px] py-[3px] rounded-full"
+                style={{ background: "var(--hc-accent-light)", color: "var(--hc-accent)" }}
               >
                 {STATUS_LABEL[p.status]}
               </span>
@@ -182,31 +195,33 @@ export default function BizDashboardPage() {
       </div>
 
       {/* 対応中 */}
-      <p
-        style={{ fontFamily: "'Sora', sans-serif" }}
-        className="text-[11px] font-bold text-[var(--hc-navy)] tracking-wider uppercase mb-3"
-      >
-        対応中
-      </p>
-      <div className="space-y-2 mb-5">
+      <span className="section-title" style={{ marginTop: 16 }}>対応中</span>
+      <div className="flex flex-col gap-1.5">
         {activeProjects.length === 0 ? (
-          <p className="text-[13px] text-[var(--hc-text-muted)]">対応中の案件はありません。</p>
+          <p className="text-[13px]" style={{ color: "var(--hc-text-muted)" }}>対応中の案件はありません。</p>
         ) : (
           activeProjects.map((p) => (
-            <Link key={p.id} href={`/biz/projects/${p.id}`}>
-              <div className="card flex items-center justify-between hover:shadow-md transition-shadow cursor-pointer mb-2">
+            <Link key={p.id} href={`/biz/projects/${p.id}`} className="no-underline">
+              <div
+                className="flex items-center justify-between rounded-lg px-3 py-3 cursor-pointer transition-shadow hover:shadow-md"
+                style={{
+                  background: "var(--hc-white)",
+                  border: "1px solid var(--hc-border)",
+                }}
+              >
                 <div>
-                  <div className="text-[13px] font-semibold text-[var(--hc-navy)]">
+                  <div className="text-[13px] font-semibold" style={{ color: "var(--hc-navy)" }}>
                     {p.company_name} — {p.subsidy_name}
                   </div>
-                  <div className="text-[11px] text-[var(--hc-text-muted)] mt-0.5">
-                    見積もり作成中
+                  <div className="text-[11px] mt-[2px]" style={{ color: "var(--hc-text-muted)" }}>
+                    {MOCK_META[p.id] || "見積もり作成中"}
                   </div>
                 </div>
                 <span
-                  className={`text-[10px] font-semibold px-3 py-1 rounded-full ${STATUS_CLASS[p.status]}`}
+                  className="text-[10px] font-semibold px-[10px] py-[3px] rounded-full"
+                  style={{ background: "rgba(21,128,61,0.08)", color: "var(--hc-primary)" }}
                 >
-                  {STATUS_LABEL[p.status]}
+                  対応中
                 </span>
               </div>
             </Link>
@@ -215,23 +230,29 @@ export default function BizDashboardPage() {
       </div>
 
       {/* 月次実績チャート */}
-      <div className="card mt-4">
+      <div
+        className="rounded-lg mt-4"
+        style={{
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          padding: 14,
+        }}
+      >
         <h3
-          style={{ fontFamily: "'Sora', sans-serif" }}
-          className="text-[12px] font-bold text-[var(--hc-navy)] mb-3"
+          style={{ fontFamily: "'Sora', sans-serif", fontSize: 12, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10 }}
         >
           月次実績（2026年）
         </h3>
         {MONTHLY_DATA.map((row) => (
-          <div key={row.label} className="flex items-center gap-2 mb-2 text-[11px] text-[var(--hc-text-muted)]">
-            <span className="w-8">{row.label}</span>
-            <div className="flex-1 h-4 bg-black/5 rounded-sm overflow-hidden">
+          <div key={row.label} className="flex items-center gap-2 mb-1.5 text-[11px]" style={{ color: "var(--hc-text-muted)" }}>
+            <span className="w-[30px]">{row.label}</span>
+            <div className="flex-1 h-4 rounded-[3px] overflow-hidden" style={{ background: "rgba(0,0,0,0.04)" }}>
               <div
-                className="h-full rounded-sm"
+                className="h-full rounded-[3px]"
                 style={{ width: `${row.pct}%`, background: "var(--hc-primary)" }}
               />
             </div>
-            <span className="w-6 text-right font-semibold text-[var(--hc-navy)]">{row.value}</span>
+            <span className="w-[30px] text-right font-semibold" style={{ color: "var(--hc-text)" }}>{row.value}</span>
           </div>
         ))}
       </div>
@@ -240,51 +261,64 @@ export default function BizDashboardPage() {
 
   const right = (
     <div>
-      <p
-        style={{ fontFamily: "'Sora', sans-serif" }}
-        className="text-[11px] font-bold text-[var(--hc-navy)] tracking-wider uppercase mb-3"
-      >
-        クイックアクション
-      </p>
+      <span className="section-title">クイックアクション</span>
       <Link
         href="/biz/profile"
-        className="block w-full text-left px-3 py-2 mb-2 bg-white border border-[var(--hc-border)] rounded-md text-[12px] font-medium text-[var(--hc-navy)] hover:border-[var(--hc-primary)] hover:text-[var(--hc-primary)] transition-colors"
+        className="block w-full text-left px-3 py-[10px] mb-1.5 rounded-md text-[12px] font-medium no-underline transition-colors"
+        style={{
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          color: "var(--hc-text)",
+        }}
       >
         👤 プロフィール更新
       </Link>
       <Link
-        href="/biz/profile"
-        className="block w-full text-left px-3 py-2 mb-2 bg-white border border-[var(--hc-border)] rounded-md text-[12px] font-medium text-[var(--hc-navy)] hover:border-[var(--hc-primary)] hover:text-[var(--hc-primary)] transition-colors"
+        href="/biz/profile#area"
+        className="block w-full text-left px-3 py-[10px] mb-1.5 rounded-md text-[12px] font-medium no-underline transition-colors"
+        style={{
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          color: "var(--hc-text)",
+        }}
       >
         📍 対応エリア変更
       </Link>
 
-      <div className="border-t border-[var(--hc-border)] my-3" />
+      <div className="divider" />
 
-      <p
-        style={{ fontFamily: "'Sora', sans-serif" }}
-        className="text-[11px] font-bold text-[var(--hc-navy)] tracking-wider uppercase mb-3"
-      >
-        通知
-      </p>
-      <div className="space-y-0">
+      <span className="section-title">通知</span>
+      <div>
         {[
           { title: "株式会社A", body: "から見積もり依頼", date: "4/12" },
           { title: "株式会社D", body: "から追加質問", date: "4/11" },
-          { title: "プロフィール", body: "の資格情報を更新してください", date: "4/8" },
+          { title: "プロフィールの", body: "資格情報を更新してください", date: "4/8" },
         ].map((n, i) => (
           <div
             key={i}
-            className="py-2 border-b border-[var(--hc-border)] last:border-none text-[11px] text-[var(--hc-text-muted)] leading-snug"
+            className="py-2 text-[11px] leading-snug"
+            style={{
+              borderBottom: "1px solid var(--hc-border)",
+              color: "var(--hc-text-muted)",
+            }}
           >
-            <strong className="text-[var(--hc-navy)]">{n.title}</strong>
-            {n.body}
-            <div className="text-[10px] mt-0.5">{n.date}</div>
+            <div>
+              <strong style={{ color: "var(--hc-text)", fontWeight: 500 }}>{n.title}</strong>
+              {n.body}
+            </div>
+            <div className="text-[10px] mt-[2px]">{n.date}</div>
           </div>
         ))}
       </div>
     </div>
   );
 
-  return <ThreeColumnLayout left={left} center={center} right={right} />;
+  return (
+    <ThreeColumnLayout
+      left={left}
+      center={center}
+      right={right}
+      gridCols="200px 1fr 240px"
+    />
+  );
 }

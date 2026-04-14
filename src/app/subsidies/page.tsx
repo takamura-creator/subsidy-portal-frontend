@@ -7,10 +7,10 @@ import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { PREFECTURES, INDUSTRIES } from "@/lib/constants";
 
 const CATEGORIES = [
-  { label: "すべて", value: "" },
-  { label: "国の補助金", value: "国" },
-  { label: "都道府県", value: "都道府県" },
-  { label: "市区町村", value: "市区町村" },
+  { label: "すべて", value: "", count: 123 },
+  { label: "国の補助金", value: "国", count: 24 },
+  { label: "都道府県", value: "都道府県", count: 47 },
+  { label: "市区町村", value: "市区町村", count: 52 },
 ];
 
 const AMOUNT_OPTIONS = [
@@ -39,6 +39,18 @@ const MOCK_SUBSIDIES: Subsidy[] = [
   { id: "8", name: "名古屋市 防犯カメラ設置費補助", category: "市区町村", ministry: "名古屋市", pref_code: "23", prefecture: "愛知県", max_amount: 100000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/10/31", status: "open", description: "", application_tips: "", source_url: "" },
 ];
 
+// 更新日のモックデータ
+const UPDATED_MAP: Record<string, string> = {
+  "1": "4/10更新",
+  "2": "4/8更新",
+  "3": "4/5更新",
+  "4": "4/1更新",
+  "5": "3/28更新",
+  "6": "3/25更新",
+  "7": "3/20更新",
+  "8": "3/15更新",
+};
+
 function getDaysUntil(dateStr: string): number {
   const parts = dateStr.split("/");
   if (parts.length !== 3) return 999;
@@ -49,9 +61,18 @@ function getDaysUntil(dateStr: string): number {
 
 function formatAmount(amount: number): string {
   if (amount >= 10000000) return `${Math.round(amount / 10000000) * 1000}万円`;
-  if (amount >= 1000000) return `${Math.round(amount / 10000)}万円`;
+  if (amount >= 1000000) return `${Math.round(amount / 10000).toLocaleString("ja-JP")}万円`;
   if (amount >= 10000) return `${Math.round(amount / 10000)}万円`;
   return `${amount.toLocaleString("ja-JP")}円`;
+}
+
+function formatAmountDisplay(s: Subsidy): string {
+  // 防犯カメラ系は「X万円/台」表示
+  if (s.name.includes("防犯") || s.name.includes("助成")) {
+    const man = Math.round(s.max_amount / 10000);
+    return `${man}万円/台`;
+  }
+  return formatAmount(s.max_amount);
 }
 
 export default function SubsidiesPage() {
@@ -103,107 +124,185 @@ export default function SubsidiesPage() {
     setSearchInput("");
   };
 
+  /* ── Left column: Filters ── */
   const left = (
     <div>
-      <p
-        className="text-xs font-bold uppercase mb-3"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        フィルター
-      </p>
+      <span className="section-title">フィルター</span>
 
-      <div className="mb-3">
-        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>都道府県</label>
-        <select className="form-select text-xs w-full" value={prefecture} onChange={(e) => setPrefecture(e.target.value)}>
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          都道府県
+        </label>
+        <select
+          className="form-select"
+          style={{ fontSize: 13, padding: "8px 10px" }}
+          value={prefecture}
+          onChange={(e) => setPrefecture(e.target.value)}
+        >
           <option value="">すべて</option>
           {PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>業種</label>
-        <select className="form-select text-xs w-full" value={industry} onChange={(e) => setIndustry(e.target.value)}>
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          業種
+        </label>
+        <select
+          className="form-select"
+          style={{ fontSize: 13, padding: "8px 10px" }}
+          value={industry}
+          onChange={(e) => setIndustry(e.target.value)}
+        >
           <option value="">すべて</option>
           {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>補助上限額</label>
-        <select className="form-select text-xs w-full" value={amountFilter} onChange={(e) => setAmountFilter(e.target.value)}>
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          補助上限額
+        </label>
+        <select
+          className="form-select"
+          style={{ fontSize: 13, padding: "8px 10px" }}
+          value={amountFilter}
+          onChange={(e) => setAmountFilter(e.target.value)}
+        >
           {AMOUNT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>締切</label>
-        <select className="form-select text-xs w-full" value={deadlineFilter} onChange={(e) => setDeadlineFilter(e.target.value)}>
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
+          締切
+        </label>
+        <select
+          className="form-select"
+          style={{ fontSize: 13, padding: "8px 10px" }}
+          value={deadlineFilter}
+          onChange={(e) => setDeadlineFilter(e.target.value)}
+        >
           {DEADLINE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </div>
 
       <button
         onClick={handleReset}
-        className="text-xs font-medium hover:underline mb-4"
-        style={{ color: "var(--hc-primary)" }}
+        style={{
+          background: "none",
+          border: "none",
+          fontSize: 11,
+          color: "var(--hc-primary)",
+          fontWeight: 500,
+          cursor: "pointer",
+          padding: 0,
+          marginTop: 6,
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+        onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
       >
         リセット
       </button>
 
-      <hr style={{ borderColor: "var(--hc-border)", margin: "14px 0" }} />
+      <div className="divider" />
 
-      <p
-        className="text-xs font-bold uppercase mb-2"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        カテゴリ
-      </p>
-      <ul>
-        {CATEGORIES.map((c) => (
-          <li key={c.value}>
-            <button
-              className="w-full text-left px-2 py-1.5 rounded text-xs flex justify-between items-center transition-colors"
-              style={{
-                color: category === c.value ? "var(--hc-primary)" : "var(--hc-text-muted)",
-                background: category === c.value ? "rgba(21,128,61,0.06)" : "transparent",
-                fontWeight: category === c.value ? 500 : 400,
-              }}
-              onClick={() => setCategory(c.value)}
-            >
-              <span>{c.label}</span>
-              <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.04)" }}>
-                {c.value === "" ? sorted.length : sorted.filter((s) => s.category.includes(c.value)).length}
-              </span>
-            </button>
-          </li>
-        ))}
+      <span className="section-title">カテゴリ</span>
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        {CATEGORIES.map((c) => {
+          const isActive = category === c.value;
+          const count = c.value === ""
+            ? sorted.length
+            : sorted.filter((s) => s.category.includes(c.value)).length;
+          return (
+            <li key={c.value}>
+              <button
+                onClick={() => setCategory(c.value)}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "6px 8px",
+                  fontSize: 12,
+                  color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
+                  background: isActive ? "rgba(21,128,61,0.06)" : "transparent",
+                  fontWeight: isActive ? 500 : 400,
+                  border: "none",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  fontFamily: "inherit",
+                  transition: "background 0.15s",
+                }}
+              >
+                <span>{c.label}</span>
+                <span
+                  style={{
+                    fontSize: 11,
+                    background: "rgba(0,0,0,0.04)",
+                    padding: "1px 6px",
+                    borderRadius: 9999,
+                  }}
+                >
+                  {count}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
 
+  /* ── Center column: Search + Table ── */
   const center = (
-    <div>
-      <div className="flex gap-2 mb-3">
+    <div style={{ padding: "0" }}>
+      {/* Search row */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
         <input
           type="text"
-          className="form-input flex-1 text-sm"
+          className="form-input"
           placeholder="補助金名、キーワードで検索..."
+          style={{ flex: 1, fontSize: 14, padding: "10px 14px" }}
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && setKeyword(searchInput)}
         />
-        <button className="btn-primary text-sm px-4" onClick={() => setKeyword(searchInput)}>
+        <button
+          onClick={() => setKeyword(searchInput)}
+          style={{
+            background: "var(--hc-primary)",
+            color: "#fff",
+            padding: "10px 18px",
+            borderRadius: 6,
+            fontSize: 13,
+            fontWeight: 700,
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "inherit",
+            transition: "background 0.2s",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.background = "var(--hc-primary-hover)")}
+          onMouseOut={(e) => (e.currentTarget.style.background = "var(--hc-primary)")}
+        >
           検索
         </button>
       </div>
 
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-xs" style={{ color: "var(--hc-text-muted)" }}>
-          {loading ? "読み込み中..." : `${sorted.length}件の補助金`}
-        </span>
+      {/* List meta: count + sort */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, fontSize: 12, color: "var(--hc-text-muted)" }}>
+        <span>{loading ? "読み込み中..." : `${sorted.length}件の補助金`}</span>
         <select
-          className="text-xs border rounded px-2 py-1"
-          style={{ borderColor: "var(--hc-border)", color: "var(--hc-text-muted)" }}
+          style={{
+            padding: "4px 8px",
+            border: "1px solid var(--hc-border)",
+            borderRadius: 4,
+            fontSize: 11,
+            fontFamily: "inherit",
+            color: "var(--hc-text-muted)",
+            background: "var(--hc-white)",
+          }}
           value={sort}
           onChange={(e) => setSort(e.target.value)}
         >
@@ -213,62 +312,136 @@ export default function SubsidiesPage() {
         </select>
       </div>
 
-      <div className="rounded-lg overflow-hidden border" style={{ borderColor: "var(--hc-border)", background: "#fff" }}>
+      {/* Table */}
+      <div
+        style={{
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 8,
+          overflow: "hidden",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.02)",
+        }}
+      >
+        {/* Table header */}
         <div
-          className="grid text-xs font-semibold uppercase px-3 py-2"
           style={{
-            gridTemplateColumns: "2.5fr 1fr 1fr 90px",
+            display: "grid",
+            gridTemplateColumns: "2.5fr 1fr 1fr 1fr 100px",
+            padding: "8px 14px",
             background: "rgba(21,128,61,0.03)",
             borderBottom: "1px solid var(--hc-border)",
+            fontSize: 11,
+            fontWeight: 600,
             color: "var(--hc-text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: "0.3px",
           }}
         >
           <span>補助金名</span>
           <span>上限額</span>
           <span>締切</span>
+          <span>更新日</span>
           <span />
         </div>
 
         {sorted.length === 0 && (
-          <div className="text-center py-10 text-sm" style={{ color: "var(--hc-text-muted)" }}>
+          <div style={{ textAlign: "center", padding: "40px 0", fontSize: 13, color: "var(--hc-text-muted)" }}>
             条件に合う補助金が見つかりませんでした
           </div>
         )}
 
-        {sorted.map((s) => {
+        {/* Table rows */}
+        {sorted.map((s, idx) => {
           const days = getDaysUntil(s.deadline);
           const isUrgent = days <= 30;
+          const isNew = s.id === "2"; // ものづくり補助金にNEWバッジ
           return (
             <div
               key={s.id}
-              className="grid items-center px-3 py-2.5 text-sm border-b last:border-0 transition-colors"
               style={{
-                gridTemplateColumns: "2.5fr 1fr 1fr 90px",
-                borderColor: "var(--hc-border)",
+                display: "grid",
+                gridTemplateColumns: "2.5fr 1fr 1fr 1fr 100px",
+                padding: "10px 14px",
+                borderBottom: idx < sorted.length - 1 ? "1px solid var(--hc-border)" : "none",
+                fontSize: 13,
+                alignItems: "center",
+                cursor: "pointer",
+                transition: "background 0.1s",
               }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "rgba(21,128,61,0.02)")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <span className="font-semibold leading-snug pr-2" style={{ color: "var(--hc-navy)" }}>
+              <span style={{ fontWeight: 600, color: "var(--hc-navy)" }}>
                 {s.name}
                 {isUrgent && (
-                  <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded font-semibold" style={{ background: "#FEF9C3", color: "var(--hc-accent)" }}>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      color: "var(--hc-accent)",
+                      background: "var(--hc-accent-light)",
+                      padding: "1px 6px",
+                      borderRadius: 4,
+                      fontWeight: 600,
+                      marginLeft: 4,
+                    }}
+                  >
                     あと{days}日
                   </span>
                 )}
+                {isNew && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      color: "var(--hc-primary)",
+                      background: "rgba(21,128,61,0.08)",
+                      padding: "1px 6px",
+                      borderRadius: 4,
+                      fontWeight: 600,
+                      marginLeft: 4,
+                    }}
+                  >
+                    NEW
+                  </span>
+                )}
               </span>
-              <span className="font-bold text-sm" style={{ color: "var(--hc-primary)" }}>
-                {formatAmount(s.max_amount)}
+              <span style={{ color: "var(--hc-primary)", fontWeight: 700 }}>
+                {formatAmountDisplay(s)}
               </span>
               <span
-                className="text-xs"
-                style={{ color: isUrgent ? "var(--hc-accent)" : "var(--hc-text-muted)", fontWeight: isUrgent ? 600 : 400 }}
+                style={{
+                  fontSize: 12,
+                  color: isUrgent ? "var(--hc-accent)" : undefined,
+                  fontWeight: isUrgent ? 600 : undefined,
+                }}
               >
                 {s.deadline}
+              </span>
+              <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>
+                {UPDATED_MAP[s.id] || ""}
               </span>
               <span>
                 <Link
                   href={`/subsidies/${s.id}`}
-                  className="text-xs font-semibold px-2.5 py-1 rounded border transition-colors"
-                  style={{ color: "var(--hc-primary)", borderColor: "var(--hc-border)" }}
+                  style={{
+                    padding: "4px 10px",
+                    border: "1px solid var(--hc-border)",
+                    borderRadius: 4,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: "var(--hc-primary)",
+                    background: "none",
+                    textDecoration: "none",
+                    transition: "all 0.15s",
+                    display: "inline-block",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.borderColor = "var(--hc-primary)";
+                    e.currentTarget.style.background = "rgba(21,128,61,0.04)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.borderColor = "var(--hc-border)";
+                    e.currentTarget.style.background = "none";
+                  }}
                 >
                   詳しく見る
                 </Link>
@@ -280,49 +453,113 @@ export default function SubsidiesPage() {
     </div>
   );
 
+  /* ── Right column: Quick actions ── */
   const right = (
     <div>
-      <p
-        className="text-xs font-bold uppercase mb-3"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        クイックアクション
-      </p>
+      <span className="section-title">クイックアクション</span>
+
+      {/* CTA: AI補助金診断 */}
       <Link
         href="/match"
-        className="block w-full text-center text-xs font-bold px-3 py-2.5 rounded mb-2 transition-opacity hover:opacity-90"
-        style={{ background: "var(--hc-primary)", color: "#fff" }}
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "10px 12px",
+          marginBottom: 6,
+          background: "var(--hc-primary)",
+          color: "#fff",
+          border: "1px solid var(--hc-primary)",
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 600,
+          textAlign: "center",
+          cursor: "pointer",
+          fontFamily: "inherit",
+          textDecoration: "none",
+          transition: "all 0.15s",
+        }}
       >
-        ⚡ AI補助金診断
+        <span style={{ marginRight: 4 }}>&#9889;</span>AI補助金診断
       </Link>
+
+      {/* 申請書作成 */}
       <Link
-        href="/auth/login?redirect=/my/applications/new"
-        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
-        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+        href="#"
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "10px 12px",
+          marginBottom: 6,
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 500,
+          color: "var(--hc-text)",
+          textAlign: "left",
+          cursor: "pointer",
+          fontFamily: "inherit",
+          textDecoration: "none",
+          transition: "all 0.15s",
+        }}
       >
-        📄 申請書を作成する
+        <span style={{ marginRight: 4 }}>&#128196;</span>選択した補助金で申請書作成
       </Link>
+
+      {/* 工事業者を探す */}
       <Link
         href="/contractors"
-        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
-        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "10px 12px",
+          marginBottom: 6,
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 500,
+          color: "var(--hc-text)",
+          textAlign: "left",
+          cursor: "pointer",
+          fontFamily: "inherit",
+          textDecoration: "none",
+          transition: "all 0.15s",
+        }}
       >
-        🔧 工事業者を探す
+        <span style={{ marginRight: 4 }}>&#128295;</span>工事業者を探す
       </Link>
 
-      <hr style={{ borderColor: "var(--hc-border)", margin: "14px 0" }} />
+      <div className="divider" />
 
-      <p
-        className="text-xs font-bold uppercase mb-2"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        補助金情報について
-      </p>
-      <p className="text-xs leading-relaxed" style={{ color: "var(--hc-text-muted)" }}>
+      <span className="section-title">補助金情報について</span>
+      <p style={{ fontSize: 11, color: "var(--hc-text-muted)", lineHeight: 1.5, marginBottom: 8 }}>
         掲載情報は各省庁・自治体の公式データに基づきます。最終更新日を必ずご確認ください。
       </p>
+
+      {/* マスコット */}
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: 20,
+          padding: 12,
+          background: "rgba(21,128,61,0.03)",
+          borderRadius: 6,
+        }}
+      >
+        <p style={{ fontSize: 10, color: "var(--hc-text-muted)", margin: 0 }}>
+          キーワードで絞り込むと<br />最適な補助金が見つかります
+        </p>
+      </div>
     </div>
   );
 
-  return <ThreeColumnLayout left={left} center={center} right={right} />;
+  return (
+    <ThreeColumnLayout
+      left={left}
+      center={center}
+      right={right}
+      gridCols="220px 1fr 240px"
+    />
+  );
 }

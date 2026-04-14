@@ -262,6 +262,18 @@ p {
   box-shadow: var(--hc-focus-ring);
 }
 
+/* Field wrapper (label + input group) */
+.field {
+  margin-bottom: 14px;
+}
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hc-navy);
+  margin-bottom: 4px;
+}
+
 /* Checkbox custom */
 .cb {
   display: flex;
