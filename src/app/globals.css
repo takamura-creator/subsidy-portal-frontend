@@ -1,172 +1,292 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* ============================================
-   CSS Variables — STYLE_GUIDE.md 準拠
-   prefix: --portal-*
+   CSS Variables — HOJYO CAME j3_earth準拠
    ============================================ */
 
 :root {
   /* Brand Colors */
-  --portal-primary: #0D9488;
-  --portal-secondary: #1E3A5F;
-  --portal-accent: #D97706;
+  --hc-primary: #15803D;
+  --hc-primary-hover: #0d6c4a;
+  --hc-navy: #1C1917;
+  --hc-accent: #CA8A04;
+  --hc-accent-light: #FEF9C3;
 
   /* Semantic Colors */
-  --portal-success: #16A34A;
-  --portal-warning: #CA8A04;
-  --portal-error: #DC2626;
+  --hc-success: #16A34A;
+  --hc-error: #DC2626;
 
   /* Neutral Colors */
-  --portal-bg: #FFFFFF;
-  --portal-bg-card: #F7F7F8;
-  --portal-bg-surface: #ECECF1;
-  --portal-text: #1A1A1A;
-  --portal-text2: #6B6B7B;
-  --portal-border: #E5E5E5;
-  --border-whisper: rgba(0,0,0,0.08);
-  --border-interactive: rgba(0,0,0,0.12);
+  --hc-bg: #FAFAF5;
+  --hc-bg-dark: #1C1917;
+  --hc-text: #1C1917;
+  --hc-text-muted: #57534E;
+  --hc-border: #E7E5E4;
+  --hc-white: #FFFFFF;
 
-  /* Elevation & Shadows — DESIGN.md §6 準拠 */
-  --portal-shadow: rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px;
-  --portal-shadow-md: rgba(13,82,95,0.12) 0px 16px 36px -16px, rgba(0,0,0,0.06) 0px 6px 16px -6px;
-  --shadow-brand: rgba(13,82,95,0.15);
-  --portal-focus-ring: 0 0 0 3px rgba(13,148,136,0.12);
+  /* Elevation */
+  --hc-shadow: rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px;
+  --hc-shadow-md: rgba(13,82,95,0.12) 0px 16px 36px -16px, rgba(0,0,0,0.06) 0px 6px 16px -6px;
+  --hc-focus-ring: 0 0 0 3px rgba(21,128,61,0.15);
+
+  /* Portal aliases (C-1 fix: --portal-* → --hc-* mapping) */
+  --portal-shadow: var(--hc-shadow);
+  --portal-shadow-md: var(--hc-shadow-md);
+  --portal-focus-ring: var(--hc-focus-ring);
+  --portal-primary: var(--hc-primary);
+  --portal-bg: var(--hc-bg);
+  --portal-bg-card: var(--hc-white);
+  --portal-text: var(--hc-text);
+  --portal-text2: var(--hc-text-muted);
+  --portal-border: var(--hc-border);
+  --portal-secondary: var(--hc-navy);
+  --portal-accent: var(--hc-accent);
+  --portal-success: var(--hc-success);
+  --portal-error: var(--hc-error);
+
+  /* Layout */
+  --hc-header-h: 52px;
+  --hc-status-h: 28px;
+  --hc-left-w: 240px;
+  --hc-right-w: 260px;
 }
 
-/* Tailwind @theme — CSS変数をTailwindユーティリティに公開 */
+/* Tailwind @theme */
 @theme inline {
-  --color-primary: var(--portal-primary);
-  --color-secondary: var(--portal-secondary);
-  --color-accent: var(--portal-accent);
-  --color-success: var(--portal-success);
-  --color-warning: var(--portal-warning);
-  --color-error: var(--portal-error);
-  --color-bg: var(--portal-bg);
-  --color-bg-card: var(--portal-bg-card);
-  --color-bg-surface: var(--portal-bg-surface);
-  --color-text: var(--portal-text);
-  --color-text2: var(--portal-text2);
-  --color-border: var(--portal-border);
-  --font-sans: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  --color-primary: var(--hc-primary);
+  --color-navy: var(--hc-navy);
+  --color-accent: var(--hc-accent);
+  --color-accent-light: var(--hc-accent-light);
+  --color-success: var(--hc-success);
+  --color-error: var(--hc-error);
+  --color-bg: var(--hc-bg);
+  --color-bg-dark: var(--hc-bg-dark);
+  --color-text: var(--hc-text);
+  --color-text-muted: var(--hc-text-muted);
+  --color-border: var(--hc-border);
+  --font-sans: 'Noto Sans JP', sans-serif;
+  --font-display: 'Sora', sans-serif;
 }
 
 /* ============================================
-   Base Styles
+   Background — j3_earth gradient + pattern
    ============================================ */
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
-  background: var(--portal-bg);
-  color: var(--portal-text);
-  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  background-color: var(--hc-bg);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(21,128,61,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(202,138,4,0.04) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(21,128,61,0.03) 0%, rgba(202,138,4,0.02) 40%, var(--hc-bg) 100%);
+  background-attachment: fixed;
+  color: var(--hc-text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
-/* Typography — weight 500 max（700多用禁止） */
-h1 { font-size: 1.75rem; line-height: 1.3; font-weight: 500; }
-h2 { font-size: 1.375rem; line-height: 1.4; font-weight: 500; }
-h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 500; }
+/* ============================================
+   Typography
+   ============================================ */
 
-@media (min-width: 768px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
+h1, h2, h3 {
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--hc-navy);
+}
+
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1rem; }
+
+/* ============================================
+   3-Column Layout
+   ============================================ */
+
+.hc-app {
+  display: grid;
+  grid-template-rows: var(--hc-header-h) 1fr var(--hc-status-h);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hc-columns {
+  display: grid;
+  grid-template-columns: var(--hc-left-w) 1fr var(--hc-right-w);
+  overflow: hidden;
+  min-height: 0;
+}
+
+.hc-col-left,
+.hc-col-right {
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(250,250,245,0.5);
+  border-right: 1px solid var(--hc-border);
+}
+
+.hc-col-right {
+  border-right: none;
+  border-left: 1px solid var(--hc-border);
+}
+
+.hc-col-center {
+  overflow-y: auto;
+  padding: 32px 40px;
+}
+
+/* Responsive: tablet=2col, mobile=1col */
+@media (max-width: 1024px) {
+  .hc-columns {
+    grid-template-columns: 1fr var(--hc-right-w);
+  }
+  .hc-col-left { display: none; }
+}
+
+@media (max-width: 640px) {
+  .hc-columns {
+    grid-template-columns: 1fr;
+  }
+  .hc-col-left,
+  .hc-col-right { display: none; }
+  .hc-col-center { padding: 16px; }
 }
 
 /* ============================================
    Components
    ============================================ */
 
-/* Card — border-radius: 12px, DESIGN.md §4準拠 */
 .card {
-  background: var(--portal-bg-card);
-  border-radius: 12px;
-  box-shadow: var(--portal-shadow);
+  background: var(--hc-white);
+  border: 1px solid var(--hc-border);
+  border-radius: 10px;
+  box-shadow: var(--hc-shadow);
   padding: 16px;
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 .card:hover {
-  box-shadow: var(--portal-shadow-md);
-  transform: translateY(-3px);
+  box-shadow: var(--hc-shadow-md);
+  transform: translateY(-2px);
 }
 
-/* Primary CTA Button */
 .btn-primary {
-  background: var(--portal-primary);
+  background: var(--hc-primary);
   color: white;
-  padding: 12px 20px;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 15px;
-  transition: background 0.2s, transform 0.15s;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
   display: inline-block;
   text-align: center;
+  cursor: pointer;
+  border: 2px solid var(--hc-primary);
 }
 .btn-primary:hover {
-  background: #0B7F74;
-  transform: translateY(-2px);
-}
-.btn-primary:active {
-  transform: translateY(0);
+  background: var(--hc-white);
+  color: var(--hc-primary);
 }
 
-/* Secondary / Outline Button */
 .btn-secondary {
   background: transparent;
-  color: var(--portal-primary);
-  padding: 12px 20px;
-  border-radius: 6px;
-  border: 1px solid var(--border-interactive);
+  color: var(--hc-text);
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--hc-border);
   font-weight: 500;
-  font-size: 15px;
-  transition: background 0.2s, border-color 0.2s;
+  font-size: 13px;
+  transition: all 0.2s;
   display: inline-block;
   text-align: center;
+  cursor: pointer;
 }
 .btn-secondary:hover {
-  background: rgba(13,148,136,0.04);
-  border-color: #0D9488;
+  border-color: var(--hc-primary);
+  color: var(--hc-primary);
 }
 
-/* Accent Button（工事業者向け） */
-.btn-accent {
-  background: var(--portal-accent);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 15px;
-  transition: background 0.2s, transform 0.15s;
-  display: inline-block;
-  text-align: center;
+/* Form fields */
+.form-select,
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--hc-border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--hc-white);
+  color: var(--hc-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.btn-accent:hover {
-  background: #b86305;
-  transform: translateY(-2px);
+.form-select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: var(--hc-primary);
+  box-shadow: var(--hc-focus-ring);
+}
+
+/* Checkbox custom */
+.cb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--hc-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 13px;
+}
+.cb:hover {
+  border-color: var(--hc-primary);
+  background: rgba(21,128,61,0.04);
+}
+.cb.selected {
+  border-color: var(--hc-primary);
+  background: rgba(21,128,61,0.08);
+  font-weight: 600;
+}
+
+/* Step dots */
+.step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  border: 2px solid var(--hc-border);
+  color: var(--hc-text-muted);
+  background: var(--hc-white);
+  transition: all 0.2s;
+}
+.step-dot.active {
+  background: var(--hc-primary);
+  border-color: var(--hc-primary);
+  color: white;
+}
+.step-dot.done {
+  background: var(--hc-primary);
+  border-color: var(--hc-primary);
+  color: white;
 }
 
 /* ============================================
-   Focus States
+   Focus & Accessibility
    ============================================ */
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  box-shadow: var(--portal-focus-ring);
-  border-color: var(--portal-primary);
+  box-shadow: var(--hc-focus-ring);
+  border-color: var(--hc-primary);
 }
-
-button:focus-visible {
-  outline: 2px solid var(--portal-primary);
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--hc-primary);
   outline-offset: 2px;
-}
-
-a:focus-visible {
-  outline: 2px solid var(--portal-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* ============================================
@@ -177,128 +297,35 @@ a:focus-visible {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-slide-in {
-  animation: fadeSlideIn 0.35s ease-out;
-}
+.animate-fade-slide-in { animation: fadeSlideIn 0.3s ease-out; }
 
-@keyframes pulse-accent {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-.animate-pulse-accent {
-  animation: pulse-accent 1.5s ease-in-out infinite;
-}
-
-@keyframes progressFill {
-  from { width: 0; }
-}
-.animate-progress-fill {
-  animation: progressFill 0.4s ease-out;
-}
-
-@keyframes scoreFill {
-  from { width: 0; }
-}
-.animate-score-fill {
-  animation: scoreFill 0.6s ease-out forwards;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* ============================================
-   Header
-   ============================================ */
-
-.header-portal {
-  background: var(--portal-bg);
-  border-bottom: 1px solid var(--portal-border);
-}
-
-/* ============================================
-   Utilities
-   ============================================ */
-
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Skeleton shimmer */
-.skeleton {
-  background: linear-gradient(90deg, var(--portal-border) 25%, var(--portal-bg-surface) 50%, var(--portal-border) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 10px;
-}
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
-/* Link underline animation */
-.link-underline {
-  position: relative;
-  text-decoration: none;
-}
-.link-underline::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 2px;
-  background: var(--portal-primary);
-  transition: width 0.3s ease;
-}
-.link-underline:hover::after {
-  width: 100%;
-}
-
-/* Glass card */
-.card-glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  padding: 16px;
-}
-
-/* Gradient text */
-.text-gradient {
-  background: linear-gradient(135deg, var(--portal-primary) 0%, #14B8A6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* FAQ accordion */
-.accordion-content {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s ease;
-}
-.accordion-content.open {
-  grid-template-rows: 1fr;
-}
-.accordion-inner {
-  overflow: hidden;
+.skeleton {
+  background: linear-gradient(90deg, var(--hc-border) 25%, #f5f5f0 50%, var(--hc-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
 }
 
 /* ============================================
-   Responsive
+   Autosave indicator
    ============================================ */
 
-@media (max-width: 640px) {
-  .card {
-    padding: 16px;
-    border-radius: 12px;
-  }
+.autosave {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--hc-text-muted);
+}
+.autosave-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--hc-success);
 }
 
 /* ============================================
@@ -306,18 +333,8 @@ a:focus-visible {
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .animate-fade-slide-in,
-  .animate-pulse-accent,
-  .animate-progress-fill,
-  .animate-score-fill,
-  .animate-float,
-  .skeleton {
-    animation: none;
-  }
-  .accordion-content {
-    transition: none;
-  }
+  .animate-fade-slide-in, .skeleton { animation: none; }
+  .card { transition: none; }
 }
 
 /* ============================================
@@ -325,6 +342,11 @@ a:focus-visible {
    ============================================ */
 
 @media print {
-  .header-portal, footer, button { display: none !important; }
-  .card { box-shadow: none; border: 1px solid #ddd; }
+  .hc-col-left, .hc-col-right, header, .status-bar { display: none !important; }
+  .hc-columns { grid-template-columns: 1fr; }
 }
+
+/* FAQ accordion (legacy compat) */
+.accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+.accordion-content.open { grid-template-rows: 1fr; }
+.accordion-inner { overflow: hidden; }

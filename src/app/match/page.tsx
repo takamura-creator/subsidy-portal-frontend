@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { matchSubsidies, MatchResponse } from "@/lib/api";
 import { INDUSTRIES, EMPLOYEE_RANGES, PREFECTURES, PURPOSES } from "@/lib/constants";
 
@@ -27,7 +27,7 @@ function ProgressBar({ step }: { step: number }) {
       </div>
       <div className="h-2 bg-bg-surface rounded-full overflow-hidden">
         <div
-          className="h-full bg-primary rounded-full transition-all duration-500 ease-out animate-progress-fill"
+          className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -42,8 +42,7 @@ const SCORE_STYLE: Record<string, { bg: string; text: string; bar: string; perce
   低: { bg: "bg-text2/10 text-text2 border-text2/20", text: "低", bar: "bg-text2", percent: 30 },
 };
 
-export default function MatchPage() {
-  const router = useRouter();
+function WizardContent() {
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState("");
   const [employees, setEmployees] = useState<number | null>(null);
@@ -79,9 +78,8 @@ export default function MatchPage() {
   }
 
   return (
-    <section className="py-8 px-4 min-h-[70vh]">
+    <section className="py-4 min-h-[60vh]">
       <div className="max-w-xl mx-auto">
-        {/* Page Title */}
         <div className="text-center mb-8">
           <h1 className="text-2xl md:text-3xl font-medium text-text mb-2">
             あなたの会社に合う<span className="text-primary">補助金</span>を診断
@@ -96,7 +94,7 @@ export default function MatchPage() {
         <div className="pb-16">
           {/* Step 1: 基本情報 */}
           {step === 1 && (
-            <div className="card border border-border animate-fade-slide-in">
+            <div className="card border border-border">
               <h2 className="text-lg font-medium mb-6">3つの情報を教えてください</h2>
               <div className="mb-5">
                 <label className="block text-sm font-medium mb-2 text-text">業種を選んでください</label>
@@ -157,7 +155,7 @@ export default function MatchPage() {
 
           {/* Step 2: 導入目的 */}
           {step === 2 && (
-            <div className="card border border-border animate-fade-slide-in">
+            <div className="card border border-border">
               <h2 className="text-lg font-medium mb-6">カメラの使い方を選んでください</h2>
               <div className="flex flex-col gap-3 mb-6">
                 {PURPOSES.map((p) => (
@@ -182,10 +180,7 @@ export default function MatchPage() {
                 ))}
               </div>
               <div className="flex gap-3">
-                <button
-                  className="btn-secondary flex-1 py-3"
-                  onClick={() => setStep(1)}
-                >
+                <button className="btn-secondary flex-1 py-3" onClick={() => setStep(1)}>
                   ← 戻る
                 </button>
                 <button
@@ -201,10 +196,9 @@ export default function MatchPage() {
 
           {/* Step 3: Results */}
           {step === 3 && (
-            <div className="animate-fade-slide-in" aria-live="polite">
+            <div aria-live="polite">
               <h2 className="text-xl font-medium mb-6 text-center">あなたの会社に合う補助金</h2>
 
-              {/* Loading */}
               {loading && (
                 <div className="card flex flex-col items-center py-16 gap-6" role="status">
                   <div className="relative">
@@ -213,19 +207,15 @@ export default function MatchPage() {
                   </div>
                   <div className="text-center">
                     <p className="text-text font-medium mb-1">AIが最適な補助金を分析中...</p>
-                    <p className="text-sm text-text2 animate-pulse-accent">
+                    <p className="text-sm text-text2 animate-pulse">
                       多数の補助金データから最適プランを検索しています
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Error */}
               {error && (
                 <div className="card border border-error/20 bg-error/5 text-center py-8">
-                  <svg className="w-10 h-10 text-error/60 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
                   <p className="text-error font-medium">{error}</p>
                   <button
                     onClick={() => { setStep(2); setError(""); }}
@@ -236,45 +226,33 @@ export default function MatchPage() {
                 </div>
               )}
 
-              {/* Results */}
               {result && !loading && (
                 <div className="flex flex-col gap-5">
                   {result.matches.slice(0, 3).map((m, i) => {
                     const score = SCORE_STYLE[m.match_score] ?? SCORE_STYLE["低"];
                     return (
-                      <div key={i} className="card border border-border" style={{
-                        boxShadow: "rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px",
-                        transition: "box-shadow 0.25s ease, transform 0.25s ease"
-                      }} onMouseEnter={(e) => {
-                        e.currentTarget.style.boxShadow = "rgba(13,82,95,0.12) 0px 16px 36px -16px, rgba(0,0,0,0.06) 0px 6px 16px -6px";
-                        e.currentTarget.style.transform = "translateY(-3px)";
-                      }} onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = "rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px";
-                        e.currentTarget.style.transform = "translateY(0)";
-                      }}>
+                      <div
+                        key={i}
+                        className="card border border-border"
+                        style={{ boxShadow: "rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px" }}
+                      >
                         <div className="flex items-start justify-between mb-3 gap-3">
                           <div className="min-w-0">
                             <span className="text-xs text-primary font-medium">マッチ度{i + 1}位</span>
                             <h3 className="font-medium text-lg leading-tight">{m.subsidy.name}</h3>
                           </div>
-                          <span
-                            className={`text-xs font-medium px-3 py-1 rounded-full border shrink-0 ${score.bg}`}
-                          >
+                          <span className={`text-xs font-medium px-3 py-1 rounded-full border shrink-0 ${score.bg}`}>
                             適合度: {score.text}
                           </span>
                         </div>
 
-                        {/* Score bar */}
                         <div className="mb-4">
                           <div className="flex justify-between text-xs text-text2 mb-1">
                             <span>マッチ度</span>
                             <span>{score.percent}%</span>
                           </div>
                           <div className="h-2 bg-bg-surface rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full animate-score-fill ${score.bar}`}
-                              style={{ width: `${score.percent}%` }}
-                            />
+                            <div className={`h-full rounded-full ${score.bar}`} style={{ width: `${score.percent}%` }} />
                           </div>
                         </div>
 
@@ -308,18 +286,13 @@ export default function MatchPage() {
                         )}
 
                         <div className="flex gap-3">
-                          <Link
-                            href={`/subsidies/${m.subsidy.id}`}
-                            className="flex-1 btn-secondary text-center py-3"
-                          >
+                          <Link href={`/subsidies/${m.subsidy.id}`} className="flex-1 btn-secondary text-center py-3">
                             詳しく確認する
                           </Link>
                           <Link
                             href={`/auth/login?redirect=/my/applications/new?subsidy_id=${m.subsidy.id}`}
                             className="flex-1 block text-center py-3 rounded-[6px] font-medium text-white transition hover:opacity-90"
-                            style={{
-                              background: "#D97706",
-                            }}
+                            style={{ background: "#D97706" }}
                           >
                             申請書を作成する
                           </Link>
@@ -334,10 +307,7 @@ export default function MatchPage() {
                     </div>
                   )}
 
-                  <button
-                    className="btn-secondary py-3"
-                    onClick={resetWizard}
-                  >
+                  <button className="btn-secondary py-3" onClick={resetWizard}>
                     もう一度診断する
                   </button>
                 </div>
@@ -347,5 +317,79 @@ export default function MatchPage() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function MatchPage() {
+  const left = (
+    <div>
+      <p
+        className="text-xs font-bold uppercase mb-3"
+        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
+      >
+        AI診断について
+      </p>
+      <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--hc-text-muted)" }}>
+        3つの質問に答えるだけで、あなたの会社に最適な補助金をAIが自動判定します。
+      </p>
+      <hr style={{ borderColor: "var(--hc-border)", margin: "12px 0" }} />
+      <p
+        className="text-xs font-bold uppercase mb-2"
+        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
+      >
+        診断ステップ
+      </p>
+      {["業種・規模・地域を選択", "カメラの用途を選択", "AIが補助金をマッチング"].map((label, i) => (
+        <div key={i} className="flex items-start gap-2 mb-2">
+          <span
+            className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
+            style={{ background: "var(--hc-primary)", color: "#fff" }}
+          >
+            {i + 1}
+          </span>
+          <span className="text-xs" style={{ color: "var(--hc-text-muted)" }}>{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+
+  const right = (
+    <div>
+      <p
+        className="text-xs font-bold uppercase mb-3"
+        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
+      >
+        関連ページ
+      </p>
+      <Link
+        href="/subsidies"
+        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
+        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+      >
+        📋 補助金一覧を見る
+      </Link>
+      <Link
+        href="/contractors"
+        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
+        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+      >
+        🔧 工事業者を探す
+      </Link>
+      <Link
+        href="/auth/login"
+        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
+        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+      >
+        👤 ログイン / 登録
+      </Link>
+      <hr style={{ borderColor: "var(--hc-border)", margin: "14px 0" }} />
+      <p className="text-xs leading-relaxed" style={{ color: "var(--hc-text-muted)" }}>
+        診断結果は参考情報です。最終的な申請要件は公式サイトをご確認ください。
+      </p>
+    </div>
+  );
+
+  return (
+    <ThreeColumnLayout left={left} center={<WizardContent />} right={right} />
   );
 }

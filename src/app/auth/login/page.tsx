@@ -3,9 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { login, ApiError } from "@/lib/api";
 
-export default function LoginPage() {
+function decodeJwtRole(token: string): string | null {
+  try {
+    const payload = token.split(".")[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return decoded.role ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +32,9 @@ export default function LoginPage() {
       const res = await login({ email, password });
       localStorage.setItem("access_token", res.access_token);
       localStorage.setItem("refresh_token", res.refresh_token);
-      router.push("/my");
+
+      const role = decodeJwtRole(res.access_token);
+      router.push(role === "contractor" ? "/biz" : "/my");
     } catch (err) {
       if (err instanceof ApiError) {
         setError(
@@ -40,75 +53,152 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-[480px] mx-auto px-4 md:px-6 py-16">
-      {/* サイト名 */}
-      <div className="text-center mb-10">
-        <Link href="/" className="text-xl font-medium text-primary">
-          補助金ポータル
-        </Link>
-        <h1 className="text-2xl font-medium text-text mt-4 mb-2">ログイン</h1>
-        <p className="text-sm text-text2">
-          アカウントにログインして、補助金申請を管理しましょう。
-        </p>
+    <div className="flex items-center justify-center min-h-full py-12">
+      <div style={{ width: "100%", maxWidth: 400 }}>
+        <div className="card" style={{ padding: 32 }}>
+          <h1
+            style={{
+              fontFamily: "'Sora', sans-serif",
+              fontSize: "1.2rem",
+              fontWeight: 700,
+              color: "var(--hc-navy)",
+              letterSpacing: "-0.5px",
+              textAlign: "center",
+              marginBottom: 4,
+            }}
+          >
+            ログイン
+          </h1>
+          <p
+            style={{
+              fontSize: 13,
+              color: "var(--hc-text-muted)",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+          >
+            アカウントにログインして申請を管理しましょう。
+          </p>
+
+          {error && (
+            <div
+              style={{
+                color: "var(--hc-error)",
+                fontSize: 13,
+                background: "rgba(220,38,38,0.06)",
+                border: "1px solid rgba(220,38,38,0.2)",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginBottom: 16,
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: 16 }}>
+              <label
+                htmlFor="email"
+                style={{
+                  display: "block",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "var(--hc-navy)",
+                  marginBottom: 4,
+                }}
+              >
+                メールアドレス
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="mail@example.com"
+              />
+            </div>
+
+            <div style={{ marginBottom: 8 }}>
+              <label
+                htmlFor="password"
+                style={{
+                  display: "block",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "var(--hc-navy)",
+                  marginBottom: 4,
+                }}
+              >
+                パスワード
+              </label>
+              <input
+                id="password"
+                type="password"
+                className="form-input"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="パスワードを入力"
+              />
+              <div style={{ textAlign: "right", marginTop: 4 }}>
+                <Link
+                  href="/auth/forgot-password"
+                  style={{ fontSize: 12, color: "var(--hc-primary)", textDecoration: "none" }}
+                >
+                  パスワードを忘れた方
+                </Link>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary"
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: 20,
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? "not-allowed" : "pointer",
+              }}
+            >
+              {loading ? "ログイン中..." : "ログイン"}
+            </button>
+          </form>
+
+          <p
+            style={{
+              textAlign: "center",
+              marginTop: 16,
+              fontSize: 13,
+              color: "var(--hc-text-muted)",
+            }}
+          >
+            アカウントをお持ちでない方は{" "}
+            <Link
+              href="/auth/register"
+              style={{ color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none" }}
+            >
+              新規登録
+            </Link>
+          </p>
+        </div>
       </div>
-
-      {/* エラーメッセージ */}
-      {error && (
-        <div className="rounded-[10px] border border-error/30 bg-error/5 px-4 py-3 text-sm text-error mb-6">
-          {error}
-        </div>
-      )}
-
-      {/* ログインフォーム */}
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text mb-1.5">
-            メールアドレス
-          </label>
-          <input
-            id="email"
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="mail@example.com"
-            className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-[16px] text-text placeholder:text-text2 focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)] transition-colors"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-text mb-1.5">
-            パスワード
-          </label>
-          <input
-            id="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="パスワードを入力"
-            className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-[16px] text-text placeholder:text-text2 focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)] transition-colors"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className={`btn-primary w-full py-3 ${loading ? "opacity-50 pointer-events-none" : ""}`}
-        >
-          {loading ? "ログイン中..." : "ログイン"}
-        </button>
-      </form>
-
-      {/* 登録リンク */}
-      <p className="text-center text-sm text-text2 mt-8">
-        アカウントをお持ちでない方は{" "}
-        <Link href="/auth/register" className="text-primary hover:underline font-medium">
-          新規登録
-        </Link>
-      </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <ThreeColumnLayout
+      showLeft={false}
+      showRight={false}
+      center={<LoginForm />}
+    />
   );
 }

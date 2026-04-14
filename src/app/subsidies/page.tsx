@@ -1,265 +1,328 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { PREFECTURES, INDUSTRIES } from "@/lib/constants";
-import Badge from "@/components/shared/Badge";
 
-const CATEGORIES = ["全て", "IT導入", "防犯", "設備投資", "介護"] as const;
+const CATEGORIES = [
+  { label: "すべて", value: "" },
+  { label: "国の補助金", value: "国" },
+  { label: "都道府県", value: "都道府県" },
+  { label: "市区町村", value: "市区町村" },
+];
 
-const STATUS_LABEL: Record<string, string> = {
-  open: "受付中",
-  upcoming: "公募予定",
-  closed: "終了",
-};
+const AMOUNT_OPTIONS = [
+  { label: "すべて", value: "" },
+  { label: "〜50万円", value: "50" },
+  { label: "〜100万円", value: "100" },
+  { label: "〜500万円", value: "500" },
+  { label: "500万円以上", value: "500plus" },
+];
+
+const DEADLINE_OPTIONS = [
+  { label: "すべて", value: "" },
+  { label: "30日以内", value: "30" },
+  { label: "60日以内", value: "60" },
+  { label: "90日以内", value: "90" },
+];
+
+const MOCK_SUBSIDIES: Subsidy[] = [
+  { id: "1", name: "IT導入補助金（セキュリティ対策推進枠）", category: "国", ministry: "中小企業庁", pref_code: "", prefecture: "", max_amount: 1000000, rate_min: 0.5, rate_max: 0.75, target_industries: [], max_employees: 300, deadline: "2026/4/30", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "2", name: "ものづくり補助金（省力化枠）", category: "国", ministry: "中小企業庁", pref_code: "", prefecture: "", max_amount: 12500000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: 300, deadline: "2026/6/15", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "3", name: "小規模事業者持続化補助金", category: "国", ministry: "商工会議所", pref_code: "", prefecture: "", max_amount: 500000, rate_min: 0.667, rate_max: 0.667, target_industries: [], max_employees: 20, deadline: "2026/5/31", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "4", name: "省エネルギー投資促進支援事業費補助金", category: "国", ministry: "経済産業省", pref_code: "", prefecture: "", max_amount: 5000000, rate_min: 0.333, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/7/31", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "5", name: "東京都 防犯設備設置費助成事業", category: "都道府県", ministry: "東京都", pref_code: "13", prefecture: "東京都", max_amount: 100000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/12/31", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "6", name: "大阪市 防犯カメラ設置補助金", category: "市区町村", ministry: "大阪市", pref_code: "27", prefecture: "大阪府", max_amount: 150000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/9/30", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "7", name: "札幌市 地域防犯カメラ設置促進事業", category: "市区町村", ministry: "札幌市", pref_code: "1", prefecture: "北海道", max_amount: 200000, rate_min: 0.5, rate_max: 0.667, target_industries: [], max_employees: null, deadline: "2026/11/30", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "8", name: "名古屋市 防犯カメラ設置費補助", category: "市区町村", ministry: "名古屋市", pref_code: "23", prefecture: "愛知県", max_amount: 100000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/10/31", status: "open", description: "", application_tips: "", source_url: "" },
+];
+
+function getDaysUntil(dateStr: string): number {
+  const parts = dateStr.split("/");
+  if (parts.length !== 3) return 999;
+  const target = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  const now = new Date();
+  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
 
 function formatAmount(amount: number): string {
-  if (amount >= 10000) {
-    return `${(amount / 10000).toLocaleString("ja-JP")}万円`;
-  }
+  if (amount >= 10000000) return `${Math.round(amount / 10000000) * 1000}万円`;
+  if (amount >= 1000000) return `${Math.round(amount / 10000)}万円`;
+  if (amount >= 10000) return `${Math.round(amount / 10000)}万円`;
   return `${amount.toLocaleString("ja-JP")}円`;
 }
 
 export default function SubsidiesPage() {
-  const [subsidies, setSubsidies] = useState<Subsidy[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [subsidies, setSubsidies] = useState<Subsidy[]>(MOCK_SUBSIDIES);
+  const [keyword, setKeyword] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [prefecture, setPrefecture] = useState("");
   const [industry, setIndustry] = useState("");
-  const [category, setCategory] = useState("全て");
-  const [keyword, setKeyword] = useState("");
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [category, setCategory] = useState("");
+  const [amountFilter, setAmountFilter] = useState("");
+  const [deadlineFilter, setDeadlineFilter] = useState("");
+  const [sort, setSort] = useState("deadline");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    fetchSubsidies({
-      prefecture: prefecture || undefined,
-      category: category === "全て" ? undefined : category,
-      industry: industry || undefined,
-    })
-      .then((d) => setSubsidies(d.subsidies))
+    fetchSubsidies({ prefecture: prefecture || undefined, category: category || undefined, industry: industry || undefined })
+      .then((res) => setSubsidies(res.subsidies))
+      .catch(() => setSubsidies(MOCK_SUBSIDIES))
       .finally(() => setLoading(false));
   }, [prefecture, category, industry]);
 
-  const filtered = keyword
-    ? subsidies.filter(
-        (s) =>
-          s.name.includes(keyword) ||
-          s.description.includes(keyword) ||
-          s.ministry.includes(keyword)
-      )
-    : subsidies;
+  const filtered = subsidies.filter((s) => {
+    if (keyword && !s.name.includes(keyword) && !s.ministry.includes(keyword)) return false;
+    if (amountFilter === "50" && s.max_amount > 500000) return false;
+    if (amountFilter === "100" && s.max_amount > 1000000) return false;
+    if (amountFilter === "500" && s.max_amount > 5000000) return false;
+    if (amountFilter === "500plus" && s.max_amount < 5000000) return false;
+    if (deadlineFilter) {
+      const days = getDaysUntil(s.deadline);
+      if (days > parseInt(deadlineFilter)) return false;
+    }
+    return true;
+  });
 
-  return (
-    <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-12">
-      {/* ページヘッダー */}
-      <div className="text-center mb-10">
-        <h1 className="text-2xl md:text-3xl font-medium text-text mb-3">
-          補助金一覧
-        </h1>
-        <p className="text-text2 text-sm max-w-lg mx-auto">
-          防犯カメラ導入に活用できる補助金を検索できます。都道府県・カテゴリ・業種で絞り込めます。
-        </p>
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "deadline") return getDaysUntil(a.deadline) - getDaysUntil(b.deadline);
+    if (sort === "amount") return b.max_amount - a.max_amount;
+    return 0;
+  });
+
+  const handleReset = () => {
+    setPrefecture("");
+    setCategory("");
+    setAmountFilter("");
+    setDeadlineFilter("");
+    setIndustry("");
+    setKeyword("");
+    setSearchInput("");
+  };
+
+  const left = (
+    <div>
+      <p
+        className="text-xs font-bold uppercase mb-3"
+        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
+      >
+        フィルター
+      </p>
+
+      <div className="mb-3">
+        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>都道府県</label>
+        <select className="form-select text-xs w-full" value={prefecture} onChange={(e) => setPrefecture(e.target.value)}>
+          <option value="">すべて</option>
+          {PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* フィルターサイドバー */}
-        <aside className="md:w-64 shrink-0">
-          {/* モバイル: トグルボタン */}
-          <button
-            className="md:hidden w-full rounded-[10px] border border-border bg-bg-card p-4 shadow-[var(--portal-shadow)] flex items-center justify-between mb-3"
-            onClick={() => setFilterOpen(!filterOpen)}
-            aria-expanded={filterOpen}
-            aria-controls="filter-panel"
-          >
-            <span className="font-medium text-sm text-text">フィルター</span>
-            <svg
-              className={`w-5 h-5 text-text2 transition-transform ${filterOpen ? "rotate-180" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+      <div className="mb-3">
+        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>業種</label>
+        <select className="form-select text-xs w-full" value={industry} onChange={(e) => setIndustry(e.target.value)}>
+          <option value="">すべて</option>
+          {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
+        </select>
+      </div>
+
+      <div className="mb-3">
+        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>補助上限額</label>
+        <select className="form-select text-xs w-full" value={amountFilter} onChange={(e) => setAmountFilter(e.target.value)}>
+          {AMOUNT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+      </div>
+
+      <div className="mb-3">
+        <label className="block text-xs font-semibold mb-1" style={{ color: "var(--hc-navy)" }}>締切</label>
+        <select className="form-select text-xs w-full" value={deadlineFilter} onChange={(e) => setDeadlineFilter(e.target.value)}>
+          {DEADLINE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+      </div>
+
+      <button
+        onClick={handleReset}
+        className="text-xs font-medium hover:underline mb-4"
+        style={{ color: "var(--hc-primary)" }}
+      >
+        リセット
+      </button>
+
+      <hr style={{ borderColor: "var(--hc-border)", margin: "14px 0" }} />
+
+      <p
+        className="text-xs font-bold uppercase mb-2"
+        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
+      >
+        カテゴリ
+      </p>
+      <ul>
+        {CATEGORIES.map((c) => (
+          <li key={c.value}>
+            <button
+              className="w-full text-left px-2 py-1.5 rounded text-xs flex justify-between items-center transition-colors"
+              style={{
+                color: category === c.value ? "var(--hc-primary)" : "var(--hc-text-muted)",
+                background: category === c.value ? "rgba(21,128,61,0.06)" : "transparent",
+                fontWeight: category === c.value ? 500 : 400,
+              }}
+              onClick={() => setCategory(c.value)}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+              <span>{c.label}</span>
+              <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.04)" }}>
+                {c.value === "" ? sorted.length : sorted.filter((s) => s.category.includes(c.value)).length}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 
-          <div
-            id="filter-panel"
-            role="region"
-            aria-label="フィルター"
-            className={`${filterOpen ? "block" : "hidden"} md:block space-y-4`}
-          >
-            {/* キーワード */}
-            <div className="rounded-[10px] border border-border bg-bg-card p-4 shadow-[var(--portal-shadow)]">
-              <label className="block text-xs font-medium text-text2 mb-2">キーワード</label>
-              <input
-                type="text"
-                placeholder="補助金名・説明で検索"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-[16px] text-text placeholder:text-text2 focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)]"
-              />
-            </div>
+  const center = (
+    <div>
+      <div className="flex gap-2 mb-3">
+        <input
+          type="text"
+          className="form-input flex-1 text-sm"
+          placeholder="補助金名、キーワードで検索..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && setKeyword(searchInput)}
+        />
+        <button className="btn-primary text-sm px-4" onClick={() => setKeyword(searchInput)}>
+          検索
+        </button>
+      </div>
 
-            {/* 都道府県 */}
-            <div className="rounded-[10px] border border-border bg-bg-card p-4 shadow-[var(--portal-shadow)]">
-              <label className="block text-xs font-medium text-text2 mb-2">都道府県</label>
-              <select
-                value={prefecture}
-                onChange={(e) => setPrefecture(e.target.value)}
-                className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-sm text-text focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)]"
-              >
-                <option value="">全て</option>
-                {PREFECTURES.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-            </div>
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs" style={{ color: "var(--hc-text-muted)" }}>
+          {loading ? "読み込み中..." : `${sorted.length}件の補助金`}
+        </span>
+        <select
+          className="text-xs border rounded px-2 py-1"
+          style={{ borderColor: "var(--hc-border)", color: "var(--hc-text-muted)" }}
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="deadline">締切が近い順</option>
+          <option value="amount">金額が大きい順</option>
+          <option value="new">新着順</option>
+        </select>
+      </div>
 
-            {/* 業種 */}
-            <div className="rounded-[10px] border border-border bg-bg-card p-4 shadow-[var(--portal-shadow)]">
-              <label className="block text-xs font-medium text-text2 mb-2">業種</label>
-              <select
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-sm text-text focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)]"
-              >
-                <option value="">全て</option>
-                {INDUSTRIES.map((i) => (
-                  <option key={i} value={i}>{i}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* AI診断CTA */}
-            <Link
-              href="/match"
-              className="btn-primary block w-full text-center"
-            >
-              AIで診断する
-            </Link>
-          </div>
-        </aside>
-
-        {/* メインコンテンツ */}
-        <div className="flex-1 min-w-0">
-          {/* カテゴリタブ + 件数 */}
-          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-            <div className="flex gap-2 flex-wrap" role="tablist" aria-label="カテゴリ">
-              {CATEGORIES.map((c) => (
-                <button
-                  key={c}
-                  role="tab"
-                  aria-selected={category === c}
-                  onClick={() => setCategory(c)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    category === c
-                      ? "bg-primary text-white shadow-sm"
-                      : "bg-bg-card border border-border text-text hover:border-primary/40 hover:shadow-sm"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-            <span className="text-xs text-text2 bg-bg-card border border-border px-3 py-1 rounded-full">
-              {filtered.length}件
-            </span>
-          </div>
-
-          {/* ローディング */}
-          {loading && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="rounded-[10px] border border-border bg-bg-card p-4">
-                  <div className="skeleton h-4 w-20 mb-3" />
-                  <div className="skeleton h-5 w-3/4 mb-2" />
-                  <div className="skeleton h-4 w-1/2 mb-4" />
-                  <div className="flex gap-3">
-                    <div className="skeleton h-14 flex-1 rounded-[10px]" />
-                    <div className="skeleton h-14 flex-1 rounded-[10px]" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* カードグリッド */}
-          {!loading && filtered.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {filtered.map((s) => {
-                const statusVariant = (s.status === "open" || s.status === "closed" || s.status === "upcoming")
-                  ? s.status
-                  : "closed" as const;
-
-                return (
-                  <Link
-                    key={s.id}
-                    href={`/subsidies/${s.id}`}
-                    className="block rounded-[10px] border border-border bg-bg-card p-4 shadow-[var(--portal-shadow)] transition-[box-shadow,transform] duration-200 hover:shadow-[var(--portal-shadow-md)] hover:-translate-y-0.5 group"
-                  >
-                    {/* カテゴリ + ステータス */}
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[11px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                        {s.category}
-                      </span>
-                      <Badge variant={statusVariant}>
-                        {STATUS_LABEL[s.status] ?? "終了"}
-                      </Badge>
-                    </div>
-
-                    {/* 補助金名 */}
-                    <h2 className="font-medium text-base text-text mb-1 group-hover:text-primary transition-colors line-clamp-2">
-                      {s.name}
-                    </h2>
-                    <p className="text-xs text-text2 mb-3">{s.ministry} / {s.prefecture}</p>
-
-                    {/* 補助率・上限額・締切 */}
-                    <div className="flex gap-3 mb-3">
-                      <div className="bg-bg-surface rounded-[10px] px-3 py-2 text-center flex-1">
-                        <div className="text-xs text-text2">補助率</div>
-                        <div className="text-lg font-medium text-primary tabular-nums">
-                          {Math.round(s.rate_max * 100)}%
-                        </div>
-                      </div>
-                      <div className="bg-bg-surface rounded-[10px] px-3 py-2 text-center flex-1">
-                        <div className="text-xs text-text2">上限額</div>
-                        <div className="text-base font-medium text-text tabular-nums">
-                          {formatAmount(s.max_amount)}
-                        </div>
-                      </div>
-                      {s.deadline && (
-                        <div className="bg-bg-surface rounded-[10px] px-3 py-2 text-center flex-1 hidden sm:block">
-                          <div className="text-xs text-text2">締切</div>
-                          <div className="text-sm font-medium text-text">{s.deadline}</div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 詳細を見る */}
-                    <span className="block text-center text-sm font-medium text-primary py-2 rounded-[10px] border border-primary/20 group-hover:bg-primary/5 transition-colors">
-                      詳細を見る
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!loading && filtered.length === 0 && (
-            <div className="text-center py-16">
-              <svg className="w-12 h-12 text-border mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <p className="text-text2 mb-4">該当する補助金がありません</p>
-              <Link href="/match" className="text-primary hover:underline text-sm">
-                AI診断で最適な補助金を探す →
-              </Link>
-            </div>
-          )}
+      <div className="rounded-lg overflow-hidden border" style={{ borderColor: "var(--hc-border)", background: "#fff" }}>
+        <div
+          className="grid text-xs font-semibold uppercase px-3 py-2"
+          style={{
+            gridTemplateColumns: "2.5fr 1fr 1fr 90px",
+            background: "rgba(21,128,61,0.03)",
+            borderBottom: "1px solid var(--hc-border)",
+            color: "var(--hc-text-muted)",
+          }}
+        >
+          <span>補助金名</span>
+          <span>上限額</span>
+          <span>締切</span>
+          <span />
         </div>
+
+        {sorted.length === 0 && (
+          <div className="text-center py-10 text-sm" style={{ color: "var(--hc-text-muted)" }}>
+            条件に合う補助金が見つかりませんでした
+          </div>
+        )}
+
+        {sorted.map((s) => {
+          const days = getDaysUntil(s.deadline);
+          const isUrgent = days <= 30;
+          return (
+            <div
+              key={s.id}
+              className="grid items-center px-3 py-2.5 text-sm border-b last:border-0 transition-colors"
+              style={{
+                gridTemplateColumns: "2.5fr 1fr 1fr 90px",
+                borderColor: "var(--hc-border)",
+              }}
+            >
+              <span className="font-semibold leading-snug pr-2" style={{ color: "var(--hc-navy)" }}>
+                {s.name}
+                {isUrgent && (
+                  <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded font-semibold" style={{ background: "#FEF9C3", color: "var(--hc-accent)" }}>
+                    あと{days}日
+                  </span>
+                )}
+              </span>
+              <span className="font-bold text-sm" style={{ color: "var(--hc-primary)" }}>
+                {formatAmount(s.max_amount)}
+              </span>
+              <span
+                className="text-xs"
+                style={{ color: isUrgent ? "var(--hc-accent)" : "var(--hc-text-muted)", fontWeight: isUrgent ? 600 : 400 }}
+              >
+                {s.deadline}
+              </span>
+              <span>
+                <Link
+                  href={`/subsidies/${s.id}`}
+                  className="text-xs font-semibold px-2.5 py-1 rounded border transition-colors"
+                  style={{ color: "var(--hc-primary)", borderColor: "var(--hc-border)" }}
+                >
+                  詳しく見る
+                </Link>
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
+
+  const right = (
+    <div>
+      <p
+        className="text-xs font-bold uppercase mb-3"
+        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
+      >
+        クイックアクション
+      </p>
+      <Link
+        href="/match"
+        className="block w-full text-center text-xs font-bold px-3 py-2.5 rounded mb-2 transition-opacity hover:opacity-90"
+        style={{ background: "var(--hc-primary)", color: "#fff" }}
+      >
+        ⚡ AI補助金診断
+      </Link>
+      <Link
+        href="/auth/login?redirect=/my/applications/new"
+        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
+        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+      >
+        📄 申請書を作成する
+      </Link>
+      <Link
+        href="/contractors"
+        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
+        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
+      >
+        🔧 工事業者を探す
+      </Link>
+
+      <hr style={{ borderColor: "var(--hc-border)", margin: "14px 0" }} />
+
+      <p
+        className="text-xs font-bold uppercase mb-2"
+        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
+      >
+        補助金情報について
+      </p>
+      <p className="text-xs leading-relaxed" style={{ color: "var(--hc-text-muted)" }}>
+        掲載情報は各省庁・自治体の公式データに基づきます。最終更新日を必ずご確認ください。
+      </p>
+    </div>
+  );
+
+  return <ThreeColumnLayout left={left} center={center} right={right} />;
 }

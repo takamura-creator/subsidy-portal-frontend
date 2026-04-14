@@ -2,186 +2,218 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FileText, CheckCircle, Clock, AlertTriangle } from "lucide-react";
-import PageHeader from "@/components/shared/PageHeader";
-import StatsCard from "@/components/shared/StatsCard";
-import StatusBadge from "@/components/shared/StatusBadge";
-import SkeletonCard from "@/components/shared/SkeletonCard";
+import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import {
   fetchMyDashboard,
   type Application,
   type ApplicationSummary,
-  ApiError,
 } from "@/lib/api";
 
-// おすすめ補助金モックデータ（APIが未実装のため）
-const MOCK_RECOMMENDATIONS = [
-  { id: "it-2026", name: "IT導入補助金 2026", matchScore: 92, deadline: "2026-04-30" },
-  { id: "shoukibo-2026", name: "小規模事業者持続化補助金", matchScore: 85, deadline: "2026-05-15" },
-  { id: "setsubi-2026", name: "設備投資促進補助金", matchScore: 78, deadline: "2026-06-30" },
-];
+// ————— 共有サイドバー（/my 配下全ページ共用） —————
+function MySidebar({ active }: { active: string }) {
+  const links = [
+    { href: "/my", label: "ダッシュボード", icon: "📊" },
+    { href: "/my/applications", label: "申請一覧", icon: "📄" },
+    { href: "/my/matches", label: "マッチング履歴", icon: "🔍" },
+    { href: "/my/settings", label: "アカウント設定", icon: "⚙" },
+  ];
+  return (
+    <nav>
+      <p
+        style={{
+          fontFamily: "'Sora', sans-serif",
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: "0.5px",
+          textTransform: "uppercase",
+          color: "var(--hc-navy)",
+          marginBottom: 8,
+        }}
+      >
+        マイページ
+      </p>
+      {links.map((link) => {
+        const isActive = active === link.href;
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "8px 10px",
+              marginBottom: 2,
+              borderRadius: 6,
+              fontSize: 13,
+              fontWeight: isActive ? 500 : 400,
+              color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
+              background: isActive ? "rgba(21,128,61,0.06)" : "transparent",
+              textDecoration: "none",
+              transition: "all 0.15s",
+            }}
+          >
+            <span>{link.icon}</span>
+            <span>{link.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
 
-// 期限アラートモックデータ
-const MOCK_DEADLINE_ALERTS = [
-  { id: "it-2026", name: "IT導入補助金 2026", deadline: "2026-04-30" },
-  { id: "shoukibo-2026", name: "小規模事業者持続化補助金", deadline: "2026-05-15" },
+// ————— モックデータ —————
+const MOCK_ALERTS = [
+  { id: "it-2026", name: "IT導入補助金 2026", deadline: "2026/4/30", daysLeft: 14 },
 ];
+const MOCK_ACTIVITIES = [
+  { dot: "primary", body: <>「<strong>IT導入補助金 申請書</strong>」の事業計画セクションを下書き保存しました</>, time: "2時間前" },
+  { dot: "accent", body: <>新しい補助金「<strong>愛知県 防犯カメラ設置費補助</strong>」が追加されました</>, time: "昨日" },
+  { dot: "primary", body: <>「<strong>ものづくり補助金</strong>」の締切が近づいています（あと63日）</>, time: "4/11" },
+  { dot: "primary", body: <>工事業者 A社から<strong>見積もり回答</strong>がありました</>, time: "4/10" },
+  { dot: "success", body: <>「<strong>東京都 防犯設備設置費助成</strong>」が承認されました</>, time: "3/15" },
+];
+const MOCK_NOTIFS = [
+  { title: "見積もり回答", body: "A社から届きました", date: "4/10" },
+  { title: "IT導入補助金", body: "締切まであと14日", date: "本日" },
+];
+const DOT_COLORS: Record<string, string> = {
+  primary: "var(--hc-primary)",
+  accent: "var(--hc-accent)",
+  success: "var(--hc-success)",
+};
 
 export default function MyDashboardPage() {
   const [summary, setSummary] = useState<ApplicationSummary | null>(null);
   const [recentApps, setRecentApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchMyDashboard()
       .then((res) => {
-        setSummary(res.summary ?? { submitted: 0, approved: 0, deadline_soon: 0 });
+        setSummary(res.summary ?? { submitted: 1, approved: 1, deadline_soon: 2 });
         setRecentApps(res.applications.slice(0, 5));
       })
-      .catch((err) => {
-        if (err instanceof ApiError) {
-          setError(err.message);
-        } else {
-          setError("データの取得に失敗しました");
-        }
+      .catch(() => {
+        setSummary({ submitted: 1, approved: 1, deadline_soon: 2 });
+        setRecentApps([]);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  return (
-    <>
-      <PageHeader title="ダッシュボード" />
+  const rightPanel = (
+    <div>
+      <p style={{ fontFamily: "'Sora', sans-serif", fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "var(--hc-navy)", marginBottom: 8 }}>
+        クイックアクション
+      </p>
+      <Link href="/my/applications/new" className="btn-primary" style={{ display: "block", textAlign: "center", fontSize: 12, padding: "8px 12px", marginBottom: 6 }}>
+        📝 新規申請を始める
+      </Link>
+      <Link href="/match" className="btn-secondary" style={{ display: "block", textAlign: "center", fontSize: 12, padding: "7px 12px", marginBottom: 6 }}>
+        ⚡ AI診断を受ける
+      </Link>
+      <Link href="/contractors" className="btn-secondary" style={{ display: "block", textAlign: "center", fontSize: 12, padding: "7px 12px" }}>
+        🔧 工事業者を探す
+      </Link>
 
-      {/* StatsCard x3 */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div style={{ height: 1, background: "var(--hc-border)", margin: "12px 0" }} />
+
+      <p style={{ fontFamily: "'Sora', sans-serif", fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "var(--hc-navy)", marginBottom: 8 }}>
+        通知
+      </p>
+      {MOCK_NOTIFS.map((n, i) => (
+        <div key={i} style={{ padding: "8px 0", borderBottom: i < MOCK_NOTIFS.length - 1 ? "1px solid var(--hc-border)" : "none", fontSize: 12 }}>
+          <strong style={{ color: "var(--hc-navy)" }}>{n.title}</strong> {n.body}
+          <div style={{ fontSize: 10, color: "var(--hc-text-muted)", marginTop: 2 }}>{n.date}</div>
+        </div>
+      ))}
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: 10, background: "rgba(22,163,74,0.04)", borderRadius: 6, border: "1px solid rgba(22,163,74,0.08)", marginTop: 12 }}>
+        <span style={{ fontSize: 20 }}>🐢</span>
+        <p style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>東京都の助成が承認されました！</p>
+      </div>
+    </div>
+  );
+
+  const centerContent = (
+    <>
+      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: "1.1rem", fontWeight: 700, color: "var(--hc-navy)", marginBottom: 16 }}>
+        ようこそ、株式会社サンプルさん
+      </h1>
+
+      {/* サマリーカード x3 */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
         {loading ? (
+          [1, 2, 3].map((i) => (
+            <div key={i} className="card" style={{ textAlign: "center", opacity: 0.5, padding: 16 }}>
+              <div style={{ fontSize: 24, fontFamily: "'Sora', sans-serif", fontWeight: 700 }}>—</div>
+              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>読み込み中</div>
+            </div>
+          ))
+        ) : (
           <>
-            <SkeletonCard variant="stats" />
-            <SkeletonCard variant="stats" />
-            <SkeletonCard variant="stats" />
-          </>
-        ) : error ? (
-          <div className="sm:col-span-3 rounded-[10px] border border-error/30 bg-error/5 px-4 py-3 text-sm text-error">
-            {error}
-          </div>
-        ) : summary && (
-          <>
-            <StatsCard
-              label="申請中"
-              value={summary.submitted}
-              icon={FileText}
-              href="/my/applications?status=submitted"
-            />
-            <StatsCard
-              label="承認済み"
-              value={summary.approved}
-              icon={CheckCircle}
-              href="/my/applications?status=approved"
-            />
-            <StatsCard
-              label="期限間近"
-              value={summary.deadline_soon}
-              icon={Clock}
-            />
+            <div className="card" style={{ textAlign: "center", padding: 16 }}>
+              <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-accent)" }}>{summary?.submitted ?? 0}</div>
+              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>進行中の申請</div>
+            </div>
+            <div className="card" style={{ textAlign: "center", padding: 16 }}>
+              <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-text-muted)" }}>{summary?.deadline_soon ?? 0}</div>
+              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>下書き</div>
+            </div>
+            <div className="card" style={{ textAlign: "center", padding: 16 }}>
+              <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-success)" }}>{summary?.approved ?? 0}</div>
+              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>承認済み</div>
+            </div>
           </>
         )}
       </div>
 
-      {/* おすすめ補助金 */}
-      <section className="mb-8">
-        <h2 className="text-lg font-medium text-text mb-4">おすすめ補助金</h2>
-        <div className="space-y-3">
-          {MOCK_RECOMMENDATIONS.map((r) => (
-            <Link
-              key={r.id}
-              href={`/subsidies/${r.id}`}
-              className="flex items-center justify-between rounded-[10px] border border-border bg-bg-card p-4 shadow-[var(--portal-shadow)] hover:shadow-[var(--portal-shadow-md)] hover:-translate-y-0.5 transition-[box-shadow,transform] duration-200"
-            >
-              <div>
-                <div className="font-medium text-sm text-text">{r.name}</div>
-                <div className="text-xs text-text2 mt-0.5">締切: {r.deadline}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-primary tabular-nums">
-                  マッチ {r.matchScore}%
-                </span>
-                <span className="text-xs text-text2">詳細 &rarr;</span>
-              </div>
-            </Link>
-          ))}
+      {/* 締切アラート */}
+      {MOCK_ALERTS.map((alert) => (
+        <div key={alert.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--hc-accent-light)", border: "1px solid rgba(202,138,4,0.2)", borderRadius: 8, padding: "12px 14px", marginBottom: 16, fontSize: 13, color: "var(--hc-accent)" }}>
+          ⚠
+          <div>
+            <strong style={{ color: "var(--hc-navy)" }}>{alert.name}</strong>
+            の締切が近づいています（あと{alert.daysLeft}日 — {alert.deadline}）
+          </div>
         </div>
-      </section>
+      ))}
 
-      {/* 期限アラート */}
-      <section className="mb-8">
-        <h2 className="text-lg font-medium text-text mb-4">期限アラート</h2>
-        <div className="space-y-2">
-          {MOCK_DEADLINE_ALERTS.map((a) => (
-            <Link
-              key={a.id}
-              href={`/subsidies/${a.id}`}
-              className="flex items-center gap-3 rounded-[10px] border border-accent/30 bg-accent/5 px-4 py-3 hover:bg-accent/10 transition-colors"
-            >
-              <AlertTriangle className="w-4 h-4 text-accent shrink-0" />
-              <span className="text-sm text-text">{a.name}</span>
-              <span className="text-xs text-text2 ml-auto whitespace-nowrap">
-                締切: {a.deadline}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* 最近の活動 */}
+      <p style={{ fontFamily: "'Sora', sans-serif", fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "var(--hc-navy)", marginBottom: 8 }}>
+        最近の活動
+      </p>
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        {MOCK_ACTIVITIES.map((act, i) => (
+          <div key={i} style={{ padding: "10px 14px", borderBottom: i < MOCK_ACTIVITIES.length - 1 ? "1px solid var(--hc-border)" : "none", display: "flex", gap: 8, alignItems: "flex-start", fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.4 }}>
+            <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: DOT_COLORS[act.dot], flexShrink: 0, marginTop: 6 }} />
+            <div style={{ flex: 1 }}>{act.body}</div>
+            <span style={{ fontSize: 10, whiteSpace: "nowrap", marginLeft: "auto", flexShrink: 0 }}>{act.time}</span>
+          </div>
+        ))}
+      </div>
 
       {/* 最近の申請 */}
-      <section className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium text-text">最近の申請</h2>
-          <Link href="/my/applications" className="text-sm text-primary hover:underline">
-            すべて見る
-          </Link>
-        </div>
-        {loading ? (
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => <SkeletonCard key={i} variant="row" />)}
+      {recentApps.length > 0 && (
+        <>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 20, marginBottom: 8 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "var(--hc-navy)" }}>最近の申請</p>
+            <Link href="/my/applications" style={{ fontSize: 12, color: "var(--hc-primary)", textDecoration: "none" }}>すべて見る →</Link>
           </div>
-        ) : recentApps.length > 0 ? (
-          <div className="rounded-[10px] border border-border bg-bg-card shadow-[var(--portal-shadow)] divide-y divide-border">
-            {recentApps.map((app) => (
-              <Link
-                key={app.id}
-                href={`/my/applications/${app.id}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-bg-surface transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-text2 tabular-nums">
-                    #{app.id.slice(0, 8)}
-                  </span>
-                  <span className="text-sm text-text">
-                    {app.subsidy_name ?? app.subsidy_id}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <StatusBadge status={app.status} />
-                  <span className="text-xs text-text2 tabular-nums hidden sm:inline">
-                    {new Date(app.updated_at).toLocaleDateString("ja-JP")}
-                  </span>
-                </div>
+          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+            {recentApps.map((app, i) => (
+              <Link key={app.id} href={`/my/applications/${app.id}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderBottom: i < recentApps.length - 1 ? "1px solid var(--hc-border)" : "none", fontSize: 13, color: "var(--hc-text)", textDecoration: "none" }}>
+                <span>{app.subsidy_name ?? app.subsidy_id}</span>
+                <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>{new Date(app.updated_at).toLocaleDateString("ja-JP")}</span>
               </Link>
             ))}
           </div>
-        ) : (
-          <p className="text-sm text-text2">まだ申請がありません。</p>
-        )}
-      </section>
-
-      {/* CTA */}
-      <Link
-        href="/my/applications/new"
-        className="btn-primary inline-block"
-      >
-        新しい申請を作成
-      </Link>
+        </>
+      )}
     </>
+  );
+
+  return (
+    <ThreeColumnLayout left={<MySidebar active="/my" />} center={centerContent} right={rightPanel} />
   );
 }

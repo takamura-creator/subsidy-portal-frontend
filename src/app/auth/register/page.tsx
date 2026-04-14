@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { register, ApiError } from "@/lib/api";
 import { PREFECTURES } from "@/lib/constants";
 
@@ -12,21 +13,84 @@ const ROLES: { value: Role; label: string; desc: string; icon: string }[] = [
   {
     value: "owner",
     label: "企業ユーザー",
-    desc: "補助金を活用して防犯カメラを導入したい中小企業の方",
+    desc: "補助金を活用して導入",
     icon: "🏢",
   },
   {
     value: "contractor",
     label: "工事業者",
-    desc: "補助金活用の導入・工事を請け負う設置業者の方",
+    desc: "案件を受注",
     icon: "🔧",
   },
 ];
 
-export default function RegisterPage() {
+/* ---- Left column: role guide cards ---- */
+function RoleGuide() {
+  return (
+    <div>
+      <h2
+        style={{
+          fontFamily: "'Sora', sans-serif",
+          fontSize: 14,
+          fontWeight: 700,
+          color: "var(--hc-navy)",
+          marginBottom: 16,
+        }}
+      >
+        登録タイプの選び方
+      </h2>
+
+      <div
+        className="card"
+        style={{ marginBottom: 12, cursor: "default" }}
+      >
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}>
+          🏢 企業ユーザー
+        </h3>
+        <p style={{ fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.5 }}>
+          補助金を活用して防犯カメラを導入したい中小企業の方。補助金診断・申請書作成・業者マッチングを利用できます。
+        </p>
+      </div>
+
+      <div
+        className="card"
+        style={{ cursor: "default" }}
+      >
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}>
+          🔧 工事業者
+        </h3>
+        <p style={{ fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.5 }}>
+          補助金活用の導入・工事を請け負う設置業者の方。案件マッチング・見積もり対応を利用できます。
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Step indicator ---- */
+function StepIndicator({ step }: { step: 1 | 2 }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginBottom: 20 }}>
+      <div
+        className={`step-dot${step >= 1 ? " active" : ""}`}
+      >
+        1
+      </div>
+      <div style={{ width: 32, height: 2, background: "var(--hc-border)", margin: "0 4px" }} />
+      <div
+        className={`step-dot${step >= 2 ? " active" : ""}`}
+      >
+        2
+      </div>
+    </div>
+  );
+}
+
+/* ---- Register form (center column) ---- */
+function RegisterForm() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
-  const [role, setRole] = useState<Role | null>(null);
+  const [role, setRole] = useState<Role>("owner");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -36,8 +100,11 @@ export default function RegisterPage() {
 
   function handleRoleSelect(r: Role) {
     setRole(r);
-    setStep(2);
+  }
+
+  function handleNext() {
     setError("");
+    setStep(2);
   }
 
   function handleBack() {
@@ -47,7 +114,6 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!role) return;
     setError("");
     setLoading(true);
 
@@ -59,7 +125,7 @@ export default function RegisterPage() {
         company_name: companyName,
         pref_code: prefCode,
       });
-      router.push("/auth/login?registered=1");
+      router.push(role === "contractor" ? "/biz" : "/my");
     } catch (err) {
       if (err instanceof ApiError) {
         setError(
@@ -78,171 +144,261 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="max-w-[480px] mx-auto px-4 md:px-6 py-16">
-      {/* サイト名 */}
-      <div className="text-center mb-10">
-        <Link href="/" className="text-xl font-medium text-primary">
-          補助金ポータル
-        </Link>
-        <h1 className="text-2xl font-medium text-text mt-4 mb-2">新規登録</h1>
-        <p className="text-sm text-text2">
-          {step === 1
-            ? "ご利用の目的に合わせて登録タイプを選択してください。"
-            : "基本情報を入力してアカウントを作成します。"}
-        </p>
-      </div>
-
-      {/* ステップインジケーター */}
-      <div className="flex items-center justify-center gap-3 mb-8">
-        <div className={`flex items-center gap-1.5 text-xs font-medium ${step >= 1 ? "text-primary" : "text-text2"}`}>
-          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${step >= 1 ? "bg-primary" : "bg-border"}`}>1</span>
-          タイプ選択
-        </div>
-        <div className="w-8 h-px bg-border" />
-        <div className={`flex items-center gap-1.5 text-xs font-medium ${step >= 2 ? "text-primary" : "text-text2"}`}>
-          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${step >= 2 ? "bg-primary" : "bg-border"}`}>2</span>
-          基本情報
-        </div>
-      </div>
-
-      {/* エラーメッセージ */}
-      {error && (
-        <div className="rounded-[10px] border border-error/30 bg-error/5 px-4 py-3 text-sm text-error mb-6">
-          {error}
-        </div>
-      )}
-
-      {/* Step 1: ロール選択 */}
-      {step === 1 && (
-        <div className="space-y-4">
-          {ROLES.map((r) => (
-            <button
-              key={r.value}
-              type="button"
-              onClick={() => handleRoleSelect(r.value)}
-              className={`w-full text-left rounded-[10px] border-[1.5px] p-5 transition-all ${
-                role === r.value
-                  ? "border-primary bg-primary/5 shadow-[var(--portal-shadow-md)]"
-                  : "border-border bg-bg-card shadow-[var(--portal-shadow)] hover:border-primary/40 hover:shadow-[var(--portal-shadow-md)] hover:-translate-y-0.5"
-              }`}
-            >
-              <div className="flex items-start gap-4">
-                <span className="text-3xl" role="img" aria-hidden="true">{r.icon}</span>
-                <div>
-                  <div className="font-medium text-text mb-1">{r.label}</div>
-                  <div className="text-sm text-text2 leading-relaxed">{r.desc}</div>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Step 2: 基本情報入力 */}
-      {step === 2 && (
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* 選択されたロール表示 + 戻るボタン */}
-          <div className="flex items-center justify-between rounded-[10px] border border-border bg-bg-card px-4 py-3">
-            <div className="flex items-center gap-2 text-sm">
-              <span role="img" aria-hidden="true">
-                {ROLES.find((r) => r.value === role)?.icon}
-              </span>
-              <span className="font-medium text-text">
-                {ROLES.find((r) => r.value === role)?.label}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={handleBack}
-              className="text-xs text-primary hover:underline"
-            >
-              変更
-            </button>
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-text mb-1.5">
-              メールアドレス
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="mail@example.com"
-              className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-[16px] text-text placeholder:text-text2 focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)] transition-colors"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-text mb-1.5">
-              パスワード
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              minLength={8}
-              autoComplete="new-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="8文字以上"
-              className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-[16px] text-text placeholder:text-text2 focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)] transition-colors"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="company" className="block text-sm font-medium text-text mb-1.5">
-              {role === "owner" ? "会社名" : "屋号・事業者名"}
-            </label>
-            <input
-              id="company"
-              type="text"
-              required
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder={role === "owner" ? "株式会社〇〇" : "〇〇設備工業"}
-              className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-[16px] text-text placeholder:text-text2 focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)] transition-colors"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="prefecture" className="block text-sm font-medium text-text mb-1.5">
-              都道府県
-            </label>
-            <select
-              id="prefecture"
-              required
-              value={prefCode}
-              onChange={(e) => setPrefCode(e.target.value)}
-              className="w-full rounded-[10px] border-[1.5px] border-border bg-bg-card px-3.5 py-3 text-[16px] text-text focus:outline-none focus:border-primary focus:shadow-[var(--portal-focus-ring)] transition-colors"
-            >
-              <option value="">選択してください</option>
-              {PREFECTURES.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`btn-primary w-full py-3 ${loading ? "opacity-50 pointer-events-none" : ""}`}
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100%", padding: "24px 0" }}>
+      <div style={{ width: "100%", maxWidth: 440 }}>
+        <div className="card" style={{ padding: 28 }}>
+          <h1
+            style={{
+              fontFamily: "'Sora', sans-serif",
+              fontSize: "1.2rem",
+              fontWeight: 700,
+              color: "var(--hc-navy)",
+              textAlign: "center",
+              marginBottom: 4,
+            }}
           >
-            {loading ? "登録中..." : "アカウントを作成"}
-          </button>
-        </form>
-      )}
+            新規登録
+          </h1>
+          <p
+            style={{
+              fontSize: 13,
+              color: "var(--hc-text-muted)",
+              textAlign: "center",
+              marginBottom: 20,
+            }}
+          >
+            登録タイプを選択してアカウントを作成します。
+          </p>
 
-      {/* ログインリンク */}
-      <p className="text-center text-sm text-text2 mt-8">
-        すでにアカウントをお持ちの方は{" "}
-        <Link href="/auth/login" className="text-primary hover:underline font-medium">
-          ログイン
-        </Link>
-      </p>
+          <StepIndicator step={step} />
+
+          {error && (
+            <div
+              style={{
+                color: "var(--hc-error)",
+                fontSize: 13,
+                background: "rgba(220,38,38,0.06)",
+                border: "1px solid rgba(220,38,38,0.2)",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginBottom: 16,
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {/* Step 1: Role selection */}
+          {step === 1 && (
+            <div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+                {ROLES.map((r) => (
+                  <button
+                    key={r.value}
+                    type="button"
+                    onClick={() => handleRoleSelect(r.value)}
+                    style={{
+                      padding: 16,
+                      border: `2px solid ${role === r.value ? "var(--hc-primary)" : "var(--hc-border)"}`,
+                      borderRadius: 8,
+                      textAlign: "center",
+                      cursor: "pointer",
+                      background: role === r.value ? "rgba(21,128,61,0.04)" : "var(--hc-white)",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    <div style={{ fontSize: 24, marginBottom: 6 }}>{r.icon}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--hc-navy)" }}>{r.label}</div>
+                    <div style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 4 }}>{r.desc}</div>
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleNext}
+                style={{ display: "block", width: "100%" }}
+              >
+                次へ
+              </button>
+
+              <p
+                style={{
+                  textAlign: "center",
+                  marginTop: 14,
+                  fontSize: 13,
+                  color: "var(--hc-text-muted)",
+                }}
+              >
+                すでにアカウントをお持ちの方は{" "}
+                <Link
+                  href="/auth/login"
+                  style={{ color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none" }}
+                >
+                  ログイン
+                </Link>
+              </p>
+            </div>
+          )}
+
+          {/* Step 2: Account info */}
+          {step === 2 && (
+            <form onSubmit={handleSubmit}>
+              {/* Selected role badge + change button */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  border: "1px solid var(--hc-border)",
+                  borderRadius: 8,
+                  padding: "10px 14px",
+                  marginBottom: 14,
+                  background: "var(--hc-white)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                  <span>{ROLES.find((r) => r.value === role)?.icon}</span>
+                  <span style={{ fontWeight: 600, color: "var(--hc-navy)" }}>
+                    {ROLES.find((r) => r.value === role)?.label}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  style={{ fontSize: 12, color: "var(--hc-primary)", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  変更
+                </button>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label
+                  htmlFor="email"
+                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
+                >
+                  メールアドレス
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  className="form-input"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="mail@example.com"
+                />
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label
+                  htmlFor="password"
+                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
+                >
+                  パスワード
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  className="form-input"
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="8文字以上"
+                />
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label
+                  htmlFor="company"
+                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
+                >
+                  {role === "owner" ? "会社名" : "屋号・事業者名"}
+                </label>
+                <input
+                  id="company"
+                  type="text"
+                  className="form-input"
+                  required
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder={role === "owner" ? "株式会社〇〇" : "〇〇設備工業"}
+                />
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label
+                  htmlFor="prefecture"
+                  style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}
+                >
+                  都道府県
+                </label>
+                <select
+                  id="prefecture"
+                  className="form-select"
+                  required
+                  value={prefCode}
+                  onChange={(e) => setPrefCode(e.target.value)}
+                >
+                  <option value="">選択してください</option>
+                  {PREFECTURES.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  marginTop: 16,
+                  opacity: loading ? 0.6 : 1,
+                  cursor: loading ? "not-allowed" : "pointer",
+                }}
+              >
+                {loading ? "登録中..." : "アカウントを作成"}
+              </button>
+
+              <p
+                style={{
+                  textAlign: "center",
+                  marginTop: 14,
+                  fontSize: 13,
+                  color: "var(--hc-text-muted)",
+                }}
+              >
+                すでにアカウントをお持ちの方は{" "}
+                <Link
+                  href="/auth/login"
+                  style={{ color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none" }}
+                >
+                  ログイン
+                </Link>
+              </p>
+            </form>
+          )}
+        </div>
+      </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <ThreeColumnLayout
+      showLeft={true}
+      showRight={false}
+      left={<RoleGuide />}
+      center={<RegisterForm />}
+    />
   );
 }

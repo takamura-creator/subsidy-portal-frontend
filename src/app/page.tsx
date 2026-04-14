@@ -1,356 +1,438 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import { CountUp } from "@/components/home/CountUp";
-import { FaqSection } from "@/components/home/FaqSection";
+"use client";
+
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
+import { INDUSTRIES, EMPLOYEE_RANGES, PREFECTURES, PURPOSES } from "@/lib/constants";
+import { useAutosave } from "@/lib/useAutosave";
 
 /* ============================================
-   Metadata
+   Types
    ============================================ */
 
-export const metadata: Metadata = {
-  title: "補助金ポータル | 防犯カメラ導入の補助金をAIが無料診断",
+type FormData = {
+  industry: string;
+  employees: number | null;
+  prefecture: string;
+  purposes: string[];
+  step: number;
+};
+
+const INITIAL: FormData = {
+  industry: "",
+  employees: null,
+  prefecture: "",
+  purposes: [],
+  step: 1,
 };
 
 /* ============================================
-   Data (static — SSR で埋め込み)
+   Left Column — 入力ガイド
    ============================================ */
 
-const STATS = [
-  { value: 47, label: "対応都道府県", unit: "" },
-  { value: 75, label: "最大補助率", unit: "%" },
-  { value: 3, label: "診断ステップ", unit: "分" },
-];
-
-const TESTIMONIALS = [
-  {
-    quote: "IT導入補助金を活用してカメラ12台を導入。導入費用の65%が補助され、万引き被害が激減しました。申請から入金まで想像以上にスムーズでした。",
-    company: "株式会社ミナミ商事",
-    industry: "小売業",
-    stars: 5,
-    amount: "補助額: 120万円",
-  },
-  {
-    quote: "夜間の入居者見守りに赤外線カメラが必要でしたが、補助金で全フロアに設置できました。スタッフの安心感が大きく上がっています。",
-    company: "ケアホームあさひ",
-    industry: "介護・福祉",
-    stars: 5,
-    amount: "補助額: 85万円",
-  },
-  {
-    quote: "工事現場の遠隔監視カメラ導入に補助金を使えるとは知りませんでした。現場確認の移動コストが月に数十万円削減できています。",
-    company: "東都建設株式会社",
-    industry: "建設業",
-    stars: 4,
-    amount: "補助額: 150万円",
-  },
-];
-
-/* ============================================
-   FAQ Data (shared between JSON-LD and display)
-   ============================================ */
-
-const FAQ_DATA = [
-  { q: "補助金診断は本当に無料ですか？", a: "はい、完全無料です。業種・従業員数・都道府県を入力するだけで、AIが最適な補助金を自動マッチングします。診断後の申請書作成まで無料でご利用いただけます。" },
-  { q: "どの補助金が使えるか分からないのですが？", a: "ご安心ください。全国の補助金データベースからAIが自動で最適な補助金を提案します。IT導入補助金、ものづくり補助金、各自治体の独自補助金など幅広く対応しています。" },
-  { q: "申請書の作成にはどのくらいかかりますか？", a: "必要情報を入力いただければ、AIが申請書のドラフトを即座に生成します。従来数日かかっていた作業が数分で完了します。" },
-  { q: "補助金の審査期間はどのくらいですか？", a: "補助金の種類によりますが、一般的にIT導入補助金は申請から約1〜2ヶ月、自治体の補助金は2週間〜1ヶ月程度です。公募期間内にお早めにお申し込みください。" },
-  { q: "従業員が少ない個人事業主でも申請できますか？", a: "はい、個人事業主の方も多くの補助金に申請可能です。小規模事業者持続化補助金やIT導入補助金など、小規模事業者向けの枠が用意されています。" },
-];
-
-/* ============================================
-   JSON-LD Structured Data
-   ============================================ */
-
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: FAQ_DATA.map((item) => ({
-    "@type": "Question",
-    name: item.q,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: item.a,
+function LeftGuide({ step }: { step: number }) {
+  const guides: Record<number, { title: string; items: string[] }> = {
+    1: {
+      title: "Step 1: 基本情報",
+      items: [
+        "業種によって使える補助金が異なります",
+        "従業員数は正社員＋パート（週20h以上）で計算",
+        "本社所在地の都道府県を選択してください",
+      ],
     },
-  })),
-};
-
-const howToJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "防犯カメラ導入の補助金をAIで診断する方法",
-  description: "業種・規模・所在地を入力するだけで、AIが最適な補助金を無料で診断します。",
-  step: [
-    {
-      "@type": "HowToStep",
-      position: 1,
-      name: "基本情報入力",
-      text: "業種・従業員数・都道府県を選択します。",
+    2: {
+      title: "Step 2: 導入目的",
+      items: [
+        "複数選択できます",
+        "目的に応じて最適な補助金を提案します",
+        "「その他」を選択した場合、詳細入力欄が表示されます",
+      ],
     },
-    {
-      "@type": "HowToStep",
-      position: 2,
-      name: "導入目的選択",
-      text: "防犯・見守り・入退場管理など、カメラの導入目的を選択します。",
+    3: {
+      title: "Step 3: 診断結果",
+      items: [
+        "マッチ度の高い順に最大3件を表示",
+        "各補助金の詳細ページで申請要件を確認できます",
+        "「申請書を作成する」で申請手続きに進めます",
+      ],
     },
-    {
-      "@type": "HowToStep",
-      position: 3,
-      name: "AI診断結果",
-      text: "AIが最適な補助金をスコア付きで提案します。申請書の作成支援も行います。",
-    },
-  ],
-};
+  };
 
-/* ============================================
-   Page (Server Component — static HTML for SEO)
-   ============================================ */
+  const guide = guides[step] || guides[1];
 
-export default function Home() {
   return (
-    <>
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
-      />
-
-      {/* ヒーロー */}
-      <section
-        className="py-20 px-4"
-        style={{
-          background: `linear-gradient(135deg, rgba(13,148,136,0.03) 0%, rgba(30,58,95,0.02) 100%)`,
-          backgroundColor: '#FFFFFF'
-        }}
-      >
-        <div className="max-w-[1200px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* テキストカラム */}
-            <div>
-              <h1 className="text-4xl md:text-5xl font-medium mb-6 leading-tight text-secondary" style={{ letterSpacing: '-0.5px' }}>
-                工事費補助金で、
-                <br />
-                <span className="text-primary">設備導入</span>をもっと身近に
-              </h1>
-              <p className="text-xl font-normal mb-8 leading-relaxed" style={{ color: 'rgba(0,0,0,0.85)' }}>
-                業種・規模・地域を3つの質問に答えるだけで、AIが最適な補助金を無料で提案。申請書作成も支援します。
-              </p>
-              <Link
-                href="/match"
-                className="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-10 py-4 rounded-md transition shadow-lg hover:-translate-y-0.5"
-                style={{
-                  boxShadow: 'rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px'
-                }}
-              >
-                無料で診断を始める
-              </Link>
-            </div>
-
-            {/* イラストカラム */}
-            <div className="flex justify-center items-center mt-8 md:mt-0">
-              <img
-                src="/svg/hero_illustration.svg"
-                alt="設備導入イメージ"
-                className="w-full max-w-xs md:max-w-md h-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 実績数字 — CountUp は Client Component */}
-      <section className="py-12 px-4 -mt-8">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-3 gap-4">
-          {STATS.map((s) => (
-            <div key={s.label} className="card text-center border border-border">
-              <div className="text-3xl font-medium text-primary">
-                <CountUp end={s.value} suffix={s.unit} />
-              </div>
-              <div className="text-sm text-text2 mt-1">{s.label}</div>
-            </div>
+    <div className="space-y-6">
+      <div>
+        <h3
+          className="text-sm font-bold mb-3"
+          style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
+        >
+          {guide.title}
+        </h3>
+        <ul className="space-y-2">
+          {guide.items.map((item, i) => (
+            <li
+              key={i}
+              className="text-xs flex gap-2"
+              style={{ color: "var(--hc-text-muted)" }}
+            >
+              <span style={{ color: "var(--hc-primary)" }}>•</span>
+              {item}
+            </li>
           ))}
-        </div>
-      </section>
+        </ul>
+      </div>
 
-      {/* 信頼バッジ */}
-      <section className="pb-8 px-4">
-        <div className="max-w-[1200px] mx-auto flex flex-wrap justify-center gap-3">
+      <div className="pt-4 border-t" style={{ borderColor: "var(--hc-border)" }}>
+        <h3
+          className="text-xs font-bold mb-2"
+          style={{ fontFamily: "'Sora', sans-serif" }}
+        >
+          よくある質問
+        </h3>
+        <details className="text-xs mb-2" style={{ color: "var(--hc-text-muted)" }}>
+          <summary className="cursor-pointer font-medium" style={{ color: "var(--hc-text)" }}>
+            診断は本当に無料ですか？
+          </summary>
+          <p className="mt-1 pl-2">
+            はい、完全無料です。登録不要で今すぐ診断できます。
+          </p>
+        </details>
+        <details className="text-xs" style={{ color: "var(--hc-text-muted)" }}>
+          <summary className="cursor-pointer font-medium" style={{ color: "var(--hc-text)" }}>
+            個人情報は必要ですか？
+          </summary>
+          <p className="mt-1 pl-2">
+            診断時は個人情報不要です。申請書作成時にのみ会社情報が必要になります。
+          </p>
+        </details>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================
+   Right Column — ツールパネル
+   ============================================ */
+
+function RightTools() {
+  return (
+    <div className="space-y-4">
+      <h3
+        className="text-sm font-bold"
+        style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
+      >
+        ツール
+      </h3>
+
+      <a href="/subsidies" className="btn-secondary block text-center text-xs py-2">
+        補助金を検索する
+      </a>
+      <a href="/contractors" className="btn-secondary block text-center text-xs py-2">
+        工事業者を探す
+      </a>
+
+      <div className="pt-4 border-t" style={{ borderColor: "var(--hc-border)" }}>
+        <h3
+          className="text-xs font-bold mb-3"
+          style={{ fontFamily: "'Sora', sans-serif" }}
+        >
+          最近のアクティビティ
+        </h3>
+        <div className="space-y-2">
           {[
-            { badge: "全国対応・地域別補助金に対応", svg: "/svg/badge_nationwide.svg", alt: "全国対応" },
-            { badge: "完全無料で診断・申請書作成", svg: "/svg/badge_free.svg", alt: "完全無料" },
-            { badge: "業者の実績から最適なパートナーが見つかる", svg: "/svg/badge_track_record.svg", alt: "実績" },
-            { badge: "中立的な立場で多数の補助金から比較提案", svg: "/svg/badge_fast.svg", alt: "高速" },
-          ].map((item) => (
-            <span
-              key={item.badge}
-              className="inline-flex items-center gap-2 bg-primary/5 border border-primary/10 text-text text-sm font-medium px-4 py-2 rounded-full"
-              style={{
-                backgroundColor: 'rgba(13,148,136,0.08)',
-                borderColor: 'rgba(13,148,136,0.15)',
-                color: '#0D9488'
-              }}
+            { text: "IT導入補助金の申請受付開始", time: "2日前" },
+            { text: "ものづくり補助金の締切が延長", time: "5日前" },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex gap-2 items-start text-xs"
+              style={{ color: "var(--hc-text-muted)" }}
             >
-              <img src={item.svg} alt={item.alt} className="w-4 h-4 shrink-0" />
-              {item.badge}
-            </span>
+              <span
+                className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                style={{ background: "var(--hc-accent)" }}
+              />
+              <div>
+                <p style={{ color: "var(--hc-text)" }}>{item.text}</p>
+                <p className="text-[10px]">{item.time}</p>
+              </div>
+            </div>
           ))}
         </div>
-      </section>
+      </div>
+    </div>
+  );
+}
 
-      {/* 3ステップ紹介 */}
-      <section className="py-16 px-4" style={{ backgroundColor: '#F6F5F4' }}>
-        <div className="max-w-[1200px] mx-auto">
-          <h2 className="text-xl md:text-2xl font-medium text-center mb-10 text-secondary">
-            <span className="text-primary">3ステップ</span>で、あなたの会社に合う補助金が見つかる
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { svg: "/svg/step_icon_input.svg", title: "業種と規模を3つの選択肢から選ぶ", desc: "業種・企業規模・お住まいの地域を選ぶだけ", step: 1 },
-              { svg: "/svg/step_icon_diagnosis.svg", title: "導入目的を選んで、AIが診断へ", desc: "防犯・見守り・作業管理など、カメラの使い方を選択", step: 2 },
-              { svg: "/svg/step_icon_matching.svg", title: "あなたの会社にぴったりな補助金が見つかる", desc: "マッチ度の高い順に3つまで提案。申請のアドバイス付き", step: 3 },
-            ].map((s, i) => (
-              <div
-                key={i}
-                className="card text-center border group hover:shadow-lg transition relative"
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderColor: 'rgba(0,0,0,0.08)',
-                  boxShadow: 'rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px'
-                }}
-              >
-                {/* ステップアイコン */}
-                <div className="flex justify-center mb-4">
-                  <img src={s.svg} alt={`ステップ${s.step}`} className="w-10 h-10 md:w-12 md:h-12" />
-                </div>
+/* ============================================
+   Center Column — AI診断フォーム
+   ============================================ */
 
-                {/* ステップバッジ */}
-                <div
-                  className="text-xs font-medium mb-3 px-3 py-1 rounded-full inline-block"
-                  style={{
-                    backgroundColor: 'rgba(217,119,6,0.10)',
-                    color: '#D97706'
-                  }}
-                >
-                  STEP {s.step}
-                </div>
+export default function HomePage() {
+  const router = useRouter();
+  const { data, setData, save, hasDraft, restore, discard, savedAt } =
+    useAutosave<FormData>("hojyo_came_top_draft", INITIAL);
 
-                <h3 className="font-medium mb-2 text-primary text-lg">{s.title}</h3>
-                <p className="text-sm" style={{ color: '#6B6B7B' }}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Link
-              href="/match"
-              className="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 rounded-md transition"
+  const step = data.step;
+
+  const updateField = useCallback(
+    <K extends keyof FormData>(field: K, value: FormData[K]) => {
+      setData((prev) => {
+        const next = { ...prev, [field]: value };
+        return next;
+      });
+    },
+    [setData],
+  );
+
+  const handleBlur = useCallback(() => {
+    save(data);
+  }, [save, data]);
+
+  const goStep = useCallback(
+    (s: number) => {
+      const next = { ...data, step: s };
+      setData(next);
+      save(next);
+    },
+    [data, setData, save],
+  );
+
+  const togglePurpose = useCallback(
+    (p: string) => {
+      const current = data.purposes;
+      const next = current.includes(p)
+        ? current.filter((x) => x !== p)
+        : [...current, p];
+      updateField("purposes", next);
+    },
+    [data.purposes, updateField],
+  );
+
+  const handleDiagnose = useCallback(() => {
+    if (!data.industry || data.employees === null || !data.prefecture || data.purposes.length === 0) return;
+    // Save form data to sessionStorage for match page
+    sessionStorage.setItem("hojyo_came_match_params", JSON.stringify({
+      industry: data.industry,
+      employees: data.employees,
+      prefecture: data.prefecture,
+      purpose: data.purposes[0],
+    }));
+    discard(); // Clear draft after submission
+    router.push("/match");
+  }, [data, discard, router]);
+
+  const step1Valid = data.industry && data.employees !== null && data.prefecture;
+  const step2Valid = data.purposes.length > 0;
+
+  return (
+    <ThreeColumnLayout
+      left={<LeftGuide step={step} />}
+      right={<RightTools />}
+      center={
+        <div className="max-w-[520px] mx-auto">
+          {/* Restore banner */}
+          {hasDraft && (
+            <div
+              className="mb-4 p-3 rounded-lg flex items-center justify-between text-xs animate-fade-slide-in"
               style={{
-                boxShadow: 'rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px'
+                background: "var(--hc-accent-light)",
+                border: "1px solid rgba(202,138,4,0.2)",
               }}
             >
-              無料診断を始める
-            </Link>
-          </div>
-        </div>
-      </section>
+              <span>前回の入力途中のデータがあります</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => restore()}
+                  className="font-semibold px-3 py-1 rounded"
+                  style={{ color: "var(--hc-accent)" }}
+                >
+                  復元する
+                </button>
+                <button
+                  onClick={discard}
+                  className="px-3 py-1 rounded"
+                  style={{ color: "var(--hc-text-muted)" }}
+                >
+                  最初から
+                </button>
+              </div>
+            </div>
+          )}
 
-      {/* 導入企業の声（案A: 非表示） */}
-      {false && (
-      <section className="py-16 px-4 bg-bg-card">
-        <div className="max-w-[1200px] mx-auto">
-          <h2 className="text-xl md:text-2xl font-medium text-center mb-10">
-            導入企業の<span className="text-primary">声</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="card border border-border relative flex flex-col gap-3 bg-bg">
-                <span className="text-4xl text-primary/20 absolute top-4 left-4 font-serif leading-none select-none" aria-hidden="true">&ldquo;</span>
-                <p className="text-sm text-text leading-relaxed pt-6">{t.quote}</p>
-                <div className="flex gap-0.5 mt-1" aria-label={`${t.stars}つ星`}>
-                  {Array.from({ length: 5 }).map((_, s) => (
-                    <span key={s} className={s < t.stars ? "text-warning" : "text-border"} aria-hidden="true">&#9733;</span>
-                  ))}
+          {/* Step indicator */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="flex items-center gap-2">
+                <div
+                  className={`step-dot ${s === step ? "active" : ""} ${s < step ? "done" : ""}`}
+                  onClick={() => s < step && goStep(s)}
+                  style={{ cursor: s < step ? "pointer" : "default" }}
+                >
+                  {s < step ? "✓" : s}
                 </div>
-                <div className="mt-auto pt-3 border-t border-border">
-                  <p className="font-medium text-sm">{t.company}</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{t.industry}</span>
-                    <span className="text-xs text-text2 font-medium">{t.amount}</span>
-                  </div>
-                </div>
+                {s < 3 && (
+                  <div
+                    className="w-8 h-0.5"
+                    style={{
+                      background: s < step ? "var(--hc-primary)" : "var(--hc-border)",
+                    }}
+                  />
+                )}
               </div>
             ))}
           </div>
-        </div>
-      </section>
-      )}
 
-      {/* 都道府県LP リンク */}
-      <section className="py-16 px-4">
-        <div className="max-w-[1200px] mx-auto">
-          <h2 className="text-xl md:text-2xl font-medium text-center mb-8">お住まいの地域の補助金を診断</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-            {["東京都","大阪府","神奈川県","愛知県","埼玉県","兵庫県","北海道","福岡県","千葉県","京都府"].map((p) => (
-              <Link
-                key={p}
-                href={`/lp/${p}`}
-                className="card text-center text-sm font-medium hover:border-primary hover:shadow-md transition border border-border py-3"
+          {/* Autosave indicator */}
+          {savedAt && (
+            <div className="autosave justify-end mb-2">
+              <span className="autosave-dot" />
+              <span>保存済み</span>
+            </div>
+          )}
+
+          {/* Step 1: 基本情報 */}
+          {step === 1 && (
+            <div className="card animate-fade-slide-in">
+              <h2
+                className="text-base font-bold mb-5"
+                style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
               >
-                {p}
-              </Link>
-            ))}
-          </div>
-          <p className="text-center text-sm text-text2 mt-4">
-            <Link href="/subsidies" className="text-primary hover:underline">
-              全都道府県の補助金制度を比較する →
-            </Link>
-          </p>
+                基本情報を入力してください
+              </h2>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold mb-1.5">業種</label>
+                <select
+                  className="form-select"
+                  value={data.industry}
+                  onChange={(e) => updateField("industry", e.target.value)}
+                  onBlur={handleBlur}
+                >
+                  <option value="">選択してください</option>
+                  {INDUSTRIES.map((i) => (
+                    <option key={i} value={i}>{i}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold mb-1.5">従業員数</label>
+                <select
+                  className="form-select"
+                  value={data.employees ?? ""}
+                  onChange={(e) =>
+                    updateField("employees", e.target.value ? Number(e.target.value) : null)
+                  }
+                  onBlur={handleBlur}
+                >
+                  <option value="">選択してください</option>
+                  {EMPLOYEE_RANGES.map((r) => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-xs font-semibold mb-1.5">都道府県</label>
+                <select
+                  className="form-select"
+                  value={data.prefecture}
+                  onChange={(e) => updateField("prefecture", e.target.value)}
+                  onBlur={handleBlur}
+                >
+                  <option value="">選択してください</option>
+                  {PREFECTURES.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                className="btn-primary w-full"
+                disabled={!step1Valid}
+                onClick={() => goStep(2)}
+                style={{ opacity: step1Valid ? 1 : 0.5 }}
+              >
+                次へ →
+              </button>
+            </div>
+          )}
+
+          {/* Step 2: 導入目的 */}
+          {step === 2 && (
+            <div className="card animate-fade-slide-in">
+              <h2
+                className="text-base font-bold mb-5"
+                style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
+              >
+                導入目的を選択してください（複数可）
+              </h2>
+
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                {PURPOSES.map((p) => (
+                  <div
+                    key={p}
+                    className={`cb ${data.purposes.includes(p) ? "selected" : ""}`}
+                    onClick={() => togglePurpose(p)}
+                  >
+                    <span
+                      className="w-4 h-4 rounded border flex items-center justify-center shrink-0"
+                      style={{
+                        borderColor: data.purposes.includes(p)
+                          ? "var(--hc-primary)"
+                          : "var(--hc-border)",
+                        background: data.purposes.includes(p)
+                          ? "var(--hc-primary)"
+                          : "transparent",
+                        color: "white",
+                      }}
+                    >
+                      {data.purposes.includes(p) && "✓"}
+                    </span>
+                    {p}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  className="btn-secondary flex-1"
+                  onClick={() => goStep(1)}
+                >
+                  ← 戻る
+                </button>
+                <button
+                  className="btn-primary flex-1"
+                  disabled={!step2Valid}
+                  onClick={handleDiagnose}
+                  style={{ opacity: step2Valid ? 1 : 0.5 }}
+                >
+                  診断する
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Turtle mascot — empty state */}
+          {step === 1 && !data.industry && !data.employees && !data.prefecture && (
+            <div className="text-center mt-8 opacity-50">
+              <Image
+                src="/images/turtle_search.png"
+                alt=""
+                width={40}
+                height={40}
+                className="mx-auto"
+              />
+              <p className="text-[10px] mt-2" style={{ color: "var(--hc-text-muted)" }}>
+                3つの質問に答えるだけで最適な補助金が見つかります
+              </p>
+            </div>
+          )}
         </div>
-      </section>
-
-      {/* FAQ — Client Component */}
-      <FaqSection />
-
-      {/* Final CTA */}
-      <section
-        className="py-16 px-4 text-white relative overflow-hidden"
-        style={{
-          backgroundColor: '#1E3A5F',
-          backgroundImage: `url('/svg/cta_background.svg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        {/* グラデーションオーバーレイ */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(30,58,95,0.04) 100%)`,
-            pointerEvents: 'none'
-          }}
-        />
-
-        <div className="max-w-[1200px] mx-auto text-center relative z-10">
-          <h2 className="text-xl md:text-2xl font-medium mb-4">
-            工事・設備導入を補助金で実現。今が決断のとき。
-          </h2>
-          <p className="text-white/70 mb-8 font-light">
-            業種・規模を3つ選ぶだけで、最適な補助金が見つかります。一度の診断で複数の選択肢から比較できます。
-          </p>
-          <Link
-            href="/match"
-            className="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-10 py-4 rounded-md transition shadow-lg text-lg"
-            style={{
-              boxShadow: 'rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px'
-            }}
-          >
-            今すぐ診断を始める
-          </Link>
-        </div>
-      </section>
-    </>
+      }
+    />
   );
 }
