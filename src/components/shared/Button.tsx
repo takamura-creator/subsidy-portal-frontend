@@ -10,11 +10,11 @@ type ButtonProps = {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white hover:bg-[#0B7F74] hover:-translate-y-px active:translate-y-0",
+    "bg-primary text-white hover:bg-[#0d6c4a] hover:-translate-y-px active:translate-y-0",
   secondary:
     "bg-transparent text-text border border-border hover:bg-bg-surface",
   accent:
-    "bg-accent text-white hover:bg-[#B45309] hover:-translate-y-px active:translate-y-0",
+    "bg-accent text-white hover:bg-accent/90 hover:-translate-y-px active:translate-y-0",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -34,7 +34,7 @@ export default function Button({
   return (
     <button
       disabled={disabled}
-      className={`inline-flex items-center justify-center rounded-[10px] font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${variantStyles[variant]} ${sizeStyles[size]} ${disabled ? "opacity-50 pointer-events-none" : ""} ${className}`}
+      className={`inline-flex items-center justify-center rounded-[8px] font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${variantStyles[variant]} ${sizeStyles[size]} ${disabled ? "opacity-50 pointer-events-none" : ""} ${className}`}
       {...rest}
     >
       {children}

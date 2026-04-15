@@ -292,7 +292,7 @@ function WizardContent() {
                           <Link
                             href={`/auth/login?redirect=/my/applications/new?subsidy_id=${m.subsidy.id}`}
                             className="flex-1 block text-center py-3 rounded-[6px] font-medium text-white transition hover:opacity-90"
-                            style={{ background: "#D97706" }}
+                            style={{ background: "var(--hc-accent)" }}
                           >
                             申請書を作成する
                           </Link>

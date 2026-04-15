@@ -58,7 +58,7 @@ export default function LoginPage() {
           style={{
             background: "var(--hc-white)",
             border: "1px solid var(--hc-border)",
-            borderRadius: 12,
+            borderRadius: 10,
             padding: 32,
             boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
           }}
