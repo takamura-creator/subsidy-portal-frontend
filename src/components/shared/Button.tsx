@@ -10,11 +10,11 @@ type ButtonProps = {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white hover:bg-[#0d6c4a] hover:-translate-y-px active:translate-y-0",
+    "bg-primary text-white hover:bg-[var(--hc-primary-hover)] hover:-translate-y-px active:translate-y-0",
   secondary:
     "bg-transparent text-text border border-border hover:bg-bg-surface",
   accent:
-    "bg-accent text-white hover:bg-accent/90 hover:-translate-y-px active:translate-y-0",
+    "bg-accent text-white hover:bg-[var(--hc-accent-hover)] hover:-translate-y-px active:translate-y-0",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
