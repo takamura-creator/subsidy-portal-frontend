@@ -704,3 +704,42 @@ export async function authFetch<T>(
     throw err;
   }
 }
+
+// --- AI書類作成補助 ---
+
+export interface DraftAssistRequest {
+  subsidy_id: string;
+  company_info: {
+    name: string;
+    industry: string;
+    employees: number;
+    prefecture: string;
+  };
+  field: "purpose" | "business_plan" | "expected_effect";
+  user_input: string;
+}
+
+export interface DraftAssistResponse {
+  draft_text: string;
+  tips: string[];
+  confidence: "high" | "medium" | "low";
+}
+
+export async function fetchAiStatus(): Promise<{ available: boolean }> {
+  const res = await fetch(`${API_URL}/api/ai/status`);
+  if (!res.ok) return { available: false };
+  return res.json();
+}
+
+export async function requestDraftAssist(req: DraftAssistRequest): Promise<DraftAssistResponse> {
+  const res = await fetch(`${API_URL}/api/ai/draft-assist`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, data.detail || "AI機能でエラーが発生しました");
+  }
+  return res.json();
+}

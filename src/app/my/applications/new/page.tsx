@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { useAutosave } from "@/lib/useAutosave";
-import { createApplication } from "@/lib/api";
+import { createApplication, fetchAiStatus, requestDraftAssist } from "@/lib/api";
 import { INDUSTRIES, PREFECTURES } from "@/lib/constants";
 
 // --- ウィザードステップ定義 ---
@@ -76,6 +76,37 @@ export default function ApplicationNewPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
+  const [aiAvailable, setAiAvailable] = useState(false);
+  const [aiLoading, setAiLoading] = useState<string | null>(null);
+  const [aiTips, setAiTips] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    fetchAiStatus().then((s) => setAiAvailable(s.available)).catch(() => {});
+  }, []);
+
+  async function handleAiAssist(field: "purpose" | "business_plan" | "expected_effect", dataField: keyof DraftData) {
+    setAiLoading(field);
+    setAiTips((prev) => ({ ...prev, [field]: [] }));
+    try {
+      const res = await requestDraftAssist({
+        subsidy_id: data.selectedSubsidyId || "",
+        company_info: {
+          name: data.companyName || "",
+          industry: data.industry || "",
+          employees: Number(data.employees) || 0,
+          prefecture: data.prefecture || "",
+        },
+        field,
+        user_input: String((data as unknown as Record<string, unknown>)[dataField] ?? ""),
+      });
+      updateField(dataField, res.draft_text);
+      setAiTips((prev) => ({ ...prev, [field]: res.tips }));
+    } catch {
+      setAiTips((prev) => ({ ...prev, [field]: ["現在AI機能が利用できません。しばらくしてから再度お試しください。"] }));
+    } finally {
+      setAiLoading(null);
+    }
+  }
 
   useEffect(() => {
     if (hasDraft) setShowRestoreBanner(true);
@@ -392,6 +423,26 @@ export default function ApplicationNewPage() {
                 placeholder="例: 万引き被害が年間○万円に達しており、防犯カメラの導入により被害を抑止したい。"
                 style={{ minHeight: 100, resize: "vertical", lineHeight: 1.6 }}
               />
+              {aiAvailable && (
+                <div style={{ marginTop: 6 }}>
+                  <button
+                    type="button"
+                    onClick={() => handleAiAssist("purpose", "purpose")}
+                    disabled={aiLoading === "purpose"}
+                    style={{
+                      fontSize: 12, padding: "6px 14px", borderRadius: 6,
+                      background: "rgba(21,128,61,0.06)", border: "1px solid rgba(21,128,61,0.15)",
+                      color: "var(--hc-primary)", cursor: "pointer", fontWeight: 500,
+                      opacity: aiLoading === "purpose" ? 0.6 : 1,
+                    }}
+                  >
+                    {aiLoading === "purpose" ? "生成中..." : "✨ AIに相談する"}
+                  </button>
+                  {aiTips.purpose?.map((tip, i) => (
+                    <p key={i} style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 4 }}>💡 {tip}</p>
+                  ))}
+                </div>
+              )}
             </Field>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <Field label="導入予定台数">
@@ -415,6 +466,26 @@ export default function ApplicationNewPage() {
                 placeholder="例: 万引き被害を50%削減、店舗運営の安全性向上、従業員の安心感の確保"
                 style={{ minHeight: 100, resize: "vertical", lineHeight: 1.6 }}
               />
+              {aiAvailable && (
+                <div style={{ marginTop: 6 }}>
+                  <button
+                    type="button"
+                    onClick={() => handleAiAssist("expected_effect", "expectedEffect")}
+                    disabled={aiLoading === "expected_effect"}
+                    style={{
+                      fontSize: 12, padding: "6px 14px", borderRadius: 6,
+                      background: "rgba(21,128,61,0.06)", border: "1px solid rgba(21,128,61,0.15)",
+                      color: "var(--hc-primary)", cursor: "pointer", fontWeight: 500,
+                      opacity: aiLoading === "expected_effect" ? 0.6 : 1,
+                    }}
+                  >
+                    {aiLoading === "expected_effect" ? "生成中..." : "✨ AIに相談する"}
+                  </button>
+                  {aiTips.expected_effect?.map((tip, i) => (
+                    <p key={i} style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 4 }}>💡 {tip}</p>
+                  ))}
+                </div>
+              )}
             </Field>
           </>
         );
