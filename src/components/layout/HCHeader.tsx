@@ -6,7 +6,8 @@ import { useState } from "react";
 
 const NAV_LINKS = [
   { href: "/subsidies", label: "補助金を探す" },
-  { href: "/contractors", label: "工事業者を探す" },
+  { href: "/results", label: "交付実績" },
+  { href: "/partners/multik", label: "施工パートナー" },
   { href: "/match", label: "AI診断" },
   { href: "/about", label: "使い方" },
 ];
@@ -19,36 +20,38 @@ export default function HCHeader() {
       className="flex items-center justify-between px-5 flex-shrink-0 relative"
       style={{
         height: "var(--hc-header-h)",
-        background: "rgba(228,238,228,0.95)",
+        background: "var(--hc-header-bg)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid rgba(21,128,61,0.08)",
+        borderBottom: "1px solid var(--hc-primary-edge)",
         zIndex: 100,
       }}
     >
-      {/* Logo */}
+      {/* Logo — 亀アイコン + HOJYO CAME（サブタイトルなし / トニー指示） */}
       <Link
         href="/"
-        className="flex items-center gap-1.5"
+        aria-label="HOJYO CAME トップへ"
+        className="flex items-center gap-2"
         style={{ textDecoration: "none", background: "none", border: "none", boxShadow: "none", outline: "none" }}
       >
         <Image
           src="/images/turtle_logo.png"
-          alt="HOJYO CAME"
+          alt=""
           width={22}
           height={22}
           style={{ objectFit: "contain" }}
         />
         <span
           style={{
-            fontFamily: "'Sora', sans-serif",
-            fontSize: "1rem",
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+            fontSize: "0.95rem",
             fontWeight: 700,
-            letterSpacing: "-0.5px",
+            letterSpacing: "2px",
+            lineHeight: 1,
           }}
         >
-          <span style={{ color: "var(--hc-navy)" }}>HOJYO</span>{" "}
-          <span style={{ color: "var(--hc-primary)" }}>CAME</span>
+          <span style={{ color: "var(--hc-brand-hojyo)" }}>HOJYO</span>
+          <span style={{ color: "var(--hc-brand-came)" }}> CAME</span>
         </span>
       </Link>
 
@@ -77,6 +80,7 @@ export default function HCHeader() {
         className="md:hidden p-1"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="メニュー"
+        aria-expanded={menuOpen}
       >
         <svg
           width="20"
@@ -99,7 +103,7 @@ export default function HCHeader() {
         <nav
           className="absolute top-full left-0 right-0 md:hidden border-b shadow-md p-4 flex flex-col gap-3"
           style={{
-            background: "rgba(240,253,244,0.95)",
+            background: "var(--hc-header-bg-mobile)",
             borderColor: "var(--hc-border)",
             zIndex: 99,
           }}

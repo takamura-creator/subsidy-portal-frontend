@@ -1,5 +1,16 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  const message =
+    "[HOJYO CAME] NEXT_PUBLIC_API_URL が未設定です。localhost:8000 にフォールバックしています。" +
+    " 本番環境では Railway の環境変数に NEXT_PUBLIC_API_URL を設定してください。";
+  if (process.env.NODE_ENV === "production") {
+    console.error(message);
+  } else if (typeof window === "undefined") {
+    console.warn(message);
+  }
+}
+
 export interface Subsidy {
   id: string;
   name: string;
@@ -110,7 +121,7 @@ export interface LoginResponse {
 export interface RegisterRequest {
   email: string;
   password: string;
-  role: "owner" | "contractor";
+  role: "owner";
   company_name: string;
   pref_code: string;
 }
@@ -172,7 +183,7 @@ export interface ApplicationListResponse {
 export interface UserProfile {
   id: string;
   email: string;
-  role: "owner" | "contractor" | "admin";
+  role: "owner" | "admin";
   company_name: string;
   pref_code: string;
 }
@@ -307,134 +318,11 @@ export async function deleteAccount(password: string): Promise<void> {
   });
 }
 
-// --- 業者案件（認証付き） ---
-
-export type BizProjectStatus = "new" | "estimating" | "working" | "completed" | "declined";
-
-export interface BizProject {
-  id: string;
-  company_name: string;
-  subsidy_name: string;
-  budget: number;
-  deadline: string;
-  status: BizProjectStatus;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface BizProjectDetail extends BizProject {
-  company_industry?: string;
-  company_address?: string;
-  contact_name?: string;
-  contact_email?: string;
-  subsidy_rate?: string;
-  subsidy_max_amount?: number;
-  purpose?: string;
-  camera_count?: number;
-  planned_date?: string;
-  documents?: Array<{ name: string; url?: string }>;
-  quotation?: Quotation;
-}
-
-export interface Quotation {
-  amount: number;
-  duration_days: number;
-  note?: string;
-  file_url?: string;
-  submitted_at?: string;
-}
-
-export interface BizStats {
-  new_count: number;
-  active_count: number;
-  monthly_received: number;
-  monthly_completed: number;
-  month: string;
-}
-
-export async function fetchBizProjects(params?: {
-  status?: string;
-  page?: number;
-}): Promise<{ total: number; projects: BizProject[] }> {
-  const query = new URLSearchParams();
-  if (params?.status) query.set("status", params.status);
-  if (params?.page) query.set("page", String(params.page));
-  return authFetch(`${API_URL}/api/biz/projects?${query}`);
-}
-
-export async function fetchBizProjectsSummary(): Promise<BizStats> {
-  return authFetch(`${API_URL}/api/biz/projects/summary`);
-}
-
-export async function fetchBizProject(id: string): Promise<BizProjectDetail> {
-  return authFetch(`${API_URL}/api/biz/projects/${id}`);
-}
-
-export async function acceptProject(id: string): Promise<{ message: string }> {
-  return authFetch(`${API_URL}/api/biz/projects/${id}/accept`, {
-    method: "POST",
-  });
-}
-
-export async function declineProject(id: string): Promise<{ message: string }> {
-  return authFetch(`${API_URL}/api/biz/projects/${id}/decline`, {
-    method: "POST",
-  });
-}
-
-export async function submitQuotation(
-  id: string,
-  data: { amount: number; duration_days: number; note?: string }
-): Promise<{ message: string }> {
-  return authFetch(`${API_URL}/api/biz/projects/${id}/quotation`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-}
-
-export async function fetchBizStats(month?: string): Promise<BizStats> {
-  const query = month ? `?month=${month}` : "";
-  return authFetch(`${API_URL}/api/biz/stats${query}`);
-}
-
-// --- 業者プロフィール（認証付き） ---
-
-export interface BizProfile {
-  id: string;
-  company_name: string;
-  representative_name?: string;
-  prefecture?: string;
-  founded_year?: number;
-  employees?: number;
-  description?: string;
-  areas: string[];
-  qualifications: string[];
-  photos: Array<{ id: string; url: string }>;
-  phone?: string;
-  email?: string;
-}
-
-export async function fetchBizProfile(): Promise<BizProfile> {
-  return authFetch(`${API_URL}/api/biz/profile`);
-}
-
-export async function updateBizProfile(
-  data: Partial<BizProfile>
-): Promise<BizProfile> {
-  return authFetch(`${API_URL}/api/biz/profile`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-}
-
 // --- 管理画面 ---
 
 export interface AdminDashboard {
   total_users: number;
   total_applications: number;
-  pending_contractors: number;
   total_matches: number;
   recent_activities: Array<{
     type: string;
@@ -445,17 +333,6 @@ export interface AdminDashboard {
 
 export interface AdminSubsidy extends Subsidy {
   admin_status: "active" | "expired" | "draft";
-}
-
-export interface AdminContractor {
-  id: string;
-  company_name: string;
-  areas: string[];
-  qualifications: string[];
-  project_count: number;
-  rating: number;
-  status: "pending" | "approved" | "suspended";
-  created_at: string;
 }
 
 export async function fetchAdminDashboard(): Promise<AdminDashboard> {
@@ -511,28 +388,6 @@ export async function importSubsidiesCSV(file: File): Promise<{ imported: number
   return res.json();
 }
 
-export async function fetchAdminContractors(params?: {
-  status?: string;
-  page?: number;
-}): Promise<{ total: number; contractors: AdminContractor[] }> {
-  const query = new URLSearchParams();
-  if (params?.status) query.set("status", params.status);
-  if (params?.page) query.set("page", String(params.page));
-  return authFetch(`${API_URL}/api/admin/contractors?${query}`);
-}
-
-export async function approveContractor(id: string): Promise<{ message: string }> {
-  return authFetch(`${API_URL}/api/admin/contractors/${id}/approve`, { method: "PUT" });
-}
-
-export async function suspendContractor(id: string): Promise<{ message: string }> {
-  return authFetch(`${API_URL}/api/admin/contractors/${id}/suspend`, { method: "PUT" });
-}
-
-export async function unsuspendContractor(id: string): Promise<{ message: string }> {
-  return authFetch(`${API_URL}/api/admin/contractors/${id}/unsuspend`, { method: "PUT" });
-}
-
 export type AdminApplicationStatus = "draft" | "submitted" | "reviewing" | "approved" | "rejected";
 
 export interface AdminApplication {
@@ -584,7 +439,7 @@ export interface AdminUser {
   id: string;
   email: string;
   company_name: string;
-  role: "owner" | "contractor" | "admin";
+  role: "owner" | "admin";
   status: "active" | "suspended";
   created_at: string;
 }
@@ -603,7 +458,7 @@ export async function fetchAdminUsers(params?: {
 
 export async function updateUserRole(
   id: string,
-  role: "owner" | "contractor" | "admin"
+  role: "owner" | "admin"
 ): Promise<{ message: string }> {
   return authFetch(`${API_URL}/api/admin/users/${id}/role`, {
     method: "PUT",
@@ -621,37 +476,6 @@ export async function suspendUser(id: string): Promise<{ message: string }> {
 export async function unsuspendUser(id: string): Promise<{ message: string }> {
   return authFetch(`${API_URL}/api/admin/users/${id}/unsuspend`, {
     method: "PUT",
-  });
-}
-
-// --- 工事業者（公開） ---
-
-export interface Contractor {
-  id: string;
-  company_name: string;
-  description: string;
-  areas: string[];
-  qualifications: string[];
-  project_count: number;
-  rating: number;
-  review_count: number;
-}
-
-export async function fetchContractors(params?: {
-  prefecture?: string;
-  keyword?: string;
-}): Promise<{ total: number; contractors: Contractor[] }> {
-  const query = new URLSearchParams();
-  if (params?.prefecture) query.set("prefecture", params.prefecture);
-  if (params?.keyword) query.set("keyword", params.keyword);
-  return apiFetch(`${API_URL}/api/contractors?${query}`, {
-    next: { revalidate: 300 },
-  });
-}
-
-export async function fetchContractor(id: string): Promise<Contractor> {
-  return apiFetch(`${API_URL}/api/contractors/${id}`, {
-    next: { revalidate: 300 },
   });
 }
 
@@ -703,6 +527,384 @@ export async function authFetch<T>(
     }
     throw err;
   }
+}
+
+// --- 交付実績 ---
+
+export interface SubsidyRecipient {
+  id: string;
+  subsidy_name: string;
+  subsidy_category: string;
+  fiscal_year: number;
+  recipient_name: string;
+  recipient_prefecture: string;
+  recipient_city: string;
+  industry: string;
+  grant_amount: number;
+  project_summary: string;
+  source_url: string;
+  source_ministry: string;
+  published_date: string;
+  created_at: string;
+}
+
+export interface RecipientListResponse {
+  total: number;
+  recipients: SubsidyRecipient[];
+}
+
+export interface PrefectureSummary {
+  prefecture: string;
+  count: number;
+  total_amount: number;
+}
+
+export interface CategorySummary {
+  category: string;
+  count: number;
+  total_amount: number;
+}
+
+export interface FiscalYearSummary {
+  fiscal_year: number;
+  count: number;
+  total_amount: number;
+}
+
+export interface RecipientStatsResponse {
+  total_records: number;
+  total_amount: number;
+  by_prefecture: PrefectureSummary[];
+  by_category: CategorySummary[];
+  by_fiscal_year: FiscalYearSummary[];
+}
+
+export async function fetchRecipients(params?: {
+  prefecture?: string;
+  category?: string;
+  fiscal_year?: number;
+  keyword?: string;
+  sort?: string;
+  page?: number;
+  per_page?: number;
+}): Promise<RecipientListResponse> {
+  const query = new URLSearchParams();
+  if (params?.prefecture) query.set("prefecture", params.prefecture);
+  if (params?.category) query.set("category", params.category);
+  if (params?.fiscal_year) query.set("fiscal_year", String(params.fiscal_year));
+  if (params?.keyword) query.set("keyword", params.keyword);
+  if (params?.sort) query.set("sort", params.sort);
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.per_page) query.set("per_page", String(params.per_page));
+  return apiFetch(`${API_URL}/api/recipients?${query}`, {
+    next: { revalidate: 300 },
+  });
+}
+
+export async function fetchRecipientStats(): Promise<RecipientStatsResponse> {
+  return apiFetch(`${API_URL}/api/recipients/stats`, {
+    next: { revalidate: 300 },
+  });
+}
+
+export async function fetchPrefecturesSummary(): Promise<PrefectureSummary[]> {
+  return apiFetch(`${API_URL}/api/recipients/prefectures`, {
+    next: { revalidate: 300 },
+  });
+}
+
+// --- Sprint 1: 製品 / エリア判定 / 見積もり ---
+
+export interface ProductSpec {
+  codec?: string;
+  ir?: boolean;
+  dual_light?: boolean;
+  lens?: string;
+  sensor?: string;
+  onvif?: boolean;
+  poe?: boolean;
+  outdoor?: boolean;
+  hdd_bay?: number;
+  channels?: number;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  category_id: string;
+  type: "camera" | "nvr" | "xvr";
+  form_factor?: string;
+  resolution?: string;
+  price_usd?: number | null;
+  price_jpy?: number | null;
+  specs?: ProductSpec;
+  features?: string[];
+  recommended_nvr?: string[];
+  use_cases?: string[];
+  subsidy_eligible?: string[];
+  current_lineup?: boolean;
+}
+
+export interface InstallationCosts {
+  ip_camera: { per_unit_jpy: number; description?: string };
+  analog_camera: { per_unit_jpy: number; description?: string };
+  nvr: { per_unit_jpy: number; description?: string };
+  network_setup: { per_site_jpy: number; description?: string };
+}
+
+export interface ProductListResponse {
+  total: number;
+  products: Product[];
+  installation_costs: InstallationCosts;
+}
+
+export interface RecommendedPackage {
+  id: string;
+  name: string;
+  tier: "economy" | "standard" | "premium" | "large";
+  total_jpy: number;
+  camera_count: number;
+  description: string;
+  items: Array<{ product_id: string; quantity: number }>;
+}
+
+export interface PackageListResponse {
+  packages: RecommendedPackage[];
+}
+
+export async function fetchProducts(params?: {
+  category_id?: string;
+  current_lineup?: boolean;
+}): Promise<ProductListResponse> {
+  const query = new URLSearchParams();
+  if (params?.category_id) query.set("category_id", params.category_id);
+  if (params?.current_lineup !== undefined) query.set("current_lineup", String(params.current_lineup));
+  return apiFetch(`${API_URL}/api/products?${query}`, {
+    next: { revalidate: 300 },
+  });
+}
+
+export async function fetchPackages(): Promise<PackageListResponse> {
+  return apiFetch(`${API_URL}/api/products/packages`, {
+    next: { revalidate: 300 },
+  });
+}
+
+export interface AreaCheckResponse {
+  in_service_area: boolean;
+  prefecture: string;
+  service_prefectures: string[];
+}
+
+export async function checkArea(prefecture: string): Promise<AreaCheckResponse> {
+  const query = new URLSearchParams({ prefecture });
+  return apiFetch(`${API_URL}/api/area/check?${query}`);
+}
+
+export interface EstimateItem {
+  product_id: string;
+  product_name?: string;
+  role?: string;
+  quantity: number;
+  unit_price: number;
+  subtotal: number;
+}
+
+export interface EstimateRequest {
+  subsidy_id?: string;
+  items: Array<{ product_id: string; quantity: number }>;
+  site_count?: number;
+}
+
+export interface Estimate {
+  id: string;
+  user_id?: string;
+  subsidy_id?: string;
+  items: EstimateItem[];
+  installation_cost: number;
+  network_setup_cost: number;
+  total_before_subsidy: number;
+  subsidy_amount: number;
+  self_payment: number;
+  status: "draft" | "confirmed";
+  created_at: string;
+  updated_at: string;
+}
+
+export async function createEstimate(req: EstimateRequest): Promise<Estimate> {
+  return authFetch(`${API_URL}/api/estimates`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+}
+
+export async function fetchEstimates(): Promise<{ total: number; estimates: Estimate[] }> {
+  return authFetch(`${API_URL}/api/estimates`);
+}
+
+export async function fetchEstimate(id: string): Promise<Estimate> {
+  return authFetch(`${API_URL}/api/estimates/${id}`);
+}
+
+export async function generateEstimatePdf(id: string): Promise<Blob> {
+  const token = localStorage.getItem("access_token");
+  const res = await fetch(`${API_URL}/api/estimates/${id}/generate-pdf`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(30000),
+  });
+  if (!res.ok) {
+    throw new ApiError(res.status, "見積書PDFの生成に失敗しました");
+  }
+  return res.blob();
+}
+
+export interface LeadCaptureRequest {
+  email: string;
+  prefecture: string;
+  source: string;
+  consent: boolean;
+}
+
+export async function submitLead(req: LeadCaptureRequest): Promise<{ message: string }> {
+  return apiFetch(`${API_URL}/api/leads`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+}
+
+// --- Sprint 2: 申請書類生成（Tier 1: 神奈川県テンプレート差込） ---
+
+export type Tier1SubsidyType = "kanagawa_digital";
+
+export interface Tier1CompanyInfo {
+  name: string;
+  representative_name: string;
+  address: string;
+  prefecture: string;
+  industry: string;
+  employees: number;
+}
+
+export interface DocumentTemplate {
+  id: string;
+  subsidy_type: string;
+  name: string;
+  format: "docx" | "xlsx";
+  auto_fill_level: "full" | "partial" | "manual";
+  description: string;
+}
+
+export interface DocumentGenerateRequest {
+  estimate_id: string;
+  subsidy_type: Tier1SubsidyType;
+  template_id: string; // 例: "form_1", "form_1_2", "all"
+  company_info: Tier1CompanyInfo;
+  additional_fields?: Record<string, string>;
+}
+
+export async function fetchDocumentTemplates(params?: {
+  subsidy_type?: string;
+}): Promise<DocumentTemplate[]> {
+  const query = new URLSearchParams();
+  if (params?.subsidy_type) query.set("subsidy_type", params.subsidy_type);
+  return apiFetch(`${API_URL}/api/documents/templates?${query}`);
+}
+
+/**
+ * Word/Excel ファイル本体を Blob で取得する。
+ * 単一テンプレート時は .docx/.xlsx、`template_id="all"` 時は .zip が返る。
+ */
+export async function generateDocument(req: DocumentGenerateRequest): Promise<{
+  blob: Blob;
+  filename: string;
+  contentType: string;
+}> {
+  const res = await fetch(`${API_URL}/api/documents/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+    signal: AbortSignal.timeout(30000),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(
+      res.status,
+      data.detail || "書類の生成に失敗しました",
+    );
+  }
+  const contentType = res.headers.get("content-type") || "application/octet-stream";
+  // Content-Disposition から filename を抜き出し（なければフォールバック）
+  const disposition = res.headers.get("content-disposition") || "";
+  const match = disposition.match(/filename="?([^";]+)"?/);
+  const fallback =
+    req.template_id === "all"
+      ? `documents_${req.estimate_id.slice(0, 8)}.zip`
+      : `${req.template_id}_${req.estimate_id.slice(0, 8)}`;
+  const filename = match?.[1] ?? fallback;
+  return { blob: await res.blob(), filename, contentType };
+}
+
+// --- Sprint 2: 申請書類下書き生成（Tier 2） ---
+// Sprint 3 Task 0: 型命名統一（フリーレン提案D）
+// Tier 1 (kanagawa_digital) と Tier 2 (jizokuka/it_dounyu/monodzukuri) を明示的に分離。
+// `DocumentSubsidyType` は両 Tier の union で、画面側の分岐判定に使用する。
+
+export type Tier2SubsidyType = "jizokuka" | "it_dounyu" | "monodzukuri";
+export type DocumentSubsidyType = Tier1SubsidyType | Tier2SubsidyType;
+
+export interface DraftCompanyInfo {
+  name: string;
+  representative_name: string;
+  industry: string;
+  employees: number;
+  prefecture: string;
+  address: string;
+  annual_revenue?: number;
+}
+
+export interface DraftGenerateRequest {
+  estimate_id: string;
+  subsidy_type: Tier2SubsidyType;
+  company_info: DraftCompanyInfo;
+  business_description?: string;
+}
+
+export interface DraftSection {
+  title: string;
+  content: string;
+  notes?: string | null;
+  max_chars?: number | null;
+}
+
+export interface DraftGenerateResponse {
+  subsidy_type: Tier2SubsidyType;
+  sections: DraftSection[];
+  generated_at: string;
+  disclaimer: string;
+  model: string;
+  fallback: boolean;
+}
+
+export async function requestDraftGeneration(
+  req: DraftGenerateRequest,
+): Promise<DraftGenerateResponse> {
+  const res = await fetch(`${API_URL}/api/documents/draft`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+    signal: AbortSignal.timeout(60000),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(
+      res.status,
+      data.detail || "下書き生成でエラーが発生しました",
+    );
+  }
+  return res.json();
 }
 
 // --- AI書類作成補助 ---

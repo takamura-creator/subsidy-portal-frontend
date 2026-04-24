@@ -14,6 +14,14 @@
   --hc-accent-light: #FEF9C3;
   --hc-accent-hover: #B45309;
 
+  /* Logo / brand identity tokens — HOJYO_CAME_design_spec_v1 §1（トニー承認済み） */
+  --hc-brand-hojyo: #0D9488; /* HOJYO 文字列 (teal) */
+  --hc-brand-came: #1E3A5F;  /* CAME 文字列・サブタイトル (navy) */
+
+  /* Header / navigation backgrounds — HF-13-C */
+  --hc-header-bg: color-mix(in srgb, var(--hc-primary) 6%, rgba(255,255,255,0.95));
+  --hc-header-bg-mobile: color-mix(in srgb, var(--hc-primary) 4%, rgba(255,255,255,0.95));
+
   /* Semantic Colors */
   --hc-success: #16A34A;
   --hc-warning: #EAB308;
@@ -31,6 +39,30 @@
   --hc-shadow: 0 2px 8px rgba(0,0,0,0.03);
   --hc-shadow-md: 0 4px 16px rgba(0,0,0,0.04);
   --hc-focus-ring: 0 0 0 2px rgba(21,128,61,0.1);
+
+  /* Transparent aliases（HF-8 / Sprint 4 Task 2: ハードコードRGBA置換用） */
+  --hc-primary-faint: color-mix(in srgb, var(--hc-primary) 3%, transparent);
+  --hc-primary-subtle: color-mix(in srgb, var(--hc-primary) 4%, transparent);
+  --hc-primary-muted: color-mix(in srgb, var(--hc-primary) 6%, transparent);
+  --hc-primary-edge: color-mix(in srgb, var(--hc-primary) 8%, transparent);
+  --hc-primary-soft: color-mix(in srgb, var(--hc-primary) 10%, transparent);
+  --hc-primary-light: color-mix(in srgb, var(--hc-primary) 12%, transparent);
+  --hc-primary-line: color-mix(in srgb, var(--hc-primary) 15%, transparent);
+  --hc-primary-pin: color-mix(in srgb, var(--hc-primary) 18%, transparent);
+  --hc-primary-border: color-mix(in srgb, var(--hc-primary) 25%, transparent);
+  --hc-accent-subtle: color-mix(in srgb, var(--hc-accent) 8%, transparent);
+  --hc-accent-line: color-mix(in srgb, var(--hc-accent) 20%, transparent);
+  --hc-accent-border: color-mix(in srgb, var(--hc-accent) 35%, transparent);
+  --hc-success-subtle: color-mix(in srgb, var(--hc-success) 4%, transparent);
+  --hc-success-edge: color-mix(in srgb, var(--hc-success) 8%, transparent);
+  --hc-error-subtle: color-mix(in srgb, var(--hc-error) 6%, transparent);
+  --hc-error-edge: color-mix(in srgb, var(--hc-error) 8%, transparent);
+  --hc-error-line: color-mix(in srgb, var(--hc-error) 20%, transparent);
+  --hc-error-border: color-mix(in srgb, var(--hc-error) 30%, transparent);
+  --hc-text-faint: color-mix(in srgb, var(--hc-text) 2%, transparent);
+  --hc-text-subtle: color-mix(in srgb, var(--hc-text) 4%, transparent);
+  --hc-text-divider: color-mix(in srgb, var(--hc-text) 5%, transparent);
+  --hc-text-line: color-mix(in srgb, var(--hc-text) 8%, transparent);
 
   /* Portal aliases (C-1 backward compat) */
   --portal-shadow: var(--hc-shadow);
@@ -68,7 +100,7 @@
   --color-text-muted: var(--hc-text-muted);
   --color-border: var(--hc-border);
   --font-sans: 'Noto Sans JP', sans-serif;
-  --font-display: 'Sora', sans-serif;
+  --font-display: 'Sora', 'Noto Sans JP', sans-serif;
 }
 
 /* ============================================
@@ -501,7 +533,6 @@ button:focus-visible, a:focus-visible {
 }
 .home-welcome h1 .came {
   color: var(--hc-primary);
-  margin-left: 6px;
 }
 
 .home-welcome .lede {

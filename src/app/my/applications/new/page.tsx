@@ -205,7 +205,7 @@ export default function ApplicationNewPage() {
                 padding: "10px 10px",
                 marginBottom: 2,
                 borderRadius: 6,
-                background: active ? "rgba(21,128,61,0.06)" : "transparent",
+                background: active ? "var(--hc-primary-muted)" : "transparent",
                 color: done ? "var(--hc-success)" : active ? "var(--hc-primary)" : "var(--hc-text-muted)",
                 fontSize: 13,
                 fontWeight: active ? 500 : 400,
@@ -225,7 +225,7 @@ export default function ApplicationNewPage() {
                   justifyContent: "center",
                   fontSize: 10,
                   flexShrink: 0,
-                  boxShadow: active ? "0 0 0 3px rgba(21,128,61,0.12)" : "none",
+                  boxShadow: active ? "0 0 0 3px var(--hc-primary-light)" : "none",
                 }}
               >
                 {done ? "✓" : ""}
@@ -336,7 +336,7 @@ export default function ApplicationNewPage() {
           style={{
             width: "100%",
             aspectRatio: "210/297",
-            background: "linear-gradient(180deg,rgba(21,128,61,0.03),rgba(21,128,61,0.01))",
+            background: "linear-gradient(180deg,var(--hc-primary-faint),transparent)",
             border: "1px solid var(--hc-border)",
             borderRadius: 4,
             display: "flex",
@@ -431,7 +431,7 @@ export default function ApplicationNewPage() {
                     disabled={aiLoading === "purpose"}
                     style={{
                       fontSize: 12, padding: "6px 14px", borderRadius: 6,
-                      background: "rgba(21,128,61,0.06)", border: "1px solid rgba(21,128,61,0.15)",
+                      background: "var(--hc-primary-muted)", border: "1px solid var(--hc-primary-line)",
                       color: "var(--hc-primary)", cursor: "pointer", fontWeight: 500,
                       opacity: aiLoading === "purpose" ? 0.6 : 1,
                     }}
@@ -474,7 +474,7 @@ export default function ApplicationNewPage() {
                     disabled={aiLoading === "expected_effect"}
                     style={{
                       fontSize: 12, padding: "6px 14px", borderRadius: 6,
-                      background: "rgba(21,128,61,0.06)", border: "1px solid rgba(21,128,61,0.15)",
+                      background: "var(--hc-primary-muted)", border: "1px solid var(--hc-primary-line)",
                       color: "var(--hc-primary)", cursor: "pointer", fontWeight: 500,
                       opacity: aiLoading === "expected_effect" ? 0.6 : 1,
                     }}
@@ -492,7 +492,7 @@ export default function ApplicationNewPage() {
 
       case 2:
         return (
-          <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "rgba(0,0,0,0.02)", borderRadius: 6 }}>
+          <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "var(--hc-text-faint)", borderRadius: 6 }}>
             事業計画の入力が完了すると見積書の作成に進めます
           </p>
         );
@@ -539,7 +539,7 @@ export default function ApplicationNewPage() {
     <>
       {/* 復元バナー */}
       {showRestoreBanner && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "var(--hc-accent-light)", border: "1px solid rgba(202,138,4,0.2)", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "var(--hc-accent-light)", border: "1px solid var(--hc-accent-line)", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
           <span style={{ color: "var(--hc-navy)" }}>⚠ 前回の下書きが見つかりました</span>
           <div style={{ display: "flex", gap: 8 }}>
             <button onClick={handleRestore} className="btn-primary" style={{ fontSize: 11, padding: "4px 12px", cursor: "pointer", width: "auto" }}>復元する</button>
@@ -549,7 +549,7 @@ export default function ApplicationNewPage() {
       )}
 
       {/* プログレスバー */}
-      <div style={{ width: "100%", height: 6, background: "rgba(0,0,0,0.05)", borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
+      <div style={{ width: "100%", height: 6, background: "var(--hc-text-divider)", borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
         <div style={{ height: "100%", width: `${progressPercent}%`, background: "var(--hc-primary)", borderRadius: 3, transition: "width 0.3s" }} />
       </div>
 

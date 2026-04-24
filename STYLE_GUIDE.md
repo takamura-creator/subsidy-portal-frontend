@@ -26,6 +26,15 @@
 - **Accent** (`#CA8A04` / `--hc-accent`): 工事業者向け要素、注目ポイント、差別化カラー（ゴールド）
 - **Accent Light** (`#FEF9C3` / `--hc-accent-light`): Accent の薄い背景。バッジ背景、注目バナー
 
+### Brand Identity — ロゴ専用トークン（Sprint 2.5 追加 / トニー承認済み）
+
+HOJYO_CAME_design_spec_v1 §1 のロゴ仕様で使用する色。サイト全体の Primary（`#15803D`）とは **意図的に別系統**（teal / navy）として管理する。ロゴマーク・ヘッダーのサイト名以外には使わない。
+
+- **HOJYO 色** (`#0D9488` / `--hc-brand-hojyo`): 「HOJYO」文字 / teal
+- **CAME 色** (`#1E3A5F` / `--hc-brand-came`): 「CAME」文字 / navy
+
+使用箇所: `components/Header.tsx`, `components/layout/HCHeader.tsx` のロゴテキストのみ。
+
 ### Semantic
 
 - **Success** (`#16A34A` / `--hc-success`): マッチング成立、承認、完了
@@ -73,6 +82,83 @@
   --hc-focus-ring: 0 0 0 3px rgba(21,128,61,0.15);
 }
 ```
+
+### Transparency Variants — 透過トークン（Sprint 4 追加 / 2026-04-24）
+
+RGBA ハードコード一掃（キョウカイ L-4）のため、各ブランド色・セマンティック色・テキスト色の透過バリエーションをトークン化。`color-mix(in srgb, ...)` で基色から算出し、基色変更時に自動追従する。新規コードで RGBA を直接書くことは禁止し、下記トークンを参照すること。
+
+#### Primary Variants（グリーン系）
+
+| Token | 算出式 | 用途 |
+|-------|--------|------|
+| `--hc-primary-faint` | primary 3% | 最弱のホバー背景、フォーム面の淡いアクセント |
+| `--hc-primary-light` | primary 12% | 選択中チェックボックス・ピル・アクティブタブの背景 |
+| `--hc-primary-line` | primary 15% | Primary 色系の枠線（選択状態のボーダー等） |
+
+> 既存: `--hc-primary-subtle` / `--hc-primary-muted` / `--hc-primary-soft` / `--hc-primary-border` / `--hc-primary-edge` / `--hc-primary-pin`（globals.css 定義済）
+
+#### Success Variants（承認・完了系）
+
+| Token | 算出式 | 用途 |
+|-------|--------|------|
+| `--hc-success-subtle` | success 4% | 承認通知・成功ステータスバッジの背景 |
+| `--hc-success-edge` | success 8% | 承認通知のボーダー |
+
+#### Accent Variants（ゴールド系）
+
+| Token | 算出式 | 用途 |
+|-------|--------|------|
+| `--hc-accent-line` | accent 20% | 注目通知・Accent 系パネルのボーダー |
+
+#### Error Variants（エラー・却下・募集終了系）
+
+| Token | 算出式 | 用途 |
+|-------|--------|------|
+| `--hc-error-subtle` | error 6% | エラーボックス背景 |
+| `--hc-error-edge` | error 8% | エラー系ピル・タグ背景 |
+| `--hc-error-line` | error 20% | エラーボックスの内側ボーダー |
+| `--hc-error-border` | error 30% | Danger Zone（削除系操作）の強調ボーダー |
+
+#### Text / Black Variants（本文・区切り線系）
+
+| Token | 算出式 | 用途 |
+|-------|--------|------|
+| `--hc-text-faint` | text 2% | テーブル行のゼブラ・超淡い面塗り |
+| `--hc-text-divider` | text 5% | テーブルヘッダー背景・薄い区切り面 |
+| `--hc-text-line` | text 8% | 罫線・中間ボーダー |
+
+> 既存: `--hc-text-subtle`（globals.css 定義済）
+
+#### CSS変数マッピング（追加分）
+
+```css
+:root {
+  /* Primary Variants */
+  --hc-primary-faint:  color-mix(in srgb, var(--hc-primary)  3%, transparent);
+  --hc-primary-light:  color-mix(in srgb, var(--hc-primary) 12%, transparent);
+  --hc-primary-line:   color-mix(in srgb, var(--hc-primary) 15%, transparent);
+
+  /* Success Variants */
+  --hc-success-subtle: color-mix(in srgb, var(--hc-success)  4%, transparent);
+  --hc-success-edge:   color-mix(in srgb, var(--hc-success)  8%, transparent);
+
+  /* Accent Variants */
+  --hc-accent-line:    color-mix(in srgb, var(--hc-accent)  20%, transparent);
+
+  /* Error Variants */
+  --hc-error-subtle:   color-mix(in srgb, var(--hc-error)    6%, transparent);
+  --hc-error-edge:     color-mix(in srgb, var(--hc-error)    8%, transparent);
+  --hc-error-line:     color-mix(in srgb, var(--hc-error)   20%, transparent);
+  --hc-error-border:   color-mix(in srgb, var(--hc-error)   30%, transparent);
+
+  /* Text / Black Variants */
+  --hc-text-faint:     color-mix(in srgb, var(--hc-text)     2%, transparent);
+  --hc-text-divider:   color-mix(in srgb, var(--hc-text)     5%, transparent);
+  --hc-text-line:      color-mix(in srgb, var(--hc-text)     8%, transparent);
+}
+```
+
+> **運用ルール**: 新規コードで `rgba(21,128,61,...)` 等の RGBA 直書きは禁止。上記トークンで近似値が存在しない場合は、当該色のバリアント追加を先に STYLE_GUIDE §2 に提案し、キョウカイ Lint を通過させてから使用すること。
 
 ### --portal-* エイリアス（後方互換）
 
@@ -419,3 +505,4 @@ Layout: 3-column (240px / 1fr / 260px)
 | 2026-04-07 | 初版作成（teal系 `--portal-*`） |
 | 2026-04-14 | j3_earth 準拠に全面書き換え（`--hc-*` 正式採用）。キョウカイ Lint 報告書に基づく |
 | 2026-04-14 | Ashitaka レビュー反映: Warning色分離(`#EAB308`)、OGPグラデ終点変更(`#16A34A`)、Do/Don't 2項目追加 |
+| 2026-04-24 | §2 Transparency Variants 追加（13 トークン）。Sprint 4 Task 2（キョウカイ L-4 / `my/*` 系 RGBA 一掃）に伴う正式登録。primary-faint/light/line、success-subtle/edge、accent-line、error-subtle/edge/line/border、text-faint/divider/line |
