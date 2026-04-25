@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { PREFECTURES, isServicePrefecture } from "@/lib/constants";
 import { listPublishedCases } from "@/data/cases";
+import { getAllSubsidies } from "@/lib/subsidies-server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojokin-portal.jp";
 
@@ -16,6 +17,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/cases`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
+
+  // Sprint 4 Task 0 で SSG 化された補助金詳細（57 件）を Search Console に発見させる
+  const subsidyPages: MetadataRoute.Sitemap = getAllSubsidies().map((s) => ({
+    url: `${SITE_URL}/subsidies/${s.id}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
 
   const casePages: MetadataRoute.Sitemap = listPublishedCases().map((c) => ({
     url: `${SITE_URL}/cases/${c.id}`,
@@ -39,5 +48,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...lpPages, ...casePages, ...resultsPrefecturePages];
+  return [
+    ...staticPages,
+    ...subsidyPages,
+    ...lpPages,
+    ...casePages,
+    ...resultsPrefecturePages,
+  ];
 }
