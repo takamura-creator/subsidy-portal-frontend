@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "補助金ポータル — 防犯カメラ導入の補助金をAIが無料診断";
+export const alt = "HOJYO CAME — 防犯カメラ導入の補助金を無料で診断";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -60,7 +60,7 @@ export default async function Image() {
               fontWeight: 500,
             }}
           >
-            補助金ポータル
+            HOJYO CAME
           </div>
         </div>
 

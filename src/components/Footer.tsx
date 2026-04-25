@@ -8,10 +8,11 @@ export default function Footer() {
           {/* ブランド */}
           <div className="sm:col-span-2 md:col-span-1">
             <h3 className="text-white text-lg font-medium mb-3">
-              <span className="text-primary">補助金</span>ポータル
+              <span style={{ color: "var(--hc-brand-hojyo)" }}>HOJYO</span>{" "}
+              <span style={{ color: "var(--hc-brand-came)" }}>CAME</span>
             </h3>
             <p className="text-sm leading-relaxed mb-4">
-              防犯カメラ導入に使える補助金をAIが最適マッチング。全47都道府県対応。
+              防犯カメラ導入に使える補助金を条件でマッチング。全47都道府県対応。
             </p>
             <div className="flex gap-3">
               {["X", "YouTube", "LINE"].map((sns) => (

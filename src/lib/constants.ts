@@ -41,3 +41,25 @@ export const LP_PREFECTURES = [
   "東京都","大阪府","神奈川県","愛知県","埼玉県",
   "兵庫県","北海道","福岡県","千葉県","京都府",
 ] as const;
+
+/** マルチックが施工対応する6都県（フルLP対象） */
+export const SERVICE_PREFECTURES = [
+  "東京都","神奈川県","静岡県","埼玉県","千葉県","山梨県",
+] as const;
+
+export type ServicePrefecture = (typeof SERVICE_PREFECTURES)[number];
+
+export function isServicePrefecture(name: string): boolean {
+  return (SERVICE_PREFECTURES as readonly string[]).includes(name);
+}
+
+/** 会社概要（partners/multik 等で使用） */
+export const MULTIK_COMPANY = {
+  name: "マルチック株式会社",
+  nameEn: "Multik Co., Ltd.",
+  website: "https://multik.jp",
+  email: "contact@multik.jp",
+  manufacturer: "AVTECH Technology Corporation",
+  relationship: "AVTECH日本正規代理店（契約書ベース）",
+  address: "東京都",
+} as const;

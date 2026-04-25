@@ -34,7 +34,7 @@ export default function Sidebar({ items }: SidebarProps) {
   const user = getUser();
 
   const isActive = (href: string) => {
-    if (href === "/my" || href === "/biz") return pathname === href;
+    if (href === "/my") return pathname === href;
     return pathname.startsWith(href);
   };
 

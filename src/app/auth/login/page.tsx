@@ -33,7 +33,7 @@ export default function LoginPage() {
       localStorage.setItem("refresh_token", res.refresh_token);
 
       const role = decodeJwtRole(res.access_token);
-      router.push(role === "contractor" ? "/biz" : "/my");
+      router.push(role === "admin" ? "/admin" : "/my");
     } catch (err) {
       if (err instanceof ApiError) {
         setError(
@@ -60,7 +60,7 @@ export default function LoginPage() {
             border: "1px solid var(--hc-border)",
             borderRadius: 10,
             padding: 32,
-            boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
+            boxShadow: "var(--hc-shadow-md)",
           }}
         >
           <h1
@@ -92,8 +92,8 @@ export default function LoginPage() {
               style={{
                 color: "var(--hc-error)",
                 fontSize: 13,
-                background: "rgba(220,38,38,0.06)",
-                border: "1px solid rgba(220,38,38,0.2)",
+                background: "var(--hc-error-subtle)",
+                border: "1px solid var(--hc-error-line)",
                 borderRadius: 8,
                 padding: "10px 14px",
                 marginBottom: 16,

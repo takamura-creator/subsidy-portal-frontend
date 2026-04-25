@@ -26,7 +26,7 @@ export default function MyLayout({ children }: { children: React.ReactNode }) {
     }
     const user = getUser();
     if (user && user.role !== "owner" && user.role !== "admin") {
-      window.location.href = "/biz";
+      window.location.href = "/";
       return;
     }
     setReady(true);

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { useAutosave } from "@/lib/useAutosave";
-import { createApplication } from "@/lib/api";
+import { createApplication, fetchAiStatus, requestDraftAssist } from "@/lib/api";
 import { INDUSTRIES, PREFECTURES } from "@/lib/constants";
 
 // --- ウィザードステップ定義 ---
@@ -76,6 +76,37 @@ export default function ApplicationNewPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
+  const [aiAvailable, setAiAvailable] = useState(false);
+  const [aiLoading, setAiLoading] = useState<string | null>(null);
+  const [aiTips, setAiTips] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    fetchAiStatus().then((s) => setAiAvailable(s.available)).catch(() => {});
+  }, []);
+
+  async function handleAiAssist(field: "purpose" | "business_plan" | "expected_effect", dataField: keyof DraftData) {
+    setAiLoading(field);
+    setAiTips((prev) => ({ ...prev, [field]: [] }));
+    try {
+      const res = await requestDraftAssist({
+        subsidy_id: data.selectedSubsidyId || "",
+        company_info: {
+          name: data.companyName || "",
+          industry: data.industry || "",
+          employees: Number(data.employees) || 0,
+          prefecture: data.prefecture || "",
+        },
+        field,
+        user_input: String((data as unknown as Record<string, unknown>)[dataField] ?? ""),
+      });
+      updateField(dataField, res.draft_text);
+      setAiTips((prev) => ({ ...prev, [field]: res.tips }));
+    } catch {
+      setAiTips((prev) => ({ ...prev, [field]: ["現在AI機能が利用できません。しばらくしてから再度お試しください。"] }));
+    } finally {
+      setAiLoading(null);
+    }
+  }
 
   useEffect(() => {
     if (hasDraft) setShowRestoreBanner(true);
@@ -174,7 +205,7 @@ export default function ApplicationNewPage() {
                 padding: "10px 10px",
                 marginBottom: 2,
                 borderRadius: 6,
-                background: active ? "rgba(21,128,61,0.06)" : "transparent",
+                background: active ? "var(--hc-primary-muted)" : "transparent",
                 color: done ? "var(--hc-success)" : active ? "var(--hc-primary)" : "var(--hc-text-muted)",
                 fontSize: 13,
                 fontWeight: active ? 500 : 400,
@@ -194,7 +225,7 @@ export default function ApplicationNewPage() {
                   justifyContent: "center",
                   fontSize: 10,
                   flexShrink: 0,
-                  boxShadow: active ? "0 0 0 3px rgba(21,128,61,0.12)" : "none",
+                  boxShadow: active ? "0 0 0 3px var(--hc-primary-light)" : "none",
                 }}
               >
                 {done ? "✓" : ""}
@@ -305,7 +336,7 @@ export default function ApplicationNewPage() {
           style={{
             width: "100%",
             aspectRatio: "210/297",
-            background: "linear-gradient(180deg,rgba(21,128,61,0.03),rgba(21,128,61,0.01))",
+            background: "linear-gradient(180deg,var(--hc-primary-faint),transparent)",
             border: "1px solid var(--hc-border)",
             borderRadius: 4,
             display: "flex",
@@ -392,6 +423,26 @@ export default function ApplicationNewPage() {
                 placeholder="例: 万引き被害が年間○万円に達しており、防犯カメラの導入により被害を抑止したい。"
                 style={{ minHeight: 100, resize: "vertical", lineHeight: 1.6 }}
               />
+              {aiAvailable && (
+                <div style={{ marginTop: 6 }}>
+                  <button
+                    type="button"
+                    onClick={() => handleAiAssist("purpose", "purpose")}
+                    disabled={aiLoading === "purpose"}
+                    style={{
+                      fontSize: 12, padding: "6px 14px", borderRadius: 6,
+                      background: "var(--hc-primary-muted)", border: "1px solid var(--hc-primary-line)",
+                      color: "var(--hc-primary)", cursor: "pointer", fontWeight: 500,
+                      opacity: aiLoading === "purpose" ? 0.6 : 1,
+                    }}
+                  >
+                    {aiLoading === "purpose" ? "生成中..." : "✨ AIに相談する"}
+                  </button>
+                  {aiTips.purpose?.map((tip, i) => (
+                    <p key={i} style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 4 }}>💡 {tip}</p>
+                  ))}
+                </div>
+              )}
             </Field>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <Field label="導入予定台数">
@@ -415,13 +466,33 @@ export default function ApplicationNewPage() {
                 placeholder="例: 万引き被害を50%削減、店舗運営の安全性向上、従業員の安心感の確保"
                 style={{ minHeight: 100, resize: "vertical", lineHeight: 1.6 }}
               />
+              {aiAvailable && (
+                <div style={{ marginTop: 6 }}>
+                  <button
+                    type="button"
+                    onClick={() => handleAiAssist("expected_effect", "expectedEffect")}
+                    disabled={aiLoading === "expected_effect"}
+                    style={{
+                      fontSize: 12, padding: "6px 14px", borderRadius: 6,
+                      background: "var(--hc-primary-muted)", border: "1px solid var(--hc-primary-line)",
+                      color: "var(--hc-primary)", cursor: "pointer", fontWeight: 500,
+                      opacity: aiLoading === "expected_effect" ? 0.6 : 1,
+                    }}
+                  >
+                    {aiLoading === "expected_effect" ? "生成中..." : "✨ AIに相談する"}
+                  </button>
+                  {aiTips.expected_effect?.map((tip, i) => (
+                    <p key={i} style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 4 }}>💡 {tip}</p>
+                  ))}
+                </div>
+              )}
             </Field>
           </>
         );
 
       case 2:
         return (
-          <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "rgba(0,0,0,0.02)", borderRadius: 6 }}>
+          <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "var(--hc-text-faint)", borderRadius: 6 }}>
             事業計画の入力が完了すると見積書の作成に進めます
           </p>
         );
@@ -468,7 +539,7 @@ export default function ApplicationNewPage() {
     <>
       {/* 復元バナー */}
       {showRestoreBanner && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "var(--hc-accent-light)", border: "1px solid rgba(202,138,4,0.2)", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "var(--hc-accent-light)", border: "1px solid var(--hc-accent-line)", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
           <span style={{ color: "var(--hc-navy)" }}>⚠ 前回の下書きが見つかりました</span>
           <div style={{ display: "flex", gap: 8 }}>
             <button onClick={handleRestore} className="btn-primary" style={{ fontSize: 11, padding: "4px 12px", cursor: "pointer", width: "auto" }}>復元する</button>
@@ -478,7 +549,7 @@ export default function ApplicationNewPage() {
       )}
 
       {/* プログレスバー */}
-      <div style={{ width: "100%", height: 6, background: "rgba(0,0,0,0.05)", borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
+      <div style={{ width: "100%", height: 6, background: "var(--hc-text-divider)", borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
         <div style={{ height: "100%", width: `${progressPercent}%`, background: "var(--hc-primary)", borderRadius: 3, transition: "width 0.3s" }} />
       </div>
 

@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Database,
-  HardHat,
   FileText,
   Users,
   ExternalLink,
@@ -17,7 +16,6 @@ import type { SidebarEntry } from "@/components/shared/Sidebar";
 const SIDEBAR_ITEMS: SidebarEntry[] = [
   { href: "/admin", label: "ダッシュボード", icon: LayoutDashboard },
   { href: "/admin/subsidies", label: "補助金管理", icon: Database },
-  { href: "/admin/contractors", label: "業者管理", icon: HardHat },
   { href: "/admin/applications", label: "申請管理", icon: FileText },
   { href: "/admin/users", label: "ユーザー管理", icon: Users },
   { separator: true },

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: "%s — HOJYO CAME",
   },
   description:
-    "防犯カメラ・設備導入に使える補助金をAIが無料診断。全47都道府県対応。業種・規模に合わせた最適な補助金をご提案します。",
+    "防犯カメラ・設備導入に使える補助金を無料で診断。全47都道府県対応。業種・規模に合わせて条件に合う補助金をご提案します。",
   keywords: ["防犯カメラ", "補助金", "IT導入補助金", "監視カメラ", "助成金", "補助金診断", "HOJYO CAME"],
   openGraph: {
     title: "HOJYO CAME | 工事費補助金をAIが無料診断",

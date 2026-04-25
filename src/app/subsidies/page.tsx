@@ -224,7 +224,7 @@ export default function SubsidiesPage() {
                   padding: "6px 8px",
                   fontSize: 12,
                   color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
-                  background: isActive ? "rgba(21,128,61,0.06)" : "transparent",
+                  background: isActive ? "var(--hc-primary-muted)" : "transparent",
                   fontWeight: isActive ? 500 : 400,
                   border: "none",
                   borderRadius: 4,
@@ -240,7 +240,7 @@ export default function SubsidiesPage() {
                 <span
                   style={{
                     fontSize: 11,
-                    background: "rgba(0,0,0,0.04)",
+                    background: "var(--hc-text-subtle)",
                     padding: "1px 6px",
                     borderRadius: 9999,
                   }}
@@ -319,7 +319,7 @@ export default function SubsidiesPage() {
           border: "1px solid var(--hc-border)",
           borderRadius: 8,
           overflow: "hidden",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.02)",
+          boxShadow: "var(--hc-shadow)",
         }}
       >
         {/* Table header */}
@@ -328,7 +328,7 @@ export default function SubsidiesPage() {
             display: "grid",
             gridTemplateColumns: "2.5fr 1fr 1fr 1fr 100px",
             padding: "8px 14px",
-            background: "rgba(21,128,61,0.03)",
+            background: "var(--hc-primary-faint)",
             borderBottom: "1px solid var(--hc-border)",
             fontSize: 11,
             fontWeight: 600,
@@ -368,7 +368,7 @@ export default function SubsidiesPage() {
                 cursor: "pointer",
                 transition: "background 0.1s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "rgba(21,128,61,0.02)")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "var(--hc-primary-faint)")}
               onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             >
               <span style={{ fontWeight: 600, color: "var(--hc-navy)" }}>
@@ -393,7 +393,7 @@ export default function SubsidiesPage() {
                     style={{
                       fontSize: 10,
                       color: "var(--hc-primary)",
-                      background: "rgba(21,128,61,0.08)",
+                      background: "var(--hc-primary-soft)",
                       padding: "1px 6px",
                       borderRadius: 4,
                       fontWeight: 600,
@@ -436,7 +436,7 @@ export default function SubsidiesPage() {
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.borderColor = "var(--hc-primary)";
-                    e.currentTarget.style.background = "rgba(21,128,61,0.04)";
+                    e.currentTarget.style.background = "var(--hc-primary-subtle)";
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.borderColor = "var(--hc-border)";
@@ -506,9 +506,9 @@ export default function SubsidiesPage() {
         <span style={{ marginRight: 4 }}>&#128196;</span>選択した補助金で申請書作成
       </Link>
 
-      {/* 工事業者を探す */}
+      {/* 施工パートナー */}
       <Link
-        href="/contractors"
+        href="/partners/multik"
         style={{
           display: "block",
           width: "100%",
@@ -516,7 +516,7 @@ export default function SubsidiesPage() {
           marginBottom: 6,
           background: "var(--hc-white)",
           border: "1px solid var(--hc-border)",
-          borderRadius: 6,
+          borderRadius: 8,
           fontSize: 12,
           fontWeight: 500,
           color: "var(--hc-text)",
@@ -527,7 +527,7 @@ export default function SubsidiesPage() {
           transition: "all 0.15s",
         }}
       >
-        <span style={{ marginRight: 4 }}>&#128295;</span>工事業者を探す
+        <span style={{ marginRight: 4 }}>&#128295;</span>施工パートナーを見る
       </Link>
 
       <div className="divider" />
@@ -543,12 +543,12 @@ export default function SubsidiesPage() {
           textAlign: "center",
           marginTop: 20,
           padding: 12,
-          background: "rgba(21,128,61,0.03)",
+          background: "var(--hc-primary-faint)",
           borderRadius: 6,
         }}
       >
         <p style={{ fontSize: 10, color: "var(--hc-text-muted)", margin: 0 }}>
-          キーワードで絞り込むと<br />最適な補助金が見つかります
+          キーワードで絞り込むと<br />条件に合う補助金が見つかります
         </p>
       </div>
     </div>

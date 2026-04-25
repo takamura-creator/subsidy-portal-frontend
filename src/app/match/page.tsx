@@ -85,7 +85,7 @@ function WizardContent() {
             あなたの会社に合う<span className="text-primary">補助金</span>を診断
           </h1>
           <p className="text-sm text-text2">
-            3つの質問に答えるだけで、最適な補助金が見つかります
+            3つの質問に答えるだけで、条件に合う補助金が見つかります
           </p>
         </div>
 
@@ -206,9 +206,9 @@ function WizardContent() {
                     <div className="absolute inset-0 w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
                   <div className="text-center">
-                    <p className="text-text font-medium mb-1">AIが最適な補助金を分析中...</p>
+                    <p className="text-text font-medium mb-1">条件に合う補助金を検索しています...</p>
                     <p className="text-sm text-text2 animate-pulse">
-                      多数の補助金データから最適プランを検索しています
+                      登録されている補助金データと照合しています
                     </p>
                   </div>
                 </div>
@@ -234,7 +234,7 @@ function WizardContent() {
                       <div
                         key={i}
                         className="card border border-border"
-                        style={{ boxShadow: "rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px" }}
+                        style={{ boxShadow: "var(--hc-shadow)" }}
                       >
                         <div className="flex items-start justify-between mb-3 gap-3">
                           <div className="min-w-0">
@@ -290,7 +290,7 @@ function WizardContent() {
                             詳しく確認する
                           </Link>
                           <Link
-                            href={`/auth/login?redirect=/my/applications/new?subsidy_id=${m.subsidy.id}`}
+                            href={`/auth/login?redirect=/my/wizard?subsidy_id=${m.subsidy.id}`}
                             className="flex-1 block text-center py-3 rounded-[6px] font-medium text-white transition hover:opacity-90"
                             style={{ background: "var(--hc-accent)" }}
                           >
@@ -330,7 +330,7 @@ export default function MatchPage() {
         AI診断について
       </p>
       <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--hc-text-muted)" }}>
-        3つの質問に答えるだけで、あなたの会社に最適な補助金をAIが自動判定します。
+        3つの質問に答えるだけで、あなたの会社の条件に合う補助金を自動で絞り込みます。
       </p>
       <hr style={{ borderColor: "var(--hc-border)", margin: "12px 0" }} />
       <p
@@ -369,11 +369,11 @@ export default function MatchPage() {
         📋 補助金一覧を見る
       </Link>
       <Link
-        href="/contractors"
+        href="/partners/multik"
         className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
         style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
       >
-        🔧 工事業者を探す
+        🛠 施工パートナー
       </Link>
       <Link
         href="/auth/login"
