@@ -10,27 +10,6 @@ import {
   ApiError,
 } from "@/lib/api";
 
-// --- モックデータ（API失敗時フォールバック） ---
-const MOCK_APP: ApplicationDetail = {
-  id: "1",
-  subsidy_id: "it-2026",
-  subsidy_name: "IT導入補助金 申請書",
-  company_name: "株式会社サンプル",
-  status: "draft",
-  created_at: "2026-04-01T00:00:00Z",
-  updated_at: "2026-04-12T00:00:00Z",
-  representative_name: "山田 太郎",
-  industry: "小売業",
-  employees: 12,
-  prefecture: "東京都",
-  phone: "03-1234-5678",
-  email: "yamada@sample.co.jp",
-  plan_text: "",
-  documents: [
-    { name: "履歴事項全部証明書.pdf", uploaded: true, url: "#" },
-    { name: "納税証明書.pdf", uploaded: true, url: "#" },
-  ],
-};
 
 // --- セクション定義 ---
 const SECTIONS = [
@@ -58,7 +37,7 @@ export default function ApplicationDetailPage({
         if (err instanceof ApiError && (err.status === 404 || err.status === 403)) {
           setError("申請が見つかりません");
         } else {
-          setApp({ ...MOCK_APP, id });
+          setError("申請データの取得に失敗しました");
         }
       })
       .finally(() => setLoading(false));
