@@ -43,10 +43,29 @@ export default function Step4Estimate({
     setError("");
     setGenerating(true);
     try {
+      const ipCount = products
+        .filter((p) => p.categoryId.startsWith("ip-camera"))
+        .reduce((s, p) => s + p.quantity, 0);
+      const analogCount = products
+        .filter((p) => p.categoryId.startsWith("analog-camera"))
+        .reduce((s, p) => s + p.quantity, 0);
+      const nvrCount = products
+        .filter((p) => p.categoryId.startsWith("nvr") || p.categoryId === "xvr")
+        .reduce((s, p) => s + p.quantity, 0);
+
       const res = await createEstimate({
         subsidy_id: subsidy.id,
-        items: products.map((p) => ({ product_id: p.productId, quantity: p.quantity })),
-        site_count: 1,
+        items: products.map((p) => ({
+          product_id: p.productId,
+          quantity: p.quantity,
+          product_name: p.name,
+        })),
+        ip_camera_count: ipCount,
+        analog_camera_count: analogCount,
+        nvr_count: nvrCount,
+        subsidy_rate: subsidy.rateMax,
+        subsidy_max: subsidy.maxAmount,
+        company_name: company.companyName,
       });
       const snap: EstimateSnapshot = {
         id: res.id,

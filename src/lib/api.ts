@@ -250,6 +250,7 @@ export interface ApplicationDetail extends Application {
 
 /** ユーザープロフィール詳細 */
 export interface UserProfileDetail extends UserProfile {
+  representative?: string;
   representative_name?: string;
   industry?: string;
   employees?: number;
@@ -712,8 +713,13 @@ export interface EstimateItem {
 
 export interface EstimateRequest {
   subsidy_id?: string;
-  items: Array<{ product_id: string; quantity: number }>;
-  site_count?: number;
+  items: Array<{ product_id: string; quantity: number; product_name?: string }>;
+  ip_camera_count?: number;
+  analog_camera_count?: number;
+  nvr_count?: number;
+  subsidy_rate?: number;
+  subsidy_max?: number;
+  company_name?: string;
 }
 
 export interface Estimate {
@@ -944,4 +950,87 @@ export async function requestDraftAssist(req: DraftAssistRequest): Promise<Draft
     throw new ApiError(res.status, data.detail || "AI機能でエラーが発生しました");
   }
   return res.json();
+}
+
+// --- ダッシュボード活動・通知・マッチング履歴（JR-DASHBOARD-LIVE-DATA） ---
+
+export interface ActivityItem {
+  id: string;
+  event_type: string;
+  description: string;
+  entity_id?: string;
+  created_at: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  notification_type: string;
+  title: string;
+  body: string;
+  is_read: boolean;
+  entity_id?: string;
+  created_at: string;
+}
+
+export interface MatchHistoryItem {
+  id: string;
+  industry: string;
+  employees: number;
+  prefecture: string;
+  purpose: string;
+  results: Array<{
+    subsidy_id?: string;
+    match_score?: string;
+    estimated_cost?: number;
+    estimated_after_subsidy?: number;
+    application_advice?: string;
+  }>;
+  match_count: number;
+  created_at: string;
+}
+
+export interface MatchHistoryListResponse {
+  total: number;
+  matches: MatchHistoryItem[];
+}
+
+export async function fetchActivities(limit?: number): Promise<{ activities: ActivityItem[] }> {
+  const query = new URLSearchParams();
+  if (limit) query.set("limit", String(limit));
+  return authFetch(`${API_URL}/api/dashboard/activities?${query}`);
+}
+
+export async function fetchNotifications(): Promise<{ notifications: NotificationItem[] }> {
+  return authFetch(`${API_URL}/api/dashboard/notifications`);
+}
+
+export async function markNotificationRead(id: string): Promise<{ message: string }> {
+  return authFetch(`${API_URL}/api/dashboard/notifications/${id}/read`, { method: "PUT" });
+}
+
+export async function fetchMatchHistory(params?: {
+  date_filter?: string;
+  page?: number;
+  per_page?: number;
+}): Promise<MatchHistoryListResponse> {
+  const query = new URLSearchParams();
+  if (params?.date_filter) query.set("date_filter", params.date_filter);
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.per_page) query.set("per_page", String(params.per_page));
+  return authFetch(`${API_URL}/api/my/matches?${query}`);
+}
+
+export async function saveMatchHistory(data: {
+  industry: string;
+  employees: number;
+  prefecture: string;
+  purpose: string;
+  results: unknown[];
+  match_count: number;
+}): Promise<{ id: string; message: string }> {
+  return authFetch(`${API_URL}/api/my/matches`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 }
