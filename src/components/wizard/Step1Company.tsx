@@ -22,6 +22,13 @@ const schema = z.object({
     .string()
     .optional()
     .refine((v) => !v || /^[0-9]+$/.test(v), "年商は半角数字で入力してください"),
+  websiteUrl: z
+    .string()
+    .refine(
+      (v) => v === "" || /^https?:\/\/.+/.test(v),
+      "URLは http:// または https:// から始めてください",
+    )
+    .optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -40,6 +47,8 @@ export default function Step1Company({ defaults, onNext }: Props) {
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: toForm(defaults),
+    mode: "onTouched",
+    reValidateMode: "onChange",
   });
 
   useEffect(() => {
@@ -55,6 +64,7 @@ export default function Step1Company({ defaults, onNext }: Props) {
       industry: values.industry,
       employees: Number(values.employees),
       annualRevenue: values.annualRevenue ? Number(values.annualRevenue) : undefined,
+      websiteUrl: values.websiteUrl || undefined,
     };
     onNext(info);
   }
@@ -139,6 +149,14 @@ export default function Step1Company({ defaults, onNext }: Props) {
             placeholder="例: 100000000"
           />
         </Field>
+        <Field label="自社ホームページ（任意）" error={errors.websiteUrl?.message}>
+          <input
+            {...register("websiteUrl")}
+            className="wizard-input"
+            placeholder="https://example.co.jp"
+            autoComplete="url"
+          />
+        </Field>
       </div>
 
       <div className="flex justify-end pt-2">
@@ -180,6 +198,7 @@ function toForm(d: Partial<CompanyInfo>): FormValues {
     industry: d.industry ?? "",
     employees: d.employees ? String(d.employees) : "",
     annualRevenue: d.annualRevenue ? String(d.annualRevenue) : "",
+    websiteUrl: d.websiteUrl ?? "",
   };
 }
 

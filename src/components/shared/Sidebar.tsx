@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getUser, logout } from "@/lib/auth";
+import { fetchProfileDetail } from "@/lib/api";
 
 export interface SidebarItem {
   href: string;
@@ -32,6 +34,15 @@ const ROLE_LABEL: Record<string, string> = {
 export default function Sidebar({ items }: SidebarProps) {
   const pathname = usePathname();
   const user = getUser();
+  const [dbCompanyName, setDbCompanyName] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchProfileDetail()
+      .then((p) => { if (p.company_name) setDbCompanyName(p.company_name); })
+      .catch(() => {});
+  }, []);
+
+  const displayName = dbCompanyName ?? user?.company_name ?? user?.email ?? "ユーザー";
 
   const isActive = (href: string) => {
     if (href === "/my") return pathname === href;
@@ -43,7 +54,7 @@ export default function Sidebar({ items }: SidebarProps) {
       {/* ユーザー情報 */}
       <div className="p-4 border-b border-border">
         <div className="font-medium text-sm text-text truncate">
-          {user?.company_name ?? user?.email ?? "ユーザー"}
+          {displayName}
         </div>
         <div className="text-xs text-text2 mt-0.5">
           {user?.role ? ROLE_LABEL[user.role] ?? user.role : ""}
