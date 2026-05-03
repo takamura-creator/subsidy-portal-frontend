@@ -1034,3 +1034,120 @@ export async function saveMatchHistory(data: {
     body: JSON.stringify(data),
   });
 }
+
+// ============================================================
+// Sprint 4 補助情報収集 API（JR-SUBSIDY-COLLECT-BACKEND）
+// T2/T3 が利用する固定API契約
+// ============================================================
+
+export interface RequiredInfoField {
+  key: string;
+  label: string;
+  type: "text" | "number" | "date" | "url" | string;
+  required: boolean;
+  source: string;
+}
+
+export interface RequiredDocument {
+  key: string;
+  label: string;
+  accept: string;
+  required: boolean;
+}
+
+export interface ExtractionResponse {
+  extracted_fields: Record<string, string | number | null>;
+  fallback: boolean;
+  errors?: string[];
+}
+
+export interface UploadedFileInfo {
+  file_id: string;
+  application_id: string;
+  document_key: string;
+  filename: string;
+  size: number;
+  mime_type: string;
+  uploaded_at: string;
+}
+
+export interface CollectedInfo {
+  extracted: Record<string, string | number | null>;
+  manual: Record<string, string | number | null>;
+  uploads: UploadedFileInfo[];
+}
+
+/** ホームページURLからClaude LLMで会社情報を抽出 */
+export async function extractFromHomepage(
+  url: string,
+  subsidyId: string,
+): Promise<ExtractionResponse> {
+  return authFetch(`${API_URL}/api/extractions/homepage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url, subsidy_id: subsidyId }),
+  });
+}
+
+/** 書類ファイルをアップロード */
+export async function uploadDocument(
+  applicationId: string,
+  file: File,
+  documentKey: string,
+): Promise<UploadedFileInfo> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("document_key", documentKey);
+  const res = await fetch(`${API_URL}/api/applications/${applicationId}/uploads`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+  if (!res.ok) {
+    const msg = await res.text().catch(() => "アップロードに失敗しました");
+    throw new ApiError(res.status, msg);
+  }
+  return res.json();
+}
+
+/** 抽出結果・手動入力・アップロード書類を統合取得 */
+export async function getCollectedInfo(applicationId: string): Promise<CollectedInfo> {
+  return authFetch(`${API_URL}/api/applications/${applicationId}/collected_info`);
+}
+
+/** 手動入力値を保存 */
+export async function updateCollectedInfoManual(
+  applicationId: string,
+  manual: Record<string, string | number | null>,
+): Promise<CollectedInfo> {
+  return authFetch(`${API_URL}/api/applications/${applicationId}/collected_info`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ manual }),
+  });
+}
+
+/** LLM抽出結果をサーバーに保存 */
+export async function saveExtractedInfo(
+  applicationId: string,
+  extractedFields: Record<string, string | number | null>,
+): Promise<{ extracted: Record<string, unknown>; manual: Record<string, unknown> }> {
+  return authFetch(`${API_URL}/api/applications/${applicationId}/collected_info/extracted`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ extracted_fields: extractedFields }),
+  });
+}
+
+/** 補助金マスタから required_info_fields / required_documents を取得 */
+export async function getSubsidySchema(subsidyId: string): Promise<{
+  required_info_fields: RequiredInfoField[];
+  required_documents: RequiredDocument[];
+}> {
+  const res = await apiFetch(`${API_URL}/api/subsidies/${subsidyId}`);
+  return {
+    required_info_fields: (res as Record<string, unknown>).required_info_fields as RequiredInfoField[] ?? [],
+    required_documents: (res as Record<string, unknown>).required_documents as RequiredDocument[] ?? [],
+  };
+}
