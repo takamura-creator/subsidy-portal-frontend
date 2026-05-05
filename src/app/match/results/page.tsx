@@ -1,12 +1,18 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
 import { isServicePrefecture } from "@/lib/constants";
+import { FadeIn, StaggerChildren, StaggerItem, ScaleIn } from "@/components/motion";
+import BonusChecklist from "@/components/strategy/BonusChecklist";
+import AdoptionRateCard from "@/components/strategy/AdoptionRateCard";
+import IndustryStrategy from "@/components/strategy/IndustryStrategy";
+import type { BonusItem, IndustryContext } from "@/lib/api";
+import { fetchBonusItems, fetchIndustryContext } from "@/lib/api";
 
 interface ResultItem {
   id: string;
@@ -52,6 +58,14 @@ function ResultsContent() {
   const employees = searchParams.get("employees") || "6〜20名";
   const prefecture = searchParams.get("prefecture") || "東京都";
   const purpose = searchParams.get("purpose") || "防犯・万引き対策";
+
+  const [bonusItems, setBonusItems] = useState<BonusItem[]>([]);
+  const [industryCtx, setIndustryCtx] = useState<IndustryContext | null>(null);
+
+  useEffect(() => {
+    fetchBonusItems().then((d) => setBonusItems(d.items)).catch(() => {});
+    fetchIndustryContext(industry).then(setIndustryCtx).catch(() => {});
+  }, [industry]);
 
   const conditions = [
     { label: "業種", value: industry },
@@ -224,114 +238,136 @@ function ResultsContent() {
       </div>
 
       {/* Result cards */}
-      {MOCK_RESULTS.map((item) => (
-        <div
-          key={item.id}
-          style={{
-            background: "var(--hc-white)",
-            border: "1px solid var(--hc-border)",
-            borderRadius: 10,
-            padding: 18,
-            marginBottom: 10,
-            display: "grid",
-            gridTemplateColumns: "60px 1fr auto",
-            gap: 14,
-            alignItems: "center",
-            transition: "all 0.15s",
-            cursor: "pointer",
-          }}
-        >
-          {/* Match score circle */}
-          <div
-            style={{
-              width: 52,
-              height: 52,
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "'Sora', sans-serif",
-              fontSize: 16,
-              fontWeight: 700,
-              ...SCORE_STYLES[item.scoreLevel],
-            }}
-          >
-            {item.percent}%
-          </div>
-
-          {/* Info */}
-          <div>
+      <StaggerChildren stagger={0.1}>
+        {MOCK_RESULTS.map((item) => (
+          <StaggerItem key={item.id}>
             <div
               style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: "var(--hc-navy)",
-                marginBottom: 4,
+                background: "var(--hc-white)",
+                border: "1px solid var(--hc-border)",
+                borderRadius: 10,
+                padding: 18,
+                marginBottom: 10,
+                display: "grid",
+                gridTemplateColumns: "60px 1fr auto",
+                gap: 14,
+                alignItems: "center",
+                transition: "all 0.15s",
+                cursor: "pointer",
               }}
             >
-              {item.name}
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                color: "var(--hc-text-muted)",
-                display: "flex",
-                gap: 12,
-                flexWrap: "wrap",
-              }}
-            >
-              <span>最大 {item.maxAmount}</span>
-              <span
-                style={
-                  item.isUrgent
-                    ? { color: "var(--hc-accent)", fontWeight: 600 }
-                    : undefined
-                }
-              >
-                締切 {item.deadline}
-              </span>
-              <span>{item.ministry}</span>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <Link
-              href={`/subsidies/${item.id}`}
-              className="btn-primary"
-              style={{
-                padding: "6px 12px",
-                borderRadius: 8,
-                fontSize: 11,
-                fontWeight: 600,
-                width: "auto",
-                border: "1px solid var(--hc-primary)",
-              }}
-            >
-              詳しく見る
-            </Link>
-            {item.hasApply && (
-              <button
-                type="button"
-                disabled
-                className="btn-secondary"
+              {/* Match score circle */}
+              <div
                 style={{
-                  padding: "6px 12px",
-                  borderRadius: 8,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  display: "block",
-                  opacity: 0.6,
-                  cursor: "not-allowed",
+                  width: 52,
+                  height: 52,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: 16,
+                  fontWeight: 700,
+                  ...SCORE_STYLES[item.scoreLevel],
                 }}
-                aria-label="申請書作成はウィザードから開始します"
               >
-                申請書作成
-              </button>
-            )}
+                {item.percent}%
+              </div>
+
+              {/* Info */}
+              <div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: "var(--hc-navy)",
+                    marginBottom: 4,
+                  }}
+                >
+                  {item.name}
+                </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "var(--hc-text-muted)",
+                    display: "flex",
+                    gap: 12,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span>最大 {item.maxAmount}</span>
+                  <span
+                    style={
+                      item.isUrgent
+                        ? { color: "var(--hc-accent)", fontWeight: 600 }
+                        : undefined
+                    }
+                  >
+                    締切 {item.deadline}
+                  </span>
+                  <span>{item.ministry}</span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <Link
+                  href={`/subsidies/${item.id}`}
+                  className="btn-primary"
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: 8,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    width: "auto",
+                    border: "1px solid var(--hc-primary)",
+                  }}
+                >
+                  詳しく見る
+                </Link>
+                {item.hasApply && (
+                  <button
+                    type="button"
+                    disabled
+                    className="btn-secondary"
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: 8,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      display: "block",
+                      opacity: 0.6,
+                      cursor: "not-allowed",
+                    }}
+                    aria-label="申請書作成はウィザードから開始します"
+                  >
+                    申請書作成
+                  </button>
+                )}
+              </div>
+            </div>
+          </StaggerItem>
+        ))}
+      </StaggerChildren>
+
+      {industryCtx && (
+        <FadeIn direction="up" delay={0.3} distance={12}>
+          <div style={{ marginTop: 24 }}>
+            <h2
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: "1rem",
+                fontWeight: 700,
+                color: "var(--hc-navy)",
+                marginBottom: 12,
+              }}
+            >
+              {industry}の採択戦略
+            </h2>
+            <IndustryStrategy context={industryCtx} />
           </div>
-        </div>
-      ))}
+        </FadeIn>
+      )}
     </div>
   );
 
@@ -407,29 +443,49 @@ function ResultsContent() {
       </Link>
 
       {/* Celebration box */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          padding: 12,
-          background: "var(--hc-primary-subtle)",
-          borderRadius: 10,
-          border: "1px solid var(--hc-primary-edge)",
-          marginTop: 12,
-        }}
-      >
-        <Image
-          src="/turtle_celebration.png"
-          alt="お祝いマスコット"
-          width={36}
-          height={36}
-          style={{ opacity: 0.6 }}
-        />
-        <p style={{ fontSize: 11, color: "var(--hc-text-muted)", lineHeight: 1.4, margin: 0 }}>
-          {MOCK_RESULTS.length}件の補助金がマッチしました。「詳しく見る」で要件を確認しましょう。
-        </p>
-      </div>
+      <ScaleIn delay={0.5}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: 12,
+            background: "var(--hc-primary-subtle)",
+            borderRadius: 10,
+            border: "1px solid var(--hc-primary-edge)",
+            marginTop: 12,
+          }}
+        >
+          <Image
+            src="/turtle_celebration.png"
+            alt="お祝いマスコット"
+            width={36}
+            height={36}
+            style={{ opacity: 0.6 }}
+          />
+          <p style={{ fontSize: 11, color: "var(--hc-text-muted)", lineHeight: 1.4, margin: 0 }}>
+            {MOCK_RESULTS.length}件の補助金がマッチしました。「詳しく見る」で要件を確認しましょう。
+          </p>
+        </div>
+      </ScaleIn>
+
+      {/* Adoption rate card */}
+      <FadeIn direction="up" delay={0.6} distance={8}>
+        <div style={{ marginTop: 16 }}>
+          <span className="section-title">採択率を上げるには</span>
+          <AdoptionRateCard />
+        </div>
+      </FadeIn>
+
+      {/* Bonus items checklist */}
+      {bonusItems.length > 0 && (
+        <FadeIn direction="up" delay={0.8} distance={8}>
+          <div style={{ marginTop: 16 }}>
+            <span className="section-title">加点項目ガイド</span>
+            <BonusChecklist items={bonusItems} />
+          </div>
+        </FadeIn>
+      )}
     </div>
   );
 

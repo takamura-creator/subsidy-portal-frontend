@@ -159,6 +159,7 @@ export async function matchSubsidies(
 // --- 認証付きAPI（マイページ用） ---
 
 export interface ApplicationSummary {
+  draft: number;
   submitted: number;
   approved: number;
   deadline_soon: number;
@@ -169,6 +170,7 @@ export interface Application {
   subsidy_id: string;
   subsidy_name?: string;
   company_name: string;
+  estimated_cost?: number;
   status: "draft" | "submitted" | "approved" | "rejected";
   created_at: string;
   updated_at: string;
@@ -189,7 +191,13 @@ export interface UserProfile {
 }
 
 export async function fetchMyDashboard(): Promise<ApplicationListResponse> {
-  return authFetch(`${API_URL}/api/applications?summary=true`);
+  const [list, summary] = await Promise.all([
+    authFetch(`${API_URL}/api/applications?per_page=5&sort=-updated_at`) as Promise<ApplicationListResponse>,
+    (authFetch(`${API_URL}/api/applications/summary`) as Promise<ApplicationSummary>).catch(
+      (): ApplicationSummary => ({ draft: 0, submitted: 0, approved: 0, deadline_soon: 0 }),
+    ),
+  ]);
+  return { ...list, summary };
 }
 
 export async function fetchMyApplications(params?: {
@@ -1150,4 +1158,313 @@ export async function getSubsidySchema(subsidyId: string): Promise<{
     required_info_fields: (res as Record<string, unknown>).required_info_fields as RequiredInfoField[] ?? [],
     required_documents: (res as Record<string, unknown>).required_documents as RequiredDocument[] ?? [],
   };
+}
+
+// --- Sprint 5: 公式様式自動差込（神奈川DX専用） ---
+
+export type SprintFiveTaxStatus = "taxable" | "exempt" | "simplified";
+
+export interface FilledCostItem {
+  cost_category: string;
+  item_name: string;
+  unit_price: number;
+  quantity: number;
+  is_tax_included: boolean;
+  is_cloud_service?: boolean;
+  contract_months?: number;
+  eligible_months?: number;
+}
+
+export interface FilledCompanyInfo {
+  company_name: string;
+  company_name_kana?: string;
+  address?: string;
+  representative_title?: string;
+  representative_name?: string;
+  representative_name_kana?: string;
+  contact_name?: string;
+  contact_phone?: string;
+}
+
+export interface FilledProjectInfo {
+  application_date?: string;
+  project_title?: string;
+  schedule_start?: string;
+  schedule_end?: string;
+  current_challenges?: string;
+  tool_name?: string;
+  vendor_name?: string;
+  vendor_address?: string;
+  expected_effect_quantitative?: string;
+  expected_effect_qualitative?: string;
+  kpi_productivity?: number;
+  security_measures?: string;
+  data_utilization?: string;
+  support_organization?: string;
+  support_contents?: string;
+  county_external_reason?: string;
+}
+
+export interface GenerateFilledRequest {
+  subsidy_id: "kanagawa-dx-2026";
+  application_id?: string;
+  tax_status: SprintFiveTaxStatus;
+  rate: number;
+  company: FilledCompanyInfo;
+  project?: FilledProjectInfo;
+  cost_items: FilledCostItem[];
+}
+
+export interface GeneratedFile {
+  template_id: string;
+  filename: string;
+  download_url: string;
+  unfilled_fields: string[];
+}
+
+export interface GenerateFilledWarning {
+  code: string;
+  message: string;
+  field?: string;
+}
+
+export interface SubsidyCalculation {
+  total_cost_excl_tax: number;
+  eligible_amount: number;
+  subsidy_amount: number;
+  self_funding: number;
+  rate_applied: number;
+}
+
+export interface GenerateFilledResponse {
+  generated_files: GeneratedFile[];
+  warnings: GenerateFilledWarning[];
+  subsidy_calculation: SubsidyCalculation;
+}
+
+export async function generateFilledDocuments(
+  req: GenerateFilledRequest,
+): Promise<GenerateFilledResponse> {
+  const res = await fetch(`${API_URL}/api/documents/generate-filled`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+    signal: AbortSignal.timeout(60000),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, data.detail || "公式様式の差込生成に失敗しました");
+  }
+  return res.json();
+}
+
+export async function downloadFilledDocument(downloadUrl: string): Promise<Blob> {
+  const res = await fetch(`${API_URL}${downloadUrl}`, {
+    method: "GET",
+    signal: AbortSignal.timeout(30000),
+  });
+  if (!res.ok) {
+    throw new ApiError(res.status, "差込済み書類のダウンロードに失敗しました");
+  }
+  return res.blob();
+}
+
+// --- M-3: 認証付きファイルダウンロード（JR-FILEUPLOAD-HARDEN） ---
+
+/**
+ * アップロード済み書類を認証付きエンドポイント経由でダウンロードする。
+ * ファイルパスを直接参照せず、バックエンドで所有権確認・復号を行う。
+ */
+export async function downloadUploadedFile(
+  applicationId: string,
+  fileId: string
+): Promise<Blob> {
+  const token = localStorage.getItem("access_token");
+  const res = await fetch(
+    `${API_URL}/api/applications/${applicationId}/uploads/${fileId}`,
+    {
+      headers: { Authorization: `Bearer ${token ?? ""}` },
+      signal: AbortSignal.timeout(30000),
+    }
+  );
+  if (!res.ok) {
+    throw new ApiError(res.status, "ファイルのダウンロードに失敗しました");
+  }
+  return res.blob();
+}
+
+// --- Sprint 6: 事業計画書AIドラフト生成 ---
+
+export interface DraftChapter {
+  chapter_id: string;
+  title: string;
+  content: string;
+  version_num: number;
+  generated_by: string;
+  has_ng_word: boolean;
+  requires_info: boolean;
+}
+
+export interface AIDraftResponse {
+  draft_id: string;
+  application_id: string;
+  subsidy_id: string;
+  status: string;
+  chapters: DraftChapter[];
+  created_at: string;
+}
+
+export interface AIDraftRequest {
+  subsidy_id: string;
+  subsidy_name: string;
+  company_name: string;
+  industry: string;
+  company_info?: Record<string, string>;
+  collected_answers?: Record<string, string>;
+  drill_down_answers?: Array<{ question: string; answer: string }>;
+}
+
+export async function generateAIDraft(
+  appId: string,
+  req: AIDraftRequest,
+): Promise<AIDraftResponse> {
+  return authFetch(`${API_URL}/api/v1/applications/${appId}/draft/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+}
+
+export interface ScoreBreakdownItem {
+  criterion: string;
+  score: number;
+  max: number;
+  feedback: string;
+}
+
+export interface ScoreResponse {
+  score_breakdown: ScoreBreakdownItem[];
+  feedback: string[];
+  confidence_level: string;
+}
+
+export async function scoreApplication(
+  appId: string,
+  subsidyId: string,
+  fieldValues?: Record<string, string>,
+): Promise<ScoreResponse> {
+  return authFetch(`${API_URL}/api/applications/${appId}/score`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      subsidy_id: subsidyId,
+      field_values: fieldValues ?? {},
+    }),
+  });
+}
+
+// --- Sprint 7: 書類収集ガイド ---
+
+export interface DocGuideItem {
+  doc_id: string;
+  name: string;
+  issuing_office: string;
+  cost_yen: number;
+  estimated_days: number;
+  validity_months: number | null;
+  online_available: boolean;
+  online_url: string | null;
+  applicable_entities: string[];
+  exclude_for_npo: boolean;
+  office_info?: PrefectureOfficeInfo;
+}
+
+export interface PrefectureOfficeInfo {
+  nearest_office: string;
+  address: string;
+  phone: string;
+  business_hours: string;
+  notes: string;
+}
+
+export interface ChecklistItem {
+  doc_id: string;
+  acquired: boolean;
+}
+
+export interface DeadlineCalcResponse {
+  application_date: string;
+  lead_days: number;
+  latest_obtain_date: string;
+}
+
+export async function fetchDocumentGuide(entityType: string): Promise<DocGuideItem[]> {
+  const query = new URLSearchParams({ entity_type: entityType });
+  return apiFetch(`${API_URL}/api/docs-guide/documents?${query}`);
+}
+
+export async function fetchPrefectureGuide(
+  prefecture: string,
+  issuingOffice: string,
+): Promise<PrefectureOfficeInfo & { prefecture: string; issuing_office: string }> {
+  return apiFetch(
+    `${API_URL}/api/docs-guide/prefecture/${encodeURIComponent(prefecture)}/${encodeURIComponent(issuingOffice)}`,
+  );
+}
+
+export async function fetchChecklist(appId: string): Promise<ChecklistItem[]> {
+  return authFetch(`${API_URL}/api/applications/${appId}/checklist`);
+}
+
+export async function updateChecklist(
+  appId: string,
+  docId: string,
+  acquired: boolean,
+): Promise<{ success: boolean; doc_id: string; acquired: boolean }> {
+  return authFetch(`${API_URL}/api/applications/${appId}/checklist`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ doc_id: docId, acquired }),
+  });
+}
+
+// --- Phase 3: 戦略情報 ---
+
+export interface BonusItem {
+  id: string;
+  name: string;
+  description: string;
+  acquisition_days: number;
+  difficulty: string;
+  strategic_value: string;
+  applicable_subsidies: string[];
+  how_to_acquire: string;
+  priority: string;
+  warnings: string[];
+}
+
+export interface RedFlag {
+  id: string;
+  pattern: string;
+  severity: string;
+  detail: string;
+  advice: string;
+}
+
+export interface IndustryContext {
+  name: string;
+  bottleneck: string;
+  solution: string;
+  ripple_effect: string;
+  loss_formula: { formula: string; example: string };
+  kpi_targets: Array<{ category: string; name: string; target: string; value_scenario: string }>;
+  before_after: Array<{ metric: string; before: string; after: string; improvement: string }>;
+}
+
+export async function fetchBonusItems(): Promise<{ items: BonusItem[] }> {
+  return apiFetch(`${API_URL}/api/v1/strategy/bonus-items`);
+}
+
+export async function fetchIndustryContext(industry: string): Promise<IndustryContext> {
+  return apiFetch(`${API_URL}/api/v1/strategy/industry/${encodeURIComponent(industry)}`);
 }
