@@ -4,25 +4,43 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { INDUSTRIES, PREFECTURES } from "@/lib/constants";
+import { INDUSTRIES, PREFECTURES, WEBSITE_EXEMPT_INDUSTRIES } from "@/lib/constants";
 import type { CompanyInfo } from "./types";
 
-const schema = z.object({
-  companyName: z.string().min(1, "会社名を入力してください").max(120),
-  representativeName: z.string().min(1, "代表者名を入力してください").max(60),
-  address: z.string().min(1, "住所を入力してください").max(200),
-  prefecture: z.string().min(1, "都道府県を選択してください"),
-  industry: z.string().min(1, "業種を選択してください"),
-  employees: z
-    .string()
-    .min(1, "従業員数を入力してください")
-    .regex(/^[0-9]+$/, "従業員数は半角数字で入力してください")
-    .refine((v) => Number(v) >= 1 && Number(v) <= 100000, "1〜100000の範囲で入力してください"),
-  annualRevenue: z
-    .string()
-    .optional()
-    .refine((v) => !v || /^[0-9]+$/.test(v), "年商は半角数字で入力してください"),
-});
+const schema = z
+  .object({
+    companyName: z.string().min(1, "会社名を入力してください").max(120),
+    representativeName: z.string().min(1, "代表者名を入力してください").max(60),
+    address: z.string().min(1, "住所を入力してください").max(200),
+    prefecture: z.string().min(1, "都道府県を選択してください"),
+    industry: z.string().min(1, "業種を選択してください"),
+    employees: z
+      .string()
+      .min(1, "従業員数を入力してください")
+      .regex(/^[0-9]+$/, "従業員数は半角数字で入力してください")
+      .refine((v) => Number(v) >= 1 && Number(v) <= 100000, "1〜100000の範囲で入力してください"),
+    annualRevenue: z
+      .string()
+      .optional()
+      .refine((v) => !v || /^[0-9]+$/.test(v), "年商は半角数字で入力してください"),
+    websiteUrl: z
+      .string()
+      .optional()
+      .refine(
+        (v) => !v || /^https?:\/\/.+/.test(v),
+        "URLは http:// または https:// から始めてください",
+      ),
+  })
+  .superRefine((data, ctx) => {
+    const isJichikai = (WEBSITE_EXEMPT_INDUSTRIES as readonly string[]).includes(data.industry);
+    if (!isJichikai && !data.websiteUrl?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "ホームページURLを入力してください（自治会・町会を除く）",
+        path: ["websiteUrl"],
+      });
+    }
+  });
 
 type FormValues = z.infer<typeof schema>;
 
@@ -36,11 +54,17 @@ export default function Step1Company({ defaults, onNext }: Props) {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: toForm(defaults),
+    mode: "onTouched",
+    reValidateMode: "onChange",
   });
+
+  const industry = watch("industry");
+  const isJichikai = (WEBSITE_EXEMPT_INDUSTRIES as readonly string[]).includes(industry ?? "");
 
   useEffect(() => {
     reset(toForm(defaults));
@@ -55,6 +79,7 @@ export default function Step1Company({ defaults, onNext }: Props) {
       industry: values.industry,
       employees: Number(values.employees),
       annualRevenue: values.annualRevenue ? Number(values.annualRevenue) : undefined,
+      websiteUrl: values.websiteUrl || undefined,
     };
     onNext(info);
   }
@@ -139,6 +164,18 @@ export default function Step1Company({ defaults, onNext }: Props) {
             placeholder="例: 100000000"
           />
         </Field>
+        <Field
+          label={isJichikai ? "自社ホームページ（任意）" : "自社ホームページ"}
+          error={errors.websiteUrl?.message}
+          required={!isJichikai}
+        >
+          <input
+            {...register("websiteUrl")}
+            className="wizard-input"
+            placeholder="https://example.co.jp"
+            autoComplete="url"
+          />
+        </Field>
       </div>
 
       <div className="flex justify-end pt-2">
@@ -180,6 +217,7 @@ function toForm(d: Partial<CompanyInfo>): FormValues {
     industry: d.industry ?? "",
     employees: d.employees ? String(d.employees) : "",
     annualRevenue: d.annualRevenue ? String(d.annualRevenue) : "",
+    websiteUrl: d.websiteUrl ?? "",
   };
 }
 

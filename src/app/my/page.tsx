@@ -3,47 +3,29 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
-import MySidebar from "@/components/my/MySidebar";
+import { getUser } from "@/lib/auth";
 import {
   fetchMyDashboard,
   type Application,
   type ApplicationSummary,
 } from "@/lib/api";
 
-// --- モックデータ ---
-const MOCK_ALERTS = [
-  { id: "it-2026", name: "IT導入補助金", deadline: "2026/4/30", daysLeft: 14 },
-];
-const MOCK_ACTIVITIES = [
-  { dot: "primary", body: <><strong>IT導入補助金 申請書</strong>の事業計画セクションを下書き保存しました</>, time: "2時間前" },
-  { dot: "accent", body: <>新しい補助金 <strong>愛知県 防犯カメラ設置費補助</strong> が追加されました</>, time: "昨日" },
-  { dot: "primary", body: <><strong>ものづくり補助金</strong>の締切が近づいています（あと63日）</>, time: "4/11" },
-  { dot: "primary", body: <>工事業者 A社から<strong>見積もり回答</strong>がありました</>, time: "4/10" },
-  { dot: "success", body: <><strong>東京都 防犯設備設置費助成</strong>が承認されました</>, time: "3/15" },
-];
-const MOCK_NOTIFS = [
-  { title: "見積もり回答", body: "がA社から届きました", date: "4/10" },
-  { title: "IT導入補助金", body: "の締切まであと14日", date: "本日" },
-];
-const DOT_COLORS: Record<string, string> = {
-  primary: "var(--hc-primary)",
-  accent: "var(--hc-accent)",
-  success: "var(--hc-success)",
-};
-
 export default function MyDashboardPage() {
   const [summary, setSummary] = useState<ApplicationSummary | null>(null);
   const [recentApps, setRecentApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const user = getUser();
+  const companyName = user?.company_name ?? user?.email ?? "ゲスト";
+
   useEffect(() => {
     fetchMyDashboard()
       .then((res) => {
-        setSummary(res.summary ?? { submitted: 1, approved: 1, deadline_soon: 2 });
+        setSummary(res.summary ?? { submitted: 0, approved: 0, deadline_soon: 0 });
         setRecentApps(res.applications.slice(0, 5));
       })
       .catch(() => {
-        setSummary({ submitted: 1, approved: 1, deadline_soon: 2 });
+        setSummary({ submitted: 0, approved: 0, deadline_soon: 0 });
         setRecentApps([]);
       })
       .finally(() => setLoading(false));
@@ -52,8 +34,6 @@ export default function MyDashboardPage() {
   // --- 左パネル ---
   const leftPanel = (
     <div>
-      <MySidebar active="/my" counts={{ applications: 2, matches: 3 }} />
-      <div className="divider" />
       <span className="section-title">おすすめ補助金</span>
       <div
         style={{
@@ -80,7 +60,7 @@ export default function MyDashboardPage() {
             fontWeight: 600,
           }}
         >
-          あと14日
+          公募中
         </span>
       </div>
     </div>
@@ -174,41 +154,20 @@ export default function MyDashboardPage() {
       <div className="divider" />
 
       <span className="section-title">通知</span>
-      <div style={{ marginTop: 12 }}>
-        {MOCK_NOTIFS.map((n, i) => (
-          <div
-            key={i}
-            style={{
-              padding: "8px 0",
-              borderBottom: i < MOCK_NOTIFS.length - 1 ? "1px solid var(--hc-border)" : "none",
-              fontSize: 11,
-              color: "var(--hc-text-muted)",
-              lineHeight: 1.4,
-            }}
-          >
-            <strong style={{ color: "var(--hc-text)", fontWeight: 500 }}>{n.title}</strong>
-            {n.body}
-            <div style={{ fontSize: 10, color: "var(--hc-text-muted)", marginTop: 2 }}>{n.date}</div>
-          </div>
-        ))}
-      </div>
-
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          padding: 10,
-          background: "var(--hc-success-subtle)",
-          borderRadius: 6,
-          border: "1px solid var(--hc-success-edge)",
           marginTop: 12,
+          padding: "20px 12px",
+          textAlign: "center",
+          color: "var(--hc-text-muted)",
+          fontSize: 11,
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 8,
         }}
       >
-        <span style={{ fontSize: 20 }}>🐢</span>
-        <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: 0 }}>
-          東京都の助成が承認されました！
-        </p>
+        <div style={{ fontSize: 20, marginBottom: 6 }}>🔔</div>
+        まだ通知はありません
       </div>
     </div>
   );
@@ -226,7 +185,7 @@ export default function MyDashboardPage() {
           marginBottom: 16,
         }}
       >
-        ようこそ、株式会社サンプルさん
+        ようこそ、{companyName}さん
       </h1>
 
       {/* サマリーカード x3 */}
@@ -262,79 +221,44 @@ export default function MyDashboardPage() {
         )}
       </div>
 
-      {/* 締切アラート */}
-      {MOCK_ALERTS.map((alert) => (
-        <div
-          key={alert.id}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            background: "var(--hc-accent-light)",
-            border: "1px solid var(--hc-accent-line)",
-            borderRadius: 8,
-            padding: "12px 14px",
-            marginBottom: 16,
-            fontSize: 13,
-            color: "var(--hc-accent)",
-          }}
-        >
-          ⚠
-          <div>
-            <strong style={{ color: "var(--hc-navy)" }}>{alert.name}</strong>
-            の締切が近づいています（あと{alert.daysLeft}日 — {alert.deadline}）
-          </div>
-        </div>
-      ))}
-
       {/* 最近の活動 */}
       <span className="section-title">最近の活動</span>
-      <div
-        style={{
-          background: "var(--hc-white)",
-          border: "1px solid var(--hc-border)",
-          borderRadius: 8,
-          overflow: "hidden",
-        }}
-      >
-        {MOCK_ACTIVITIES.map((act, i) => (
-          <div
-            key={i}
-            style={{
-              padding: "10px 14px",
-              borderBottom: i < MOCK_ACTIVITIES.length - 1 ? "1px solid var(--hc-border)" : "none",
-              display: "flex",
-              gap: 8,
-              alignItems: "flex-start",
-              fontSize: 12,
-              color: "var(--hc-text-muted)",
-              lineHeight: 1.4,
-            }}
-          >
-            <span
+      {recentApps.length === 0 ? (
+        <div
+          style={{
+            background: "var(--hc-white)",
+            border: "1px solid var(--hc-border)",
+            borderRadius: 8,
+            padding: "32px 20px",
+            textAlign: "center",
+            color: "var(--hc-text-muted)",
+            fontSize: 13,
+          }}
+        >
+          <div style={{ fontSize: 32, marginBottom: 10 }}>📋</div>
+          まだ活動はありません
+          <div style={{ marginTop: 12 }}>
+            <Link
+              href="/my/wizard"
               style={{
                 display: "inline-block",
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: DOT_COLORS[act.dot],
-                flexShrink: 0,
-                marginTop: 5,
+                padding: "8px 16px",
+                background: "var(--hc-primary)",
+                color: "#fff",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                textDecoration: "none",
               }}
-            />
-            <div style={{ flex: 1 }}>{act.body}</div>
-            <span style={{ fontSize: 10, whiteSpace: "nowrap", marginLeft: "auto", flexShrink: 0 }}>
-              {act.time}
-            </span>
+            >
+              最初の申請を始める
+            </Link>
           </div>
-        ))}
-      </div>
-
-      {/* 最近の申請（APIから取得した場合のみ） */}
-      {recentApps.length > 0 && (
+        </div>
+      ) : (
         <>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 20, marginBottom: 8 }}>
-            <span className="section-title" style={{ marginBottom: 0 }}>最近の申請</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <span />
             <Link href="/my/applications" style={{ fontSize: 12, color: "var(--hc-primary)", textDecoration: "none" }}>
               すべて見る →
             </Link>

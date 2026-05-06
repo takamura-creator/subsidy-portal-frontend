@@ -7,8 +7,11 @@ export const INDUSTRIES = [
   "宿泊業",
   "サービス業",
   "運輸業",
+  "自治会・町会",
   "その他",
 ] as const;
+
+export const WEBSITE_EXEMPT_INDUSTRIES: readonly string[] = ["自治会・町会"];
 
 export const EMPLOYEE_RANGES = [
   { label: "1〜5名", value: 3 },

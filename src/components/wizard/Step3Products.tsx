@@ -132,7 +132,7 @@ export default function Step3Products({ selected, onBack, onNext }: Props) {
               <p className="text-[11px] text-text-muted mb-3 leading-relaxed">
                 ※ 下記の参考合計は製品価格＋工事費＋ネットワーク構築費の概算です。補助金適用前の値となります。
               </p>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="relative z-[1] grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {packages.map((pkg) => {
                   const breakdown = calcPackageBreakdown(pkg, installCosts);
                   return (

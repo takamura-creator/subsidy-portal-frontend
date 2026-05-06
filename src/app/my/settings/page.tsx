@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
-import MySidebar from "@/components/my/MySidebar";
 import {
   fetchProfileDetail,
   updateProfile,
@@ -104,11 +103,11 @@ export default function SettingsPage() {
         setPrefecture(p.prefecture || "");
       })
       .catch(() => {
-        setCompanyName("株式会社サンプル");
-        setRepresentative("山田 太郎");
-        setEmail("yamada@sample.co.jp");
-        setPhone("03-1234-5678");
-        setPrefecture("東京都");
+        setCompanyName("");
+        setRepresentative("");
+        setEmail("");
+        setPhone("");
+        setPrefecture("");
       })
       .finally(() => setLoading(false));
   }, []);
@@ -169,8 +168,6 @@ export default function SettingsPage() {
   // --- 左パネル ---
   const leftPanel = (
     <div>
-      <MySidebar active="/my/settings" />
-      <div className="divider" />
       <span className="section-title">設定メニュー</span>
       {SETTING_MENUS.map((m) => (
         <button
