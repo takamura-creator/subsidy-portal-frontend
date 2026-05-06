@@ -1,10 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
-import { matchSubsidies, MatchResponse } from "@/lib/api";
+import { matchSubsidies, fetchBonusItems, fetchIndustryContext, MatchResponse, BonusItem, IndustryContext } from "@/lib/api";
 import { INDUSTRIES, EMPLOYEE_RANGES, PREFECTURES, PURPOSES } from "@/lib/constants";
+import BonusChecklist from "@/components/strategy/BonusChecklist";
+import AdoptionRateCard from "@/components/strategy/AdoptionRateCard";
+import IndustryStrategy from "@/components/strategy/IndustryStrategy";
+
+// ── 自治会・町会フロー専用定数（AI診断 landing のみ。本登録ウィザードには波及しない） ──
+const JICHIKAI = "自治会・町会" as const;
+
+const JICHIKAI_EMPLOYEE_RANGES = [
+  { label: "〜100世帯",      value: 50   },
+  { label: "101〜500世帯",   value: 300  },
+  { label: "501〜1,000世帯", value: 750  },
+  { label: "1,001世帯以上",  value: 1500 },
+] as const;
+
+const JICHIKAI_PURPOSES = [
+  "地域防犯",
+  "通学路の見守り",
+  "公園・集会所の不審者対策",
+  "ゴミ不法投棄対策",
+  "災害時の状況確認",
+] as const;
 
 const STEP_LABELS = ["基本情報", "導入目的", "AI診断"];
 
@@ -51,6 +72,28 @@ function WizardContent() {
   const [result, setResult] = useState<MatchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [bonusItems, setBonusItems] = useState<BonusItem[]>([]);
+  const [industryCtx, setIndustryCtx] = useState<IndustryContext | null>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    fetchBonusItems().then((d) => setBonusItems(d.items)).catch(() => {});
+    fetchIndustryContext(industry).then(setIndustryCtx).catch(() => {});
+  }, [result, industry]);
+
+  // 自治会フロー判定
+  const isJichikai = industry === JICHIKAI;
+
+  // 業種切替ハンドラ: 自治会⇔営利企業を跨ぐ場合、不整合データをリセット
+  function handleIndustryChange(newIndustry: string) {
+    const wasJichikai = industry === JICHIKAI;
+    const willBeJichikai = newIndustry === JICHIKAI;
+    if (wasJichikai !== willBeJichikai) {
+      setEmployees(null);
+      setPurpose("");
+    }
+    setIndustry(newIndustry);
+  }
 
   async function handleDiagnose() {
     if (!industry || employees === null || !prefecture || !purpose) return;
@@ -101,16 +144,18 @@ function WizardContent() {
                 <select
                   className="w-full border-[1.5px] border-border rounded-[10px] px-4 py-3 bg-bg-card text-[16px] focus:outline-none focus:border-primary transition"
                   value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
+                  onChange={(e) => handleIndustryChange(e.target.value)}
                 >
                   <option value="">選択してください</option>
                   {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
                 </select>
               </div>
               <div className="mb-5">
-                <label className="block text-sm font-medium mb-2 text-text">会社の規模を選んでください</label>
+                <label className="block text-sm font-medium mb-2 text-text">
+                  {isJichikai ? "世帯数を選んでください" : "会社の規模を選んでください"}
+                </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {EMPLOYEE_RANGES.map((r) => (
+                  {(isJichikai ? JICHIKAI_EMPLOYEE_RANGES : EMPLOYEE_RANGES).map((r) => (
                     <label
                       key={r.value}
                       className={`flex items-center gap-2 border-[1.5px] rounded-[10px] px-4 py-3 cursor-pointer transition ${
@@ -156,9 +201,11 @@ function WizardContent() {
           {/* Step 2: 導入目的 */}
           {step === 2 && (
             <div className="card border border-border">
-              <h2 className="text-lg font-medium mb-6">カメラの使い方を選んでください</h2>
+              <h2 className="text-lg font-medium mb-6">
+                {isJichikai ? "設置目的を選んでください" : "カメラの使い方を選んでください"}
+              </h2>
               <div className="flex flex-col gap-3 mb-6">
-                {PURPOSES.map((p) => (
+                {(isJichikai ? JICHIKAI_PURPOSES : PURPOSES).map((p) => (
                   <label
                     key={p}
                     className={`flex items-center gap-3 border-[1.5px] rounded-[10px] px-4 py-4 cursor-pointer transition ${
@@ -304,6 +351,23 @@ function WizardContent() {
                   {result.overall_recommendation && (
                     <div className="card bg-secondary text-white text-center">
                       <p className="font-medium">{result.overall_recommendation}</p>
+                    </div>
+                  )}
+
+                  {/* ── Groot研究知見: 採択率・加点項目・業種別戦略 ── */}
+                  <div style={{ marginTop: 8 }}>
+                    <AdoptionRateCard />
+                  </div>
+
+                  {bonusItems.length > 0 && (
+                    <div style={{ marginTop: 8 }}>
+                      <BonusChecklist items={bonusItems} />
+                    </div>
+                  )}
+
+                  {industryCtx && (
+                    <div style={{ marginTop: 8 }}>
+                      <IndustryStrategy context={industryCtx} />
                     </div>
                   )}
 
