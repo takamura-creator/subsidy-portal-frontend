@@ -7,14 +7,13 @@ import { X } from "lucide-react";
 
 const ROLES = [
   { value: "owner" as const, label: "企業（owner）" },
-  { value: "contractor" as const, label: "業者（contractor）" },
   { value: "admin" as const, label: "管理者（admin）" },
 ];
 
 interface UserRoleChangeDialogProps {
   userId: string;
   email: string;
-  currentRole: "owner" | "contractor" | "admin";
+  currentRole: "owner" | "admin";
   onClose: () => void;
   onChanged: () => void;
 }

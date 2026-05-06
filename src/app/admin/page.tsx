@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, FileText, HardHat, Link2, Activity } from "lucide-react";
+import { Users, FileText, Link2, Activity } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import StatsCard from "@/components/shared/StatsCard";
 import SkeletonCard from "@/components/shared/SkeletonCard";
@@ -37,7 +37,6 @@ export default function AdminDashboardPage() {
             <SkeletonCard variant="stats" />
             <SkeletonCard variant="stats" />
             <SkeletonCard variant="stats" />
-            <SkeletonCard variant="stats" />
           </>
         ) : error ? (
           <div className="sm:col-span-2 lg:col-span-4 rounded-[10px] border border-error/30 bg-error/5 px-4 py-3 text-sm text-error">
@@ -47,7 +46,6 @@ export default function AdminDashboardPage() {
           <>
             <StatsCard label="総ユーザー数" value={data.total_users} icon={Users} href="/admin/users" />
             <StatsCard label="総申請数" value={data.total_applications} icon={FileText} href="/admin/applications" />
-            <StatsCard label="承認待ち業者" value={data.pending_contractors} icon={HardHat} href="/admin/contractors?status=pending" />
             <StatsCard label="総マッチング数" value={data.total_matches} icon={Link2} />
           </>
         )}

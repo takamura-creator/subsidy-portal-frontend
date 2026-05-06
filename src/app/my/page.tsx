@@ -91,7 +91,7 @@ export default function MyDashboardPage() {
     <div>
       <span className="section-title">クイックアクション</span>
       <Link
-        href="/my/applications/new"
+        href="/my/wizard"
         style={{
           display: "block",
           width: "100%",
@@ -131,7 +131,27 @@ export default function MyDashboardPage() {
         ⚡ AI診断を受ける
       </Link>
       <Link
-        href="/contractors"
+        href="/my/wizard"
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "10px 12px",
+          marginBottom: 6,
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 500,
+          textAlign: "left",
+          background: "var(--hc-white)",
+          color: "var(--hc-text)",
+          border: "1px solid var(--hc-border)",
+          textDecoration: "none",
+          transition: "all 0.15s",
+        }}
+      >
+        📋 見積もり・書類ウィザード
+      </Link>
+      <Link
+        href="/partners/multik"
         style={{
           display: "block",
           width: "100%",
@@ -179,9 +199,9 @@ export default function MyDashboardPage() {
           alignItems: "center",
           gap: 8,
           padding: 10,
-          background: "rgba(22,163,74,0.04)",
+          background: "var(--hc-success-subtle)",
           borderRadius: 6,
-          border: "1px solid rgba(22,163,74,0.08)",
+          border: "1px solid var(--hc-success-edge)",
           marginTop: 12,
         }}
       >
@@ -251,7 +271,7 @@ export default function MyDashboardPage() {
             alignItems: "center",
             gap: 10,
             background: "var(--hc-accent-light)",
-            border: "1px solid rgba(202,138,4,0.2)",
+            border: "1px solid var(--hc-accent-line)",
             borderRadius: 8,
             padding: "12px 14px",
             marginBottom: 16,

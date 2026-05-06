@@ -187,7 +187,7 @@ export default function SettingsPage() {
             border: "none",
             cursor: "pointer",
             fontFamily: "inherit",
-            background: activeMenu === m.key ? "rgba(21,128,61,0.06)" : "transparent",
+            background: activeMenu === m.key ? "var(--hc-primary-muted)" : "transparent",
             color: activeMenu === m.key ? "var(--hc-primary)" : "var(--hc-text-muted)",
             fontWeight: activeMenu === m.key ? 500 : 400,
           }}
@@ -340,7 +340,7 @@ export default function SettingsPage() {
           </div>
 
           {/* 危険ゾーン */}
-          <div className="form-card" style={{ border: "1px solid rgba(220,38,38,0.2)" }}>
+          <div className="form-card" style={{ border: "1px solid var(--hc-error-line)" }}>
             <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "var(--hc-error)", marginBottom: 8, marginTop: 0 }}>
               アカウント削除
             </h2>
@@ -353,7 +353,7 @@ export default function SettingsPage() {
                 padding: "10px 20px",
                 background: "transparent",
                 color: "var(--hc-error)",
-                border: "1px solid rgba(220,38,38,0.3)",
+                border: "1px solid var(--hc-error-border)",
                 borderRadius: 8,
                 fontSize: 13,
                 fontWeight: 600,

@@ -116,7 +116,7 @@ export default function ApplicationDetailPage({
             borderLeft: s.id === "plan" ? "3px solid var(--hc-primary)" : "3px solid transparent",
             paddingLeft: s.id === "plan" ? 7 : 10,
             fontWeight: s.id === "plan" ? 500 : 400,
-            background: s.id === "plan" ? "rgba(21,128,61,0.06)" : "transparent",
+            background: s.id === "plan" ? "var(--hc-primary-muted)" : "transparent",
           }}
         >
           {s.icon} {s.label}
@@ -205,7 +205,7 @@ export default function ApplicationDetailPage({
         提出する
       </Link>
       <Link
-        href="/contractors"
+        href="/partners/multik"
         style={{
           display: "block",
           width: "100%",
@@ -222,7 +222,7 @@ export default function ApplicationDetailPage({
           transition: "all 0.3s",
         }}
       >
-        業者に見積依頼
+        施工を依頼する
       </Link>
 
       {app.documents && app.documents.length > 0 && (
@@ -267,7 +267,7 @@ export default function ApplicationDetailPage({
   const thStyle: React.CSSProperties = {
     textAlign: "left",
     padding: "8px 12px",
-    background: "rgba(21,128,61,0.03)",
+    background: "var(--hc-primary-faint)",
     border: "1px solid var(--hc-border)",
     fontSize: 13,
     fontWeight: 600,
@@ -285,7 +285,7 @@ export default function ApplicationDetailPage({
   const centerContent = (
     <>
       {/* プログレスバー */}
-      <div style={{ width: "100%", height: 6, background: "rgba(0,0,0,0.05)", borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
+      <div style={{ width: "100%", height: 6, background: "var(--hc-text-divider)", borderRadius: 3, overflow: "hidden", marginBottom: 20 }}>
         <div style={{ height: "100%", width: progressWidth, background: "var(--hc-primary)", borderRadius: 3 }} />
       </div>
 
@@ -337,7 +337,7 @@ export default function ApplicationDetailPage({
           見積書
           <span style={{ fontSize: 11, color: "var(--hc-text-muted)", marginLeft: 8 }}>未着手</span>
         </h2>
-        <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "rgba(0,0,0,0.02)", borderRadius: 6 }}>
+        <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "var(--hc-text-faint)", borderRadius: 6 }}>
           事業計画の入力が完了すると見積書の作成に進めます
         </p>
       </div>
@@ -348,7 +348,7 @@ export default function ApplicationDetailPage({
           添付書類
           <span style={{ fontSize: 11, color: "var(--hc-text-muted)", marginLeft: 8 }}>未着手</span>
         </h2>
-        <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "rgba(0,0,0,0.02)", borderRadius: 6 }}>
+        <p style={{ fontSize: 13, color: "var(--hc-text-muted)", padding: 20, textAlign: "center", background: "var(--hc-text-faint)", borderRadius: 6 }}>
           見積書の完了後に添付書類をアップロードできます
         </p>
       </div>

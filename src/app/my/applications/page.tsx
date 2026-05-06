@@ -29,10 +29,10 @@ const MOCK_APPS: Application[] = [
 
 // --- ステータスバッジ ---
 const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-  draft: { bg: "rgba(0,0,0,0.05)", color: "var(--hc-text-muted)", label: "下書き" },
-  submitted: { bg: "rgba(21,128,61,0.08)", color: "var(--hc-primary)", label: "提出済み" },
-  approved: { bg: "rgba(22,163,74,0.08)", color: "var(--hc-success)", label: "承認済み" },
-  rejected: { bg: "rgba(220,38,38,0.08)", color: "var(--hc-error)", label: "却下" },
+  draft: { bg: "var(--hc-text-divider)", color: "var(--hc-text-muted)", label: "下書き" },
+  submitted: { bg: "var(--hc-primary-soft)", color: "var(--hc-primary)", label: "提出済み" },
+  approved: { bg: "var(--hc-success-edge)", color: "var(--hc-success)", label: "承認済み" },
+  rejected: { bg: "var(--hc-error-edge)", color: "var(--hc-error)", label: "却下" },
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -119,7 +119,7 @@ export default function MyApplicationsPage() {
                 fontSize: 12,
                 border: "none",
                 cursor: "pointer",
-                background: isActive ? "rgba(21,128,61,0.06)" : "transparent",
+                background: isActive ? "var(--hc-primary-muted)" : "transparent",
                 color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
                 fontWeight: isActive ? 500 : 400,
                 fontFamily: "inherit",
@@ -127,7 +127,7 @@ export default function MyApplicationsPage() {
               }}
             >
               <span>{f.label}</span>
-              <span style={{ fontSize: 11, background: "rgba(0,0,0,0.04)", padding: "1px 6px", borderRadius: 9999 }}>
+              <span style={{ fontSize: 11, background: "var(--hc-text-subtle)", padding: "1px 6px", borderRadius: 9999 }}>
                 {count}
               </span>
             </button>
@@ -232,7 +232,7 @@ export default function MyApplicationsPage() {
             marginTop: 8,
             borderRadius: 6,
             fontSize: 12,
-            border: "1px solid rgba(220,38,38,0.2)",
+            border: "1px solid var(--hc-error-line)",
             background: "transparent",
             color: "var(--hc-error)",
             cursor: "pointer",
@@ -258,10 +258,10 @@ export default function MyApplicationsPage() {
           申請一覧
         </h1>
         <Link
-          href="/my/applications/new"
+          href="/my/wizard"
           style={{
             padding: "8px 16px",
-            borderRadius: 6,
+            borderRadius: 8,
             fontSize: 12,
             fontWeight: 600,
             textAlign: "center",
@@ -282,7 +282,7 @@ export default function MyApplicationsPage() {
           <div style={{ fontSize: 32, marginBottom: 12 }}>📄</div>
           申請がありません
           <div style={{ marginTop: 12 }}>
-            <Link href="/my/applications/new" className="btn-primary" style={{ fontSize: 12, padding: "8px 16px", width: "auto", display: "inline-block" }}>
+            <Link href="/my/wizard" className="btn-primary" style={{ fontSize: 12, padding: "8px 16px", width: "auto", display: "inline-block" }}>
               最初の申請を作成
             </Link>
           </div>
@@ -320,7 +320,7 @@ export default function MyApplicationsPage() {
                     <StatusBadge status={app.status} />
                   </div>
                   {progress != null && (
-                    <div style={{ marginTop: 6, width: 120, height: 4, background: "rgba(0,0,0,0.05)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{ marginTop: 6, width: 120, height: 4, background: "var(--hc-text-divider)", borderRadius: 2, overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${progress}%`, background: "var(--hc-primary)", borderRadius: 2 }} />
                     </div>
                   )}

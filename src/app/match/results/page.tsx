@@ -5,6 +5,8 @@ import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
+import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
+import { isServicePrefecture } from "@/lib/constants";
 
 interface ResultItem {
   id: string;
@@ -28,17 +30,17 @@ const MOCK_RESULTS: ResultItem[] = [
 
 const SCORE_STYLES: Record<string, React.CSSProperties> = {
   high: {
-    background: "rgba(21,128,61,0.1)",
+    background: "var(--hc-primary-soft)",
     color: "var(--hc-success)",
     border: "2px solid var(--hc-success)",
   },
   mid: {
-    background: "rgba(202,138,4,0.08)",
+    background: "var(--hc-accent-subtle)",
     color: "var(--hc-accent)",
     border: "2px solid var(--hc-accent)",
   },
   low: {
-    background: "rgba(0,0,0,0.04)",
+    background: "var(--hc-text-subtle)",
     color: "var(--hc-text-muted)",
     border: "2px solid var(--hc-border)",
   },
@@ -180,9 +182,21 @@ function ResultsContent() {
     </div>
   );
 
+  const inServiceArea = isServicePrefecture(prefecture);
+
   /* ── Center column: Result cards ── */
   const center = (
     <div>
+      {!inServiceArea && (
+        <div style={{ marginBottom: 16 }}>
+          <EmailCaptureForm
+            defaultPrefecture={prefecture}
+            variant="b"
+            source="match_results_out_of_area"
+            compact
+          />
+        </div>
+      )}
       {/* Results header */}
       <div
         style={{
@@ -287,7 +301,7 @@ function ResultsContent() {
               className="btn-primary"
               style={{
                 padding: "6px 12px",
-                borderRadius: 6,
+                borderRadius: 8,
                 fontSize: 11,
                 fontWeight: 600,
                 width: "auto",
@@ -297,19 +311,23 @@ function ResultsContent() {
               詳しく見る
             </Link>
             {item.hasApply && (
-              <Link
-                href="#"
+              <button
+                type="button"
+                disabled
                 className="btn-secondary"
                 style={{
                   padding: "6px 12px",
-                  borderRadius: 6,
+                  borderRadius: 8,
                   fontSize: 11,
                   fontWeight: 600,
                   display: "block",
+                  opacity: 0.6,
+                  cursor: "not-allowed",
                 }}
+                aria-label="申請書作成はウィザードから開始します"
               >
                 申請書作成
-              </Link>
+              </button>
             )}
           </div>
         </div>
@@ -323,12 +341,12 @@ function ResultsContent() {
       <span className="section-title">次のステップ</span>
 
       <Link
-        href="/my/applications/new"
+        href="/my/wizard"
         className="btn-primary"
         style={{
           padding: "10px 12px",
           marginBottom: 6,
-          borderRadius: 6,
+          borderRadius: 8,
           fontSize: 12,
           fontWeight: 700,
         }}
@@ -336,37 +354,41 @@ function ResultsContent() {
         申請書を作成する
       </Link>
       <Link
-        href="/contractors"
+        href="/partners/multik"
         className="btn-secondary"
         style={{
           display: "block",
           width: "100%",
           padding: "10px 12px",
           marginBottom: 6,
-          borderRadius: 6,
+          borderRadius: 8,
           fontSize: 12,
           fontWeight: 600,
           background: "var(--hc-white)",
         }}
       >
-        工事業者を探す
+        施工パートナーを見る
       </Link>
-      <Link
-        href="#"
+      <button
+        type="button"
+        disabled
         className="btn-secondary"
         style={{
           display: "block",
           width: "100%",
           padding: "10px 12px",
           marginBottom: 6,
-          borderRadius: 6,
+          borderRadius: 8,
           fontSize: 12,
           fontWeight: 600,
           background: "var(--hc-white)",
+          opacity: 0.6,
+          cursor: "not-allowed",
         }}
+        aria-label="結果保存機能はSprint 2で実装予定"
       >
         結果を保存する
-      </Link>
+      </button>
       <Link
         href="/match"
         className="btn-secondary"
@@ -375,7 +397,7 @@ function ResultsContent() {
           width: "100%",
           padding: "10px 12px",
           marginBottom: 6,
-          borderRadius: 6,
+          borderRadius: 8,
           fontSize: 12,
           fontWeight: 600,
           background: "var(--hc-white)",
@@ -391,9 +413,9 @@ function ResultsContent() {
           alignItems: "center",
           gap: 8,
           padding: 12,
-          background: "rgba(21,128,61,0.04)",
-          borderRadius: 6,
-          border: "1px solid rgba(21,128,61,0.08)",
+          background: "var(--hc-primary-subtle)",
+          borderRadius: 10,
+          border: "1px solid var(--hc-primary-edge)",
           marginTop: 12,
         }}
       >
@@ -405,7 +427,7 @@ function ResultsContent() {
           style={{ opacity: 0.6 }}
         />
         <p style={{ fontSize: 11, color: "var(--hc-text-muted)", lineHeight: 1.4, margin: 0 }}>
-          {MOCK_RESULTS.length}件の補助金がマッチしました！「詳しく見る」で要件を確認しましょう。
+          {MOCK_RESULTS.length}件の補助金がマッチしました。「詳しく見る」で要件を確認しましょう。
         </p>
       </div>
     </div>

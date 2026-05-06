@@ -71,7 +71,7 @@ export function requireAuth(
     if (user.role === "owner") {
       window.location.href = "/my";
     } else if (user.role === "contractor") {
-      window.location.href = "/biz";
+      window.location.href = "/";
     } else {
       window.location.href = "/";
     }

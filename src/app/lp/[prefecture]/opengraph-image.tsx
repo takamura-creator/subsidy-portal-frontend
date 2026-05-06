@@ -1,14 +1,14 @@
 import { ImageResponse } from "next/og";
 import { LP_PREFECTURES } from "@/lib/constants";
 
-export const alt = "補助金ポータル — 都道府県別の防犯カメラ補助金情報";
+export const alt = "HOJYO CAME — 都道府県別の防犯カメラ補助金情報";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export function generateStaticParams() {
-  return LP_PREFECTURES.map((p) => ({
-    prefecture: encodeURIComponent(p),
-  }));
+  // HF-15: Next.js 16 は URL セグメントを内部で自動エンコードするため、
+  // ここで encodeURIComponent すると二重エンコードになる（page.tsx と対称）。
+  return LP_PREFECTURES.map((p) => ({ prefecture: p }));
 }
 
 export default async function Image({
@@ -82,7 +82,7 @@ export default async function Image({
             marginBottom: "40px",
           }}
         >
-          最大75%の補助金で初期費用を大幅削減
+          補助金を活用した防犯カメラ導入をサポート
         </div>
 
         <div
@@ -125,7 +125,7 @@ export default async function Image({
             color: "rgba(255,255,255,0.6)",
           }}
         >
-          補助金ポータル
+          HOJYO CAME
         </div>
       </div>
     ),
