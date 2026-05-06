@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { login, ApiError } from "@/lib/api";
 
 function decodeJwtRole(token: string): string | null {
@@ -15,8 +15,9 @@ function decodeJwtRole(token: string): string | null {
   }
 }
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -33,7 +34,12 @@ export default function LoginPage() {
       localStorage.setItem("refresh_token", res.refresh_token);
 
       const role = decodeJwtRole(res.access_token);
-      router.push(role === "admin" ? "/admin" : "/my");
+      const returnUrl = searchParams.get("returnUrl") || searchParams.get("redirect");
+      if (returnUrl && returnUrl.startsWith("/")) {
+        router.push(returnUrl);
+      } else {
+        router.push(role === "admin" ? "/admin" : "/my");
+      }
     } catch (err) {
       if (err instanceof ApiError) {
         setError(
@@ -197,5 +203,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

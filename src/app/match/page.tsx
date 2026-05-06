@@ -337,7 +337,7 @@ function WizardContent() {
                             詳しく確認する
                           </Link>
                           <Link
-                            href={`/auth/login?redirect=/my/wizard?subsidy_id=${m.subsidy.id}`}
+                            href={`/auth/login?redirect=${encodeURIComponent(`/my/wizard?subsidy_id=${m.subsidy.id}`)}`}
                             className="flex-1 block text-center py-3 rounded-[6px] font-medium text-white transition hover:opacity-90"
                             style={{ background: "var(--hc-accent)" }}
                           >

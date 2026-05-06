@@ -1468,3 +1468,65 @@ export async function fetchBonusItems(): Promise<{ items: BonusItem[] }> {
 export async function fetchIndustryContext(industry: string): Promise<IndustryContext> {
   return apiFetch(`${API_URL}/api/v1/strategy/industry/${encodeURIComponent(industry)}`);
 }
+
+// ── 事業計画書 半自動作成 ──────────────────────────────────────
+
+export interface BPRationale {
+  title: string;
+  rationale: string;
+  source: string;
+}
+
+export interface BPQuestion {
+  id: string;
+  question: string;
+  type: "single" | "multi";
+  required: boolean;
+  max_select?: number;
+  options: { value: string; label: string; description: string }[];
+}
+
+export interface BPAnswers {
+  facility_type: string;
+  challenges: string[];
+  existing_equipment: string;
+  scale: string;
+  expected_effects: string[];
+}
+
+export interface BPGenerateResult {
+  business_content: string;
+  purpose: string;
+  num_units: number;
+  expected_effects: string;
+  unit_breakdown: { location: string; count: number }[];
+  unit_rationale?: string;
+  schedule?: { phase: string; duration: string; milestone: string }[];
+  before_after?: string;
+  loss_calculation?: { annual_loss: number; profit_rate: number; required_additional_revenue: number };
+  evidence_sources?: string[];
+  rationales?: Record<string, BPRationale>;
+}
+
+export async function fetchBPQuestions(): Promise<{ questions: BPQuestion[] }> {
+  return apiFetch(`${API_URL}/api/v1/business-plan/questions`, { cache: "no-store" });
+}
+
+export async function previewBusinessPlan(answers: BPAnswers): Promise<BPGenerateResult> {
+  return authFetch(`${API_URL}/api/v1/business-plan/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(answers),
+  });
+}
+
+export async function generateAndSaveBusinessPlan(
+  appId: string,
+  answers: BPAnswers
+): Promise<BPGenerateResult> {
+  return authFetch(`${API_URL}/api/v1/business-plan/applications/${appId}/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(answers),
+  });
+}
