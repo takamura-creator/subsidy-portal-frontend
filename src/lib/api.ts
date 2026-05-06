@@ -1530,3 +1530,58 @@ export async function generateAndSaveBusinessPlan(
     body: JSON.stringify(answers),
   });
 }
+
+// ── Sprint strategy / その他 不足 API スタブ ────────────────────
+
+export type AISectionType = string;
+export interface GenerateSectionResponse { section: string; text: string; disclaimer: string }
+export async function postGenerateSection(_req: unknown): Promise<GenerateSectionResponse> {
+  return authFetch(`${API_URL}/api/v1/ai-section/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(_req) });
+}
+
+export type TimelineTaskStatus = "pending" | "in_progress" | "done" | "skipped";
+export type TimelineTaskCategory = "document" | "application" | "review" | "other";
+export interface TimelineTask { id: string; label: string; status: TimelineTaskStatus; category: TimelineTaskCategory; due_date?: string; note?: string }
+export interface TimelinePhase { id: string; label: string; tasks: TimelineTask[] }
+export interface ActionTimelineResponse { phases: TimelinePhase[]; subsidy_id: string }
+export async function getActionTimeline(subsidyId: string, appId?: string): Promise<ActionTimelineResponse> {
+  const q = appId ? `?app_id=${appId}` : "";
+  return authFetch(`${API_URL}/api/v1/strategy/action-timeline/${subsidyId}${q}`);
+}
+
+export type StrategyIndustry = string;
+export interface RoiSideInput { label: string; value: number }
+export interface RoiSimulateRequest { industry: StrategyIndustry; before: RoiSideInput[]; after: RoiSideInput[] }
+export interface RoiSimulateResponse { roi_months: number; annual_saving: number; break_even: number }
+export async function postRoiSimulate(req: RoiSimulateRequest): Promise<RoiSimulateResponse> {
+  return authFetch(`${API_URL}/api/v1/strategy/roi-simulate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
+}
+
+export interface LossCalcRequest { industry: StrategyIndustry; monthly_incidents: number; avg_loss_per_incident: number; hourly_wage: number; hours_per_incident: number }
+export interface LossCalcResponse { annual_direct_loss: number; annual_labor_loss: number; total_annual_loss: number; required_additional_revenue: number }
+export async function postLossCalc(req: LossCalcRequest): Promise<LossCalcResponse> {
+  return authFetch(`${API_URL}/api/v1/strategy/loss-calc`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
+}
+
+export interface DeductionCheckResponse { is_deductible: boolean; reason: string; tax_rate: number }
+export async function postDeductionCheck(req: unknown): Promise<DeductionCheckResponse> {
+  return authFetch(`${API_URL}/api/v1/strategy/deduction-check`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
+}
+
+export interface TaxClassifyResponse { category: string; label: string; advice: string }
+export async function postTaxClassify(req: unknown): Promise<TaxClassifyResponse> {
+  return authFetch(`${API_URL}/api/v1/strategy/tax-classify`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
+}
+
+export interface PendingReminder { id: string; subsidy_name: string; deadline: string; days_left: number }
+export async function fetchPendingReminders(): Promise<{ reminders: PendingReminder[] }> {
+  return authFetch(`${API_URL}/api/my/reminders/pending`);
+}
+
+export interface ApplicationStatusResponse { status: string; phase: string; available_transitions: string[] }
+export async function getApplicationStatus(appId: string): Promise<ApplicationStatusResponse> {
+  return authFetch(`${API_URL}/api/applications/${appId}/status`);
+}
+export async function patchApplicationStatus(appId: string, status: string): Promise<ApplicationStatusResponse> {
+  return authFetch(`${API_URL}/api/applications/${appId}/status`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
+}
