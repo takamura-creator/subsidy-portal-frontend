@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { submitContact, ApiError } from "@/lib/api";
+import { submitContact, ApiError, fetchProfileDetail } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 import { PREFECTURES } from "@/lib/constants";
 
 const WIZARD_KEY = "hc_wizard_state_v2";
@@ -56,13 +57,27 @@ export default function ContactPage() {
   const [inquiryId, setInquiryId]         = useState("");
   const [error, setError]                 = useState("");
 
-  // ウィザードデータから自動補完
+  // JWT + プロフィール + ウィザードデータから自動補完
   useEffect(() => {
+    // 1) JWT から即座に補完（同期）
+    const user = getUser();
+    if (user?.email)        setEmail(user.email);
+    if (user?.company_name) setCompanyName(user.company_name);
+
+    // 2) ウィザードデータで上書き（より詳細）
     const d = getWizardDefaults();
     if (d.companyName)        setCompanyName(d.companyName);
     if (d.representativeName) setContactName(d.representativeName);
     if (d.email)              setEmail(d.email);
     if (d.estimateId)         setEstimateId(d.estimateId);
+
+    // 3) DB プロフィールで最終確定（非同期）
+    fetchProfileDetail()
+      .then((p) => {
+        if (p.company_name && !d.companyName) setCompanyName(p.company_name);
+        if (p.representative_name && !d.representativeName) setContactName(p.representative_name);
+      })
+      .catch(() => {});
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {

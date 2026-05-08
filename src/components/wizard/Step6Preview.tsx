@@ -354,7 +354,7 @@ function ReminderCard({
               className="mt-0.5 accent-primary"
             />
             <span>
-              <a href="/about" className="text-primary hover:underline">プライバシーポリシー</a>
+              <a href="https://multik.jp/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">プライバシーポリシー</a>
               に同意し、補助金のリマインダー配信を受け取ります。
             </span>
           </label>

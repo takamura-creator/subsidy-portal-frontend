@@ -9,7 +9,6 @@ const NAV_LINKS = [
   { href: "/results", label: "交付実績" },
   { href: "/partners/multik", label: "施工パートナー" },
   { href: "/match", label: "AI診断" },
-  { href: "/about", label: "使い方" },
   { href: "/contact", label: "お問い合わせ" },
 ];
 

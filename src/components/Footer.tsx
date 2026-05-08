@@ -33,7 +33,8 @@ export default function Footer() {
             <ul className="text-sm space-y-2">
               <li><Link href="/match" className="hover:text-white transition">補助金診断</Link></li>
               <li><Link href="/subsidies" className="hover:text-white transition">補助金一覧</Link></li>
-              <li><Link href="/about" className="hover:text-white transition">運営者情報</Link></li>
+              <li><Link href="/partners/multik" className="hover:text-white transition">施工パートナー</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition">お問い合わせ</Link></li>
             </ul>
           </div>
 
@@ -82,8 +83,17 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-8 pt-6 text-sm text-center text-white/40">
-          &copy; 2026 マルチック株式会社 All rights reserved.
+        {/* 法的リンク + コピーライト */}
+        <div className="border-t border-white/10 mt-8 pt-6">
+          <div className="flex flex-wrap justify-center gap-4 text-xs text-white/40 mb-4">
+            <Link href="/about" className="hover:text-white/60 transition">運営者情報</Link>
+            <a href="https://multik.jp/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white/60 transition">プライバシーポリシー</a>
+            <a href="https://multik.jp/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white/60 transition">利用規約</a>
+            <a href="https://multik.jp/tokushoho" target="_blank" rel="noopener noreferrer" className="hover:text-white/60 transition">特定商取引法に基づく表記</a>
+          </div>
+          <p className="text-sm text-center text-white/40">
+            &copy; 2026 HOJYO CAME — マルチック株式会社
+          </p>
         </div>
       </div>
     </footer>

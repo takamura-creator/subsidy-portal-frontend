@@ -6,11 +6,20 @@ import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { PREFECTURES, INDUSTRIES } from "@/lib/constants";
 
+// 事業カテゴリ（データの category フィールドに対応）
 const CATEGORIES = [
-  { label: "すべて", value: "", count: 123 },
-  { label: "国の補助金", value: "国", count: 24 },
-  { label: "都道府県", value: "都道府県", count: 47 },
-  { label: "市区町村", value: "市区町村", count: 52 },
+  { label: "すべて", value: "" },
+  { label: "防犯カメラ", value: "防犯" },
+  { label: "IT導入・DX", value: "IT導入" },
+  { label: "設備投資", value: "設備投資" },
+  { label: "介護・福祉", value: "介護" },
+];
+
+// 管轄レベル（pref_code から判定）
+const GOV_LEVELS = [
+  { label: "すべて", value: "" },
+  { label: "国の補助金", value: "national" },
+  { label: "都道府県", value: "prefectural" },
 ];
 
 const AMOUNT_OPTIONS = [
@@ -84,6 +93,7 @@ export default function SubsidiesPage() {
   const [category, setCategory] = useState("");
   const [amountFilter, setAmountFilter] = useState("");
   const [deadlineFilter, setDeadlineFilter] = useState("");
+  const [govLevel, setGovLevel] = useState("");
   const [sort, setSort] = useState("deadline");
   const [loading, setLoading] = useState(false);
 
@@ -101,6 +111,8 @@ export default function SubsidiesPage() {
     if (amountFilter === "100" && s.max_amount > 1000000) return false;
     if (amountFilter === "500" && s.max_amount > 5000000) return false;
     if (amountFilter === "500plus" && s.max_amount < 5000000) return false;
+    if (govLevel === "national" && s.pref_code !== "00") return false;
+    if (govLevel === "prefectural" && s.pref_code === "00") return false;
     if (deadlineFilter) {
       const days = getDaysUntil(s.deadline);
       if (days > parseInt(deadlineFilter)) return false;
@@ -119,6 +131,7 @@ export default function SubsidiesPage() {
     setCategory("");
     setAmountFilter("");
     setDeadlineFilter("");
+    setGovLevel("");
     setIndustry("");
     setKeyword("");
     setSearchInput("");
@@ -212,8 +225,8 @@ export default function SubsidiesPage() {
         {CATEGORIES.map((c) => {
           const isActive = category === c.value;
           const count = c.value === ""
-            ? sorted.length
-            : sorted.filter((s) => s.category.includes(c.value)).length;
+            ? subsidies.length
+            : subsidies.filter((s) => s.category === c.value).length;
           return (
             <li key={c.value}>
               <button
@@ -237,6 +250,56 @@ export default function SubsidiesPage() {
                 }}
               >
                 <span>{c.label}</span>
+                <span
+                  style={{
+                    fontSize: 11,
+                    background: "var(--hc-text-subtle)",
+                    padding: "1px 6px",
+                    borderRadius: 9999,
+                  }}
+                >
+                  {count}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="divider" />
+
+      <span className="section-title">管轄</span>
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        {GOV_LEVELS.map((g) => {
+          const isActive = govLevel === g.value;
+          const count = g.value === ""
+            ? subsidies.length
+            : g.value === "national"
+            ? subsidies.filter((s) => s.pref_code === "00").length
+            : subsidies.filter((s) => s.pref_code !== "00").length;
+          return (
+            <li key={g.value}>
+              <button
+                onClick={() => setGovLevel(g.value)}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "6px 8px",
+                  fontSize: 12,
+                  color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
+                  background: isActive ? "var(--hc-primary-muted)" : "transparent",
+                  fontWeight: isActive ? 500 : 400,
+                  border: "none",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  fontFamily: "inherit",
+                  transition: "background 0.15s",
+                }}
+              >
+                <span>{g.label}</span>
                 <span
                   style={{
                     fontSize: 11,
