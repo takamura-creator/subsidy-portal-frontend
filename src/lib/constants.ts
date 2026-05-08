@@ -65,6 +65,8 @@ export const MULTIK_COMPANY = {
   nameEn: "Multik Co., Ltd.",
   website: "https://multik.jp",
   email: "contact@multik.jp",
+  /** 施工相談・詳細見積もりの問い合わせ先（補助金申請相談は受け付けていない） */
+  contact_url: "https://multik.jp/contact",
   manufacturer: "AVTECH Technology Corporation",
   relationship: "AVTECH日本正規代理店（契約書ベース）",
   address: "東京都",

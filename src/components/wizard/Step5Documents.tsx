@@ -704,14 +704,16 @@ function UnknownTypePanel({ subsidyName }: { subsidyName: string }) {
       <p className="text-[13px] text-text-muted leading-relaxed">
         {subsidyName} は現時点で HOJYO CAME の書類自動生成対応補助金（神奈川県デジタル化支援 /
         小規模事業者持続化補助金 / IT導入補助金 / ものづくり補助金）に含まれていません。
-        お手続きにご不明点がある場合は
+        施工・詳細見積もりについてのご相談は
         <a
-          href="mailto:contact@multik.jp"
+          href="https://multik.jp/contact"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-primary hover:underline mx-1"
         >
-          contact@multik.jp
+          マルチック お問い合わせフォーム
         </a>
-        までお問い合わせください。公式サイトの手続きに沿ってご自身で作成いただくこともできます。
+        からどうぞ。補助金申請の代行対応はサービス対象外です。
       </p>
     </section>
   );

@@ -234,12 +234,14 @@ export default function MyDashboardPage() {
           lineHeight: 1.6,
         }}
       >
-        <p style={{ fontWeight: 700, marginBottom: 4 }}>📞 マルチックに相談する</p>
+        <p style={{ fontWeight: 700, marginBottom: 4 }}>🔧 施工・詳細見積もりのご相談</p>
         <p style={{ color: "var(--hc-text-muted)", marginBottom: 8 }}>
-          概算見積もり・補助金申請について、専門スタッフにご相談いただけます。
+          施工依頼・詳細見積もりのご相談は、マルチック公式サイトのお問い合わせフォームからどうぞ。
         </p>
         <a
-          href="mailto:contact@multik.jp"
+          href="https://multik.jp/contact"
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
             fontSize: 11,
             color: "var(--hc-primary)",
@@ -247,7 +249,7 @@ export default function MyDashboardPage() {
             textDecoration: "none",
           }}
         >
-          contact@multik.jp →
+          お問い合わせフォームへ →
         </a>
       </div>
     </div>
@@ -370,9 +372,9 @@ export default function MyDashboardPage() {
           },
           {
             step: 4,
-            label: "マルチックに施工・申請支援を依頼する",
+            label: "マルチックに施工・詳細見積もりを依頼する",
             done: false,
-            href: "mailto:contact@multik.jp",
+            href: "https://multik.jp/contact",
           },
         ].map((item, i, arr) => (
           <Link

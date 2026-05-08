@@ -221,11 +221,16 @@ export default function PartnersMultikPage() {
             </Link>
           </div>
           <p className="mt-5 text-[12px] text-text-muted">
-            お問い合わせは{" "}
-            <a href={`mailto:${MULTIK_COMPANY.email}`} className="text-primary hover:underline">
-              {MULTIK_COMPANY.email}
+            施工・詳細見積もりのご相談は{" "}
+            <a
+              href={MULTIK_COMPANY.contact_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              お問い合わせフォーム
             </a>{" "}
-            まで。メール対応のみ（電話営業は行いません）。
+            から。メール対応のみ（電話営業は行いません）。
           </p>
         </div>
       </section>

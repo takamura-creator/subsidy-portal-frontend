@@ -15,7 +15,7 @@ import {
   type SubsidySelection,
 } from "./types";
 
-const MULTIK_CONTACT_EMAIL = "contact@multik.jp";
+const MULTIK_CONTACT_URL = "https://multik.jp/contact";
 
 interface Props {
   company: CompanyInfo;
@@ -392,17 +392,6 @@ function ContactMultikCard({
 }) {
   const [sent, setSent] = useState(false);
 
-  const mailtoHref = useMemo(
-    () => buildMailto({ company, subsidy, estimate }),
-    [company, subsidy, estimate],
-  );
-
-  function handleClick() {
-    window.location.href = mailtoHref;
-    // メールクライアント起動後にUIを切替（戻ってきた時用）
-    window.setTimeout(() => setSent(true), 500);
-  }
-
   async function handleCopyBody() {
     try {
       await navigator.clipboard.writeText(
@@ -421,52 +410,40 @@ function ContactMultikCard({
         className="text-[16px] font-bold"
         style={{ fontFamily: "'Sora', sans-serif" }}
       >
-        マルチックに施工を依頼する
+        施工・詳細見積もりを依頼する
       </h3>
       <p className="text-[13px] text-white/75 leading-relaxed">
-        ここまでの入力内容と見積もりIDをまとめたメールを{" "}
-        <span className="font-medium text-white">{MULTIK_CONTACT_EMAIL}</span> 宛に送信します。
-        担当者より2営業日以内にメールでご返信します（電話営業は行いません）。
+        マルチック公式サイトのお問い合わせフォームからご依頼ください。
+        下の「本文をコピー」ボタンで会社情報・見積もり内容をコピーし、フォームに貼り付けてお送りください。
+        担当者より2営業日以内にご返信します（電話営業は行いません）。
+      </p>
+      <p className="text-[11px] text-white/60 leading-relaxed">
+        ※ 補助金申請の代行・審査対応はサービス対象外です。施工・機器導入に関するご相談のみ承ります。
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          type="button"
-          onClick={handleClick}
+        <a
+          href={MULTIK_CONTACT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center justify-center px-6 py-3 rounded-[8px] bg-primary text-white font-semibold hover:bg-[var(--hc-primary-hover)] transition"
         >
-          メールクライアントで送信する
-        </button>
+          お問い合わせフォームへ →
+        </a>
         <button
           type="button"
           onClick={handleCopyBody}
           className="inline-flex items-center justify-center px-6 py-3 rounded-[8px] border border-white/40 bg-transparent text-white font-semibold hover:bg-white/10 transition"
         >
-          {sent ? "本文をコピーしました" : "本文をクリップボードにコピー"}
+          {sent ? "本文をコピーしました ✓" : "見積もり内容をコピー"}
         </button>
       </div>
 
       <p className="text-[11px] text-white/60 leading-relaxed pt-2 border-t border-white/10">
-        送信先: {MULTIK_CONTACT_EMAIL} ／ 件名・本文は自動生成されます。送信前に内容をご確認ください。
+        コピーした内容をフォームの「お問い合わせ内容」欄に貼り付けてください。
       </p>
     </section>
   );
-}
-
-function buildMailto({
-  company,
-  subsidy,
-  estimate,
-}: {
-  company: CompanyInfo;
-  subsidy: SubsidySelection;
-  estimate: EstimateSnapshot;
-}): string {
-  const subject = `【HOJYO CAME】施工依頼（${company.companyName} / ${subsidy.name}）`;
-  const body = buildMailBody({ company, subsidy, estimate });
-  return `mailto:${MULTIK_CONTACT_EMAIL}?subject=${encodeURIComponent(
-    subject,
-  )}&body=${encodeURIComponent(body)}`;
 }
 
 function buildMailBody({
