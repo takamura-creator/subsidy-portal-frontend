@@ -113,6 +113,8 @@ html {
 
 body {
   min-height: 100%;
+  /* fixed StatusBar (28px) の下にコンテンツが隠れないようパディング */
+  padding-bottom: var(--hc-status-h, 28px);
 }
 
 body {

@@ -365,6 +365,15 @@ function Tier2DraftPanel({
   const [businessDescription, setBusinessDescription] = useState("");
   const [copiedTitle, setCopiedTitle] = useState<string | null>(null);
 
+  // 業務改善助成金専用の深掘り質問 state
+  const [gyomuQA, setGyomuQA] = useState({
+    currentWage: "",       // 現在の事業場内最低賃金（円/時）
+    targetWage: "",        // 引上げ後の目標賃金（円/時）
+    patrolHours: "",       // 月間の現場巡回時間（時間）
+    recordHours: "",       // 月間の記録・日報作成時間（時間）
+    installLocation: "",   // 主な設置場所
+  });
+
   // 経過秒数カウンター（生成中のみ動作）
   useEffect(() => {
     if (!loading) { setElapsed(0); return; }
@@ -372,10 +381,25 @@ function Tier2DraftPanel({
     return () => window.clearInterval(id);
   }, [loading]);
 
+  /** 業務改善用QA回答を business_description に変換 */
+  function buildGyomuDescription(): string {
+    const parts: string[] = [];
+    if (gyomuQA.currentWage) parts.push(`現在の事業場内最低賃金: ${gyomuQA.currentWage}円/時`);
+    if (gyomuQA.targetWage) parts.push(`引上げ後の目標賃金: ${gyomuQA.targetWage}円/時`);
+    if (gyomuQA.patrolHours) parts.push(`月間の現場巡回時間: ${gyomuQA.patrolHours}時間`);
+    if (gyomuQA.recordHours) parts.push(`月間の記録・日報作成時間: ${gyomuQA.recordHours}時間`);
+    if (gyomuQA.installLocation) parts.push(`主な設置場所: ${gyomuQA.installLocation}`);
+    if (businessDescription.trim()) parts.push(businessDescription.trim());
+    return parts.join("\n");
+  }
+
   async function handleGenerate() {
     setError("");
     setLoading(true);
     try {
+      const desc = draftType === "gyomu_kaizen"
+        ? buildGyomuDescription()
+        : businessDescription.trim();
       const res: DraftGenerateResponse = await requestDraftGeneration({
         estimate_id: estimate.id,
         subsidy_type: draftType,
@@ -388,7 +412,7 @@ function Tier2DraftPanel({
           address: company.address,
           annual_revenue: company.annualRevenue,
         },
-        business_description: businessDescription.trim() || undefined,
+        business_description: desc || undefined,
       });
       const snap: DraftSnapshot = {
         subsidy_type: res.subsidy_type,
@@ -455,24 +479,109 @@ function Tier2DraftPanel({
         虚偽の記述を含めず、実際の事業計画・数値に合わせて修正のうえご使用ください。
       </div>
 
+      {/* 業務改善助成金専用の深掘り質問フォーム */}
+      {draftType === "gyomu_kaizen" && (
+        <div className="rounded-[10px] border border-border bg-bg p-4 space-y-4">
+          <p className="text-[13px] font-semibold text-navy">
+            📋 申請書の精度を高めるために教えてください
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[12px] text-text-muted mb-1">
+                現在の事業場内最低賃金（円/時）
+              </label>
+              <input
+                type="number"
+                min={0}
+                placeholder="例: 1162"
+                value={gyomuQA.currentWage}
+                onChange={(e) => setGyomuQA((q) => ({ ...q, currentWage: e.target.value }))}
+                className="w-full border border-border rounded-[8px] px-3 py-2 text-[13px] bg-white focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] text-text-muted mb-1">
+                引上げ後の目標賃金（円/時）
+              </label>
+              <input
+                type="number"
+                min={0}
+                placeholder="例: 1200（+30円以上が必須）"
+                value={gyomuQA.targetWage}
+                onChange={(e) => setGyomuQA((q) => ({ ...q, targetWage: e.target.value }))}
+                className="w-full border border-border rounded-[8px] px-3 py-2 text-[13px] bg-white focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] text-text-muted mb-1">
+                月間の現場巡回にかかる時間（時間）
+              </label>
+              <input
+                type="number"
+                min={0}
+                placeholder="例: 40"
+                value={gyomuQA.patrolHours}
+                onChange={(e) => setGyomuQA((q) => ({ ...q, patrolHours: e.target.value }))}
+                className="w-full border border-border rounded-[8px] px-3 py-2 text-[13px] bg-white focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] text-text-muted mb-1">
+                月間の記録・日報作成にかかる時間（時間）
+              </label>
+              <input
+                type="number"
+                min={0}
+                placeholder="例: 20"
+                value={gyomuQA.recordHours}
+                onChange={(e) => setGyomuQA((q) => ({ ...q, recordHours: e.target.value }))}
+                className="w-full border border-border rounded-[8px] px-3 py-2 text-[13px] bg-white focus:outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[12px] text-text-muted mb-1">
+              主な設置場所
+            </label>
+            <input
+              type="text"
+              placeholder="例: 工事現場・事務所・倉庫"
+              value={gyomuQA.installLocation}
+              onChange={(e) => setGyomuQA((q) => ({ ...q, installLocation: e.target.value }))}
+              className="w-full border border-border rounded-[8px] px-3 py-2 text-[13px] bg-white focus:outline-none focus:border-primary"
+            />
+          </div>
+        </div>
+      )}
+
       <div>
         <label
           htmlFor="biz-desc"
           className="block text-[12px] text-text-muted mb-1"
         >
-          事業内容・追加文脈（任意 / 2000字まで）
+          {draftType === "gyomu_kaizen"
+            ? "その他・補足情報（任意 / 2000字まで）"
+            : "事業内容・追加文脈（任意 / 2000字まで）"}
         </label>
         <textarea
           id="biz-desc"
           value={businessDescription}
           onChange={(e) => setBusinessDescription(e.target.value)}
-          rows={4}
+          rows={3}
           maxLength={2000}
-          placeholder="例: 3店舗を運営。繁華街で夜間の万引き被害が年間50件発生。AVTECH 4Kカメラで顔認証を行い、被害を半減したい。"
+          placeholder={
+            draftType === "gyomu_kaizen"
+              ? "例: 建設現場での安全管理に課題があり、遠隔監視カメラを活用して作業員の動線管理を行いたい。"
+              : "例: 3店舗を運営。繁華街で夜間の万引き被害が年間50件発生。AVTECH 4Kカメラで顔認証を行い、被害を半減したい。"
+          }
           className="w-full border border-border rounded-[8px] px-3 py-2.5 text-[13px] bg-white focus:outline-none focus:border-primary"
         />
         <p className="mt-1 text-[11px] text-text-muted">
-          会社情報・見積もりはすでに送信します。ここには AIが反映しにくい定性情報（被害実績・現場状況）を自由記述してください。
+          {draftType === "gyomu_kaizen"
+            ? "上記の質問回答と合わせてAIに送信されます。"
+            : "会社情報・見積もりはすでに送信します。ここにはAIが反映しにくい定性情報（被害実績・現場状況）を自由記述してください。"}
         </p>
       </div>
 

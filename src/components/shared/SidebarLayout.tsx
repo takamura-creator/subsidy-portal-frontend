@@ -10,21 +10,32 @@ interface SidebarLayoutProps {
   sidebarItems: SidebarEntry[];
 }
 
+// ヘッダー 52px + StatusBar 28px = 80px
+const HEADER_H = "52px";
+const STATUSBAR_H = "28px";
+
 export default function SidebarLayout({ children, sidebarItems }: SidebarLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)]">
+    <div style={{ display: "flex", minHeight: `calc(100vh - ${HEADER_H} - ${STATUSBAR_H})` }}>
       {/* デスクトップサイドバー */}
       <aside className="hidden md:block w-60 shrink-0">
-        <div className="sticky top-16 h-[calc(100vh-64px)]">
+        <div
+          className="sticky"
+          style={{
+            top: HEADER_H,
+            height: `calc(100vh - ${HEADER_H} - ${STATUSBAR_H})`,
+          }}
+        >
           <Sidebar items={sidebarItems} />
         </div>
       </aside>
 
       {/* モバイルハンバーガー */}
       <button
-        className="md:hidden fixed bottom-4 right-4 z-40 w-12 h-12 rounded-full bg-primary text-white shadow-[var(--portal-shadow-md)] flex items-center justify-center"
+        className="md:hidden fixed right-4 z-40 w-12 h-12 rounded-full bg-primary text-white shadow-[var(--portal-shadow-md)] flex items-center justify-center"
+        style={{ bottom: `calc(${STATUSBAR_H} + 16px)` }}
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label="メニュー"
       >
@@ -38,7 +49,10 @@ export default function SidebarLayout({ children, sidebarItems }: SidebarLayoutP
             className="md:hidden fixed inset-0 z-30 bg-black/30"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="md:hidden fixed left-0 top-16 bottom-0 z-40 w-60 bg-bg-card shadow-[var(--portal-shadow-md)]">
+          <aside
+            className="md:hidden fixed left-0 z-40 w-60 bg-bg-card shadow-[var(--portal-shadow-md)]"
+            style={{ top: HEADER_H, bottom: STATUSBAR_H }}
+          >
             <Sidebar items={sidebarItems} />
           </aside>
         </>

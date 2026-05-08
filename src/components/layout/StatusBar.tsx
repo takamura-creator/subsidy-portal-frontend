@@ -1,14 +1,20 @@
 export default function StatusBar() {
   return (
     <div
-      className="flex items-center justify-between px-5 flex-shrink-0 relative"
+      className="flex items-center justify-between px-5"
       style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
         height: "var(--hc-status-h)",
-        background: "rgba(240,253,244,0.85)",
+        background: "rgba(240,253,244,0.92)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
         borderTop: "1px solid rgba(21,128,61,0.08)",
         fontSize: "11px",
         color: "var(--hc-text-muted)",
-        zIndex: 1,
+        zIndex: 99,
       }}
     >
       <span>&copy; 2026 HOJYO CAME — マルチック株式会社</span>

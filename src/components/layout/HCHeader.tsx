@@ -19,6 +19,8 @@ export default function HCHeader() {
     <header
       className="flex items-center justify-between px-5 flex-shrink-0 relative"
       style={{
+        position: "sticky",
+        top: 0,
         height: "var(--hc-header-h)",
         background: "var(--hc-header-bg)",
         backdropFilter: "blur(12px)",
