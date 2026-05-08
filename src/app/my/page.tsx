@@ -238,10 +238,8 @@ export default function MyDashboardPage() {
         <p style={{ color: "var(--hc-text-muted)", marginBottom: 8 }}>
           施工依頼・詳細見積もりのご相談は、マルチック公式サイトのお問い合わせフォームからどうぞ。
         </p>
-        <a
-          href="https://multik.jp/contact"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/contact"
           style={{
             fontSize: 11,
             color: "var(--hc-primary)",
@@ -250,7 +248,7 @@ export default function MyDashboardPage() {
           }}
         >
           お問い合わせフォームへ →
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -374,7 +372,7 @@ export default function MyDashboardPage() {
             step: 4,
             label: "マルチックに施工・詳細見積もりを依頼する",
             done: false,
-            href: "https://multik.jp/contact",
+            href: "/contact",
           },
         ].map((item, i, arr) => (
           <Link

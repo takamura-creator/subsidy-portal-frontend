@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/partners/multik", label: "施工パートナー" },
   { href: "/match", label: "AI診断" },
   { href: "/about", label: "使い方" },
+  { href: "/contact", label: "お問い合わせ" },
 ];
 
 export default function HCHeader() {

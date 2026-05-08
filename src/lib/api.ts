@@ -806,6 +806,32 @@ export async function submitLead(req: LeadCaptureRequest): Promise<{ message: st
   });
 }
 
+// --- 問い合わせフォーム ---
+
+export interface ContactRequest {
+  company_name: string;
+  contact_name: string;
+  email: string;
+  phone?: string;
+  inquiry_type: string;
+  estimate_id?: string;
+  message: string;
+  consent: boolean;
+}
+
+export interface ContactResponse {
+  message: string;
+  inquiry_id: string;
+}
+
+export async function submitContact(req: ContactRequest): Promise<ContactResponse> {
+  return apiFetch(`${API_URL}/api/contact`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+}
+
 // --- Sprint 2: 申請書類生成（Tier 1: 神奈川県テンプレート差込） ---
 
 export type Tier1SubsidyType = "kanagawa_digital";

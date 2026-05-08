@@ -706,7 +706,7 @@ function UnknownTypePanel({ subsidyName }: { subsidyName: string }) {
         小規模事業者持続化補助金 / IT導入補助金 / ものづくり補助金）に含まれていません。
         施工・詳細見積もりについてのご相談は
         <a
-          href="https://multik.jp/contact"
+          href="/contact"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline mx-1"

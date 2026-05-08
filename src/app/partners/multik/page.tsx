@@ -222,14 +222,9 @@ export default function PartnersMultikPage() {
           </div>
           <p className="mt-5 text-[12px] text-text-muted">
             施工・詳細見積もりのご相談は{" "}
-            <a
-              href={MULTIK_COMPANY.contact_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
+            <Link href="/contact" className="text-primary hover:underline">
               お問い合わせフォーム
-            </a>{" "}
+            </Link>{" "}
             から。メール対応のみ（電話営業は行いません）。
           </p>
         </div>

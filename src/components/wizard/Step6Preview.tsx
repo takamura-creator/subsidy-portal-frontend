@@ -15,7 +15,7 @@ import {
   type SubsidySelection,
 } from "./types";
 
-const MULTIK_CONTACT_URL = "https://multik.jp/contact";
+const MULTIK_CONTACT_URL = "/contact";
 
 interface Props {
   company: CompanyInfo;
@@ -422,14 +422,12 @@ function ContactMultikCard({
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <a
+        <Link
           href={MULTIK_CONTACT_URL}
-          target="_blank"
-          rel="noopener noreferrer"
           className="inline-flex items-center justify-center px-6 py-3 rounded-[8px] bg-primary text-white font-semibold hover:bg-[var(--hc-primary-hover)] transition"
         >
           お問い合わせフォームへ →
-        </a>
+        </Link>
         <button
           type="button"
           onClick={handleCopyBody}
