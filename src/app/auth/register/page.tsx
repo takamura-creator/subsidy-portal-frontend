@@ -4,8 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
-import { register, ApiError } from "@/lib/api";
+import { register, updateProfile, ApiError } from "@/lib/api";
 import { PREFECTURES } from "@/lib/constants";
+
+const WIZARD_KEY = "hc_wizard_state_v2";
+function getWizardCompany(): Record<string, string | number> | null {
+  try {
+    const raw = localStorage.getItem(WIZARD_KEY);
+    if (!raw) return null;
+    const snap = JSON.parse(raw) as { state?: { company?: Record<string, string | number> } };
+    return snap?.state?.company ?? null;
+  } catch { return null; }
+}
 
 /* ---- Left column: onboarding guide ---- */
 function OwnerGuide() {
@@ -142,6 +152,21 @@ function RegisterForm() {
         company_name: companyName,
         pref_code: prefCode,
       });
+
+      // 登録後: ウィザードのデータがあれば自動でプロフィールに反映
+      try {
+        const wiz = getWizardCompany();
+        if (wiz) {
+          await updateProfile({
+            company_name: companyName || String(wiz.companyName ?? ""),
+            pref_code: prefCode || String(wiz.prefecture ?? ""),
+            representative: String(wiz.representativeName ?? ""),
+          });
+        }
+      } catch {
+        // プロフィール保存失敗は無視（登録自体は成功しているため）
+      }
+
       router.push("/my");
     } catch (err) {
       if (err instanceof ApiError) {

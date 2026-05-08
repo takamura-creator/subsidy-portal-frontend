@@ -7,9 +7,20 @@ import {
   updateProfile,
   changePassword,
   deleteAccount,
-  type UserProfileDetail,
 } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 import { PREFECTURES } from "@/lib/constants";
+
+const WIZARD_KEY = "hc_wizard_state_v2";
+function loadWizardCompany(): Record<string, string | number> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(WIZARD_KEY);
+    if (!raw) return null;
+    const snap = JSON.parse(raw) as { state?: { company?: Record<string, string | number> } };
+    return snap?.state?.company ?? null;
+  } catch { return null; }
+}
 
 // --- トグルコンポーネント ---
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
@@ -71,6 +82,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+  const [autoFilled, setAutoFilled] = useState(false);
 
   // プロフィールフォーム
   const [companyName, setCompanyName] = useState("");
@@ -93,21 +105,44 @@ export default function SettingsPage() {
   const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
+    // 同期: JWT + ウィザード localStorage から先読み（API遅延時のフォールバック）
+    const jwtUser = getUser();
+    const wiz = loadWizardCompany();
+    const jwtCompany = jwtUser?.company_name ?? "";
+    const wizCompany   = String(wiz?.companyName ?? "");
+    const wizRep       = String(wiz?.representativeName ?? "");
+    const wizPref      = String(wiz?.prefecture ?? "");
+
+    // 非同期: APIから取得し、保存済みデータを優先、空欄はwizard/JWTで補完
     fetchProfileDetail()
       .then((p) => {
         setProfile(p);
-        setCompanyName(p.company_name || "");
-        setRepresentative(p.representative_name || "");
-        setEmail(p.email || "");
-        setPhone(p.phone || "");
-        setPrefecture(p.prefecture || "");
+        const apiCompany = p.company_name || "";
+        const apiRep     = (p as { representative?: string }).representative || "";
+        const apiEmail   = p.email || "";
+        const apiPhone   = (p as { phone?: string }).phone || "";
+        const apiPref    = (p as { pref_code?: string }).pref_code || "";
+
+        setCompanyName(apiCompany || wizCompany || jwtCompany);
+        setEmail(apiEmail || jwtUser?.email || "");
+        setPhone(apiPhone);
+        setPrefecture(apiPref || wizPref);
+
+        // representative: API保存済みがあれば優先、なければウィザードから自動補完
+        if (apiRep) {
+          setRepresentative(apiRep);
+        } else if (wizRep) {
+          setRepresentative(wizRep);
+          setAutoFilled(true);
+        }
       })
       .catch(() => {
-        setCompanyName("");
-        setRepresentative("");
-        setEmail("");
-        setPhone("");
-        setPrefecture("");
+        // API失敗時はJWT+ウィザードデータで補完
+        setCompanyName(wizCompany || jwtCompany);
+        setRepresentative(wizRep);
+        setEmail(jwtUser?.email || "");
+        setPrefecture(wizPref);
+        if (wizRep || wizCompany) setAutoFilled(true);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -119,10 +154,11 @@ export default function SettingsPage() {
     try {
       await updateProfile({
         company_name: companyName,
-        representative_name: representative,
+        representative,   // バックエンドフィールド名は representative
         phone,
-        prefecture,
+        pref_code: prefecture,
       });
+      setAutoFilled(false);
       setSaveMsg("保存しました");
     } catch {
       setSaveMsg("保存に失敗しました");
@@ -212,6 +248,22 @@ export default function SettingsPage() {
             <p style={{ fontSize: 13, color: "var(--hc-text-muted)" }}>読み込み中...</p>
           ) : (
             <form onSubmit={handleSaveProfile}>
+              {autoFilled && (
+                <div
+                  style={{
+                    marginBottom: 14,
+                    padding: "10px 14px",
+                    background: "var(--hc-primary-muted)",
+                    border: "1px solid var(--hc-primary-edge)",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    color: "var(--hc-navy)",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  ✨ ウィザードで入力した情報を自動で補完しました。内容を確認して「保存する」を押してください。
+                </div>
+              )}
               <Field label="会社名">
                 <input className="form-input" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
               </Field>
