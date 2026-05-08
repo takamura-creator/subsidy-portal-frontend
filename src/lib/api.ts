@@ -11,6 +11,14 @@ if (!process.env.NEXT_PUBLIC_API_URL) {
   }
 }
 
+export interface SubsidyDocument {
+  key: string;
+  label: string;
+  accept?: string;
+  required: boolean;
+  note?: string;
+}
+
 export interface Subsidy {
   id: string;
   name: string;
@@ -28,6 +36,9 @@ export interface Subsidy {
   description: string;
   application_tips: string;
   source_url: string;
+  document_tier?: number;
+  draft_subsidy_type?: string;
+  required_documents?: SubsidyDocument[];
 }
 
 export interface MatchRequest {
@@ -65,10 +76,15 @@ async function apiFetch<T>(
   url: string,
   options: RequestInit & { next?: { revalidate?: number } } = {}
 ): Promise<T> {
+  const DEFAULT_TIMEOUT = 10000;
+  const { signal: customSignal, ...restOptions } = options;
+  const timeoutMs = customSignal ? undefined : DEFAULT_TIMEOUT;
+  const effectiveSignal = customSignal ?? AbortSignal.timeout(DEFAULT_TIMEOUT);
+
   try {
     const res = await fetch(url, {
-      signal: AbortSignal.timeout(10000),
-      ...options,
+      ...restOptions,
+      signal: effectiveSignal,
     });
     if (!res.ok) {
       const message =
@@ -81,7 +97,8 @@ async function apiFetch<T>(
   } catch (err) {
     if (err instanceof ApiError) throw err;
     if (err instanceof DOMException && err.name === "TimeoutError") {
-      throw new ApiError(408, "リクエストがタイムアウトしました（10秒）");
+      const sec = timeoutMs ? Math.round(timeoutMs / 1000) : "—";
+      throw new ApiError(408, `リクエストがタイムアウトしました（${sec}秒）`);
     }
     throw new ApiError(0, "ネットワークエラーが発生しました");
   }
@@ -1332,7 +1349,15 @@ export async function generateAIDraft(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
+    signal: AbortSignal.timeout(120000),
   });
+}
+
+export async function fetchDraft(
+  appId: string,
+  draftId: string,
+): Promise<AIDraftResponse> {
+  return authFetch(`${API_URL}/api/v1/applications/${appId}/draft/${draftId}`);
 }
 
 export interface ScoreBreakdownItem {
@@ -1584,4 +1609,71 @@ export async function getApplicationStatus(appId: string): Promise<ApplicationSt
 }
 export async function patchApplicationStatus(appId: string, status: string): Promise<ApplicationStatusResponse> {
   return authFetch(`${API_URL}/api/applications/${appId}/status`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
+}
+
+// --- Sprint 7: ドラフト永続化・インライン編集 ---
+
+export async function patchDraftChapter(
+  appId: string,
+  draftId: string,
+  chapterId: string,
+  content: string,
+): Promise<DraftChapter> {
+  return authFetch(`${API_URL}/api/v1/applications/${appId}/draft/${draftId}/chapters/${chapterId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+  });
+}
+
+export interface UsageInfo {
+  used: number;
+  limit: number;
+  year_month: string;
+}
+
+export async function fetchUsageRemaining(): Promise<UsageInfo> {
+  return authFetch(`${API_URL}/api/v1/applications/usage`);
+}
+
+export async function exportDraftBlob(
+  appId: string,
+  draftId: string,
+  format: "pdf" | "docx" = "pdf",
+): Promise<Blob> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  const res = await fetch(
+    `${API_URL}/api/v1/applications/${appId}/draft/${draftId}/export?format=${format}`,
+    { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+  );
+  if (!res.ok) throw new ApiError(res.status, `Export failed: ${res.statusText}`);
+  return res.blob();
+}
+
+export interface DrillDownQuestionItem {
+  question_id: string;
+  chapter_id: string;
+  question_text: string;
+  priority: number;
+}
+
+export async function fetchDrillDownQuestions(
+  applicationId: string,
+  chapterIds: string[],
+): Promise<DrillDownQuestionItem[]> {
+  const token = getToken();
+  const res = await fetch(
+    `${API_URL}/api/v1/applications/${applicationId}/drill-down-questions`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ chapter_ids: chapterIds }),
+    },
+  );
+  if (!res.ok) throw new ApiError(res.status, "Failed to fetch drill-down questions");
+  const data = await res.json();
+  return data.questions ?? [];
 }

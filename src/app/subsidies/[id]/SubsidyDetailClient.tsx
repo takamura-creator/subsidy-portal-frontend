@@ -13,12 +13,29 @@ import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import type { Subsidy } from "@/lib/api";
 
-function getDaysUntil(dateStr: string): number {
-  const parts = dateStr.split("/");
-  if (parts.length !== 3) return 999;
-  const target = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+/** deadlineテキストから次の日付を抽出し、残日数を返す。パース不能ならnullを返す */
+function getDaysUntil(dateStr: string): number | null {
+  // "2026年5月12日" or "2026/5/12" 形式を探す
+  const patterns = [
+    /(\d{4})年(\d{1,2})月(\d{1,2})日/g,
+    /(\d{4})\/(\d{1,2})\/(\d{1,2})/g,
+  ];
   const now = new Date();
-  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  let nearest: number | null = null;
+  for (const re of patterns) {
+    let m;
+    while ((m = re.exec(dateStr)) !== null) {
+      const target = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+      const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      // 未来の日付のうち最も近いものを採用。すべて過去なら最も近い過去を採用
+      if (diff > 0 && (nearest === null || diff < nearest)) {
+        nearest = diff;
+      } else if (nearest === null || (nearest < 0 && diff > nearest)) {
+        nearest = diff;
+      }
+    }
+  }
+  return nearest;
 }
 
 function formatAmount(amount: number): string {
@@ -27,13 +44,23 @@ function formatAmount(amount: number): string {
   return `${amount.toLocaleString("ja-JP")}円`;
 }
 
-const DOCUMENTS = [
-  { label: "gBizIDプライムアカウント", done: true },
-  { label: "履歴事項全部証明書", done: true },
-  { label: "法人税の納税証明書", done: false },
-  { label: "事業計画書", done: false },
-  { label: "ITツール見積書", done: false },
-];
+/** 補助率を人間用テキストに変換 */
+function formatRate(rateMin: number, rateMax: number): string {
+  const minPct = Math.round(rateMin * 100);
+  const maxPct = Math.round(rateMax * 100);
+  if (minPct === maxPct) return `${minPct}%（${formatFraction(rateMin)}）`;
+  return `${formatFraction(rateMin)}〜${formatFraction(rateMax)}`;
+}
+
+function formatFraction(rate: number): string {
+  if (rate === 0.5) return "1/2";
+  if (rate === 0.67 || Math.abs(rate - 2/3) < 0.01) return "2/3";
+  if (rate === 0.75) return "3/4";
+  if (rate === 1) return "全額";
+  if (rate === 0.25) return "1/4";
+  if (rate === 0.33 || Math.abs(rate - 1/3) < 0.01) return "1/3";
+  return `${Math.round(rate * 100)}%`;
+}
 
 const TOC_ITEMS = [
   { href: "#overview", label: "概要" },
@@ -42,22 +69,14 @@ const TOC_ITEMS = [
   { href: "#deadline", label: "締切・スケジュール" },
   { href: "#howto", label: "申請方法" },
   { href: "#industries", label: "対象業種" },
-  { href: "#documents", label: "必要書類" },
+  { href: "#documents", label: "必要書類一覧" },
 ];
 
 export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }) {
   const [activeSection, setActiveSection] = useState("#overview");
-  const [checkedDocs, setCheckedDocs] = useState<boolean[]>(DOCUMENTS.map((d) => d.done));
+  const docs = s.required_documents ?? [];
 
   const days = getDaysUntil(s.deadline);
-
-  const toggleDoc = (idx: number) => {
-    setCheckedDocs((prev) => {
-      const next = [...prev];
-      next[idx] = !next[idx];
-      return next;
-    });
-  };
 
   /* ── Left column: Back + TOC ── */
   const left = (
@@ -144,7 +163,11 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           background: "var(--hc-accent-light)",
           color: "var(--hc-accent)",
         }}>
-          締切: {s.deadline}（あと{days}日）
+          {days !== null && days > 0
+            ? `締切まであと${days}日`
+            : days !== null && days <= 0
+              ? "締切済み（次回公募をお待ちください）"
+              : `締切: ${s.deadline}`}
         </span>
         <span style={{
           fontSize: 12,
@@ -186,9 +209,6 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
         <p style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
           {s.description || "詳細情報は公式サイトをご確認ください。"}
         </p>
-        <p style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
-          防犯カメラ・監視カメラシステムのうち、IoT連携型・クラウド録画型のシステムは本枠の対象になりやすい傾向があります。
-        </p>
       </section>
 
       {/* 対象要件 */}
@@ -214,23 +234,15 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
             </tr>
             <tr>
               <th>対象設備</th>
-              <td>セキュリティ対策を目的としたITツール（クラウド型監視カメラ含む）</td>
+              <td>防犯カメラ・監視カメラ関連設備</td>
             </tr>
             <tr>
               <th>補助率</th>
-              <td>{Math.round(s.rate_min * 100) === Math.round(s.rate_max * 100)
-                ? `${Math.round(s.rate_min * 100)}%`
-                : `1/${Math.round(1 / s.rate_min)} 〜 ${Math.round(1 / s.rate_max) === 1 ? "全額" : `${Math.round(1 / s.rate_max)}/${4}`}`
-              }
-              </td>
+              <td>{formatRate(s.rate_min, s.rate_max)}</td>
             </tr>
             <tr>
               <th>補助上限</th>
               <td>{formatAmount(s.max_amount)}</td>
-            </tr>
-            <tr>
-              <th>申請方法</th>
-              <td>IT導入支援事業者経由で電子申請</td>
             </tr>
           </tbody>
         </table>
@@ -255,11 +267,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           <tbody>
             <tr>
               <th>補助率</th>
-              <td>1/2（通常）〜 3/4（小規模事業者）</td>
-            </tr>
-            <tr>
-              <th>補助下限</th>
-              <td>5万円</td>
+              <td>{formatRate(s.rate_min, s.rate_max)}</td>
             </tr>
             <tr>
               <th>補助上限</th>
@@ -267,7 +275,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
             </tr>
             <tr>
               <th>自己負担</th>
-              <td>25% 〜 50%</td>
+              <td>{Math.round((1 - s.rate_max) * 100)}%{s.rate_min !== s.rate_max ? `〜${Math.round((1 - s.rate_min) * 100)}%` : ""}</td>
             </tr>
           </tbody>
         </table>
@@ -289,13 +297,28 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           締切・スケジュール
         </h2>
         <ul style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
-          <li style={{ marginBottom: 6 }}>公募開始: 2026年2月15日</li>
           <li style={{ marginBottom: 6 }}>
-            申請締切: <strong style={{ color: "var(--hc-accent)" }}>{s.deadline}（あと{days}日）</strong>
+            申請締切: <strong style={{ color: "var(--hc-accent)" }}>
+              {s.deadline}
+              {days !== null && days > 0 && `（あと${days}日）`}
+              {days !== null && days <= 0 && "（締切済み）"}
+            </strong>
           </li>
-          <li style={{ marginBottom: 6 }}>採択通知: 2026年6月上旬（予定）</li>
-          <li style={{ marginBottom: 6 }}>事業完了: 2026年12月31日</li>
+          <li style={{ marginBottom: 6 }}>ステータス: {s.status === "open" ? "公募中" : s.status === "upcoming" ? "公募予定" : "締切済み"}</li>
         </ul>
+        {s.application_tips && (
+          <div style={{
+            marginTop: 8,
+            padding: "10px 14px",
+            background: "var(--hc-primary-muted, #f0f7f0)",
+            borderRadius: 8,
+            fontSize: 13,
+            color: "var(--hc-text-muted)",
+            lineHeight: 1.7,
+          }}>
+            <strong style={{ color: "var(--hc-navy)" }}>申請のポイント:</strong> {s.application_tips}
+          </div>
+        )}
       </section>
 
       {/* 申請方法 */}
@@ -314,11 +337,22 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           申請方法
         </h2>
         <ol style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
-          <li style={{ marginBottom: 6 }}>IT導入支援事業者を選定</li>
-          <li style={{ marginBottom: 6 }}>ITツール（監視カメラシステム）を選定</li>
           <li style={{ marginBottom: 6 }}>gBizIDプライムを取得</li>
-          <li style={{ marginBottom: 6 }}>申請マイページから電子申請</li>
+          <li style={{ marginBottom: 6 }}>必要書類を準備</li>
+          <li style={{ marginBottom: 6 }}>電子申請システムから申請</li>
         </ol>
+        {s.source_url && (
+          <p style={{ fontSize: 13, marginTop: 8 }}>
+            <a
+              href={s.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--hc-primary)", textDecoration: "underline" }}
+            >
+              公式サイトで詳細を確認 →
+            </a>
+          </p>
+        )}
       </section>
 
       {/* 対象業種 */}
@@ -343,7 +377,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
         </p>
       </section>
 
-      {/* 必要書類チェックリスト */}
+      {/* 必要書類一覧 */}
       <section id="documents" style={{ marginBottom: 24 }}>
         <h2 style={{
           fontFamily: "'Sora', sans-serif",
@@ -356,60 +390,36 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           letterSpacing: "-0.3px",
           marginTop: 0,
         }}>
-          必要書類チェックリスト
+          必要書類
         </h2>
-        <div style={{
-          background: "var(--hc-white)",
-          border: "1px solid var(--hc-border)",
-          borderRadius: 8,
-          padding: 16,
-        }}>
-          {DOCUMENTS.map((doc, idx) => {
-            const isDone = checkedDocs[idx];
-            return (
-              <div
-                key={doc.label}
-                onClick={() => toggleDoc(idx)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "8px 0",
-                  borderBottom: idx < DOCUMENTS.length - 1 ? "1px solid var(--hc-border)" : "none",
-                  fontSize: 13,
-                  cursor: "pointer",
-                }}
-              >
-                <div
-                  style={{
-                    width: 18,
-                    height: 18,
-                    border: `2px solid ${isDone ? "var(--hc-primary)" : "var(--hc-border)"}`,
-                    borderRadius: 4,
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 11,
-                    background: isDone ? "var(--hc-primary)" : "transparent",
-                    color: isDone ? "#fff" : "transparent",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {isDone ? "✓" : ""}
-                </div>
-                <span
-                  style={{
-                    color: isDone ? "var(--hc-text-muted)" : "var(--hc-text)",
-                    textDecoration: isDone ? "line-through" : "none",
-                  }}
-                >
-                  {doc.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+        {docs.length > 0 ? (
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th style={{ width: "45%" }}>書類名</th>
+                <th style={{ width: "15%", textAlign: "center" }}>必須</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              {docs.map((doc) => (
+                <tr key={doc.key}>
+                  <td style={{ fontWeight: 500 }}>{doc.label}</td>
+                  <td style={{ textAlign: "center" }}>
+                    {doc.required
+                      ? <span style={{ color: "var(--hc-accent)", fontWeight: 600 }}>必須</span>
+                      : <span style={{ color: "var(--hc-text-muted)" }}>任意</span>}
+                  </td>
+                  <td style={{ fontSize: 12, color: "var(--hc-text-muted)" }}>{doc.note || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p style={{ fontSize: 14, color: "var(--hc-text-muted)" }}>
+            必要書類の詳細は公式サイトをご確認ください。
+          </p>
+        )}
       </section>
     </div>
   );
@@ -496,8 +506,8 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
         </h3>
         {[
           ["管轄", s.ministry],
-          ["情報ソース", "公式サイト"],
-          ["最終更新", "2026/4/10"],
+          ["カテゴリ", s.category],
+          ["地域", s.prefecture],
           ["データID", s.id],
         ].map(([label, value]) => (
           <div

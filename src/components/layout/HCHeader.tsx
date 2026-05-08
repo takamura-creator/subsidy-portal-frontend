@@ -39,6 +39,7 @@ export default function HCHeader() {
           alt=""
           width={22}
           height={22}
+          priority
           style={{ objectFit: "contain" }}
         />
         <span

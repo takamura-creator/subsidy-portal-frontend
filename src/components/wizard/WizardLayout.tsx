@@ -2,28 +2,46 @@
 
 import type { ReactNode } from "react";
 
-export const WIZARD_STEPS = [
+export interface WizardStepDef {
+  id: number;
+  label: string;
+  shortLabel: string;
+}
+
+export const WIZARD_STEPS: WizardStepDef[] = [
   { id: 1, label: "会社情報", shortLabel: "会社" },
   { id: 2, label: "補助金選択", shortLabel: "補助金" },
   { id: 3, label: "製品・構成", shortLabel: "製品" },
   { id: 4, label: "見積もり", shortLabel: "見積" },
   { id: 5, label: "申請書類", shortLabel: "書類" },
   { id: 6, label: "プレビュー", shortLabel: "出力" },
-] as const;
+];
 
-export type WizardStepId = (typeof WIZARD_STEPS)[number]["id"];
+export const JIZOKUKA_STEPS: WizardStepDef[] = [
+  { id: 1, label: "会社情報", shortLabel: "会社" },
+  { id: 2, label: "補助金選択", shortLabel: "補助金" },
+  { id: 3, label: "製品・構成", shortLabel: "製品" },
+  { id: 4, label: "見積もり", shortLabel: "見積" },
+  { id: 5, label: "補足質問", shortLabel: "質問" },
+  { id: 6, label: "AI生成", shortLabel: "生成" },
+  { id: 7, label: "編集・出力", shortLabel: "出力" },
+];
+
+export type WizardStepId = number;
 
 interface Props {
   currentStep: WizardStepId;
   children: ReactNode;
   title?: string;
   subtitle?: string;
+  steps?: WizardStepDef[];
 }
 
-export default function WizardLayout({ currentStep, children, title, subtitle }: Props) {
+export default function WizardLayout({ currentStep, children, title, subtitle, steps }: Props) {
+  const stepDefs = steps ?? WIZARD_STEPS;
   return (
     <div className="max-w-[960px] mx-auto px-4 md:px-6 py-8">
-      <ProgressBar currentStep={currentStep} />
+      <ProgressBar currentStep={currentStep} steps={stepDefs} />
       {(title || subtitle) && (
         <div className="mt-6 mb-4">
           {title && (
@@ -46,10 +64,10 @@ export default function WizardLayout({ currentStep, children, title, subtitle }:
   );
 }
 
-function ProgressBar({ currentStep }: { currentStep: WizardStepId }) {
+function ProgressBar({ currentStep, steps }: { currentStep: WizardStepId; steps: WizardStepDef[] }) {
   return (
     <ol className="flex items-center justify-between gap-2 md:gap-3" aria-label="ウィザード進捗">
-      {WIZARD_STEPS.map((step, idx) => {
+      {steps.map((step, idx) => {
         const isDone = step.id < currentStep;
         const isCurrent = step.id === currentStep;
         const stateClass = isCurrent
@@ -76,7 +94,7 @@ function ProgressBar({ currentStep }: { currentStep: WizardStepId }) {
                 <span className="md:hidden">{step.shortLabel}</span>
               </span>
             </div>
-            {idx < WIZARD_STEPS.length - 1 && (
+            {idx < steps.length - 1 && (
               <div
                 className={`flex-1 h-[2px] ${
                   step.id < currentStep ? "bg-primary" : "bg-border"

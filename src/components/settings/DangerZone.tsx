@@ -31,6 +31,7 @@ export default function DangerZone() {
       await deleteAccount(password);
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
+      localStorage.removeItem("hc_wizard_state_v2");
       window.location.href = "/auth/login";
     } catch (err) {
       setError(

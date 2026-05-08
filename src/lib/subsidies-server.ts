@@ -18,7 +18,7 @@ import type { Subsidy } from "./api";
 
 type SubsidiesJson = { subsidies: Subsidy[] };
 
-const SUBSIDIES: Subsidy[] = (subsidiesJson as SubsidiesJson).subsidies ?? [];
+const SUBSIDIES: Subsidy[] = (subsidiesJson as unknown as SubsidiesJson).subsidies ?? [];
 
 /** 全補助金を返す（sitemap / 一覧 SSG 用）。 */
 export function getAllSubsidies(): Subsidy[] {

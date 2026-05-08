@@ -457,7 +457,7 @@ function ResultsContent() {
           }}
         >
           <Image
-            src="/turtle_celebration.png"
+            src="/images/turtle_celebration.png"
             alt="お祝いマスコット"
             width={36}
             height={36}

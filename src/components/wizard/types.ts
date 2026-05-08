@@ -8,6 +8,7 @@ export interface CompanyInfo {
   industry: string;
   employees: number;
   annualRevenue?: number;
+  websiteUrl?: string;
 }
 
 export interface SubsidySelection {
@@ -81,6 +82,10 @@ export interface WizardState {
   estimate?: EstimateSnapshot;
   documents?: DocumentsSnapshot;
   reminderEmail?: string;
+  hpExtracted?: Record<string, string>;
+  qaAnswers?: Record<string, string>;
+  documentId?: string;
+  draftId?: string;
 }
 
 export const EMPTY_WIZARD_STATE: WizardState = {

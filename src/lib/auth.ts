@@ -44,6 +44,8 @@ export function isAuthenticated(): boolean {
 export function logout(): void {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
+  // ウィザードの状態もクリア（別アカウントのデータ残留を防止）
+  localStorage.removeItem("hc_wizard_state_v2");
   window.location.href = "/auth/login";
 }
 

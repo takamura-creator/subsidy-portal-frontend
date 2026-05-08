@@ -1,0 +1,97 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import {
+  ScaleIn,
+  FadeIn,
+  FloatLoop,
+  TextReveal,
+  ButtonPulse,
+  StaggerChildren,
+  StaggerItem,
+  WaveText,
+  TerminalTypewriter,
+  GradientText,
+} from "@/components/motion";
+import SubsidyCarousel from "@/components/home/SubsidyCarousel";
+
+const CATCHPHRASES = [
+  "あなたの会社に合った補助金を、最短30秒でAIが自動診断します。",
+  "主要な補助金制度から、防犯カメラ導入に使える制度を一括検索。対応補助金は随時追加中。",
+  "診断・検索・比較・申請書類の作成まで、このサイトだけで完結できます。",
+];
+
+export default function HeroStage() {
+  return (
+    <div className="stage">
+      <ScaleIn delay={0.1} duration={0.6}>
+        <FloatLoop amplitude={6} duration={3.5}>
+          <Image
+            className="turtle"
+            src="/images/turtle_wave.png"
+            alt="HOJYO CAME キャラクター"
+            width={112}
+            height={112}
+            priority
+          />
+        </FloatLoop>
+      </ScaleIn>
+
+      <h1>
+        <TextReveal
+          text="HOJYO "
+          splitBy="char"
+          stagger={0.05}
+          delay={0.3}
+          duration={0.4}
+        />
+        <GradientText>
+          <TextReveal
+            text="CAME"
+            splitBy="char"
+            stagger={0.05}
+            delay={0.6}
+            duration={0.4}
+          />
+        </GradientText>
+      </h1>
+
+      <FadeIn direction="up" delay={0.8} distance={16}>
+        <TerminalTypewriter lines={CATCHPHRASES} />
+      </FadeIn>
+
+      <ButtonPulse delay={1.0} glowColor="rgba(21, 128, 61, 0.25)">
+        <Link href="/match" className="cta-primary">
+          無料で補助金を診断する →
+        </Link>
+      </ButtonPulse>
+
+      <StaggerChildren stagger={0.12} className="support-items">
+        <StaggerItem>
+          <span className="support-chip">無料・登録不要</span>
+        </StaggerItem>
+        <StaggerItem>
+          <span className="support-chip">約30秒</span>
+        </StaggerItem>
+        <StaggerItem>
+          <span className="support-chip">主要補助金に対応</span>
+        </StaggerItem>
+      </StaggerChildren>
+
+      <FadeIn direction="none" delay={1.4}>
+        <p className="interactive-hint">
+          <WaveText
+            text="補助金で、はじめよう。"
+            className="wave-tagline"
+            hoverColor="var(--hc-brand-hojyo)"
+          />
+        </p>
+      </FadeIn>
+
+      <FadeIn direction="up" delay={1.6} distance={12}>
+        <SubsidyCarousel />
+      </FadeIn>
+    </div>
+  );
+}

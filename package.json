@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync-subsidies": "bash scripts/sync-subsidies.sh",
+    "prebuild": "bash scripts/sync-subsidies.sh || true"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

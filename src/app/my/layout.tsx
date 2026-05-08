@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, FileText, Search, Settings } from "lucide-react";
-import { isAuthenticated, getUser, requireAuth } from "@/lib/auth";
+import { isAuthenticated, getUser } from "@/lib/auth";
 import SidebarLayout from "@/components/shared/SidebarLayout";
 import type { SidebarEntry } from "@/components/shared/Sidebar";
 
@@ -17,27 +17,26 @@ const SIDEBAR_ITEMS: SidebarEntry[] = [
 
 export default function MyLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      window.location.href = `/auth/login?returnUrl=${encodeURIComponent(pathname)}`;
+      // router.replace でクライアント側遷移 → 画面フラッシュなし
+      router.replace(`/auth/login?returnUrl=${encodeURIComponent(pathname)}`);
       return;
     }
     const user = getUser();
     if (user && user.role !== "owner" && user.role !== "admin") {
-      window.location.href = "/";
+      router.replace("/");
       return;
     }
     setReady(true);
-  }, [pathname]);
+  }, [pathname, router]);
 
   if (!ready) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-text2 text-sm">認証確認中...</div>
-      </div>
-    );
+    // null を返すことで一瞬の「認証確認中...」テキストフラッシュも防止
+    return null;
   }
 
   return (
