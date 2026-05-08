@@ -360,9 +360,17 @@ function Tier2DraftPanel({
       : undefined;
 
   const [loading, setLoading] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string>("");
   const [businessDescription, setBusinessDescription] = useState("");
   const [copiedTitle, setCopiedTitle] = useState<string | null>(null);
+
+  // 経過秒数カウンター（生成中のみ動作）
+  useEffect(() => {
+    if (!loading) { setElapsed(0); return; }
+    const id = window.setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [loading]);
 
   async function handleGenerate() {
     setError("");
@@ -475,11 +483,26 @@ function Tier2DraftPanel({
           type="button"
           onClick={handleGenerate}
           disabled={loading}
-          className="inline-flex items-center justify-center px-5 py-2.5 rounded-[8px] bg-primary text-white font-semibold hover:bg-[var(--hc-primary-hover)] transition disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[8px] bg-primary text-white font-semibold hover:bg-[var(--hc-primary-hover)] transition disabled:opacity-70"
         >
-          {loading ? "生成中..." : existingDraft ? "下書きを再生成する" : "下書きを生成する"}
+          {loading && (
+            <svg
+              className="animate-spin h-4 w-4 shrink-0"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+          )}
+          {loading
+            ? `生成中... ${elapsed}秒`
+            : existingDraft
+              ? "下書きを再生成する"
+              : "下書きを生成する"}
         </button>
-        {existingDraft && (
+        {existingDraft && !loading && (
           <button
             type="button"
             onClick={copyAll}
@@ -489,6 +512,21 @@ function Tier2DraftPanel({
           </button>
         )}
       </div>
+
+      {loading && (
+        <div className="rounded-[10px] border border-[var(--hc-primary-border)] bg-[var(--hc-primary-muted)] px-4 py-3 text-[12px] text-navy leading-relaxed">
+          <p className="font-semibold mb-1">⏳ AI が申請書を作成しています</p>
+          <p className="text-text-muted">
+            通常 <strong>30〜60秒</strong> かかります。このままお待ちください。
+          </p>
+          <div className="mt-2 h-1.5 rounded-full bg-[var(--hc-primary-border)] overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-all duration-1000"
+              style={{ width: `${Math.min(elapsed * 1.5, 90)}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {existingDraft && (
         <div className="space-y-3">
