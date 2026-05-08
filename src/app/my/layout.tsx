@@ -15,29 +15,39 @@ const SIDEBAR_ITEMS: SidebarEntry[] = [
   { href: "/my/settings", label: "アカウント設定", icon: Settings },
 ];
 
+/** ログイン済み & ロール OK かをクライアントサイドで同期チェック */
+function checkReady(): boolean {
+  if (typeof window === "undefined") return false; // SSR は常に false
+  if (!isAuthenticated()) return false;
+  const user = getUser();
+  if (!user) return false;
+  return user.role === "owner" || user.role === "admin";
+}
+
 export default function MyLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+
+  // useState の lazy initializer で初回レンダリング時に同期チェック
+  // → ログイン済みなら ready=true のまま描画 → フラッシュゼロ
+  const [ready, setReady] = useState<boolean>(() => checkReady());
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      // router.replace でクライアント側遷移 → 画面フラッシュなし
+      setReady(false);
       router.replace(`/auth/login?returnUrl=${encodeURIComponent(pathname)}`);
       return;
     }
     const user = getUser();
     if (user && user.role !== "owner" && user.role !== "admin") {
+      setReady(false);
       router.replace("/");
       return;
     }
     setReady(true);
   }, [pathname, router]);
 
-  if (!ready) {
-    // null を返すことで一瞬の「認証確認中...」テキストフラッシュも防止
-    return null;
-  }
+  if (!ready) return null;
 
   return (
     <SidebarLayout sidebarItems={SIDEBAR_ITEMS}>
