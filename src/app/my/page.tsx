@@ -4,69 +4,137 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { getUser } from "@/lib/auth";
-import {
-  fetchMyDashboard,
-  type Application,
-  type ApplicationSummary,
-} from "@/lib/api";
+
+// ウィザードの localStorage キー（wizard/page.tsx と同一）
+const STORAGE_KEY = "hc_wizard_state_v2";
+
+interface WizardSnapshot {
+  step?: number;
+  state?: {
+    company?: { companyName?: string };
+    subsidy?: { name?: string; maxAmount?: number };
+    estimate?: { totalBeforeSubsidy?: number; subsidyAmount?: number; selfPayment?: number };
+    documents?: { draft?: { sections?: unknown[] }; tier1Generated?: unknown[] };
+    products?: unknown[];
+  };
+}
+
+function loadWizardSnapshot(): WizardSnapshot | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as WizardSnapshot) : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function MyDashboardPage() {
-  const [summary, setSummary] = useState<ApplicationSummary | null>(null);
-  const [recentApps, setRecentApps] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const user = getUser();
-  const companyName = user?.company_name ?? user?.email ?? "ゲスト";
+  const [companyName, setCompanyName] = useState<string>("...");
+  const [snap, setSnap] = useState<WizardSnapshot | null>(null);
 
   useEffect(() => {
-    fetchMyDashboard()
-      .then((res) => {
-        setSummary(res.summary ?? { submitted: 0, approved: 0, deadline_soon: 0 });
-        setRecentApps(res.applications.slice(0, 5));
-      })
-      .catch(() => {
-        setSummary({ submitted: 0, approved: 0, deadline_soon: 0 });
-        setRecentApps([]);
-      })
-      .finally(() => setLoading(false));
+    // クライアント側でのみ user / localStorage を参照
+    const user = getUser();
+    setCompanyName(user?.company_name ?? user?.email?.split("@")[0] ?? "ゲスト");
+    setSnap(loadWizardSnapshot());
   }, []);
 
-  // --- 左パネル ---
+  // ウィザード進捗から表示値を算出
+  const wizardStep = snap?.step ?? 0;
+  const subsidyName = snap?.state?.subsidy?.name ?? null;
+  const estimate = snap?.state?.estimate;
+  const hasDraft = !!(
+    snap?.state?.documents?.draft?.sections?.length ||
+    snap?.state?.documents?.tier1Generated?.length
+  );
+  const productCount = snap?.state?.products?.length ?? 0;
+  const maxSubsidy = estimate?.subsidyAmount
+    ? `${(estimate.subsidyAmount / 10000).toFixed(0)}万円`
+    : null;
+  const selfPayment = estimate?.selfPayment
+    ? `${(estimate.selfPayment / 10000).toFixed(0)}万円`
+    : null;
+
+  // ウィザード完了度（%）
+  const progressPct = wizardStep >= 6 ? 100 : wizardStep >= 1 ? Math.round((wizardStep / 6) * 100) : 0;
+
+  // --- 左パネル: ウィザード進行状況 ---
   const leftPanel = (
-    <div>
-      <span className="section-title">おすすめ補助金</span>
-      <div
-        style={{
-          background: "var(--hc-white)",
-          border: "1px solid var(--hc-border)",
-          borderRadius: 8,
-          padding: 12,
-          marginTop: 12,
-        }}
-      >
-        <h4 style={{ fontSize: 12, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}>
-          IT導入補助金
-        </h4>
-        <p style={{ fontSize: 11, color: "var(--hc-text-muted)", marginBottom: 6 }}>
-          セキュリティ対策推進枠 最大100万円
-        </p>
-        <span
+    <div className="space-y-3">
+      <span className="section-title">ウィザード進行状況</span>
+
+      {subsidyName ? (
+        <div
           style={{
-            fontSize: 10,
-            color: "var(--hc-accent)",
-            background: "var(--hc-accent-light)",
-            padding: "2px 8px",
-            borderRadius: 9999,
-            fontWeight: 600,
+            background: "var(--hc-white)",
+            border: "1px solid var(--hc-border)",
+            borderRadius: 8,
+            padding: 12,
+            marginTop: 12,
           }}
         >
-          公募中
-        </span>
-      </div>
+          <p style={{ fontSize: 11, fontWeight: 600, color: "var(--hc-text-muted)", marginBottom: 4 }}>
+            選択中の補助金
+          </p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 8 }}>
+            {subsidyName}
+          </p>
+          {/* プログレスバー */}
+          <div style={{ height: 6, borderRadius: 99, background: "var(--hc-border)", marginBottom: 4 }}>
+            <div
+              style={{
+                height: "100%",
+                borderRadius: 99,
+                background: "var(--hc-primary)",
+                width: `${progressPct}%`,
+                transition: "width 0.4s",
+              }}
+            />
+          </div>
+          <p style={{ fontSize: 10, color: "var(--hc-text-muted)" }}>
+            Step {wizardStep} / 6 完了（{progressPct}%）
+          </p>
+          {productCount > 0 && (
+            <p style={{ fontSize: 11, color: "var(--hc-text-muted)", marginTop: 6 }}>
+              製品 {productCount} 点を選択中
+            </p>
+          )}
+        </div>
+      ) : (
+        <div
+          style={{
+            background: "var(--hc-white)",
+            border: "1px dashed var(--hc-border)",
+            borderRadius: 8,
+            padding: "20px 12px",
+            marginTop: 12,
+            textAlign: "center",
+            color: "var(--hc-text-muted)",
+            fontSize: 11,
+          }}
+        >
+          <div style={{ fontSize: 20, marginBottom: 6 }}>📋</div>
+          ウィザード未開始
+          <div style={{ marginTop: 8 }}>
+            <Link
+              href="/my/wizard"
+              style={{
+                fontSize: 11,
+                color: "var(--hc-primary)",
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              今すぐ始める →
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 
-  // --- 右パネル ---
+  // --- 右パネル: クイックアクション ---
   const rightPanel = (
     <div>
       <span className="section-title">クイックアクション</span>
@@ -88,7 +156,7 @@ export default function MyDashboardPage() {
           transition: "all 0.15s",
         }}
       >
-        📝 新規申請を始める
+        📝 {wizardStep >= 1 ? "ウィザードを続ける" : "新規申請を始める"}
       </Link>
       <Link
         href="/match"
@@ -153,21 +221,34 @@ export default function MyDashboardPage() {
 
       <div className="divider" />
 
-      <span className="section-title">通知</span>
+      {/* マルチックへの相談 */}
       <div
         style={{
           marginTop: 12,
-          padding: "20px 12px",
-          textAlign: "center",
-          color: "var(--hc-text-muted)",
-          fontSize: 11,
-          background: "var(--hc-white)",
-          border: "1px solid var(--hc-border)",
+          padding: "14px 12px",
+          background: "var(--hc-primary-muted)",
+          border: "1px solid var(--hc-primary-edge)",
           borderRadius: 8,
+          fontSize: 11,
+          color: "var(--hc-navy)",
+          lineHeight: 1.6,
         }}
       >
-        <div style={{ fontSize: 20, marginBottom: 6 }}>🔔</div>
-        まだ通知はありません
+        <p style={{ fontWeight: 700, marginBottom: 4 }}>📞 マルチックに相談する</p>
+        <p style={{ color: "var(--hc-text-muted)", marginBottom: 8 }}>
+          概算見積もり・補助金申請について、専門スタッフにご相談いただけます。
+        </p>
+        <a
+          href="mailto:contact@multik.jp"
+          style={{
+            fontSize: 11,
+            color: "var(--hc-primary)",
+            fontWeight: 600,
+            textDecoration: "none",
+          }}
+        >
+          contact@multik.jp →
+        </a>
       </div>
     </div>
   );
@@ -188,113 +269,153 @@ export default function MyDashboardPage() {
         ようこそ、{companyName}さん
       </h1>
 
-      {/* サマリーカード x3 */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
-        {loading ? (
-          [1, 2, 3].map((i) => (
-            <div key={i} className="summary-card" style={{ textAlign: "center", opacity: 0.5 }}>
-              <div style={{ fontSize: 24, fontFamily: "'Sora', sans-serif", fontWeight: 700 }}>—</div>
-              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>読み込み中</div>
-            </div>
-          ))
-        ) : (
-          <>
-            <div className="summary-card" style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-accent)", marginBottom: 2 }}>
-                {summary?.submitted ?? 0}
-              </div>
-              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>進行中の申請</div>
-            </div>
-            <div className="summary-card" style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-text-muted)", marginBottom: 2 }}>
-                {summary?.deadline_soon ?? 0}
-              </div>
-              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>下書き</div>
-            </div>
-            <div className="summary-card" style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-success)", marginBottom: 2 }}>
-                {summary?.approved ?? 0}
-              </div>
-              <div style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>承認済み</div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* 最近の活動 */}
-      <span className="section-title">最近の活動</span>
-      {recentApps.length === 0 ? (
+      {/* HOJYO CAME の用途説明バナー（初回のみ的に表示） */}
+      {wizardStep === 0 && (
         <div
           style={{
-            background: "var(--hc-white)",
-            border: "1px solid var(--hc-border)",
+            background: "var(--hc-primary-muted)",
+            border: "1px solid var(--hc-primary-edge)",
             borderRadius: 8,
-            padding: "32px 20px",
-            textAlign: "center",
-            color: "var(--hc-text-muted)",
-            fontSize: 13,
+            padding: "12px 16px",
+            marginBottom: 16,
+            fontSize: 12,
+            color: "var(--hc-navy)",
+            lineHeight: 1.7,
           }}
         >
-          <div style={{ fontSize: 32, marginBottom: 10 }}>📋</div>
-          まだ活動はありません
-          <div style={{ marginTop: 12 }}>
-            <Link
-              href="/my/wizard"
-              style={{
-                display: "inline-block",
-                padding: "8px 16px",
-                background: "var(--hc-primary)",
-                color: "#fff",
-                borderRadius: 6,
-                fontSize: 12,
-                fontWeight: 600,
-                textDecoration: "none",
-              }}
-            >
-              最初の申請を始める
-            </Link>
+          <strong>HOJYO CAME でできること</strong><br />
+          防犯カメラ導入に使える補助金の診断・概算見積もり・申請書類の下書き生成を
+          一括でサポートします。実際の補助金交付は各行政機関への申請が必要です。
+        </div>
+      )}
+
+      {/* サマリーカード x3 — HOJYO CAME 内の進捗ベース */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
+        {/* カード1: 概算見積もり */}
+        <div className="summary-card" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-accent)", marginBottom: 2 }}>
+            {maxSubsidy ?? "—"}
+          </div>
+          <div style={{ fontSize: 10, color: "var(--hc-text-muted)", lineHeight: 1.4 }}>
+            補助金概算額<br />
+            <span style={{ fontSize: 9 }}>（参考値）</span>
           </div>
         </div>
-      ) : (
-        <>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <span />
-            <Link href="/my/applications" style={{ fontSize: 12, color: "var(--hc-primary)", textDecoration: "none" }}>
-              すべて見る →
-            </Link>
+
+        {/* カード2: 自己負担概算 */}
+        <div className="summary-card" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-text-muted)", marginBottom: 2 }}>
+            {selfPayment ?? "—"}
           </div>
-          <div
+          <div style={{ fontSize: 10, color: "var(--hc-text-muted)", lineHeight: 1.4 }}>
+            自己負担概算<br />
+            <span style={{ fontSize: 9 }}>（参考値）</span>
+          </div>
+        </div>
+
+        {/* カード3: 書類生成状況 */}
+        <div className="summary-card" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: hasDraft ? "var(--hc-primary)" : "var(--hc-text-muted)", marginBottom: 2 }}>
+            {hasDraft ? "✓" : "—"}
+          </div>
+          <div style={{ fontSize: 10, color: "var(--hc-text-muted)", lineHeight: 1.4 }}>
+            申請書下書き<br />
+            <span style={{ fontSize: 9 }}>{hasDraft ? "生成済み" : "未生成"}</span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          fontSize: 10,
+          color: "var(--hc-text-muted)",
+          marginBottom: 16,
+          padding: "6px 10px",
+          background: "rgba(0,0,0,0.03)",
+          borderRadius: 6,
+        }}
+      >
+        ⚠ 上記の金額は概算参考値です。実際の補助金額は審査機関の判定により異なります。
+      </div>
+
+      {/* 次のステップガイド */}
+      <span className="section-title">次のステップ</span>
+      <div
+        style={{
+          background: "var(--hc-white)",
+          border: "1px solid var(--hc-border)",
+          borderRadius: 8,
+          overflow: "hidden",
+          marginTop: 12,
+        }}
+      >
+        {[
+          {
+            step: 1,
+            label: "会社情報・補助金を選択する",
+            done: wizardStep >= 2,
+            href: "/my/wizard",
+          },
+          {
+            step: 2,
+            label: "製品構成と概算見積もりを確認する",
+            done: wizardStep >= 4,
+            href: "/my/wizard",
+          },
+          {
+            step: 3,
+            label: "申請書類の下書きを生成する",
+            done: hasDraft,
+            href: "/my/wizard",
+          },
+          {
+            step: 4,
+            label: "マルチックに施工・申請支援を依頼する",
+            done: false,
+            href: "mailto:contact@multik.jp",
+          },
+        ].map((item, i, arr) => (
+          <Link
+            key={item.step}
+            href={item.href}
             style={{
-              background: "var(--hc-white)",
-              border: "1px solid var(--hc-border)",
-              borderRadius: 8,
-              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "10px 14px",
+              borderBottom: i < arr.length - 1 ? "1px solid var(--hc-border)" : "none",
+              fontSize: 12,
+              color: item.done ? "var(--hc-text-muted)" : "var(--hc-text)",
+              textDecoration: "none",
+              background: item.done ? "transparent" : "var(--hc-white)",
             }}
           >
-            {recentApps.map((app, i) => (
-              <Link
-                key={app.id}
-                href={`/my/applications/${app.id}`}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "10px 14px",
-                  borderBottom: i < recentApps.length - 1 ? "1px solid var(--hc-border)" : "none",
-                  fontSize: 13,
-                  color: "var(--hc-text)",
-                  textDecoration: "none",
-                }}
-              >
-                <span>{app.subsidy_name ?? app.subsidy_id}</span>
-                <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>
-                  {new Date(app.updated_at).toLocaleDateString("ja-JP")}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </>
-      )}
+            <span
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 700,
+                flexShrink: 0,
+                background: item.done ? "var(--hc-primary)" : "var(--hc-border)",
+                color: item.done ? "#fff" : "var(--hc-text-muted)",
+              }}
+            >
+              {item.done ? "✓" : item.step}
+            </span>
+            <span style={{ flex: 1, textDecoration: item.done ? "line-through" : "none", opacity: item.done ? 0.6 : 1 }}>
+              {item.label}
+            </span>
+            {!item.done && (
+              <span style={{ fontSize: 10, color: "var(--hc-primary)", fontWeight: 600 }}>→</span>
+            )}
+          </Link>
+        ))}
+      </div>
     </>
   );
 
