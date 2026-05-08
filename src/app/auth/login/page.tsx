@@ -35,7 +35,11 @@ function LoginForm() {
 
       const role = decodeJwtRole(res.access_token);
       const returnUrl = searchParams.get("returnUrl") || searchParams.get("redirect");
-      if (returnUrl && returnUrl.startsWith("/")) {
+      // open-redirect 対策: 自サイト相対パスのみ許可。"//" や外部ドメインを遮断
+      const isSafeReturn = returnUrl
+        ? returnUrl.startsWith("/") && !returnUrl.startsWith("//")
+        : false;
+      if (isSafeReturn && returnUrl) {
         router.push(returnUrl);
       } else {
         router.push(role === "admin" ? "/admin" : "/my");
@@ -161,11 +165,12 @@ function LoginForm() {
                 style={{ borderRadius: 6, fontSize: 14 }}
               />
               <div style={{ textAlign: "right", marginTop: 4 }}>
+                {/* パスワードリセット機能は未実装。お問い合わせフォームへ案内 */}
                 <Link
-                  href="#"
-                  style={{ fontSize: 12, color: "var(--hc-primary)", textDecoration: "none" }}
+                  href="/contact"
+                  style={{ fontSize: 12, color: "var(--hc-text-muted)", textDecoration: "none" }}
                 >
-                  パスワードを忘れた方
+                  パスワードをお忘れの方はお問い合わせください
                 </Link>
               </div>
             </div>

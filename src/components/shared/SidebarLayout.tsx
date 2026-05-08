@@ -10,9 +10,9 @@ interface SidebarLayoutProps {
   sidebarItems: SidebarEntry[];
 }
 
-// ヘッダー 52px + StatusBar 28px = 80px
-const HEADER_H = "52px";
-const STATUSBAR_H = "28px";
+// CSS 変数を参照（ハードコード禁止 — D8修正）
+const HEADER_H = "var(--hc-header-h)";
+const STATUSBAR_H = "var(--hc-status-h)";
 
 export default function SidebarLayout({ children, sidebarItems }: SidebarLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);

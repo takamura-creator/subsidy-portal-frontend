@@ -80,6 +80,9 @@
   --portal-warning: var(--hc-warning);
   --portal-error: var(--hc-error);
 
+  /* Teal — ブランドカラー別トークン（#0D9488 ハードコード置換用） */
+  --hc-teal: #0D9488;
+
   /* Layout */
   --hc-header-h: 52px;
   --hc-status-h: 28px;
@@ -167,7 +170,7 @@ p {
 
 .hc-columns {
   display: grid;
-  height: calc(100vh - 64px);
+  height: calc(100vh - var(--hc-header-h) - var(--hc-status-h));
   overflow: hidden;
   position: relative;
   z-index: 1;

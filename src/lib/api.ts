@@ -545,9 +545,13 @@ export async function authFetch<T>(
         };
         return await apiFetch<T>(url, { ...options, headers: retryHeaders });
       } catch {
-        // リフレッシュも失敗 → 再ログインが必要
+        // リフレッシュも失敗 → ログアウトしてログインページへリダイレクト
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        if (typeof window !== "undefined") {
+          const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `/auth/login?returnUrl=${returnUrl}`;
+        }
         throw new ApiError(401, "セッションが期限切れです。再度ログインしてください。");
       }
     }

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { useAutosave } from "@/lib/useAutosave";
-import { createApplication, fetchAiStatus, requestDraftAssist } from "@/lib/api";
+import { createApplication, fetchAiStatus, requestDraftAssist, fetchProfileDetail } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 import { INDUSTRIES, PREFECTURES } from "@/lib/constants";
 
 // --- ウィザードステップ定義 ---
@@ -37,15 +38,15 @@ interface DraftData {
 }
 
 const INITIAL_DRAFT: DraftData = {
-  step: 1,
-  companyName: "株式会社サンプル",
-  representative: "山田 太郎",
-  phone: "03-1234-5678",
-  email: "yamada@sample.co.jp",
-  prefecture: "東京都新宿区",
-  industry: "小売業",
-  employees: "12",
-  selectedSubsidyId: "it-2026",
+  step: 0,
+  companyName: "",
+  representative: "",
+  phone: "",
+  email: "",
+  prefecture: "",
+  industry: "",
+  employees: "",
+  selectedSubsidyId: "",
   purpose: "",
   businessContent: "",
   expectedEffect: "",
@@ -82,6 +83,36 @@ export default function ApplicationNewPage() {
 
   useEffect(() => {
     fetchAiStatus().then((s) => setAiAvailable(s.available)).catch(() => {});
+
+    // JWT から即座に補完（同期）
+    const user = getUser();
+    if (user) {
+      const updates: Partial<DraftData> = {};
+      if (user.sub) updates.email = user.sub;
+      if (user.company_name) updates.companyName = user.company_name;
+      if (user.representative_name) updates.representative = user.representative_name;
+      if (Object.keys(updates).length > 0) {
+        setData((prev) => ({ ...prev, ...updates }));
+      }
+    }
+
+    // DB プロフィールで確定値を補完（非同期）
+    fetchProfileDetail()
+      .then((p) => {
+        setData((prev) => {
+          const updates: Partial<DraftData> = {};
+          if (p.company_name && !prev.companyName) updates.companyName = p.company_name;
+          const rep = p.representative_name || p.representative || "";
+          if (rep && !prev.representative) updates.representative = rep;
+          if (p.phone && !prev.phone) updates.phone = p.phone;
+          if (p.email && !prev.email) updates.email = p.email;
+          if (p.prefecture && !prev.prefecture) updates.prefecture = p.prefecture;
+          if (p.industry && !prev.industry) updates.industry = p.industry;
+          if (p.employees && !prev.employees) updates.employees = String(p.employees);
+          return Object.keys(updates).length > 0 ? { ...prev, ...updates } : prev;
+        });
+      })
+      .catch(() => {});
   }, []);
 
   async function handleAiAssist(field: "purpose" | "business_plan" | "expected_effect", dataField: keyof DraftData) {

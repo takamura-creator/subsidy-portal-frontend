@@ -35,9 +35,11 @@ interface Props {
   title?: string;
   subtitle?: string;
   steps?: WizardStepDef[];
+  /** O7: hydration 完了前は children を非表示にしてレイアウトシフトを防止 */
+  hydrated?: boolean;
 }
 
-export default function WizardLayout({ currentStep, children, title, subtitle, steps }: Props) {
+export default function WizardLayout({ currentStep, children, title, subtitle, steps, hydrated }: Props) {
   const stepDefs = steps ?? WIZARD_STEPS;
   return (
     <div className="max-w-[960px] mx-auto px-4 md:px-6 py-8">
@@ -57,7 +59,10 @@ export default function WizardLayout({ currentStep, children, title, subtitle, s
           )}
         </div>
       )}
-      <div className="bg-white border border-border rounded-[10px] p-6 md:p-8">
+      <div
+        className="bg-white border border-border rounded-[10px] p-6 md:p-8"
+        style={hydrated === false ? { visibility: "hidden" } : undefined}
+      >
         {children}
       </div>
     </div>

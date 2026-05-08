@@ -75,7 +75,8 @@ export default function ContactPage() {
     fetchProfileDetail()
       .then((p) => {
         if (p.company_name && !d.companyName) setCompanyName(p.company_name);
-        if (p.representative_name && !d.representativeName) setContactName(p.representative_name);
+        const repName = p.representative_name || p.representative || "";
+        if (repName && !d.representativeName) setContactName(repName);
       })
       .catch(() => {});
   }, []);

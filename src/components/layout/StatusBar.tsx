@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function StatusBar() {
   return (
     <div
@@ -18,7 +20,27 @@ export default function StatusBar() {
       }}
     >
       <span>&copy; 2026 HOJYO CAME — マルチック株式会社</span>
-      <span></span>
+      <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <Link
+          href="/about"
+          style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}
+        >
+          運営者情報
+        </Link>
+        {/* TODO: /privacy /terms ページ未作成。暫定的に /contact へリンク */}
+        <Link
+          href="/contact"
+          style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}
+        >
+          プライバシーポリシー
+        </Link>
+        <Link
+          href="/contact"
+          style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}
+        >
+          利用規約
+        </Link>
+      </span>
     </div>
   );
 }

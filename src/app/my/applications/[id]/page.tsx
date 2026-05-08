@@ -164,7 +164,7 @@ export default function ApplicationDetailPage({
         {pdfLoading ? "生成中..." : "PDF出力"}
       </button>
       <Link
-        href="#"
+        href={`/my/wizard?id=${id}&step=0`}
         style={{
           display: "block",
           width: "100%",
@@ -181,7 +181,7 @@ export default function ApplicationDetailPage({
           transition: "all 0.3s",
         }}
       >
-        提出する
+        修正する
       </Link>
       <Link
         href="/partners/multik"
@@ -279,8 +279,8 @@ export default function ApplicationDetailPage({
       <div id="company" style={{ marginBottom: 24 }}>
         <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
           会社情報
-          <a href="#" style={{ fontSize: 12, color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none", float: "right", display: "inline-flex", alignItems: "center", gap: 4 }}>
-            編集
+          <a href={`/my/wizard?id=${id}&step=0`} style={{ fontSize: 12, color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none", float: "right", display: "inline-flex", alignItems: "center", gap: 4 }}>
+            修正
           </a>
         </h2>
         <table className="info-table">

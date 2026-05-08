@@ -1,10 +1,14 @@
 "use client";
 
-interface JwtPayload {
+export interface JwtPayload {
   sub: string;
   email: string;
   role: "owner" | "contractor" | "admin";
   company_name?: string;
+  representative_name?: string;
+  industry?: string;
+  pref_code?: string;
+  employees?: number;
   exp: number;
   iat: number;
 }

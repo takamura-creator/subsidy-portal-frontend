@@ -37,11 +37,10 @@ const DEADLINE_OPTIONS = [
   { label: "90日以内", value: "90" },
 ];
 
-const MOCK_SUBSIDIES: Subsidy[] = [
+// カメラ関連補助金のみ（H7: id=2,4 は防犯カメラと無関係のため除外）
+const CAMERA_SUBSIDIES: Subsidy[] = [
   { id: "1", name: "IT導入補助金（セキュリティ対策推進枠）", category: "国", ministry: "中小企業庁", pref_code: "", prefecture: "", max_amount: 1000000, rate_min: 0.5, rate_max: 0.75, target_industries: [], max_employees: 300, deadline: "2026/4/30", status: "open", description: "", application_tips: "", source_url: "" },
-  { id: "2", name: "ものづくり補助金（省力化枠）", category: "国", ministry: "中小企業庁", pref_code: "", prefecture: "", max_amount: 12500000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: 300, deadline: "2026/6/15", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "3", name: "小規模事業者持続化補助金", category: "国", ministry: "商工会議所", pref_code: "", prefecture: "", max_amount: 500000, rate_min: 0.667, rate_max: 0.667, target_industries: [], max_employees: 20, deadline: "2026/5/31", status: "open", description: "", application_tips: "", source_url: "" },
-  { id: "4", name: "省エネルギー投資促進支援事業費補助金", category: "国", ministry: "経済産業省", pref_code: "", prefecture: "", max_amount: 5000000, rate_min: 0.333, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/7/31", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "5", name: "東京都 防犯設備設置費助成事業", category: "都道府県", ministry: "東京都", pref_code: "13", prefecture: "東京都", max_amount: 100000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/12/31", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "6", name: "大阪市 防犯カメラ設置補助金", category: "市区町村", ministry: "大阪市", pref_code: "27", prefecture: "大阪府", max_amount: 150000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/9/30", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "7", name: "札幌市 地域防犯カメラ設置促進事業", category: "市区町村", ministry: "札幌市", pref_code: "1", prefecture: "北海道", max_amount: 200000, rate_min: 0.5, rate_max: 0.667, target_industries: [], max_employees: null, deadline: "2026/11/30", status: "open", description: "", application_tips: "", source_url: "" },
@@ -51,9 +50,7 @@ const MOCK_SUBSIDIES: Subsidy[] = [
 // 更新日のモックデータ
 const UPDATED_MAP: Record<string, string> = {
   "1": "4/10更新",
-  "2": "4/8更新",
   "3": "4/5更新",
-  "4": "4/1更新",
   "5": "3/28更新",
   "6": "3/25更新",
   "7": "3/20更新",
@@ -85,7 +82,7 @@ function formatAmountDisplay(s: Subsidy): string {
 }
 
 export default function SubsidiesPage() {
-  const [subsidies, setSubsidies] = useState<Subsidy[]>(MOCK_SUBSIDIES);
+  const [subsidies, setSubsidies] = useState<Subsidy[]>(CAMERA_SUBSIDIES);
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [prefecture, setPrefecture] = useState("");
@@ -97,11 +94,23 @@ export default function SubsidiesPage() {
   const [sort, setSort] = useState("deadline");
   const [loading, setLoading] = useState(false);
 
+  // auto-memory 制約「カメラ関連補助金のみ表示」— API 正常系でも保証
+  const CAMERA_KEYWORDS = ["防犯", "セキュリティ", "カメラ", "監視", "IT導入", "DX"];
+  const filterCameraOnly = (list: Subsidy[]) =>
+    list.filter((s) =>
+      CAMERA_KEYWORDS.some(
+        (kw) => s.name.includes(kw) || s.category.includes(kw) || s.description?.includes(kw)
+      )
+    );
+
   useEffect(() => {
     setLoading(true);
     fetchSubsidies({ prefecture: prefecture || undefined, category: category || undefined, industry: industry || undefined })
-      .then((res) => setSubsidies(res.subsidies))
-      .catch(() => setSubsidies(MOCK_SUBSIDIES))
+      .then((res) => {
+        const cameraOnly = filterCameraOnly(res.subsidies);
+        setSubsidies(cameraOnly.length > 0 ? cameraOnly : CAMERA_SUBSIDIES);
+      })
+      .catch(() => setSubsidies(CAMERA_SUBSIDIES))
       .finally(() => setLoading(false));
   }, [prefecture, category, industry]);
 
@@ -417,7 +426,7 @@ export default function SubsidiesPage() {
         {sorted.map((s, idx) => {
           const days = getDaysUntil(s.deadline);
           const isUrgent = days <= 30;
-          const isNew = s.id === "2"; // ものづくり補助金にNEWバッジ
+          const isNew = false; // H7: カメラ無関係補助金除外後はNEWバッジ対象なし
           return (
             <div
               key={s.id}

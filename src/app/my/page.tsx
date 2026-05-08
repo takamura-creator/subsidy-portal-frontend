@@ -167,7 +167,7 @@ export default function MyDashboardPage() {
           value={hasDraft ? "✓" : "—"}
           label="申請書下書き"
           sub={hasDraft ? "生成済み" : "未生成"}
-          color={hasDraft ? "#0D9488" : "#6B6B7B"}
+          color={hasDraft ? "var(--hc-teal)" : "#6B6B7B"}
           active={hasDraft}
         />
       </div>
@@ -239,7 +239,7 @@ export default function MyDashboardPage() {
                     fontSize: 11,
                     fontWeight: 500,
                     flexShrink: 0,
-                    background: item.done ? "#0D9488" : "rgba(0,0,0,0.08)",
+                    background: item.done ? "var(--hc-teal)" : "rgba(0,0,0,0.08)",
                     color: item.done ? "#fff" : "#6B6B7B",
                   }}
                 >
@@ -255,7 +255,7 @@ export default function MyDashboardPage() {
                   {item.label}
                 </span>
                 {!item.done && (
-                  <span style={{ fontSize: 12, color: "#0D9488", fontWeight: 500 }}>→</span>
+                  <span style={{ fontSize: 12, color: "var(--hc-teal)", fontWeight: 500 }}>→</span>
                 )}
               </Link>
             ))}
@@ -285,7 +285,7 @@ export default function MyDashboardPage() {
                   style={{
                     height: "100%",
                     borderRadius: 99,
-                    background: "#0D9488",
+                    background: "var(--hc-teal)",
                     width: `${progressPct}%`,
                     transition: "width 0.4s",
                   }}
@@ -311,7 +311,7 @@ export default function MyDashboardPage() {
               borderRadius: RADIUS_STANDARD,
               fontSize: 14,
               fontWeight: 500,
-              background: "#0D9488",
+              background: "var(--hc-teal)",
               color: "#fff",
               textDecoration: "none",
               boxShadow: "rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px",
@@ -349,7 +349,7 @@ export default function MyDashboardPage() {
               href="/contact"
               style={{
                 fontSize: 13,
-                color: "#0D9488",
+                color: "var(--hc-teal)",
                 fontWeight: 500,
                 textDecoration: "none",
               }}

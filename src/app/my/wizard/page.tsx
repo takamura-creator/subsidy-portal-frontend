@@ -148,6 +148,7 @@ export default function WizardPage() {
       steps={steps}
       title="見積もり・申請書類ウィザード"
       subtitle={subtitleByStep[step]}
+      hydrated={hydrated}
     >
       {!hydrated ? (
         <p className="text-[13px] text-text-muted">読み込み中...</p>
@@ -202,12 +203,12 @@ export default function WizardPage() {
           onNext={goToStep6}
           onUpdateDocuments={setDocuments}
         />
-      ) : step === 6 && isJizokuka && isCompanyReady(state.company) && state.subsidy ? (
-        /* 持続化: Step 6 = AI生成（旧 Step 7） */
+      ) : step === 6 && isJizokuka && isCompanyReady(state.company) && state.subsidy && state.estimate ? (
+        /* 持続化: Step 6 = AI生成（旧 Step 7）— estimate 必須（H5修正） */
         <Step7Generate
           company={state.company as CompanyInfo}
           subsidy={state.subsidy}
-          applicationId={state.estimate?.id ?? "draft-preview"}
+          applicationId={state.estimate.id}
           hpExtracted={state.hpExtracted ?? {}}
           qaAnswers={state.qaAnswers ?? {}}
           existingDraftId={state.draftId}

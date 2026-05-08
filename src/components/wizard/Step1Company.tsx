@@ -215,6 +215,10 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
       } else {
         setExtractError("自動取得に失敗しました。しばらく待ってから再度お試しください。");
       }
+      // O6: 失敗時も空オブジェクトで通知（Step6QA の autoFill が undefined 安全に動作）
+      if (onHpExtracted) {
+        onHpExtracted({});
+      }
     } finally {
       setExtracting(false);
     }
