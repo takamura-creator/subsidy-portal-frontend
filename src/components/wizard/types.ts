@@ -112,5 +112,7 @@ export function detectDocumentTier(subsidy?: SubsidySelection): {
     return { tier: "tier2", draftType: "it_dounyu" };
   if (hay.includes("ものづくり") || hay.includes("もの作り"))
     return { tier: "tier2", draftType: "monodzukuri" };
+  if (hay.includes("業務改善") || hay.includes("業務改善助成金"))
+    return { tier: "tier2", draftType: "gyomu_kaizen" };
   return { tier: "unknown" };
 }

@@ -145,13 +145,38 @@ export default function Step4Estimate({
       {/* 試算 or 確定見積 */}
       {estimate ? (
         <section className="bg-[var(--hc-primary-subtle)] border border-[var(--hc-primary-border)] rounded-[10px] p-5 space-y-2 text-[14px]">
-          <h3 className="text-[14px] font-bold text-navy mb-2">正式見積（ID: {estimate.id}）</h3>
+          {/* 正式見積ではなく参考概算であることを明示 */}
+          <div className="flex items-start gap-2 mb-2">
+            <h3 className="text-[14px] font-bold text-navy">概算見積もり（参考値）</h3>
+            <span style={{
+              fontSize: 10, fontWeight: 700, color: "var(--hc-accent)",
+              background: "rgba(202,138,4,0.1)", border: "1px solid rgba(202,138,4,0.3)",
+              borderRadius: 4, padding: "1px 6px", whiteSpace: "nowrap", alignSelf: "center",
+            }}>参考値のみ・見積合わせ不可</span>
+          </div>
           <PriceRow label="製品＋工事＋ネットワーク合計（税抜）" value={estimate.totalBeforeSubsidy} />
           <PriceRow label="うち工事費" value={estimate.installationCost} muted />
           <PriceRow label="うちネットワーク構築費" value={estimate.networkSetupCost} muted />
-          <PriceRow label={`${subsidy.name} 補助金適用`} value={-estimate.subsidyAmount} accent />
+          <PriceRow label={`${subsidy.name} 補助金適用（試算）`} value={-estimate.subsidyAmount} accent />
           <div className="border-t border-border my-2" />
           <PriceRow label="自己負担額（試算）" value={estimate.selfPayment} bold />
+
+          {/* 補助金適用範囲の注記 */}
+          <div style={{
+            marginTop: 12, padding: "10px 12px",
+            background: "rgba(202,138,4,0.06)", border: "1px solid rgba(202,138,4,0.2)",
+            borderRadius: 8, fontSize: 11, color: "var(--hc-text-muted)", lineHeight: 1.7,
+          }}>
+            <p style={{ fontWeight: 700, color: "var(--hc-accent)", marginBottom: 4 }}>
+              ⚠️ 補助金適用額について
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 14 }}>
+              <li>上記は補助率上限を単純適用した<strong>試算値</strong>です。実際の補助金額は審査・採択結果により異なります。</li>
+              <li>補助対象経費の範囲（設備費・工事費の按分等）は補助金制度ごとに定められており、<strong>全額が対象になるとは限りません。</strong></li>
+              <li>補助金の上限額・加点条件・申請時期によって受給額は変動します。</li>
+              <li>正確な補助金額は申請前に所管機関または専門家にご確認ください。</li>
+            </ul>
+          </div>
         </section>
       ) : (
         <section className="bg-bg border border-border rounded-[10px] p-5 space-y-2 text-[14px]">
@@ -191,7 +216,7 @@ export default function Step4Estimate({
             disabled={!estimate || pdfLoading}
             className="inline-flex items-center justify-center px-6 py-3 rounded-[8px] bg-accent text-white font-semibold hover:bg-[var(--hc-accent-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {pdfLoading ? "PDF準備中..." : "見積書PDFをダウンロード"}
+            {pdfLoading ? "PDF準備中..." : "概算書PDFをダウンロード"}
           </button>
         </div>
       </div>

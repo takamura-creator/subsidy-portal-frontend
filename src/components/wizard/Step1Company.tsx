@@ -204,14 +204,16 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
     } catch (err) {
       if (err instanceof ApiError) {
         setExtractError(
-          err.status === 408
-            ? "タイムアウトしました。ホームページが応答しているか確認してください。"
-            : err.status === 401
-              ? "ログインが必要です。ログインしてから再度お試しください。"
-              : `自動取得に失敗しました（${err.message}）`,
+          err.status === 401
+            ? "ログインが必要です。ページを再読み込みしてログインし直してください。"
+            : err.status === 403
+              ? "アクセス権限がありません。"
+              : err.status === 408 || err.message?.includes("タイムアウト")
+                ? "ホームページの取得がタイムアウトしました。URLを確認して再度お試しください。"
+                : `自動取得に失敗しました（${err.message}）`,
         );
       } else {
-        setExtractError("自動取得に失敗しました。");
+        setExtractError("自動取得に失敗しました。しばらく待ってから再度お試しください。");
       }
     } finally {
       setExtracting(false);

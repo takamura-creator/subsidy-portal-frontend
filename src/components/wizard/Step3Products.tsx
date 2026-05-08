@@ -26,6 +26,8 @@ export default function Step3Products({ selected, onBack, onNext }: Props) {
   const [qty, setQty] = useState<Record<string, number>>(() =>
     Object.fromEntries(selected.map((s) => [s.productId, s.quantity])),
   );
+  // 選択中パッケージID（null = 未選択 / 個別選択）
+  const [selectedPkgId, setSelectedPkgId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -85,14 +87,23 @@ export default function Step3Products({ selected, onBack, onNext }: Props) {
   const totals = useMemo(() => calcTotals(selectedItems, installCosts), [selectedItems, installCosts]);
 
   function applyPackage(pkg: RecommendedPackage) {
+    if (selectedPkgId === pkg.id) {
+      // 再クリックで選択解除 → 数量をリセット
+      setSelectedPkgId(null);
+      setQty({});
+      return;
+    }
     const next: Record<string, number> = {};
     for (const item of pkg.items) {
       next[item.product_id] = (next[item.product_id] ?? 0) + item.quantity;
     }
     setQty(next);
+    setSelectedPkgId(pkg.id);
   }
 
   function setQuantity(id: string, n: number) {
+    // 個別数量変更したら「パッケージ選択」状態を解除
+    setSelectedPkgId(null);
     setQty((prev) => ({ ...prev, [id]: Math.max(0, Math.min(999, n | 0)) }));
   }
 
@@ -135,12 +146,24 @@ export default function Step3Products({ selected, onBack, onNext }: Props) {
               <div className="relative z-[1] grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {packages.map((pkg) => {
                   const breakdown = calcPackageBreakdown(pkg, installCosts);
+                  const isSelected = selectedPkgId === pkg.id;
                   return (
                     <button
                       key={pkg.id}
                       type="button"
                       onClick={() => applyPackage(pkg)}
-                      className="text-left border border-border rounded-[10px] p-4 bg-white hover:border-primary transition"
+                      className="text-left rounded-[10px] p-4 bg-white transition"
+                      style={{
+                        border: isSelected
+                          ? "2px solid var(--hc-primary)"
+                          : "1px solid var(--hc-border)",
+                        boxShadow: isSelected
+                          ? "0 0 0 3px rgba(21,128,61,0.12)"
+                          : "none",
+                        background: isSelected ? "rgba(21,128,61,0.04)" : "#fff",
+                      }}
+                      aria-pressed={isSelected}
+                      title={isSelected ? "クリックで選択解除" : "クリックで選択"}
                     >
                       <p className="text-[11px] font-semibold tracking-widest text-[color:var(--hc-accent)] uppercase mb-1">
                         {pkg.tier}
