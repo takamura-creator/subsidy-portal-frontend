@@ -336,6 +336,7 @@ const DRAFT_TYPE_LABEL: Record<DraftSubsidyType, string> = {
   jizokuka: "小規模事業者持続化補助金",
   it_dounyu: "IT導入補助金",
   monodzukuri: "ものづくり補助金",
+  gyomu_kaizen: "業務改善助成金",
 };
 
 function Tier2DraftPanel({

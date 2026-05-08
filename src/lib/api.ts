@@ -883,7 +883,7 @@ export async function generateDocument(req: DocumentGenerateRequest): Promise<{
 // Tier 1 (kanagawa_digital) と Tier 2 (jizokuka/it_dounyu/monodzukuri) を明示的に分離。
 // `DocumentSubsidyType` は両 Tier の union で、画面側の分岐判定に使用する。
 
-export type Tier2SubsidyType = "jizokuka" | "it_dounyu" | "monodzukuri";
+export type Tier2SubsidyType = "jizokuka" | "it_dounyu" | "monodzukuri" | "gyomu_kaizen";
 export type DocumentSubsidyType = Tier1SubsidyType | Tier2SubsidyType;
 
 export interface DraftCompanyInfo {
@@ -930,10 +930,10 @@ export async function requestDraftGeneration(
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new ApiError(
-      res.status,
-      data.detail || "下書き生成でエラーが発生しました",
-    );
+    const detailMsg = Array.isArray(data.detail)
+      ? data.detail.map((e: { msg?: string }) => e.msg ?? JSON.stringify(e)).join(", ")
+      : (data.detail || "下書き生成でエラーが発生しました");
+    throw new ApiError(res.status, detailMsg);
   }
   return res.json();
 }
