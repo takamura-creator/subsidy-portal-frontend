@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { fetchSubsidies, type Subsidy } from "@/lib/api";
 import {
@@ -24,7 +25,7 @@ export function generateStaticParams() {
   // Next.js 16 は内部で URL エンコードするため、generateStaticParams では**生の文字列**を返す。
   // 旧 `encodeURIComponent(p)` を返すと二重エンコードされ、page 内の `decodeURIComponent(prefecture)`
   // でも復号が1層しか進まず `name = "%E6%9D%..."` になる（FAQPage 差込失敗の原因）。
-  return PREFECTURES.map((p) => ({ prefecture: p }));
+  return SERVICE_PREFECTURES.map((p) => ({ prefecture: p }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -53,7 +54,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PrefectureLPPage({ params }: Props) {
   const { prefecture } = await params;
   const name = decodeURIComponent(prefecture);
-  const inService = isServicePrefecture(name);
+  if (!isServicePrefecture(name)) notFound();
+  const inService = true;
 
   let subsidies: Subsidy[] = [];
   try {

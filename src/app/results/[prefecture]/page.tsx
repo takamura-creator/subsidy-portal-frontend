@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
+import { isServicePrefecture } from "@/lib/constants";
 import {
   fetchRecipients,
   RecipientListResponse,
@@ -23,6 +24,7 @@ function formatAmount(amount: number): string {
 export default function PrefecturePage() {
   const params = useParams();
   const prefecture = decodeURIComponent(params.prefecture as string);
+  if (!isServicePrefecture(prefecture)) notFound();
 
   const [data, setData] = useState<RecipientListResponse | null>(null);
   const [loading, setLoading] = useState(true);

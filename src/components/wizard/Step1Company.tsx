@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { INDUSTRIES, PREFECTURES } from "@/lib/constants";
+import { INDUSTRIES, SERVICE_SERVICE_PREFECTURES } from "@/lib/constants";
 import { authFetch, ApiError } from "@/lib/api";
 import type { CompanyInfo } from "./types";
 
@@ -134,9 +134,9 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
         const formKey = FIELD_MAP[extractKey];
 
         if (formKey) {
-          // 都道府県: PREFECTURES リストと照合
+          // 都道府県: SERVICE_PREFECTURES リストと照合
           if (formKey === "prefecture") {
-            const matched = (PREFECTURES as readonly string[]).find(
+            const matched = (SERVICE_PREFECTURES as readonly string[]).find(
               (p) => strValue.includes(p),
             );
             if (matched) {
@@ -388,7 +388,7 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
         <Field label="都道府県" error={errors.prefecture?.message} required>
           <select {...register("prefecture")} className="wizard-input" autoComplete="address-level1">
             <option value="">選択してください</option>
-            {PREFECTURES.map((p) => (
+            {SERVICE_PREFECTURES.map((p) => (
               <option key={p} value={p}>
                 {p}
               </option>

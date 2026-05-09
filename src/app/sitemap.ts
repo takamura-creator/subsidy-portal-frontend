@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { PREFECTURES, isServicePrefecture } from "@/lib/constants";
+import { SERVICE_PREFECTURES } from "@/lib/constants";
 import { listPublishedCases } from "@/data/cases";
 import { getAllSubsidies } from "@/lib/subsidies-server";
 
@@ -34,15 +34,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  // LP 二層: 6都県=priority 1.0（フル）, 41道府県=priority 0.6（情報のみ）
-  const lpPages: MetadataRoute.Sitemap = PREFECTURES.map((pref) => ({
+  const lpPages: MetadataRoute.Sitemap = SERVICE_PREFECTURES.map((pref) => ({
     url: `${SITE_URL}/lp/${encodeURIComponent(pref)}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: isServicePrefecture(pref) ? 1.0 : 0.6,
+    priority: 1.0,
   }));
 
-  const resultsPrefecturePages: MetadataRoute.Sitemap = PREFECTURES.map((pref) => ({
+  const resultsPrefecturePages: MetadataRoute.Sitemap = SERVICE_PREFECTURES.map((pref) => ({
     url: `${SITE_URL}/results/${encodeURIComponent(pref)}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
