@@ -191,6 +191,47 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
         </span>
       </div>
 
+      {/* 自治会向け補助金の場合：鵠沼地区実績バナー */}
+      {s.target_industries?.includes("自治会・町会") && (
+        <section
+          style={{
+            marginBottom: 24,
+            padding: "16px 18px",
+            borderRadius: 10,
+            background: "linear-gradient(135deg, var(--hc-primary-faint) 0%, var(--hc-accent-light) 100%)",
+            border: "1px solid var(--hc-primary-edge)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
+            <div style={{
+              fontSize: 13, fontWeight: 700, color: "var(--hc-primary)",
+              padding: "4px 10px", borderRadius: 9999, background: "#fff", border: "1px solid var(--hc-primary-edge)",
+              fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px", flexShrink: 0,
+            }}>
+              湘南エリア 9件の施工実績
+            </div>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", margin: "0 0 4px", lineHeight: 1.5 }}>
+                藤沢市鵠沼地区での街頭防犯カメラ施工実績多数
+              </p>
+              <p style={{ fontSize: 12, color: "var(--hc-text-muted)", margin: 0, lineHeight: 1.6 }}>
+                自治会様の補助金申請から設置・運用まで、近隣自治会様の事例を踏まえてご提案いたします。
+              </p>
+            </div>
+            <Link
+              href="/contact"
+              style={{
+                fontSize: 12, fontWeight: 700, color: "#fff",
+                background: "var(--hc-primary)", padding: "8px 16px", borderRadius: 6,
+                textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0,
+              }}
+            >
+              まずは相談する →
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* 概要 */}
       <section id="overview" style={{ marginBottom: 24 }}>
         <h2 style={{

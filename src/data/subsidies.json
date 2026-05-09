@@ -6772,6 +6772,229 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ]
+    },
+    {
+      "id": "fujisawa-bouhan-camera-2026",
+      "name": "藤沢市 防犯カメラ設置補助金",
+      "category": "防犯",
+      "ministry": "藤沢市市民自治推進課",
+      "pref_code": "14",
+      "prefecture": "神奈川県",
+      "max_amount": 250000,
+      "rate_min": 0.75,
+      "rate_max": 0.75,
+      "target_industries": [
+        "自治会・町会"
+      ],
+      "max_employees": null,
+      "deadline": "2026年6月12日（事前協議は4〜6月）",
+      "status": "open",
+      "description": "藤沢市内の自治会・町内会が設置する街頭防犯カメラを支援。補助率3/4・上限25万円/台。鵠沼地区など湘南エリアでの設置実績多数。地権者同意書の提出が必須。",
+      "application_tips": "6月12日が申請期限。電柱等私有地への設置は地権者同意書が必須。マルチックは藤沢市鵠沼地区での施工実績9件・湘南エリアでの対応経験豊富。",
+      "source_url": "https://www.city.fujisawa.kanagawa.jp/",
+      "document_tier": 3,
+      "draft_subsidy_type": "jichitai_bouhan",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "申請団体名",
+          "type": "text",
+          "required": true,
+          "source": "homepage",
+          "note": "自治会・町内会・商店街の場合は団体名"
+        },
+        {
+          "key": "address",
+          "label": "所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "設立年月日",
+          "type": "date",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "installation_purpose",
+          "label": "設置目的",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "犯罪抑止",
+            "子供見守り",
+            "不法投棄防止",
+            "交通安全",
+            "その他"
+          ]
+        },
+        {
+          "key": "installation_locations",
+          "label": "設置場所（住所一覧）",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "複数箇所の場合は全住所を記載"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH製品型番（例: AVM3620V4）"
+        },
+        {
+          "key": "recording_days",
+          "label": "録画保存日数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "coverage_area_type",
+          "label": "撮影範囲区分",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "公道",
+            "私有地",
+            "建物内",
+            "複合"
+          ]
+        },
+        {
+          "key": "retention_days",
+          "label": "映像保存期間（日）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "manager_name",
+          "label": "映像管理責任者名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "police_consultation_date",
+          "label": "警察への事前協議日",
+          "type": "date",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（各自治体様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "installation_location_map",
+          "label": "設置場所位置図",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "police_consultation_cert",
+          "label": "警察との事前協議証明書",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "consent_doc",
+          "label": "自治会総会議事録・同意書類",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "自治会員の合意証明"
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "management_policy",
+          "label": "管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "coverage_diagram",
+          "label": "撮影範囲図面",
+          "accept": ".pdf,.jpg",
+          "required": false
+        },
+        {
+          "key": "land_consent",
+          "label": "土地使用承諾書（私有地設置時）",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false,
+          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
+        }
+      ]
     }
   ]
 }
