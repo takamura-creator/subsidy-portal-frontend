@@ -238,6 +238,57 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
         <EligibilityChecker key={s.id} subsidyId={s.id} subsidyName={s.name} />
       )}
 
+      {/* 自治会向け補助金の場合：参考書類テンプレ生成への誘導 */}
+      {s.target_industries?.includes("自治会・町会") && (
+        <section
+          style={{
+            marginBottom: 24,
+            padding: 20,
+            borderRadius: 10,
+            background: "var(--hc-white)",
+            border: "1px solid var(--hc-primary-edge)",
+            boxShadow: "var(--hc-shadow)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
+            <div style={{ fontSize: 32, lineHeight: 1, flexShrink: 0 }}>📝</div>
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <h3
+                style={{
+                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "var(--hc-navy)",
+                  margin: "0 0 4px",
+                  letterSpacing: "-0.3px",
+                }}
+              >
+                参考書類テンプレを作成する
+              </h3>
+              <p style={{ fontSize: 13, color: "var(--hc-text-muted)", margin: 0, lineHeight: 1.6 }}>
+                設置目的書・管理運用規程・個人情報保護方針・撮影範囲説明書の 4 種類を、選択式で5分で作成できます（参考資料）。
+              </p>
+            </div>
+            <Link
+              href={`/subsidies/${s.id}/templates`}
+              style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: "var(--hc-white)",
+                background: "var(--hc-primary)",
+                padding: "10px 18px",
+                borderRadius: 8,
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              テンプレを作成する →
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* 概要 */}
       <section id="overview" style={{ marginBottom: 24 }}>
         <h2 style={{
