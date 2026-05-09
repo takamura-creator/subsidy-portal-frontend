@@ -148,6 +148,13 @@ export default function Step8Draft({
         </div>
       </div>
 
+      {/* F3-3: モック時・AIキー未設定時の警告バナー */}
+      {draft?.warning && (
+        <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+          {draft.warning}
+        </div>
+      )}
+
       {/* ハイライト凡例 */}
       {draft && !loading && (
         <div className="flex items-center gap-3 text-[12px] bg-amber-50 border border-amber-200 rounded-[8px] px-3 py-2">

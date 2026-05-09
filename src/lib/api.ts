@@ -141,6 +141,7 @@ export interface RegisterRequest {
   role: "owner";
   company_name: string;
   pref_code: string;
+  representative?: string;   // F5: 代表者名（任意）
 }
 
 export interface RegisterResponse {
@@ -205,6 +206,7 @@ export interface UserProfile {
   role: "owner" | "admin";
   company_name: string;
   pref_code: string;
+  prefecture?: string;   // F4: pref_code のエイリアス（バックエンドが同値で返す）
 }
 
 export async function fetchMyDashboard(): Promise<ApplicationListResponse> {
@@ -1359,6 +1361,7 @@ export interface AIDraftResponse {
   status: string;
   chapters: DraftChapter[];
   created_at: string;
+  warning?: string;   // F3-3: モック時・AIキー未設定時の警告メッセージ
 }
 
 export interface AIDraftRequest {

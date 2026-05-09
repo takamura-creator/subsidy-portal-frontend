@@ -136,6 +136,7 @@ function RegisterForm() {
   const [password, setPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [prefCode, setPrefCode] = useState("");
+  const [representative, setRepresentative] = useState("");   // F5: 代表者名
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -151,6 +152,7 @@ function RegisterForm() {
         role: "owner",
         company_name: companyName,
         pref_code: prefCode,
+        representative,   // F5: 代表者名をAPI送信
       });
 
       // 登録後: ウィザードのデータがあれば自動でプロフィールに反映
@@ -160,7 +162,8 @@ function RegisterForm() {
           await updateProfile({
             company_name: companyName || String(wiz.companyName ?? ""),
             pref_code: prefCode || String(wiz.prefecture ?? ""),
-            representative: String(wiz.representativeName ?? ""),
+            // N7: フォーム入力値を優先し、空の場合のみウィザードデータで補完
+            representative: representative || String(wiz.representativeName ?? ""),
           });
         }
       } catch {
@@ -276,6 +279,20 @@ function RegisterForm() {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="株式会社〇〇"
+              />
+            </div>
+
+            {/* F5: 代表者名（任意） */}
+            <div className="field">
+              <label htmlFor="representative">代表者名（任意）</label>
+              <input
+                id="representative"
+                type="text"
+                className="form-input"
+                value={representative}
+                onChange={(e) => setRepresentative(e.target.value)}
+                placeholder="山田 太郎"
+                maxLength={100}
               />
             </div>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { PREFECTURES, INDUSTRIES } from "@/lib/constants";
+import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 
 // 事業カテゴリ（データの category フィールドに対応）
 const CATEGORIES = [
@@ -94,15 +95,7 @@ export default function SubsidiesPage() {
   const [sort, setSort] = useState("deadline");
   const [loading, setLoading] = useState(false);
 
-  // auto-memory 制約「カメラ関連補助金のみ表示」— API 正常系でも保証
-  const CAMERA_KEYWORDS = ["防犯", "セキュリティ", "カメラ", "監視", "IT導入", "DX"];
-  const filterCameraOnly = (list: Subsidy[]) =>
-    list.filter((s) =>
-      CAMERA_KEYWORDS.some(
-        (kw) => s.name.includes(kw) || s.category.includes(kw) || s.description?.includes(kw)
-      )
-    );
-
+  // F1: filterCameraOnly は共通モジュール（@/lib/subsidyFilters）から import済み
   useEffect(() => {
     setLoading(true);
     fetchSubsidies({ prefecture: prefecture || undefined, category: category || undefined, industry: industry || undefined })

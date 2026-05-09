@@ -42,7 +42,13 @@ export default function Step7Generate({
         subsidy_name: subsidy.name,
         company_name: company.companyName,
         industry: company.industry,
-        company_info: hpExtracted,
+        // F2: business_description 未設定時のみ qaAnswers.business_content で補完
+        // N6: ?? "" を削除。値が存在するときだけマージし、空文字でバックエンド判定を誤魔化さない
+        company_info: {
+          ...hpExtracted,
+          ...(hpExtracted.business_description ? {} :
+            qaAnswers.business_content ? { business_description: qaAnswers.business_content } : {}),
+        },
         collected_answers: qaAnswers,
       }).finally(() => {
         generatingRef.current = false;

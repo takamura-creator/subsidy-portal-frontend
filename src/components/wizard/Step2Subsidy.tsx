@@ -10,6 +10,7 @@ import {
   ApiError,
 } from "@/lib/api";
 import { isServicePrefecture } from "@/lib/constants";
+import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
 import type { CompanyInfo, SubsidySelection } from "./types";
 
@@ -18,16 +19,6 @@ interface Props {
   selected?: SubsidySelection;
   onBack: () => void;
   onNext: (subsidy: SubsidySelection) => void;
-}
-
-// auto-memory: カメラ関連補助金のみ表示（B5修正）
-const CAMERA_KEYWORDS = ["防犯", "セキュリティ", "カメラ", "監視", "IT導入", "DX"];
-function filterCameraOnly(items: Subsidy[]): Subsidy[] {
-  return items.filter((s) =>
-    CAMERA_KEYWORDS.some(
-      (kw) => s.name.includes(kw) || s.category.includes(kw) || (s.description?.includes(kw) ?? false)
-    )
-  );
 }
 
 export default function Step2Subsidy({ company, selected, onBack, onNext }: Props) {
