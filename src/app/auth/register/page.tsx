@@ -146,7 +146,7 @@ function RegisterForm() {
     setLoading(true);
 
     try {
-      await register({
+      const res = await register({
         email,
         password,
         role: "owner",
@@ -154,6 +154,10 @@ function RegisterForm() {
         pref_code: prefCode,
         representative,   // F5: 代表者名をAPI送信
       });
+
+      // 登録と同時にトークンを保存 → 再ログイン不要
+      localStorage.setItem("access_token", res.access_token);
+      localStorage.setItem("refresh_token", res.refresh_token);
 
       // 登録後: ウィザードのデータがあれば自動でプロフィールに反映
       try {
