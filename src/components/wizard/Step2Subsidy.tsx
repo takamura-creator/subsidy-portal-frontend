@@ -20,6 +20,16 @@ interface Props {
   onNext: (subsidy: SubsidySelection) => void;
 }
 
+// auto-memory: カメラ関連補助金のみ表示（B5修正）
+const CAMERA_KEYWORDS = ["防犯", "セキュリティ", "カメラ", "監視", "IT導入", "DX"];
+function filterCameraOnly(items: Subsidy[]): Subsidy[] {
+  return items.filter((s) =>
+    CAMERA_KEYWORDS.some(
+      (kw) => s.name.includes(kw) || s.category.includes(kw) || (s.description?.includes(kw) ?? false)
+    )
+  );
+}
+
 export default function Step2Subsidy({ company, selected, onBack, onNext }: Props) {
   const [subsidies, setSubsidies] = useState<Subsidy[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +49,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         ]);
         if (cancelled) return;
         if (subRes.status === "fulfilled") {
-          setSubsidies(subRes.value.subsidies ?? []);
+          setSubsidies(filterCameraOnly(subRes.value.subsidies ?? []));
         } else {
           setLoadError("補助金一覧の取得に失敗しました。時間をおいて再度お試しください。");
         }

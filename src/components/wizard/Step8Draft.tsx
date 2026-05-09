@@ -269,6 +269,11 @@ export default function Step8Draft({
           <p className="mt-2 text-xs text-text-muted">
             信頼度: {score.confidence_level}
           </p>
+          {score.disclaimer && (
+            <p className="mt-1 text-xs text-text-muted">
+              {score.disclaimer}
+            </p>
+          )}
         </div>
       )}
 

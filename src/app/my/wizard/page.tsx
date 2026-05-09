@@ -25,6 +25,8 @@ import {
   type WizardState,
   EMPTY_WIZARD_STATE,
 } from "@/components/wizard/types";
+import { getUser } from "@/lib/auth";
+import { fetchProfileDetail } from "@/lib/api";
 
 const STORAGE_KEY = "hc_wizard_state_v2";
 
@@ -64,6 +66,41 @@ export default function WizardPage() {
       // noop
     }
   }, [step, state, hydrated]);
+
+  // B6: M1 自動入力 — hydration 後に Profile で state.company を補完
+  // frontend.md 規約「getUser() は同期呼び出し」は applications/new/page.tsx 同様、
+  // hydration 後の補完用途として useEffect 内利用を許容
+  useEffect(() => {
+    if (!hydrated) return;
+    const user = getUser();
+    if (user) {
+      setState((prev) => {
+        const c = prev.company;
+        const updates: Partial<CompanyInfo> = {};
+        if (user.company_name && !c.companyName) updates.companyName = user.company_name;
+        if (user.representative_name && !c.representativeName) updates.representativeName = user.representative_name;
+        return Object.keys(updates).length > 0 ? { ...prev, company: { ...c, ...updates } } : prev;
+      });
+    }
+    // DB プロフィール（確定値）で補完 — JWT より優先度高
+    fetchProfileDetail()
+      .then((p) => {
+        setState((prev) => {
+          const c = prev.company;
+          const updates: Partial<CompanyInfo> = {};
+          if (p.company_name && !c.companyName) updates.companyName = p.company_name;
+          const rep = p.representative_name ?? p.representative ?? "";
+          if (rep && !c.representativeName) updates.representativeName = rep;
+          if (p.prefecture && !c.prefecture) updates.prefecture = p.prefecture;
+          if (p.industry && !c.industry) updates.industry = p.industry;
+          if (p.employees && !c.employees) updates.employees = p.employees;
+          return Object.keys(updates).length > 0 ? { ...prev, company: { ...c, ...updates } } : prev;
+        });
+      })
+      .catch((err: unknown) => {
+        console.warn("[wizard] fetchProfileDetail failed:", err);
+      });
+  }, [hydrated]);
 
   const setCompany = useCallback((c: CompanyInfo) => {
     setState((prev) => ({ ...prev, company: c }));

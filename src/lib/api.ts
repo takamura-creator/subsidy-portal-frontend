@@ -1401,6 +1401,7 @@ export interface ScoreResponse {
   score_breakdown: ScoreBreakdownItem[];
   feedback: string[];
   confidence_level: string;
+  disclaimer?: string;  // M7 修正: 採択保証なし免責
 }
 
 export async function scoreApplication(
