@@ -125,7 +125,7 @@ export default function MatchPage() {
             <Link
               key={ind}
               href={`/subsidies?industry=${encodeURIComponent(ind)}`}
-              style={{ textDecoration: "none", color: "inherit" }}
+              style={{ textDecoration: "none", color: "inherit", display: "block" }}
             >
               <article
                 className="hc-industry-card"
@@ -136,19 +136,29 @@ export default function MatchPage() {
                   padding: "20px 16px",
                   cursor: "pointer",
                   height: "100%",
+                  minHeight: 160,
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-                <div style={{ fontSize: 34, marginBottom: 10, lineHeight: 1 }}>{meta.icon}</div>
+                <div style={{
+                  width: 44, height: 44, marginBottom: 10,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 30, lineHeight: 1, flexShrink: 0,
+                }}>
+                  {meta.icon}
+                </div>
                 <h2 style={{ fontSize: 14, fontWeight: 700, margin: "0 0 4px", color: "var(--hc-navy)" }}>
                   {ind}
                 </h2>
-                <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: "0 0 12px", lineHeight: 1.5 }}>
+                <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: "0 0 0", lineHeight: 1.5, flex: 1 }}>
                   {meta.desc}
                 </p>
                 <div
                   style={{
                     fontSize: 12,
                     fontWeight: 700,
+                    marginTop: 12,
                     color: count > 0 ? "var(--hc-primary)" : "var(--hc-text-muted)",
                   }}
                 >
