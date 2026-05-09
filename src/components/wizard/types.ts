@@ -38,7 +38,7 @@ export interface EstimateSnapshot {
   createdAt: string;
 }
 
-export type DocumentTier = "tier1" | "tier2" | "unknown";
+export type DocumentTier = "tier1" | "tier2" | "jichikai" | "unknown";
 /**
  * Sprint 3 Task 0: `api.ts::Tier2SubsidyType` の再エクスポート。
  * 重複定義を避けるため本ファイルでは独自に Literal を持たない。
@@ -108,11 +108,15 @@ export function detectDocumentTier(subsidy?: SubsidySelection): {
     return { tier: "tier1" };
   }
   if (hay.includes("持続化")) return { tier: "tier2", draftType: "jizokuka" };
-  if (hay.includes("IT導入") || hay.includes("ITツール") || hay.includes("ＩＴ導入"))
+  if (hay.includes("IT導入") || hay.includes("ITツール") || hay.includes("ＩＴ導入") || hay.includes("デジタル化・AI"))
     return { tier: "tier2", draftType: "it_dounyu" };
   if (hay.includes("ものづくり") || hay.includes("もの作り"))
     return { tier: "tier2", draftType: "monodzukuri" };
   if (hay.includes("業務改善") || hay.includes("業務改善助成金"))
     return { tier: "tier2", draftType: "gyomu_kaizen" };
+  // 自治会向け補助金（防犯カメラ系）は別 tier として扱い、専用パネルで案内する
+  if (hay.includes("防犯カメラ") || hay.includes("地域防犯") || hay.includes("街頭防犯") || hay.includes("見守り") || hay.includes("防犯設備") || hay.includes("地域安全") || hay.includes("安全・安心まち")) {
+    return { tier: "jichikai" };
+  }
   return { tier: "unknown" };
 }

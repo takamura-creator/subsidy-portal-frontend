@@ -79,6 +79,10 @@ export default function Step5Documents({
         />
       )}
 
+      {tier === "jichikai" && (
+        <JichikaiPanel subsidyName={subsidy.name} />
+      )}
+
       {tier === "unknown" && (
         <UnknownTypePanel subsidyName={subsidy.name} />
       )}
@@ -694,6 +698,38 @@ function Tier2DraftPanel({
 /* ============================================================
  *  その他の補助金（Tier 未定義）
  * ============================================================ */
+
+/* ============================================================
+ *  自治会向け補助金（防犯カメラ系）— 紙申請が主流
+ * ============================================================ */
+
+function JichikaiPanel({ subsidyName }: { subsidyName: string }) {
+  return (
+    <section className="bg-white border border-border rounded-[10px] p-5 space-y-3">
+      <h3 className="text-[14px] font-bold text-navy">
+        自治会向け補助金は紙申請です
+      </h3>
+      <p className="text-[13px] text-text-muted leading-relaxed">
+        {subsidyName} は自治会・町会が申請主体の補助金で、各自治体の独自様式（紙申請）が一般的です。
+        Step 4 で生成した <strong>概算書PDF</strong>・<strong>見積書</strong> をそのまま申請窓口にご提出いただけます。
+      </p>
+      <div className="bg-[var(--hc-primary-faint)] border border-[var(--hc-primary-edge)] rounded-[8px] p-3 text-[12px] text-text leading-relaxed">
+        <strong>申請の流れ：</strong>
+        <ol className="list-decimal pl-5 mt-1 space-y-0.5">
+          <li>所轄自治体の窓口で申請様式（交付申請書・設置同意書等）を入手</li>
+          <li>本ウィザードの概算書PDF・見積書を添付</li>
+          <li>自治会総会の議事録・警察事前協議証明を準備</li>
+          <li>窓口へ提出（多くの自治体で公道撮影が条件）</li>
+        </ol>
+      </div>
+      <p className="text-[12px] text-text-muted">
+        施工・現地調査・詳細見積もりのご相談は{" "}
+        <a href="/contact" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">マルチック お問い合わせフォーム</a>{" "}
+        からどうぞ。
+      </p>
+    </section>
+  );
+}
 
 function UnknownTypePanel({ subsidyName }: { subsidyName: string }) {
   return (
