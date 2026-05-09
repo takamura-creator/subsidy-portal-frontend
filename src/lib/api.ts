@@ -171,6 +171,7 @@ export async function matchSubsidies(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
+    signal: AbortSignal.timeout(30000), // AI診断はAnthropicを呼ぶため30秒に延長
   });
 }
 
