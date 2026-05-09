@@ -79,10 +79,40 @@ export default function LossCalculator() {
     };
   }
 
-  const fieldVisible = (key: string) =>
-    !result?.applicable_fields || result.applicable_fields.length === 0
-      ? true
-      : result.applicable_fields.includes(key);
+  // 業種未選択時はオプションフィールドを非表示。選択後はAPIのapplicable_fieldsに従う
+  const fieldVisible = (key: string) => {
+    if (!industry) return false;
+    if (!result?.applicable_fields || result.applicable_fields.length === 0) return true;
+    return result.applicable_fields.includes(key);
+  };
+
+  // 業種別フィールドラベル（「万引き」等の業種不適切ワードを排除）
+  const THEFT_LABEL: Partial<Record<StrategyIndustry, string>> = {
+    retail:        "過去1年の盗難・万引き被害（万円）",
+    restaurant:    "過去1年の食材盗難・不正持ち出し（万円）",
+    hotel:         "過去1年の備品盗難・紛失（万円）",
+    manufacturing: "過去1年の資材・製品の不正持ち出し（万円）",
+    construction:  "過去1年の工具・資材の盗難（万円）",
+    transport:     "過去1年の荷物盗難・横領被害（万円）",
+    medical:       "過去1年の医薬品・備品の紛失（万円）",
+    care:          "過去1年の備品盗難・不正持ち出し（万円）",
+    education:     "過去1年の備品・機材の盗難（万円）",
+    other_service: "過去1年の盗難・不正持ち出し被害（万円）",
+  };
+  const INTRUSION_LABEL: Partial<Record<StrategyIndustry, string>> = {
+    retail:        "過去1年の不正侵入回数",
+    manufacturing: "過去1年の無断立入・不正侵入回数",
+    construction:  "過去1年の工事現場への不正侵入回数",
+    transport:     "過去1年の施設への不正侵入回数",
+    hotel:         "過去1年の不正侵入・客室トラブル回数",
+    medical:       "過去1年の不正立入・院内トラブル回数",
+    care:          "過去1年の施設への不正侵入回数",
+    education:     "過去1年の不正侵入・校内トラブル回数",
+    other_service: "過去1年の不正侵入回数",
+    restaurant:    "過去1年の不正侵入回数",
+  };
+  const theftLabel  = (industry && THEFT_LABEL[industry as StrategyIndustry])     ?? "過去1年の盗難・不正持ち出し被害（万円）";
+  const intrusionLabel = (industry && INTRUSION_LABEL[industry as StrategyIndustry]) ?? "過去1年の不正侵入回数";
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "minmax(0,420px) 1fr", gap: 24 }}>
@@ -111,13 +141,19 @@ export default function LossCalculator() {
           <NumInput value={staffCount} min={1} max={10000} onChange={markStale(setStaffCount)} />
         </Field>
 
+        {!industry && (
+          <p style={{ fontSize: 12, color: "#6B7280", padding: "8px 10px", background: "#F9FAFB", borderRadius: 6, margin: "4px 0" }}>
+            業種を選択すると、業種に合わせた損失項目が表示されます
+          </p>
+        )}
+
         {fieldVisible("theft_loss_man") && (
-          <Field label="過去1年の盗難・万引き被害（万円）">
+          <Field label={theftLabel}>
             <NumInput value={theftLoss} min={0} max={100000} onChange={markStale(setTheftLoss)} />
           </Field>
         )}
         {fieldVisible("unauthorized_entry_count") && (
-          <Field label="過去1年の不正侵入回数">
+          <Field label={intrusionLabel}>
             <NumInput value={intrusionCount} min={0} max={365} onChange={markStale(setIntrusionCount)} />
           </Field>
         )}
