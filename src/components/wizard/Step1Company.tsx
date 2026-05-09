@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { INDUSTRIES, SERVICE_SERVICE_PREFECTURES } from "@/lib/constants";
+import { INDUSTRIES, SERVICE_PREFECTURES } from "@/lib/constants";
 import { authFetch, ApiError } from "@/lib/api";
 import type { CompanyInfo } from "./types";
 
