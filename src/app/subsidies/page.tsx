@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
-import { PREFECTURES, INDUSTRIES } from "@/lib/constants";
+import { SERVICE_PREFECTURES, INDUSTRIES } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 
 // 事業カテゴリ（データの category フィールドに対応）
@@ -39,14 +39,12 @@ const DEADLINE_OPTIONS = [
   { label: "90日以内", value: "90" },
 ];
 
-// カメラ関連補助金のみ（H7: id=2,4 は防犯カメラと無関係のため除外）
+// APIフォールバック用（国補助金 + 対応エリアのみ）
 const CAMERA_SUBSIDIES: Subsidy[] = [
   { id: "1", name: "IT導入補助金（セキュリティ対策推進枠）", category: "国", ministry: "中小企業庁", pref_code: "", prefecture: "", max_amount: 1000000, rate_min: 0.5, rate_max: 0.75, target_industries: [], max_employees: 300, deadline: "2026/4/30", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "3", name: "小規模事業者持続化補助金", category: "国", ministry: "商工会議所", pref_code: "", prefecture: "", max_amount: 500000, rate_min: 0.667, rate_max: 0.667, target_industries: [], max_employees: 20, deadline: "2026/5/31", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "5", name: "東京都 防犯設備設置費助成事業", category: "都道府県", ministry: "東京都", pref_code: "13", prefecture: "東京都", max_amount: 100000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/12/31", status: "open", description: "", application_tips: "", source_url: "" },
-  { id: "6", name: "大阪市 防犯カメラ設置補助金", category: "市区町村", ministry: "大阪市", pref_code: "27", prefecture: "大阪府", max_amount: 150000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/9/30", status: "open", description: "", application_tips: "", source_url: "" },
-  { id: "7", name: "札幌市 地域防犯カメラ設置促進事業", category: "市区町村", ministry: "札幌市", pref_code: "1", prefecture: "北海道", max_amount: 200000, rate_min: 0.5, rate_max: 0.667, target_industries: [], max_employees: null, deadline: "2026/11/30", status: "open", description: "", application_tips: "", source_url: "" },
-  { id: "8", name: "名古屋市 防犯カメラ設置費補助", category: "市区町村", ministry: "名古屋市", pref_code: "23", prefecture: "愛知県", max_amount: 100000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/10/31", status: "open", description: "", application_tips: "", source_url: "" },
+  { id: "yoko1", name: "横浜市 地域防犯カメラ設置補助金", category: "防犯", ministry: "横浜市", pref_code: "14", prefecture: "神奈川県", max_amount: 280000, rate_min: 0.9, rate_max: 0.9, target_industries: ["自治会・町会"], max_employees: null, deadline: "毎年7月末", status: "open", description: "", application_tips: "", source_url: "" },
 ];
 
 // 更新日のモックデータ
@@ -157,7 +155,7 @@ function SubsidiesContent() {
           onChange={(e) => setPrefecture(e.target.value)}
         >
           <option value="">すべて</option>
-          {PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
+          {SERVICE_PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
       </div>
 
