@@ -1,459 +1,174 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
-import { matchSubsidies, fetchBonusItems, fetchIndustryContext, MatchResponse, BonusItem, IndustryContext } from "@/lib/api";
-import { INDUSTRIES, EMPLOYEE_RANGES, PREFECTURES, PURPOSES } from "@/lib/constants";
-import BonusChecklist from "@/components/strategy/BonusChecklist";
-import AdoptionRateCard from "@/components/strategy/AdoptionRateCard";
-import IndustryStrategy from "@/components/strategy/IndustryStrategy";
+import { getAllSubsidies } from "@/lib/subsidies-server";
+import { INDUSTRIES } from "@/lib/constants";
 
-// ── 自治会・町会フロー専用定数（AI診断 landing のみ。本登録ウィザードには波及しない） ──
-const JICHIKAI = "自治会・町会" as const;
-
-const JICHIKAI_EMPLOYEE_RANGES = [
-  { label: "〜100世帯",      value: 50   },
-  { label: "101〜500世帯",   value: 300  },
-  { label: "501〜1,000世帯", value: 750  },
-  { label: "1,001世帯以上",  value: 1500 },
-] as const;
-
-const JICHIKAI_PURPOSES = [
-  "地域防犯",
-  "通学路の見守り",
-  "公園・集会所の不審者対策",
-  "ゴミ不法投棄対策",
-  "災害時の状況確認",
-] as const;
-
-const STEP_LABELS = ["基本情報", "導入目的", "AI診断"];
-
-function ProgressBar({ step }: { step: number }) {
-  const progress = step === 1 ? 33 : step === 2 ? 66 : 100;
-  return (
-    <div className="max-w-xl mx-auto mb-8">
-      <div className="flex justify-between mb-2">
-        {STEP_LABELS.map((label, i) => (
-          <div
-            key={i}
-            className={`text-xs font-medium transition ${
-              step > i + 1 ? "text-primary" : step === i + 1 ? "text-primary" : "text-text2"
-            }`}
-          >
-            {step > i + 1 ? "✓ " : ""}
-            {label}
-          </div>
-        ))}
-      </div>
-      <div className="h-2 bg-bg-surface rounded-full overflow-hidden">
-        <div
-          className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      <div className="text-right text-xs text-text2 mt-1">{step}/3</div>
-    </div>
-  );
-}
-
-const SCORE_STYLE: Record<string, { bg: string; text: string; bar: string; percent: number }> = {
-  高: { bg: "bg-success/10 text-success border-success/20", text: "高", bar: "bg-success", percent: 90 },
-  中: { bg: "bg-warning/10 text-warning border-warning/20", text: "中", bar: "bg-warning", percent: 60 },
-  低: { bg: "bg-text2/10 text-text2 border-text2/20", text: "低", bar: "bg-text2", percent: 30 },
+const INDUSTRY_META: Record<string, { icon: string; desc: string }> = {
+  "小売業":             { icon: "🏪", desc: "店舗・スーパー・コンビニ" },
+  "飲食業":             { icon: "🍽️", desc: "レストラン・カフェ・厨房" },
+  "医療・介護":         { icon: "🏥", desc: "病院・クリニック・老人ホーム" },
+  "製造業":             { icon: "🏭", desc: "工場・生産ライン・ヤード" },
+  "建設業":             { icon: "🔨", desc: "工事現場・資材置場" },
+  "宿泊業":             { icon: "🏨", desc: "ホテル・旅館・民宿" },
+  "サービス業":         { icon: "🔧", desc: "事務所・各種サービス拠点" },
+  "運輸業":             { icon: "🚛", desc: "倉庫・配送センター・駐車場" },
+  "廃棄物処理業":       { icon: "♻️", desc: "産廃ヤード・処理施設" },
+  "農業・林業・水産業": { icon: "🌾", desc: "農場・漁港・ハウス施設" },
+  "不動産業":           { icon: "🏢", desc: "賃貸マンション・アパート" },
+  "自治会・町会":       { icon: "🏘️", desc: "街頭・公道・通学路" },
+  "その他":             { icon: "📋", desc: "上記以外の業種" },
 };
 
-function WizardContent() {
-  const [step, setStep] = useState(1);
-  const [industry, setIndustry] = useState("");
-  const [employees, setEmployees] = useState<number | null>(null);
-  const [prefecture, setPrefecture] = useState("");
-  const [purpose, setPurpose] = useState("");
-  const [result, setResult] = useState<MatchResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [bonusItems, setBonusItems] = useState<BonusItem[]>([]);
-  const [industryCtx, setIndustryCtx] = useState<IndustryContext | null>(null);
+export const metadata = {
+  title: "業種からさがす | HOJYO CAME",
+  description: "あなたの業種に合った防犯カメラ補助金を探せます。登録不要で閲覧可能。",
+};
 
-  useEffect(() => {
-    if (!result) return;
-    fetchBonusItems().then((d) => setBonusItems(d.items)).catch(() => {});
-    fetchIndustryContext(industry).then(setIndustryCtx).catch(() => {});
-  }, [result, industry]);
+const S = {
+  sideLabel: {
+    fontSize: 11,
+    fontWeight: 700,
+    textTransform: "uppercase" as const,
+    letterSpacing: "-0.3px",
+    marginBottom: 12,
+    fontFamily: "'Sora', sans-serif",
+    color: "var(--hc-navy)",
+  },
+  stepRow: { display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 8 },
+  stepNum: {
+    width: 20, height: 20, borderRadius: "50%",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
+    background: "var(--hc-primary)", color: "#fff",
+  },
+  stepText: { fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.5 },
+  hr: { borderColor: "var(--hc-border)", margin: "12px 0" } as React.CSSProperties,
+  note: { fontSize: 12, lineHeight: 1.6, color: "var(--hc-text-muted)" },
+  navLink: {
+    display: "block", width: "100%", textAlign: "left" as const,
+    fontSize: 12, fontWeight: 500, padding: "8px 12px",
+    borderRadius: 4, border: "1px solid var(--hc-border)",
+    marginBottom: 8, color: "var(--hc-navy)", background: "#fff",
+    textDecoration: "none",
+  },
+  navLinkPrimary: {
+    display: "block", width: "100%", textAlign: "left" as const,
+    fontSize: 12, fontWeight: 700, padding: "8px 12px",
+    borderRadius: 4, border: "1px solid var(--hc-primary)",
+    marginBottom: 8, color: "var(--hc-primary)", background: "#fff",
+    textDecoration: "none",
+  },
+} as const;
 
-  // 自治会フロー判定
-  const isJichikai = industry === JICHIKAI;
-
-  // 業種切替ハンドラ: 自治会⇔営利企業を跨ぐ場合、不整合データをリセット
-  function handleIndustryChange(newIndustry: string) {
-    const wasJichikai = industry === JICHIKAI;
-    const willBeJichikai = newIndustry === JICHIKAI;
-    if (wasJichikai !== willBeJichikai) {
-      setEmployees(null);
-      setPurpose("");
-    }
-    setIndustry(newIndustry);
-  }
-
-  async function handleDiagnose() {
-    if (!industry || employees === null || !prefecture || !purpose) return;
-    setStep(3);
-    setLoading(true);
-    setError("");
-    try {
-      const res = await matchSubsidies({ industry, employees, prefecture, purpose });
-      setResult(res);
-    } catch {
-      setError("診断中にエラーが発生しました。しばらく経ってから再度お試しください。");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function resetWizard() {
-    setStep(1);
-    setResult(null);
-    setError("");
-    setIndustry("");
-    setEmployees(null);
-    setPrefecture("");
-    setPurpose("");
-  }
-
-  return (
-    <section className="py-4 min-h-[60vh]">
-      <div className="max-w-xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-medium text-text mb-2">
-            あなたの会社に合う<span className="text-primary">補助金</span>を診断
-          </h1>
-          <p className="text-sm text-text2">
-            3つの質問に答えるだけで、条件に合う補助金が見つかります
-          </p>
-        </div>
-
-        <ProgressBar step={step} />
-
-        <div className="pb-16">
-          {/* Step 1: 基本情報 */}
-          {step === 1 && (
-            <div className="card border border-border">
-              <h2 className="text-lg font-medium mb-6">3つの情報を教えてください</h2>
-              <div className="mb-5">
-                <label className="block text-sm font-medium mb-2 text-text">業種を選んでください</label>
-                <select
-                  className="w-full border-[1.5px] border-border rounded-[10px] px-4 py-3 bg-bg-card text-[16px] focus:outline-none focus:border-primary transition"
-                  value={industry}
-                  onChange={(e) => handleIndustryChange(e.target.value)}
-                >
-                  <option value="">選択してください</option>
-                  {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
-                </select>
-              </div>
-              <div className="mb-5">
-                <label className="block text-sm font-medium mb-2 text-text">
-                  {isJichikai ? "世帯数を選んでください" : "会社の規模を選んでください"}
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {(isJichikai ? JICHIKAI_EMPLOYEE_RANGES : EMPLOYEE_RANGES).map((r) => (
-                    <label
-                      key={r.value}
-                      className={`flex items-center gap-2 border-[1.5px] rounded-[10px] px-4 py-3 cursor-pointer transition ${
-                        employees === r.value
-                          ? "border-primary bg-primary/5 shadow-sm"
-                          : "border-border hover:border-text2"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="employees"
-                        value={r.value}
-                        checked={employees === r.value}
-                        onChange={() => setEmployees(r.value)}
-                        className="accent-primary"
-                      />
-                      <span className="text-sm font-medium">{r.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div className="mb-6">
-                <label className="block text-sm font-medium mb-2 text-text">都道府県（事業所所在地）を選んでください</label>
-                <select
-                  className="w-full border-[1.5px] border-border rounded-[10px] px-4 py-3 bg-bg-card text-[16px] focus:outline-none focus:border-primary transition"
-                  value={prefecture}
-                  onChange={(e) => setPrefecture(e.target.value)}
-                >
-                  <option value="">選択してください</option>
-                  {PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
-                </select>
-              </div>
-              <button
-                className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!industry || employees === null || !prefecture}
-                onClick={() => setStep(2)}
-              >
-                次へ →
-              </button>
-            </div>
-          )}
-
-          {/* Step 2: 導入目的 */}
-          {step === 2 && (
-            <div className="card border border-border">
-              <h2 className="text-lg font-medium mb-6">
-                {isJichikai ? "設置目的を選んでください" : "カメラの使い方を選んでください"}
-              </h2>
-              <div className="flex flex-col gap-3 mb-6">
-                {(isJichikai ? JICHIKAI_PURPOSES : PURPOSES).map((p) => (
-                  <label
-                    key={p}
-                    className={`flex items-center gap-3 border-[1.5px] rounded-[10px] px-4 py-4 cursor-pointer transition ${
-                      purpose === p
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border hover:border-text2"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="purpose"
-                      value={p}
-                      checked={purpose === p}
-                      onChange={() => setPurpose(p)}
-                      className="accent-primary"
-                    />
-                    <span className="font-medium">{p}</span>
-                  </label>
-                ))}
-              </div>
-              <div className="flex gap-3">
-                <button className="btn-secondary flex-1 py-3" onClick={() => setStep(1)}>
-                  ← 戻る
-                </button>
-                <button
-                  className="btn-primary flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!purpose}
-                  onClick={handleDiagnose}
-                >
-                  診断を開始
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Results */}
-          {step === 3 && (
-            <div aria-live="polite">
-              <h2 className="text-xl font-medium mb-6 text-center">あなたの会社に合う補助金</h2>
-
-              {loading && (
-                <div className="card flex flex-col items-center py-16 gap-6" role="status">
-                  <div className="relative">
-                    <div className="w-16 h-16 border-4 border-primary/20 rounded-full" />
-                    <div className="absolute inset-0 w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-text font-medium mb-1">条件に合う補助金を検索しています...</p>
-                    <p className="text-sm text-text2 animate-pulse">
-                      登録されている補助金データと照合しています
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {error && (
-                <div className="card border border-error/20 bg-error/5 text-center py-8">
-                  <p className="text-error font-medium">{error}</p>
-                  <button
-                    onClick={() => { setStep(2); setError(""); }}
-                    className="mt-4 text-sm text-primary hover:underline"
-                  >
-                    もう一度試す
-                  </button>
-                </div>
-              )}
-
-              {result && !loading && (
-                <div className="flex flex-col gap-5">
-                  {result.matches.slice(0, 3).map((m, i) => {
-                    const score = SCORE_STYLE[m.match_score] ?? SCORE_STYLE["低"];
-                    return (
-                      <div
-                        key={i}
-                        className="card border border-border"
-                        style={{ boxShadow: "var(--hc-shadow)" }}
-                      >
-                        <div className="flex items-start justify-between mb-3 gap-3">
-                          <div className="min-w-0">
-                            <span className="text-xs text-primary font-medium">マッチ度{i + 1}位</span>
-                            <h3 className="font-medium text-lg leading-tight">{m.subsidy.name}</h3>
-                          </div>
-                          <span className={`text-xs font-medium px-3 py-1 rounded-full border shrink-0 ${score.bg}`}>
-                            適合度: {score.text}
-                          </span>
-                        </div>
-
-                        <div className="mb-4">
-                          <div className="flex justify-between text-xs text-text2 mb-1">
-                            <span>マッチ度</span>
-                            <span>{score.percent}%</span>
-                          </div>
-                          <div className="h-2 bg-bg-surface rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${score.bar}`} style={{ width: `${score.percent}%` }} />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 mb-3">
-                          <div className="bg-bg-card rounded-[10px] p-3 text-center border border-border">
-                            <div className="text-xs text-text2">補助率</div>
-                            <div className="text-lg font-medium text-primary">
-                              {Math.round(m.subsidy.rate_max * 100)}%
-                            </div>
-                          </div>
-                          <div className="bg-bg-card rounded-[10px] p-3 text-center border border-border">
-                            <div className="text-xs text-text2">上限額</div>
-                            <div className="text-lg font-medium">
-                              {m.subsidy.max_amount.toLocaleString("ja-JP")}円
-                            </div>
-                          </div>
-                        </div>
-
-                        {m.estimated_cost > 0 && (
-                          <div className="bg-primary/5 rounded-[10px] p-3 mb-3 text-sm">
-                            <span className="font-medium">概算:</span>{" "}
-                            {m.estimated_cost.toLocaleString("ja-JP")}円 →{" "}
-                            <span className="text-primary font-medium">
-                              補助後 {m.estimated_after_subsidy.toLocaleString("ja-JP")}円
-                            </span>
-                          </div>
-                        )}
-
-                        {m.application_advice && (
-                          <p className="text-sm text-text2 mb-4">{m.application_advice}</p>
-                        )}
-
-                        <div className="flex gap-3">
-                          <Link href={`/subsidies/${m.subsidy.id}`} className="flex-1 btn-secondary text-center py-3">
-                            詳しく確認する
-                          </Link>
-                          <Link
-                            href={`/my/wizard?subsidy_id=${m.subsidy.id}`}
-                            className="flex-1 block text-center py-3 rounded-[6px] font-medium text-white transition hover:opacity-90"
-                            style={{ background: "var(--hc-accent)" }}
-                          >
-                            申請書を作成する
-                          </Link>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {result.overall_recommendation && (
-                    <div className="card bg-secondary text-white text-center">
-                      <p className="font-medium">{result.overall_recommendation}</p>
-                    </div>
-                  )}
-
-                  {/* ── Groot研究知見: 採択率・加点項目・業種別戦略 ── */}
-                  <div style={{ marginTop: 8 }}>
-                    <AdoptionRateCard />
-                  </div>
-
-                  {bonusItems.length > 0 && (
-                    <div style={{ marginTop: 8 }}>
-                      <BonusChecklist items={bonusItems} />
-                    </div>
-                  )}
-
-                  {industryCtx && (
-                    <div style={{ marginTop: 8 }}>
-                      <IndustryStrategy context={industryCtx} />
-                    </div>
-                  )}
-
-                  <button className="btn-secondary py-3" onClick={resetWizard}>
-                    もう一度診断する
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
+import type React from "react";
 
 export default function MatchPage() {
+  const allSubsidies = getAllSubsidies();
+
+  function countForIndustry(ind: string): number {
+    return allSubsidies.filter(
+      (s) => Array.isArray(s.target_industries) && s.target_industries.includes(ind)
+    ).length;
+  }
+
   const left = (
     <div>
-      <p
-        className="text-xs font-bold uppercase mb-3"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        AI診断について
-      </p>
-      <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--hc-text-muted)" }}>
-        3つの質問に答えるだけで、あなたの会社の条件に合う補助金を自動で絞り込みます。
-      </p>
-      <hr style={{ borderColor: "var(--hc-border)", margin: "12px 0" }} />
-      <p
-        className="text-xs font-bold uppercase mb-2"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        診断ステップ
-      </p>
-      {["基本情報", "導入目的", "AI診断"].map((label, i) => (
-        <div key={i} className="flex items-start gap-2 mb-2">
-          <span
-            className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-            style={{ background: "var(--hc-primary)", color: "#fff" }}
-          >
-            {i + 1}
-          </span>
-          <span className="text-xs" style={{ color: "var(--hc-text-muted)" }}>{label}</span>
+      <p style={S.sideLabel}>使い方</p>
+      {["業種を選ぶ", "使える補助金を確認する", "登録して申請書を自動生成"].map((step, i) => (
+        <div key={i} style={S.stepRow}>
+          <span style={S.stepNum}>{i + 1}</span>
+          <span style={S.stepText}>{step}</span>
         </div>
       ))}
+      <hr style={S.hr} />
+      <p style={S.note}>
+        補助金一覧は<strong>ログイン不要</strong>で閲覧できます
+      </p>
     </div>
   );
 
   const right = (
     <div>
-      <p
-        className="text-xs font-bold uppercase mb-3"
-        style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.3px" }}
-      >
-        関連ページ
-      </p>
-      <Link
-        href="/subsidies"
-        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
-        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
-      >
-        📋 補助金一覧を見る
-      </Link>
-      <Link
-        href="/partners/multik"
-        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
-        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
-      >
-        🛠 施工パートナー
-      </Link>
-      <Link
-        href="/auth/login"
-        className="block w-full text-left text-xs font-medium px-3 py-2.5 rounded border mb-2 transition-colors"
-        style={{ borderColor: "var(--hc-border)", color: "var(--hc-navy)", background: "#fff" }}
-      >
-        👤 ログイン / 登録
-      </Link>
-      <hr style={{ borderColor: "var(--hc-border)", margin: "14px 0" }} />
-      <p className="text-xs leading-relaxed" style={{ color: "var(--hc-text-muted)" }}>
-        診断結果は参考情報です。最終的な申請要件は公式サイトをご確認ください。
+      <p style={S.sideLabel}>関連ページ</p>
+      <Link href="/subsidies" style={S.navLink}>📋 補助金一覧を見る</Link>
+      <Link href="/partners/multik" style={S.navLink}>🛠 施工パートナー</Link>
+      <Link href="/auth/register" style={S.navLinkPrimary}>✍️ 無料登録して申請書を作る</Link>
+      <hr style={S.hr} />
+      <p style={S.note}>
+        補助金情報は参考情報です。最終的な申請要件は公式サイトをご確認ください。
       </p>
     </div>
   );
 
-  return (
-    <ThreeColumnLayout left={left} center={<WizardContent />} right={right} />
+  const center = (
+    <main style={{ padding: "32px 16px", maxWidth: 900, margin: "0 auto" }}>
+      <header style={{ marginBottom: 32, textAlign: "center" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 8px", color: "var(--hc-navy)" }}>
+          業種からさがす
+        </h1>
+        <p style={{ fontSize: 14, color: "var(--hc-text-muted)", margin: 0 }}>
+          あなたの業種を選んで、使える補助金を確認してください
+        </p>
+      </header>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
+          gap: 14,
+        }}
+      >
+        {INDUSTRIES.map((ind) => {
+          const meta = INDUSTRY_META[ind] ?? { icon: "📋", desc: "" };
+          const count = countForIndustry(ind);
+          return (
+            <Link
+              key={ind}
+              href={`/subsidies?industry=${encodeURIComponent(ind)}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <article
+                className="hc-industry-card"
+                style={{
+                  background: "#fff",
+                  border: "1px solid var(--hc-border)",
+                  borderRadius: 12,
+                  padding: "20px 16px",
+                  cursor: "pointer",
+                  height: "100%",
+                }}
+              >
+                <div style={{ fontSize: 34, marginBottom: 10, lineHeight: 1 }}>{meta.icon}</div>
+                <h2 style={{ fontSize: 14, fontWeight: 700, margin: "0 0 4px", color: "var(--hc-navy)" }}>
+                  {ind}
+                </h2>
+                <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: "0 0 12px", lineHeight: 1.5 }}>
+                  {meta.desc}
+                </p>
+                <div
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: count > 0 ? "var(--hc-primary)" : "var(--hc-text-muted)",
+                  }}
+                >
+                  {count > 0 ? `補助金 ${count}件 →` : "情報準備中"}
+                </div>
+              </article>
+            </Link>
+          );
+        })}
+      </div>
+
+      <p style={{ marginTop: 24, fontSize: 12, color: "var(--hc-text-muted)", textAlign: "center" }}>
+        申請書の自動生成は{" "}
+        <Link href="/auth/register" style={{ color: "var(--hc-primary)", textDecoration: "none", fontWeight: 600 }}>
+          無料登録後
+        </Link>{" "}
+        にご利用いただけます
+      </p>
+    </main>
   );
+
+  return <ThreeColumnLayout left={left} center={center} right={right} />;
 }

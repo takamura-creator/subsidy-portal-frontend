@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { PREFECTURES, INDUSTRIES } from "@/lib/constants";
@@ -82,12 +83,13 @@ function formatAmountDisplay(s: Subsidy): string {
   return formatAmount(s.max_amount);
 }
 
-export default function SubsidiesPage() {
+function SubsidiesContent() {
+  const searchParams = useSearchParams();
   const [subsidies, setSubsidies] = useState<Subsidy[]>(CAMERA_SUBSIDIES);
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [prefecture, setPrefecture] = useState("");
-  const [industry, setIndustry] = useState("");
+  const [industry, setIndustry] = useState(searchParams.get("industry") ?? "");
   const [category, setCategory] = useState("");
   const [amountFilter, setAmountFilter] = useState("");
   const [deadlineFilter, setDeadlineFilter] = useState("");
@@ -626,5 +628,13 @@ export default function SubsidiesPage() {
       right={right}
       gridCols="220px 1fr 240px"
     />
+  );
+}
+
+export default function SubsidiesPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
+      <SubsidiesContent />
+    </Suspense>
   );
 }

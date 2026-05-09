@@ -786,3 +786,12 @@ button:focus-visible, a:focus-visible {
   .subsidy-card-amount { font-size: 11px; }
   .subsidy-carousel { margin-top: 24px; }
 }
+
+/* 業種カード（/match ページ） */
+.hc-industry-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.hc-industry-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--hc-shadow-md);
+}
