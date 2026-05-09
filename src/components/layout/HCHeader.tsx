@@ -86,8 +86,8 @@ export default function HCHeader() {
         </span>
       </Link>
 
-      {/* Desktop nav */}
-      <nav className="hidden md:flex items-center gap-4">
+      {/* Desktop nav — suppressHydrationWarning: user state は SSR=null / CSR=getUser() で必ず異なる */}
+      <nav className="hidden md:flex items-center gap-4" suppressHydrationWarning>
         {NAV_LINKS.map((link) => (
           <Link
             key={link.href}
@@ -142,7 +142,7 @@ export default function HCHeader() {
       </nav>
 
       {/* 右端: 認証UI */}
-      <div className="hidden md:flex items-center gap-3">
+      <div className="hidden md:flex items-center gap-3" suppressHydrationWarning>
         {user ? (
           <>
             <span

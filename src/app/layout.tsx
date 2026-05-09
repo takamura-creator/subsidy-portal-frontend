@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import HCHeader from "@/components/layout/HCHeader";
 import StatusBar from "@/components/layout/StatusBar";
 import "./globals.css";
@@ -29,6 +29,12 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true },
+};
+
+// ① viewport を明示設定（Next.js 15必須）— 未設定だと初回レンダリングで幅が誤判定される
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

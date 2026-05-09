@@ -47,7 +47,8 @@ export default function MyLayout({ children }: { children: React.ReactNode }) {
     setReady(true);
   }, [pathname, router]);
 
-  if (!ready) return null;
+  // null ではなく空の div を返してレイアウトシフト（一瞬縦長になる現象）を防ぐ
+  if (!ready) return <div style={{ minHeight: "100vh" }} />;
 
   return (
     <SidebarLayout sidebarItems={SIDEBAR_ITEMS}>
