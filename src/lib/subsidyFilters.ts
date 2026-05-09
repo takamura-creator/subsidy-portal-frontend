@@ -10,9 +10,13 @@ export const NG_SUBSIDY_IDS = new Set([
   "kaigo-chiiki-kikin-2026",    // 主目的: 介護環境整備
 ]);
 
-export function filterCameraOnly(items: Subsidy[]): Subsidy[] {
+export function filterCameraOnly(items: Subsidy[], industry?: string): Subsidy[] {
   return items.filter((s) => {
     if (NG_SUBSIDY_IDS.has(s.id)) return false;
+    // B5: 業種フィルタ — target_industries が設定されていてユーザー業種を含まない場合は除外
+    if (industry && s.target_industries?.length > 0 && !s.target_industries.includes(industry)) {
+      return false;
+    }
     return CAMERA_KEYWORDS.some(
       (kw) =>
         s.name.includes(kw) ||

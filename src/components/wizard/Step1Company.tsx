@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { INDUSTRIES, PREFECTURES, WEBSITE_EXEMPT_INDUSTRIES } from "@/lib/constants";
+import { INDUSTRIES, PREFECTURES } from "@/lib/constants";
 import { authFetch, ApiError } from "@/lib/api";
 import type { CompanyInfo } from "./types";
 
@@ -34,16 +34,6 @@ const schema = z
         "URLは http:// または https:// から始めてください",
       ),
   })
-  .superRefine((data, ctx) => {
-    const isJichikai = (WEBSITE_EXEMPT_INDUSTRIES as readonly string[]).includes(data.industry);
-    if (!isJichikai && !data.websiteUrl?.trim()) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "ホームページURLを入力してください（自治会・町会を除く）",
-        path: ["websiteUrl"],
-      });
-    }
-  });
 
 type FormValues = z.infer<typeof schema>;
 
@@ -101,9 +91,7 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
     reValidateMode: "onChange",
   });
 
-  const industry = watch("industry");
   const websiteUrl = watch("websiteUrl");
-  const isJichikai = (WEBSITE_EXEMPT_INDUSTRIES as readonly string[]).includes(industry ?? "");
 
   // HP extraction state
   const [extracting, setExtracting] = useState(false);
@@ -441,12 +429,6 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
             placeholder="例: 100000000"
           />
         </Field>
-        {/* websiteUrl は上のHP自動取得セクションで表示済み — hidden field で値を保持 */}
-        {!isJichikai && (
-          <div className="hidden">
-            {/* 上部セクションで register 済みのため追加 register は不要 */}
-          </div>
-        )}
       </div>
 
       <div className="flex justify-end pt-2">

@@ -40,7 +40,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         ]);
         if (cancelled) return;
         if (subRes.status === "fulfilled") {
-          setSubsidies(filterCameraOnly(subRes.value.subsidies ?? []));
+          setSubsidies(filterCameraOnly(subRes.value.subsidies ?? [], company.industry));
         } else {
           setLoadError("補助金一覧の取得に失敗しました。時間をおいて再度お試しください。");
         }
