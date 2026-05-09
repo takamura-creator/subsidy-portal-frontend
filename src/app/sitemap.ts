@@ -17,11 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/cases`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
-    // /strategy 系ページ（D10 追加）
-    { url: `${SITE_URL}/strategy`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-{ url: `${SITE_URL}/strategy/roi-simulator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${SITE_URL}/strategy/timeline`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${SITE_URL}/strategy/tax-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
   ];
 
   // Sprint 4 Task 0 で SSG 化された補助金詳細（57 件）を Search Console に発見させる

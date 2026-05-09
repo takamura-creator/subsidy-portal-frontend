@@ -1609,24 +1609,6 @@ export async function getActionTimeline(subsidyId: string, appId?: string): Prom
   return authFetch(`${API_URL}/api/v1/strategy/action-timeline/${subsidyId}${q}`);
 }
 
-export type StrategyIndustry = string;
-export interface RoiSideInput { label: string; value: number }
-export interface RoiSimulateRequest { industry: StrategyIndustry; before: RoiSideInput[]; after: RoiSideInput[] }
-export interface RoiSimulateResponse { roi_months: number; annual_saving: number; break_even: number }
-export async function postRoiSimulate(req: RoiSimulateRequest): Promise<RoiSimulateResponse> {
-  return authFetch(`${API_URL}/api/v1/strategy/roi-simulate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
-}
-
-
-export interface DeductionCheckResponse { is_deductible: boolean; reason: string; tax_rate: number }
-export async function postDeductionCheck(req: unknown): Promise<DeductionCheckResponse> {
-  return authFetch(`${API_URL}/api/v1/strategy/deduction-check`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
-}
-
-export interface TaxClassifyResponse { category: string; label: string; advice: string }
-export async function postTaxClassify(req: unknown): Promise<TaxClassifyResponse> {
-  return authFetch(`${API_URL}/api/v1/strategy/tax-classify`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
-}
 
 export interface PendingReminder { id: string; subsidy_name: string; deadline: string; days_left: number }
 export async function fetchPendingReminders(): Promise<{ reminders: PendingReminder[] }> {
