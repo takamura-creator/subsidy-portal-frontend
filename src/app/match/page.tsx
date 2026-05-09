@@ -115,7 +115,7 @@ export default function MatchPage() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
-          gap: 14,
+          gap: 16,
         }}
       >
         {INDUSTRIES.map((ind) => {
@@ -130,35 +130,38 @@ export default function MatchPage() {
               <article
                 className="hc-industry-card"
                 style={{
-                  background: "#fff",
-                  border: "1px solid var(--hc-border)",
-                  borderRadius: 12,
-                  padding: "20px 16px",
+                  borderRadius: 10,
+                  padding: 16,
                   cursor: "pointer",
                   height: "100%",
-                  minHeight: 160,
+                  minHeight: 156,
                   display: "flex",
                   flexDirection: "column",
                 }}
               >
                 <div style={{
-                  width: 44, height: 44, marginBottom: 10,
+                  width: 40, height: 40, marginBottom: 8,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 30, lineHeight: 1, flexShrink: 0,
+                  fontSize: 28, lineHeight: 1, flexShrink: 0,
                 }}>
                   {meta.icon}
                 </div>
-                <h2 style={{ fontSize: 14, fontWeight: 700, margin: "0 0 4px", color: "var(--hc-navy)" }}>
+                <h2 style={{
+                  fontSize: 16, fontWeight: 700, margin: "0 0 4px",
+                  color: "var(--hc-navy)",
+                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+                  letterSpacing: "-0.3px",
+                }}>
                   {ind}
                 </h2>
-                <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: "0 0 0", lineHeight: 1.5, flex: 1 }}>
+                <p style={{ fontSize: 13, color: "var(--hc-text-muted)", margin: 0, lineHeight: 1.6, flex: 1 }}>
                   {meta.desc}
                 </p>
                 <div
                   style={{
                     fontSize: 12,
-                    fontWeight: 700,
-                    marginTop: 12,
+                    fontWeight: 500,
+                    marginTop: 8,
                     color: count > 0 ? "var(--hc-primary)" : "var(--hc-text-muted)",
                   }}
                 >
