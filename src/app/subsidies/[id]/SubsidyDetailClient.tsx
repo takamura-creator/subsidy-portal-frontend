@@ -11,6 +11,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
+import EligibilityChecker from "@/components/subsidies/EligibilityChecker";
 import type { Subsidy } from "@/lib/api";
 
 /** deadlineテキストから次の日付を抽出し、残日数を返す。パース不能ならnullを返す */
@@ -230,6 +231,11 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
             </Link>
           </div>
         </section>
+      )}
+
+      {/* 自治会向け補助金の場合：採択適合チェッカー */}
+      {s.target_industries?.includes("自治会・町会") && (
+        <EligibilityChecker key={s.id} subsidyId={s.id} subsidyName={s.name} />
       )}
 
       {/* 概要 */}
