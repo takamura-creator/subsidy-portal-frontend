@@ -145,7 +145,10 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-  message: string;
+  access_token: string;
+  refresh_token: string;
+  role: string;
+  email: string;
 }
 
 export async function login(req: LoginRequest): Promise<LoginResponse> {

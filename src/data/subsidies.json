@@ -1500,8 +1500,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（公募時期未定）",
@@ -2350,8 +2349,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -4414,8 +4412,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -4959,8 +4956,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（5月頃）",
@@ -5807,8 +5803,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -6885,8 +6880,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -8882,8 +8876,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -9427,8 +9420,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -10008,8 +10000,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -10856,8 +10847,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -11703,8 +11693,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -12550,8 +12539,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -13398,8 +13386,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -14245,8 +14232,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -14791,8 +14777,7 @@
       "target_industries": [
         "小売業",
         "サービス業",
-        "飲食業",
-        "自治会・町会"
+        "飲食業"
       ],
       "max_employees": null,
       "deadline": "2026年度（4月〜）",
@@ -16942,1344 +16927,6 @@
       ]
     },
     {
-      "id": "nagoya-jichikai-2026",
-      "name": "名古屋市 街頭犯罪抑止環境整備事業補助金",
-      "category": "防犯",
-      "ministry": "名古屋市市民経済局生活安全課",
-      "pref_code": "23",
-      "prefecture": "愛知県",
-      "max_amount": 140000,
-      "rate_min": 0.67,
-      "rate_max": 0.67,
-      "target_industries": [
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年4月〜2027年1月31日",
-      "status": "open",
-      "description": "名古屋市内の学区連絡協議会・町内会等の自主防犯活動団体が設置する街頭防犯カメラを支援。補助率2/3以内・上限14万円/台（新規・更新）。",
-      "application_tips": "学区連絡協議会・町内会等の地域団体が対象。修繕補助は5万円/台。",
-      "source_url": "https://www.city.nagoya.jp/bousai/anzen/1014448/1014449/1034528/1014452.html",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "自治会員の合意証明"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ]
-    },
-    {
-      "id": "fukuoka-jichikai-2026",
-      "name": "福岡市 街頭防犯カメラ設置補助金",
-      "category": "防犯",
-      "ministry": "福岡市市民局市民部生活安全推進課",
-      "pref_code": "40",
-      "prefecture": "福岡県",
-      "max_amount": 200000,
-      "rate_min": 0.75,
-      "rate_max": 0.75,
-      "target_industries": [
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年度実施中（各区役所防犯・交通安全課へ申請）",
-      "status": "open",
-      "description": "福岡市内の自治協議会・自治会・町内会等が設置する街頭防犯カメラを支援。補助率75%・1台目20万円/2台目以降10万円。",
-      "application_tips": "申請窓口は各区役所の防犯・交通安全課。1台目と2台目以降で補助上限額が異なる。",
-      "source_url": "https://www.city.fukuoka.lg.jp/shimin/seikatsuanzen/life/fukuokashigaitoubouhannkamerasettihojyokinseido.html",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "自治会員の合意証明"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ]
-    },
-    {
-      "id": "sapporo-jichikai-2026",
-      "name": "札幌市 地域防犯カメラ設置補助事業",
-      "category": "防犯",
-      "ministry": "札幌市市民文化局地域振興部地域振興課",
-      "pref_code": "01",
-      "prefecture": "北海道",
-      "max_amount": 180000,
-      "rate_min": 1.0,
-      "rate_max": 1.0,
-      "target_industries": [
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年5月1日〜9月30日（先着順）",
-      "status": "open",
-      "description": "札幌市内の単位町内会・自治会・連合町内会が設置する防犯カメラを全額支援。補助率10/10・新規設置18万円/台・撤去再取付け10万円/台。",
-      "application_tips": "全額補助（10/10）の手厚い制度。先着順のため公募開始直後の申請が有効。9月30日が締切。",
-      "source_url": "https://www.city.sapporo.jp/shimin/chiiki-bohan/camerahojyo/hojyojigyo.html",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "自治会員の合意証明"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ]
-    },
-    {
-      "id": "sendai-jichikai-2026",
-      "name": "仙台市 防犯カメラ設置等事業補助金",
-      "category": "防犯",
-      "ministry": "仙台市市民局市民安全部生活安全課",
-      "pref_code": "04",
-      "prefecture": "宮城県",
-      "max_amount": 300000,
-      "rate_min": 0.75,
-      "rate_max": 0.75,
-      "target_industries": [
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年5月1日〜8月31日（先着順）",
-      "status": "open",
-      "description": "仙台市内の防犯活動を行う自治会・町内会等の地域団体が設置する防犯カメラを支援。補助率3/4・上限30万円/台。",
-      "application_tips": "先着順。5月受付開始のため早めの申請を。事前相談は受付前から可能な場合あり。",
-      "source_url": "https://www.city.sendai.jp/shiminsekatsu/kurashi/anzen/anzen/bohan/bohan.html",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "自治会員の合意証明"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ]
-    },
-    {
-      "id": "hiroshima-jichikai-2026",
-      "name": "広島市 地域防犯カメラ設置補助制度",
-      "category": "防犯",
-      "ministry": "広島市市民局市民安全推進課",
-      "pref_code": "34",
-      "prefecture": "広島県",
-      "max_amount": 300000,
-      "rate_min": 0.75,
-      "rate_max": 0.75,
-      "target_industries": [
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年度募集中（事前協議申請が必要）",
-      "status": "open",
-      "description": "広島市内の町内会・自治会・連合町内会・防犯組合等が設置する防犯カメラを支援。補助率3/4以内・上限30万円/台。事前協議が必要。",
-      "application_tips": "必ず事前協議申請を行うこと。公道設置が原則。警察署との協議記録が求められる。",
-      "source_url": "https://www.city.hiroshima.lg.jp/living/1035962/1021171/1025679/1020493.html",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "自治会員の合意証明"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ]
-    },
-    {
-      "id": "kyoto-jichikai-2026",
-      "name": "京都市 防犯カメラ設置促進補助事業",
-      "category": "防犯",
-      "ministry": "京都市文化市民局地域自治推進室",
-      "pref_code": "26",
-      "prefecture": "京都府",
-      "max_amount": 200000,
-      "rate_min": 0.5,
-      "rate_max": 0.5,
-      "target_industries": [
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年度募集中（各区役所窓口）",
-      "status": "open",
-      "description": "京都市内の自治連合会・町内会等地域団体が設置する防犯カメラを支援。補助率5割以内・上限10万円/台（1団体2台まで）。",
-      "application_tips": "1団体2台まで（最大20万円）。区役所窓口で申請。地域の防犯計画書が必要な場合あり。",
-      "source_url": "https://www.city.kyoto.lg.jp/bunshi/page/0000351939.html",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "自治会員の合意証明"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ]
-    },
-    {
       "id": "sagamihara-bouhan-camera-2026",
       "name": "相模原市 防犯カメラ設置費補助制度",
       "category": "防犯",
@@ -18969,6 +17616,452 @@
       "source_url": "https://www.city.kawaguchi.lg.jp/soshiki/04050/bouhan/bouhancamera.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "申請団体名",
+          "type": "text",
+          "required": true,
+          "source": "homepage",
+          "note": "自治会・町内会・商店街の場合は団体名"
+        },
+        {
+          "key": "address",
+          "label": "所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "設立年月日",
+          "type": "date",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "installation_purpose",
+          "label": "設置目的",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "犯罪抑止",
+            "子供見守り",
+            "不法投棄防止",
+            "交通安全",
+            "その他"
+          ]
+        },
+        {
+          "key": "installation_locations",
+          "label": "設置場所（住所一覧）",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "複数箇所の場合は全住所を記載"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH製品型番（例: AVM3620V4）"
+        },
+        {
+          "key": "recording_days",
+          "label": "録画保存日数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "coverage_area_type",
+          "label": "撮影範囲区分",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "公道",
+            "私有地",
+            "建物内",
+            "複合"
+          ]
+        },
+        {
+          "key": "retention_days",
+          "label": "映像保存期間（日）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "manager_name",
+          "label": "映像管理責任者名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "police_consultation_date",
+          "label": "警察への事前協議日",
+          "type": "date",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（各自治体様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "installation_location_map",
+          "label": "設置場所位置図",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "police_consultation_cert",
+          "label": "警察との事前協議証明書",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "consent_doc",
+          "label": "自治会総会議事録・同意書類",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "自治会員の合意証明"
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "management_policy",
+          "label": "管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "coverage_diagram",
+          "label": "撮影範囲図面",
+          "accept": ".pdf,.jpg",
+          "required": false
+        },
+        {
+          "key": "land_consent",
+          "label": "土地使用承諾書（私有地設置時）",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false,
+          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
+        }
+      ]
+    },
+    {
+      "id": "kokudo-jutaku-kaihu-2026",
+      "name": "国土交通省 居住サポート住宅改修事業（防犯カメラ対応）",
+      "category": "設備投資",
+      "ministry": "国土交通省住宅局",
+      "pref_code": "00",
+      "prefecture": "",
+      "max_amount": 500000,
+      "rate_min": 0.333,
+      "rate_max": 0.333,
+      "target_industries": [
+        "不動産業"
+      ],
+      "max_employees": null,
+      "deadline": "2026年度（随時受付、予算消化次第終了）",
+      "status": "open",
+      "description": "賃貸住宅オーナーが共用部に防犯カメラを設置する改修費用を補助。補助率1/3・上限50万円/戸（子育て世帯向け改修として防犯カメラ・屋外灯設置が対象経費に明記）。住宅確保要配慮者専用賃貸住宅の登録が必要。",
+      "application_tips": "建築士による工事内容確認が必要。面積按分計算あり。住宅確保要配慮者（高齢者・低額所得者・子育て世帯等）の入居優先宣誓が条件。TEL: 居住サポート住宅改修事業交付事務局。",
+      "source_url": "https://www.how.or.jp/koufu/snj.html",
+      "document_tier": 3,
+      "draft_subsidy_type": "setsubi_toushi",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "申請団体名",
+          "type": "text",
+          "required": true,
+          "source": "homepage",
+          "note": "自治会・町内会・商店街の場合は団体名"
+        },
+        {
+          "key": "address",
+          "label": "所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "設立年月日",
+          "type": "date",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "installation_purpose",
+          "label": "設置目的",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "犯罪抑止",
+            "子供見守り",
+            "不法投棄防止",
+            "交通安全",
+            "その他"
+          ]
+        },
+        {
+          "key": "installation_locations",
+          "label": "設置場所（住所一覧）",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "複数箇所の場合は全住所を記載"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH製品型番（例: AVM3620V4）"
+        },
+        {
+          "key": "recording_days",
+          "label": "録画保存日数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "coverage_area_type",
+          "label": "撮影範囲区分",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "公道",
+            "私有地",
+            "建物内",
+            "複合"
+          ]
+        },
+        {
+          "key": "retention_days",
+          "label": "映像保存期間（日）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "manager_name",
+          "label": "映像管理責任者名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "police_consultation_date",
+          "label": "警察への事前協議日",
+          "type": "date",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（各自治体様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "installation_location_map",
+          "label": "設置場所位置図",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "police_consultation_cert",
+          "label": "警察との事前協議証明書",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "consent_doc",
+          "label": "自治会総会議事録・同意書類",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "自治会員の合意証明"
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "management_policy",
+          "label": "管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "coverage_diagram",
+          "label": "撮影範囲図面",
+          "accept": ".pdf,.jpg",
+          "required": false
+        },
+        {
+          "key": "land_consent",
+          "label": "土地使用承諾書（私有地設置時）",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false,
+          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
+        }
+      ]
+    },
+    {
+      "id": "minato-kyodo-bouhan-2026",
+      "name": "港区 共同住宅防犯対策助成事業",
+      "category": "防犯",
+      "ministry": "港区生活安全課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 300000,
+      "rate_min": 0.5,
+      "rate_max": 0.5,
+      "target_industries": [
+        "不動産業"
+      ],
+      "max_employees": null,
+      "deadline": "2026年度（随時受付）",
+      "status": "open",
+      "description": "港区内の賃貸住宅所有者（個人・法人問わず）が共用部に設置する防犯カメラを支援。設置から7年経過後の更新も再申請可能。",
+      "application_tips": "共用部への新規設置が対象。更新の場合は設置から7年以上経過が条件。港区生活安全課に事前相談推奨。",
+      "source_url": "https://www.city.minato.tokyo.jp/",
+      "document_tier": 3,
+      "draft_subsidy_type": "setsubi_toushi",
       "required_info_fields": [
         {
           "key": "company_name",
