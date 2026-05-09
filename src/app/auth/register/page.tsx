@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { register, updateProfile, ApiError } from "@/lib/api";
-import { PREFECTURES } from "@/lib/constants";
+import { SERVICE_PREFECTURES } from "@/lib/constants";
 
 const WIZARD_KEY = "hc_wizard_state_v2";
 function getWizardCompany(): Record<string, string | number> | null {
@@ -310,7 +310,7 @@ function RegisterForm() {
                 onChange={(e) => setPrefCode(e.target.value)}
               >
                 <option value="">選択してください</option>
-                {PREFECTURES.map((p) => (
+                {SERVICE_PREFECTURES.map((p) => (
                   <option key={p} value={p}>
                     {p}
                   </option>
