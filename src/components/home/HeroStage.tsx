@@ -17,9 +17,9 @@ import {
 import SubsidyCarousel from "@/components/home/SubsidyCarousel";
 
 const CATCHPHRASES = [
-  "あなたの会社に合った補助金を、最短30秒でAIが自動診断します。",
-  "主要な補助金制度から、防犯カメラ導入に使える制度を一括検索。対応補助金は随時追加中。",
-  "診断・検索・比較・申請書類の作成まで、このサイトだけで完結できます。",
+  "補助金診断からAI申請書類作成まで、無料で完結。",
+  "防犯カメラ導入に使える補助金を一括検索。随時追加中。",
+  "診断・検索・比較・申請書類まで、このサイトで完結。",
 ];
 
 export default function HeroStage() {
