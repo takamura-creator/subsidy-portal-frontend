@@ -787,11 +787,28 @@ button:focus-visible, a:focus-visible {
   .subsidy-carousel { margin-top: 24px; }
 }
 
-/* 業種カード（/match ページ） */
+/* 業種カード（/match ページ） — ヒーローカルーセルと同一色調 */
 .hc-industry-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background:
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%,
+      var(--hc-bg) 55%,
+      color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%
+    );
+  border: 1px solid color-mix(in srgb, var(--hc-primary) 10%, var(--hc-border)) !important;
+  border-bottom-color: color-mix(in srgb, var(--hc-primary) 18%, var(--hc-border)) !important;
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, var(--hc-white) 60%, transparent) inset,
+    0 2px 4px -1px rgba(28, 25, 23, 0.06),
+    0 6px 14px -4px rgba(28, 25, 23, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .hc-industry-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--hc-shadow-md);
+  border-color: var(--hc-primary-border) !important;
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, var(--hc-white) 80%, transparent) inset,
+    0 4px 8px -2px rgba(28, 25, 23, 0.08),
+    0 12px 28px -6px rgba(28, 25, 23, 0.12);
 }
