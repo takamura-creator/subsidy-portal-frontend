@@ -19,8 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
     // /strategy 系ページ（D10 追加）
     { url: `${SITE_URL}/strategy`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${SITE_URL}/strategy/loss-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${SITE_URL}/strategy/roi-simulator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+{ url: `${SITE_URL}/strategy/roi-simulator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/strategy/timeline`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/strategy/tax-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
   ];

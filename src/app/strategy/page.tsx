@@ -20,7 +20,6 @@ interface ToolCard {
 }
 
 const TOOLS: ToolCard[] = [
-  { icon: "📉", title: "損失算出ツール", desc: "業種別に年間損失額を試算", duration: "3分", href: "/strategy/loss-calculator", available: true },
   { icon: "📈", title: "ROI比較ツール", desc: "導入前後を2列で比較", duration: "5分", href: "/strategy/roi-simulator", available: true },
   { icon: "💰", title: "賃上げ計画ビルダー", desc: "必要な賃上げ率を逆算", duration: "3分", href: "/strategy/wage-planner", available: false },
   { icon: "🗓", title: "申請カレンダー", desc: "申請までの逆算スケジュール", duration: "2分", href: "/strategy/timeline", available: false },

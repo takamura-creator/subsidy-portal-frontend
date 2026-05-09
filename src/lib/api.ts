@@ -1617,11 +1617,6 @@ export async function postRoiSimulate(req: RoiSimulateRequest): Promise<RoiSimul
   return authFetch(`${API_URL}/api/v1/strategy/roi-simulate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
 }
 
-export interface LossCalcRequest { industry: StrategyIndustry; monthly_incidents: number; avg_loss_per_incident: number; hourly_wage: number; hours_per_incident: number }
-export interface LossCalcResponse { annual_direct_loss: number; annual_labor_loss: number; total_annual_loss: number; required_additional_revenue: number }
-export async function postLossCalc(req: LossCalcRequest): Promise<LossCalcResponse> {
-  return authFetch(`${API_URL}/api/v1/strategy/loss-calc`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
-}
 
 export interface DeductionCheckResponse { is_deductible: boolean; reason: string; tax_rate: number }
 export async function postDeductionCheck(req: unknown): Promise<DeductionCheckResponse> {
