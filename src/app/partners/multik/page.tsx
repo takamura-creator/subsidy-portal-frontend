@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { MULTIK_COMPANY, SERVICE_PREFECTURES } from "@/lib/constants";
 
@@ -243,53 +244,16 @@ function CompanyRow({ label, value }: { label: string; value: React.ReactNode })
 }
 
 function AreaMap() {
-  const dots: Record<string, { x: number; y: number; label: string }> = {
-    "山梨県": { x: 230, y: 240, label: "山梨" },
-    "埼玉県": { x: 300, y: 190, label: "埼玉" },
-    "東京都": { x: 305, y: 230, label: "東京" },
-    "千葉県": { x: 350, y: 235, label: "千葉" },
-    "神奈川県": { x: 295, y: 260, label: "神奈川" },
-    "静岡県": { x: 260, y: 290, label: "静岡" },
-  };
   return (
-    <div
-      className="relative bg-bg border border-border rounded-[10px] overflow-hidden"
-      style={{ aspectRatio: "16 / 10" }}
-    >
-      <svg
-        viewBox="0 0 480 330"
-        className="w-full h-full"
-        role="img"
-        aria-label="対応エリア6都県（東京・神奈川・静岡・埼玉・千葉・山梨）"
-      >
-        {/* 日本列島のシンプルな形状（関東〜中部） */}
-        <path
-          d="M110 240 Q140 190 190 180 Q230 160 280 165 Q335 155 380 170 Q420 190 430 220 Q425 260 400 285 Q360 305 320 300 Q280 310 240 305 Q200 315 170 295 Q130 280 110 240Z"
-          fill="var(--hc-primary-muted)"
-          stroke="var(--hc-primary-border)"
-          strokeWidth="1.5"
-        />
-        {/* 6都県のピン */}
-        {Object.values(dots).map((d) => (
-          <g key={d.label}>
-            <circle cx={d.x} cy={d.y} r="6" fill="var(--hc-primary)" />
-            <circle cx={d.x} cy={d.y} r="11" fill="var(--hc-primary-pin)" aria-hidden="true" />
-            <text
-              x={d.x}
-              y={d.y - 14}
-              textAnchor="middle"
-              fontSize="11"
-              fontWeight="600"
-              fill="var(--hc-navy)"
-            >
-              {d.label}
-            </text>
-          </g>
-        ))}
-      </svg>
-      <p className="absolute bottom-3 left-3 text-[11px] text-text-muted bg-white/80 px-2 py-1 rounded">
-        ※ 位置関係の概念図です
-      </p>
+    <div className="relative rounded-[10px] overflow-hidden border border-border">
+      <Image
+        src="/images/area-map.png"
+        alt="対応エリア6都県（東京・神奈川・静岡・埼玉・千葉・山梨）"
+        width={800}
+        height={500}
+        className="w-full h-auto"
+        priority
+      />
     </div>
   );
 }
