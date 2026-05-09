@@ -1678,7 +1678,7 @@ export async function exportDraftBlob(
   const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
   const res = await fetch(
     `${API_URL}/api/v1/applications/${appId}/draft/${draftId}/export?format=${format}`,
-    { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+    { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {} },
   );
   if (!res.ok) throw new ApiError(res.status, `Export failed: ${res.statusText}`);
   return res.blob();
