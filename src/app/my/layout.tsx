@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, FileText, Settings, FilePlus } from "lucide-react";
+import { LayoutDashboard, Settings, FilePlus } from "lucide-react";
 import { isAuthenticated, getUser } from "@/lib/auth";
 import SidebarLayout from "@/components/shared/SidebarLayout";
 import type { SidebarEntry } from "@/components/shared/Sidebar";
@@ -10,7 +10,6 @@ import type { SidebarEntry } from "@/components/shared/Sidebar";
 const SIDEBAR_ITEMS: SidebarEntry[] = [
   { href: "/my", label: "ダッシュボード", icon: LayoutDashboard },
   { href: "/my/wizard", label: "申請ウィザード", icon: FilePlus },
-  { href: "/my/applications", label: "申請一覧", icon: FileText },
   { separator: true },
   {
     href: "/my/settings",

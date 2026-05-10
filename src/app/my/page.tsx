@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getUser } from "@/lib/auth";
-import { fetchProfileDetail } from "@/lib/api";
+import { fetchProfileDetail, fetchMyApplications, type Application } from "@/lib/api";
+
+const STATUS_LABEL: Record<string, { bg: string; color: string; label: string }> = {
+  draft: { bg: "var(--hc-text-divider)", color: "var(--hc-text-muted)", label: "下書き" },
+  submitted: { bg: "var(--hc-primary-soft)", color: "var(--hc-primary)", label: "提出済み" },
+  approved: { bg: "var(--hc-success-edge)", color: "var(--hc-success)", label: "承認済み" },
+  rejected: { bg: "var(--hc-error-edge)", color: "var(--hc-error)", label: "却下" },
+};
 
 // ウィザードの localStorage キー（wizard/page.tsx と同一）
 const STORAGE_KEY = "hc_wizard_state_v2";
@@ -43,9 +50,9 @@ export default function MyDashboardPage() {
 
   const [companyName, setCompanyName] = useState<string>(jwtName);
   const [snap, setSnap] = useState<WizardSnapshot | null>(null);
+  const [applications, setApplications] = useState<Application[]>([]);
 
   useEffect(() => {
-    // DB からの確定表示（Sidebar と同じ fetchProfileDetail）
     fetchProfileDetail()
       .then((p) => {
         if (p.company_name) setCompanyName(p.company_name);
@@ -53,6 +60,11 @@ export default function MyDashboardPage() {
       .catch(() => {});
 
     setSnap(loadWizardSnapshot());
+
+    // 直近の申請（最大5件）を取得して表示
+    fetchMyApplications()
+      .then((res) => setApplications((res.applications ?? []).slice(0, 5)))
+      .catch(() => setApplications([]));
   }, []);
 
   // ウィザード進捗から表示値を算出
@@ -289,6 +301,73 @@ export default function MyDashboardPage() {
                     transition: "width 0.4s",
                   }}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* 申請一覧（最大5件・統合表示） */}
+          {applications.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <SectionTitle>申請一覧</SectionTitle>
+              <div
+                style={{
+                  background:
+                    "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+                  border: BORDER_WHISPER,
+                  borderRadius: RADIUS_CARD,
+                  boxShadow: SHADOW_CARD,
+                  overflow: "hidden",
+                }}
+              >
+                {applications.map((app, i) => {
+                  const status = STATUS_LABEL[app.status] ?? STATUS_LABEL.draft;
+                  return (
+                    <Link
+                      key={app.id}
+                      href={`/my/applications/${app.id}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        padding: "12px 16px",
+                        borderBottom:
+                          i < applications.length - 1 ? "1px solid var(--hc-text-divider)" : "none",
+                        textDecoration: "none",
+                        color: "var(--hc-text)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 700,
+                          padding: "2px 8px",
+                          borderRadius: 9999,
+                          background: status.bg,
+                          color: status.color,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {status.label}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 500,
+                          color: "var(--hc-navy)",
+                          flex: 1,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {app.subsidy_name ?? app.subsidy_id}
+                      </span>
+                      <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>
+                        {app.updated_at?.slice(0, 10)}
+                      </span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           )}
