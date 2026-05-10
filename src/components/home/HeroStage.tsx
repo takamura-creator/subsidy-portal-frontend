@@ -16,9 +16,9 @@ import {
 import SubsidyCarousel from "@/components/home/SubsidyCarousel";
 
 const CATCHPHRASES = [
-  "補助金診断からAI申請書類作成まで、無料で完結。",
-  "防犯カメラ導入に使える補助金を一括検索。随時追加中。",
-  "診断・検索・比較・申請書類まで、このサイトで完結。",
+  "防犯カメラ補助金の診断・申請書類作成まで無料で完結。",
+  "監視カメラ導入に使える補助金を一括検索。随時追加中。",
+  "防犯カメラ補助金を診断・検索・比較・申請まで完結。",
 ];
 
 export default function HeroStage() {
