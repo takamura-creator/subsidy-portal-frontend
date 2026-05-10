@@ -806,3 +806,16 @@ button:focus-visible, a:focus-visible {
   border-color: var(--hc-primary-border) !important;
   box-shadow: var(--hc-shadow-md);
 }
+
+/* StatusBar（フッター）— モバイルでリンクを非表示にして崩れ防止 */
+@media (max-width: 640px) {
+  .hc-status-bar {
+    padding: 0 12px !important;
+  }
+  .hc-status-bar .hc-status-links {
+    display: none !important;
+  }
+  .hc-status-bar .hc-status-copy {
+    font-size: 10px;
+  }
+}

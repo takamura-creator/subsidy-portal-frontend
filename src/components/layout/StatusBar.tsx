@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function StatusBar() {
   return (
     <div
-      className="flex items-center justify-between px-5"
+      className="hc-status-bar"
       style={{
         position: "fixed",
         bottom: 0,
@@ -17,10 +17,14 @@ export default function StatusBar() {
         fontSize: "11px",
         color: "var(--hc-text-muted)",
         zIndex: 99,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 20px",
       }}
     >
-      <span>&copy; 2026 HOJYO CAME — マルチック株式会社</span>
-      <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <span className="hc-status-copy">&copy; 2026 HOJYO CAME — マルチック株式会社</span>
+      <span className="hc-status-links" style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <Link
           href="/about"
           style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}
