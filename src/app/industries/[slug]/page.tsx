@@ -33,7 +33,7 @@ export default async function IndustryLPPage({ params }: Props) {
 
   return (
     <main style={{ maxWidth: 880, margin: "0 auto", padding: "32px 16px 48px" }}>
-      <nav style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 12 }}>
+      <nav aria-label="パンくずリスト" style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 12 }}>
         <Link href="/match" style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}>
           業種選択
         </Link>
@@ -46,7 +46,7 @@ export default async function IndustryLPPage({ params }: Props) {
           style={{
             fontFamily: "'Sora', sans-serif",
             fontSize: 26,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "var(--hc-navy)",
             letterSpacing: "-0.5px",
             margin: "0 0 12px",

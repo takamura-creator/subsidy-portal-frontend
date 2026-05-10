@@ -30,7 +30,7 @@ export const INDUSTRY_LPS: IndustryLP[] = [
       "ライン稼働状況の遠隔監視",
     ],
     risks: ["生産機械の事故時の責任問題", "原材料・完成品の盗難", "敷地内への不法侵入・産廃投棄"],
-    recommendedSubsidies: ["it-hojo-2026", "gyomu-kaizen-2026", "monodzukuri-2026"],
+    recommendedSubsidies: ["it-hojo-2026", "gyomu-kaizen-2026"],
   },
   {
     slug: "waste-management",

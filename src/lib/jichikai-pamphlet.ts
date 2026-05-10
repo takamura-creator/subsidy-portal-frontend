@@ -41,17 +41,18 @@ export function buildPamphletHtml(input: PamphletInput): string {
 <meta charset="utf-8">
 <title>${escapeHtml(title)}</title>
 <style>
+/* STYLE_GUIDE 準拠の HEX 値（Word 用 HTML のため CSS 変数は使用不可） */
 @page { size: A4; margin: 18mm; }
-body { font-family: 'ＭＳ 明朝', 'MS Mincho', serif; font-size: 11pt; line-height: 1.65; color: #1A1A1A; }
+body { font-family: 'ＭＳ 明朝', 'MS Mincho', serif; font-size: 11pt; line-height: 1.65; color: #1C1917; }
 h1 { font-size: 16pt; text-align: center; border-bottom: 2px solid #15803D; padding-bottom: 4px; margin: 0 0 8px; }
 h2 { font-size: 12pt; color: #15803D; margin: 14px 0 4px; border-left: 4px solid #15803D; padding-left: 8px; }
-.lead { text-align: center; font-size: 10pt; color: #666; margin: 0 0 12px; }
-.box { border: 1px solid #ccc; padding: 10px 14px; margin: 10px 0; background: #fafaf5; }
+.lead { text-align: center; font-size: 10pt; color: #57534E; margin: 0 0 12px; }
+.box { border: 1px solid #E7E5E4; padding: 10px 14px; margin: 10px 0; background: #FAFAF5; }
 table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 10pt; }
-th, td { border: 1px solid #bbb; padding: 6px 10px; text-align: left; }
-th { background: #f0fdf4; width: 38%; }
-.note { font-size: 9pt; color: #666; }
-.footer { margin-top: 14pt; border-top: 1px solid #ccc; padding-top: 6pt; font-size: 9pt; color: #444; }
+th, td { border: 1px solid #E7E5E4; padding: 6px 10px; text-align: left; }
+th { background: #FEF9C3; width: 38%; }
+.note { font-size: 9pt; color: #57534E; }
+.footer { margin-top: 14pt; border-top: 1px solid #E7E5E4; padding-top: 6pt; font-size: 9pt; color: #57534E; }
 .amount { font-size: 14pt; font-weight: bold; color: #15803D; }
 </style>
 </head>

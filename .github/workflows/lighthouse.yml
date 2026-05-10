@@ -48,9 +48,18 @@ jobs:
             --collect.url=http://localhost:3000/contact \
             --collect.url=http://localhost:3000/privacy \
             --collect.numberOfRuns=1 \
-            --upload.target=temporary-public-storage \
+            --upload.target=filesystem \
+            --upload.outputDir=./.lighthouseci \
             --assert.preset=lighthouse:recommended \
             --assert.assertions.categories:accessibility=warn \
             --assert.assertions.categories:performance=warn \
             --assert.assertions.categories:seo=warn \
             --assert.assertions.categories:best-practices=warn || true
+
+      - name: Upload Lighthouse reports as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: ./.lighthouseci
+          retention-days: 7

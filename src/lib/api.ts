@@ -1678,7 +1678,7 @@ export async function fetchDrillDownQuestions(
   applicationId: string,
   chapterIds: string[],
 ): Promise<DrillDownQuestionItem[]> {
-  const token = getToken();
+  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
   const res = await fetch(
     `${API_URL}/api/v1/applications/${applicationId}/drill-down-questions`,
     {

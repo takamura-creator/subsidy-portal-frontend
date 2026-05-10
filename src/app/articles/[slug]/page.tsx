@@ -106,7 +106,7 @@ export default async function ArticlePage({ params }: Props) {
         fontSize: 14,
       }}
     >
-      <nav style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 12 }}>
+      <nav aria-label="パンくずリスト" style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 12 }}>
         <Link href="/articles" style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}>
           お役立ち記事
         </Link>
@@ -133,7 +133,7 @@ export default async function ArticlePage({ params }: Props) {
           style={{
             fontFamily: "'Sora', sans-serif",
             fontSize: 24,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "var(--hc-navy)",
             letterSpacing: "-0.5px",
             margin: "10px 0 6px",

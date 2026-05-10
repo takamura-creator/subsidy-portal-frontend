@@ -19,7 +19,7 @@ export default function ArticlesIndex() {
           style={{
             fontFamily: "'Sora', sans-serif",
             fontSize: 24,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "var(--hc-navy)",
             letterSpacing: "-0.5px",
             margin: "0 0 6px",
@@ -39,7 +39,7 @@ export default function ArticlesIndex() {
             href={`/articles/${a.slug}`}
             style={{
               display: "block",
-              padding: 18,
+              padding: 16,
               background: "var(--hc-white)",
               border: "1px solid var(--hc-border)",
               borderRadius: 10,

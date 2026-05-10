@@ -79,11 +79,11 @@ export default function CookieConsent() {
           onClick={() => decide("rejected")}
           style={{
             fontSize: 12,
-            padding: "8px 14px",
+            padding: "10px 16px",
             border: "1px solid var(--hc-border)",
             background: "var(--hc-white)",
             color: "var(--hc-text-muted)",
-            borderRadius: 6,
+            borderRadius: 8,
             cursor: "pointer",
             fontFamily: "inherit",
           }}
@@ -96,11 +96,11 @@ export default function CookieConsent() {
           style={{
             fontSize: 12,
             fontWeight: 700,
-            padding: "8px 16px",
+            padding: "10px 18px",
             border: "1px solid var(--hc-primary)",
             background: "var(--hc-primary)",
             color: "var(--hc-white)",
-            borderRadius: 6,
+            borderRadius: 8,
             cursor: "pointer",
             fontFamily: "inherit",
           }}

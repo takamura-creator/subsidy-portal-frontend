@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         style={{
           fontFamily: "'Sora', sans-serif",
           fontSize: 24,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "var(--hc-navy)",
           letterSpacing: "-0.5px",
           margin: "0 0 8px",
