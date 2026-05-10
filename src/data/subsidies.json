@@ -7072,6 +7072,1500 @@
       "document_tier": 2,
       "draft_subsidy_type": "kanagawa_setsubi",
       "updated_at": "2026-05-10"
+    },
+    {
+      "id": "tokyo-kaigo-ict-2026",
+      "name": "東京都 介護ロボット・ICT導入支援事業",
+      "category": "介護",
+      "ministry": "東京都福祉局",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 2600000,
+      "rate_min": 0.5,
+      "rate_max": 0.75,
+      "target_industries": [
+        "医療・介護"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月〜7月（年度ごと公募）",
+      "status": "open",
+      "description": "東京都内の介護事業所が見守りカメラ・センサー等を導入する経費を支援。地域医療介護総合確保基金を原資。",
+      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "source_url": "https://www.fukushi.metro.tokyo.lg.jp/",
+      "document_tier": 3,
+      "draft_subsidy_type": "kaigo",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "施設・法人名称",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "facility_type",
+          "label": "施設種別",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "特別養護老人ホーム",
+            "介護老人保健施設",
+            "グループホーム",
+            "デイサービス",
+            "訪問介護事業所",
+            "その他介護施設"
+          ]
+        },
+        {
+          "key": "address",
+          "label": "施設所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・施設長氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_name",
+          "label": "担当者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "担当者電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "care_license_number",
+          "label": "介護保険事業所番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "法人設立年月日",
+          "type": "date",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "capital",
+          "label": "資本金（万円）",
+          "type": "number",
+          "required": false,
+          "source": "homepage",
+          "note": "社会福祉法人・NPOは不要"
+        },
+        {
+          "key": "employee_count",
+          "label": "従業員数（介護職員数）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "annual_revenue",
+          "label": "直近年度売上高（万円）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "website_url",
+          "label": "自社ホームページURL",
+          "type": "url",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "monitoring_purpose",
+          "label": "見守り・安全管理の目的",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "転倒検知・夜間見守り・徘徊防止等"
+        },
+        {
+          "key": "product_model",
+          "label": "導入製品型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH見守りカメラの型番"
+        },
+        {
+          "key": "installation_location",
+          "label": "設置場所（室名・フロア）",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "expected_staff_reduction",
+          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
+          "type": "number",
+          "required": false,
+          "source": "manual",
+          "note": "定量効果として記載"
+        },
+        {
+          "key": "bcp_plan",
+          "label": "BCP計画との関連（BCP事業のみ）",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（都道府県様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "business_plan_doc",
+          "label": "事業実施計画書",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "care_license_copy",
+          "label": "介護保険事業所指定証のコピー",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "rireki",
+          "label": "法人登記事項証明書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "kessan",
+          "label": "決算書（直近1〜2期）",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "AVTECH見守りカメラの公式カタログ"
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "設置前の現状を示す写真"
+        },
+        {
+          "key": "nouzei",
+          "label": "納税証明書",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "privacy_policy",
+          "label": "個人情報保護方針・管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "入居者のプライバシー保護規程が必要"
+        }
+      ],
+      "updated_at": "2026-05-10"
+    },
+    {
+      "id": "kanagawa-kaigo-ict-2026",
+      "name": "神奈川県 介護ロボット・ICT導入支援事業費補助金",
+      "category": "介護",
+      "ministry": "神奈川県福祉子どもみらい局",
+      "pref_code": "14",
+      "prefecture": "神奈川県",
+      "max_amount": 2600000,
+      "rate_min": 0.5,
+      "rate_max": 0.75,
+      "target_industries": [
+        "医療・介護"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月〜6月（年度ごと公募）",
+      "status": "open",
+      "description": "県内介護事業所の見守りカメラ・センサー・記録ICT等の導入を補助。1機器あたり上限30万円〜法人上限260万円。",
+      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "source_url": "https://www.pref.kanagawa.jp/docs/u6s/cnt/f420373/p1075201.html",
+      "document_tier": 3,
+      "draft_subsidy_type": "kaigo",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "施設・法人名称",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "facility_type",
+          "label": "施設種別",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "特別養護老人ホーム",
+            "介護老人保健施設",
+            "グループホーム",
+            "デイサービス",
+            "訪問介護事業所",
+            "その他介護施設"
+          ]
+        },
+        {
+          "key": "address",
+          "label": "施設所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・施設長氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_name",
+          "label": "担当者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "担当者電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "care_license_number",
+          "label": "介護保険事業所番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "法人設立年月日",
+          "type": "date",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "capital",
+          "label": "資本金（万円）",
+          "type": "number",
+          "required": false,
+          "source": "homepage",
+          "note": "社会福祉法人・NPOは不要"
+        },
+        {
+          "key": "employee_count",
+          "label": "従業員数（介護職員数）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "annual_revenue",
+          "label": "直近年度売上高（万円）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "website_url",
+          "label": "自社ホームページURL",
+          "type": "url",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "monitoring_purpose",
+          "label": "見守り・安全管理の目的",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "転倒検知・夜間見守り・徘徊防止等"
+        },
+        {
+          "key": "product_model",
+          "label": "導入製品型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH見守りカメラの型番"
+        },
+        {
+          "key": "installation_location",
+          "label": "設置場所（室名・フロア）",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "expected_staff_reduction",
+          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
+          "type": "number",
+          "required": false,
+          "source": "manual",
+          "note": "定量効果として記載"
+        },
+        {
+          "key": "bcp_plan",
+          "label": "BCP計画との関連（BCP事業のみ）",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（都道府県様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "business_plan_doc",
+          "label": "事業実施計画書",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "care_license_copy",
+          "label": "介護保険事業所指定証のコピー",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "rireki",
+          "label": "法人登記事項証明書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "kessan",
+          "label": "決算書（直近1〜2期）",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "AVTECH見守りカメラの公式カタログ"
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "設置前の現状を示す写真"
+        },
+        {
+          "key": "nouzei",
+          "label": "納税証明書",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "privacy_policy",
+          "label": "個人情報保護方針・管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "入居者のプライバシー保護規程が必要"
+        }
+      ],
+      "updated_at": "2026-05-10"
+    },
+    {
+      "id": "chiba-kaigo-ict-2026",
+      "name": "千葉県 介護ロボット・ICT導入支援事業",
+      "category": "介護",
+      "ministry": "千葉県健康福祉部高齢者福祉課",
+      "pref_code": "12",
+      "prefecture": "千葉県",
+      "max_amount": 2600000,
+      "rate_min": 0.5,
+      "rate_max": 0.75,
+      "target_industries": [
+        "医療・介護"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月〜7月（年度ごと公募）",
+      "status": "open",
+      "description": "千葉県内の介護施設等がICT・見守りカメラ等を導入する際の費用を補助。地域医療介護総合確保基金を活用。",
+      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "source_url": "https://www.pref.chiba.lg.jp/koufuku/shisetsumuke/index.html",
+      "document_tier": 3,
+      "draft_subsidy_type": "kaigo",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "施設・法人名称",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "facility_type",
+          "label": "施設種別",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "特別養護老人ホーム",
+            "介護老人保健施設",
+            "グループホーム",
+            "デイサービス",
+            "訪問介護事業所",
+            "その他介護施設"
+          ]
+        },
+        {
+          "key": "address",
+          "label": "施設所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・施設長氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_name",
+          "label": "担当者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "担当者電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "care_license_number",
+          "label": "介護保険事業所番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "法人設立年月日",
+          "type": "date",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "capital",
+          "label": "資本金（万円）",
+          "type": "number",
+          "required": false,
+          "source": "homepage",
+          "note": "社会福祉法人・NPOは不要"
+        },
+        {
+          "key": "employee_count",
+          "label": "従業員数（介護職員数）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "annual_revenue",
+          "label": "直近年度売上高（万円）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "website_url",
+          "label": "自社ホームページURL",
+          "type": "url",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "monitoring_purpose",
+          "label": "見守り・安全管理の目的",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "転倒検知・夜間見守り・徘徊防止等"
+        },
+        {
+          "key": "product_model",
+          "label": "導入製品型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH見守りカメラの型番"
+        },
+        {
+          "key": "installation_location",
+          "label": "設置場所（室名・フロア）",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "expected_staff_reduction",
+          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
+          "type": "number",
+          "required": false,
+          "source": "manual",
+          "note": "定量効果として記載"
+        },
+        {
+          "key": "bcp_plan",
+          "label": "BCP計画との関連（BCP事業のみ）",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（都道府県様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "business_plan_doc",
+          "label": "事業実施計画書",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "care_license_copy",
+          "label": "介護保険事業所指定証のコピー",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "rireki",
+          "label": "法人登記事項証明書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "kessan",
+          "label": "決算書（直近1〜2期）",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "AVTECH見守りカメラの公式カタログ"
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "設置前の現状を示す写真"
+        },
+        {
+          "key": "nouzei",
+          "label": "納税証明書",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "privacy_policy",
+          "label": "個人情報保護方針・管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "入居者のプライバシー保護規程が必要"
+        }
+      ],
+      "updated_at": "2026-05-10"
+    },
+    {
+      "id": "saitama-kaigo-ict-2026",
+      "name": "埼玉県 介護ロボット・ICT導入支援事業",
+      "category": "介護",
+      "ministry": "埼玉県福祉部高齢者福祉課",
+      "pref_code": "11",
+      "prefecture": "埼玉県",
+      "max_amount": 2600000,
+      "rate_min": 0.5,
+      "rate_max": 0.75,
+      "target_industries": [
+        "医療・介護"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月〜7月（年度ごと公募）",
+      "status": "open",
+      "description": "県内介護事業所の見守りカメラ・センサー・記録ソフト導入経費を補助。",
+      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "source_url": "https://www.pref.saitama.lg.jp/a0603/kaigo-net/index.html",
+      "document_tier": 3,
+      "draft_subsidy_type": "kaigo",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "施設・法人名称",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "facility_type",
+          "label": "施設種別",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "特別養護老人ホーム",
+            "介護老人保健施設",
+            "グループホーム",
+            "デイサービス",
+            "訪問介護事業所",
+            "その他介護施設"
+          ]
+        },
+        {
+          "key": "address",
+          "label": "施設所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・施設長氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_name",
+          "label": "担当者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "担当者電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "care_license_number",
+          "label": "介護保険事業所番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "法人設立年月日",
+          "type": "date",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "capital",
+          "label": "資本金（万円）",
+          "type": "number",
+          "required": false,
+          "source": "homepage",
+          "note": "社会福祉法人・NPOは不要"
+        },
+        {
+          "key": "employee_count",
+          "label": "従業員数（介護職員数）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "annual_revenue",
+          "label": "直近年度売上高（万円）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "website_url",
+          "label": "自社ホームページURL",
+          "type": "url",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "monitoring_purpose",
+          "label": "見守り・安全管理の目的",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "転倒検知・夜間見守り・徘徊防止等"
+        },
+        {
+          "key": "product_model",
+          "label": "導入製品型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH見守りカメラの型番"
+        },
+        {
+          "key": "installation_location",
+          "label": "設置場所（室名・フロア）",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "expected_staff_reduction",
+          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
+          "type": "number",
+          "required": false,
+          "source": "manual",
+          "note": "定量効果として記載"
+        },
+        {
+          "key": "bcp_plan",
+          "label": "BCP計画との関連（BCP事業のみ）",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（都道府県様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "business_plan_doc",
+          "label": "事業実施計画書",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "care_license_copy",
+          "label": "介護保険事業所指定証のコピー",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "rireki",
+          "label": "法人登記事項証明書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "kessan",
+          "label": "決算書（直近1〜2期）",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "AVTECH見守りカメラの公式カタログ"
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "設置前の現状を示す写真"
+        },
+        {
+          "key": "nouzei",
+          "label": "納税証明書",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "privacy_policy",
+          "label": "個人情報保護方針・管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "入居者のプライバシー保護規程が必要"
+        }
+      ],
+      "updated_at": "2026-05-10"
+    },
+    {
+      "id": "shizuoka-kaigo-ict-2026",
+      "name": "静岡県 介護ロボット・ICT導入支援事業",
+      "category": "介護",
+      "ministry": "静岡県健康福祉部介護保険課",
+      "pref_code": "22",
+      "prefecture": "静岡県",
+      "max_amount": 2600000,
+      "rate_min": 0.5,
+      "rate_max": 0.75,
+      "target_industries": [
+        "医療・介護"
+      ],
+      "max_employees": null,
+      "deadline": "2026年6月〜7月（年度ごと公募）",
+      "status": "open",
+      "description": "静岡県内の介護施設・事業所が見守りセンサー・カメラ等を導入する経費を補助。",
+      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "source_url": "https://www.pref.shizuoka.jp/kenkofukushi/koreifukushi/kaigohoken/1002941/index.html",
+      "document_tier": 3,
+      "draft_subsidy_type": "kaigo",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "施設・法人名称",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "facility_type",
+          "label": "施設種別",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "特別養護老人ホーム",
+            "介護老人保健施設",
+            "グループホーム",
+            "デイサービス",
+            "訪問介護事業所",
+            "その他介護施設"
+          ]
+        },
+        {
+          "key": "address",
+          "label": "施設所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・施設長氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_name",
+          "label": "担当者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "担当者電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "care_license_number",
+          "label": "介護保険事業所番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "法人設立年月日",
+          "type": "date",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "capital",
+          "label": "資本金（万円）",
+          "type": "number",
+          "required": false,
+          "source": "homepage",
+          "note": "社会福祉法人・NPOは不要"
+        },
+        {
+          "key": "employee_count",
+          "label": "従業員数（介護職員数）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "annual_revenue",
+          "label": "直近年度売上高（万円）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "website_url",
+          "label": "自社ホームページURL",
+          "type": "url",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "monitoring_purpose",
+          "label": "見守り・安全管理の目的",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "転倒検知・夜間見守り・徘徊防止等"
+        },
+        {
+          "key": "product_model",
+          "label": "導入製品型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH見守りカメラの型番"
+        },
+        {
+          "key": "installation_location",
+          "label": "設置場所（室名・フロア）",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "expected_staff_reduction",
+          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
+          "type": "number",
+          "required": false,
+          "source": "manual",
+          "note": "定量効果として記載"
+        },
+        {
+          "key": "bcp_plan",
+          "label": "BCP計画との関連（BCP事業のみ）",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（都道府県様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "business_plan_doc",
+          "label": "事業実施計画書",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "care_license_copy",
+          "label": "介護保険事業所指定証のコピー",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "rireki",
+          "label": "法人登記事項証明書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "kessan",
+          "label": "決算書（直近1〜2期）",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "AVTECH見守りカメラの公式カタログ"
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "設置前の現状を示す写真"
+        },
+        {
+          "key": "nouzei",
+          "label": "納税証明書",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "privacy_policy",
+          "label": "個人情報保護方針・管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "入居者のプライバシー保護規程が必要"
+        }
+      ],
+      "updated_at": "2026-05-10"
+    },
+    {
+      "id": "yamanashi-kaigo-tech-2026",
+      "name": "山梨県 テクノロジーを活用した業務効率化事業費補助金（介護）",
+      "category": "介護",
+      "ministry": "山梨県福祉保健部健康長寿推進課",
+      "pref_code": "19",
+      "prefecture": "山梨県",
+      "max_amount": 2600000,
+      "rate_min": 0.5,
+      "rate_max": 0.75,
+      "target_industries": [
+        "医療・介護"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月〜7月（年度ごと公募）",
+      "status": "open",
+      "description": "県内介護事業所が見守りカメラ・センサー・ICT機器を導入する経費を補助。職員負担軽減を主目的とする。",
+      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "source_url": "https://www.pref.yamanashi.jp/chouju/technology_model.html",
+      "document_tier": 3,
+      "draft_subsidy_type": "kaigo",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "施設・法人名称",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "facility_type",
+          "label": "施設種別",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "特別養護老人ホーム",
+            "介護老人保健施設",
+            "グループホーム",
+            "デイサービス",
+            "訪問介護事業所",
+            "その他介護施設"
+          ]
+        },
+        {
+          "key": "address",
+          "label": "施設所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・施設長氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_name",
+          "label": "担当者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "担当者電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "care_license_number",
+          "label": "介護保険事業所番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "established_date",
+          "label": "法人設立年月日",
+          "type": "date",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "capital",
+          "label": "資本金（万円）",
+          "type": "number",
+          "required": false,
+          "source": "homepage",
+          "note": "社会福祉法人・NPOは不要"
+        },
+        {
+          "key": "employee_count",
+          "label": "従業員数（介護職員数）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "annual_revenue",
+          "label": "直近年度売上高（万円）",
+          "type": "number",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "website_url",
+          "label": "自社ホームページURL",
+          "type": "url",
+          "required": false,
+          "source": "homepage"
+        },
+        {
+          "key": "monitoring_purpose",
+          "label": "見守り・安全管理の目的",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "転倒検知・夜間見守り・徘徊防止等"
+        },
+        {
+          "key": "product_model",
+          "label": "導入製品型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH見守りカメラの型番"
+        },
+        {
+          "key": "installation_location",
+          "label": "設置場所（室名・フロア）",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "expected_staff_reduction",
+          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
+          "type": "number",
+          "required": false,
+          "source": "manual",
+          "note": "定量効果として記載"
+        },
+        {
+          "key": "bcp_plan",
+          "label": "BCP計画との関連（BCP事業のみ）",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（都道府県様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "business_plan_doc",
+          "label": "事業実施計画書",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "care_license_copy",
+          "label": "介護保険事業所指定証のコピー",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "rireki",
+          "label": "法人登記事項証明書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "kessan",
+          "label": "決算書（直近1〜2期）",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "AVTECH見守りカメラの公式カタログ"
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "設置前の現状を示す写真"
+        },
+        {
+          "key": "nouzei",
+          "label": "納税証明書",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "privacy_policy",
+          "label": "個人情報保護方針・管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "入居者のプライバシー保護規程が必要"
+        }
+      ],
+      "updated_at": "2026-05-10"
     }
   ]
 }
