@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   fetchProfileDetail,
   updateProfile,
@@ -25,12 +25,11 @@ function loadWizardCompany(): Record<string, string | number> | null {
   }
 }
 
-const SETTING_MENUS = [
-  { key: "profile", label: "プロフィール" },
-  { key: "notifications", label: "通知設定" },
-  { key: "security", label: "セキュリティ" },
-] as const;
-type MenuKey = (typeof SETTING_MENUS)[number]["key"];
+type MenuKey = "profile" | "notifications" | "security";
+
+function isMenuKey(v: string | null | undefined): v is MenuKey {
+  return v === "profile" || v === "notifications" || v === "security";
+}
 
 /* ─────────────────────────────────────────────
  *  STYLE_GUIDE 準拠の共通スタイル
@@ -46,8 +45,10 @@ const S = {
     margin: "0 0 16px",
   } as React.CSSProperties,
   card: {
-    background: "var(--hc-white)",
-    border: "1px solid var(--hc-border)",
+    background:
+      "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+    border: "1px solid color-mix(in srgb, var(--hc-primary) 10%, var(--hc-border))",
+    borderBottomColor: "color-mix(in srgb, var(--hc-primary) 18%, var(--hc-border))",
     borderRadius: 10,
     padding: 20,
     marginBottom: 16,
@@ -163,8 +164,10 @@ function Field({
   );
 }
 
-export default function SettingsPage() {
-  const [activeMenu, setActiveMenu] = useState<MenuKey>("profile");
+function SettingsContent() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeMenu: MenuKey = isMenuKey(tabParam) ? tabParam : "profile";
   const [, setProfile] = useState<UserProfileDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -290,41 +293,8 @@ export default function SettingsPage() {
     }
   }
 
-  const leftPanel = (
-    <div>
-      <span className="section-title">設定メニュー</span>
-      {SETTING_MENUS.map((m) => {
-        const isActive = activeMenu === m.key;
-        return (
-          <button
-            key={m.key}
-            type="button"
-            onClick={() => setActiveMenu(m.key)}
-            style={{
-              display: "block",
-              width: "100%",
-              textAlign: "left",
-              padding: "8px 12px",
-              marginBottom: 4,
-              borderRadius: 8,
-              fontSize: 13,
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              background: isActive ? "var(--hc-primary-light)" : "transparent",
-              color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
-              fontWeight: isActive ? 700 : 500,
-              transition: "all 0.15s",
-            }}
-          >
-            {m.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-
-  const centerContent = (
+  // メニュー切替はサイドバーのサブメニュー（?tab=...）が担うため、設定ページ内の左パネルは廃止
+  return (
     <div style={{ maxWidth: 640 }}>
       <h1 style={S.pageTitle}>アカウント設定</h1>
 
@@ -555,13 +525,12 @@ export default function SettingsPage() {
       )}
     </div>
   );
+}
 
+export default function SettingsPage() {
   return (
-    <ThreeColumnLayout
-      left={leftPanel}
-      center={centerContent}
-      showRight={false}
-      gridCols="200px 1fr"
-    />
+    <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
+      <SettingsContent />
+    </Suspense>
   );
 }

@@ -173,8 +173,10 @@ export default function EligibilityChecker({ subsidyId, subsidyName }: Props) {
         marginBottom: 24,
         padding: 20,
         borderRadius: 10,
-        background: "var(--hc-white)",
-        border: "1px solid var(--hc-border)",
+        background:
+          "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+        border: "1px solid color-mix(in srgb, var(--hc-primary) 10%, var(--hc-border))",
+        borderBottomColor: "color-mix(in srgb, var(--hc-primary) 18%, var(--hc-border))",
         boxShadow: "var(--hc-shadow)",
       }}
       aria-label="採択適合チェッカー"

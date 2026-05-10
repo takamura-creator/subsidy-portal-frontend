@@ -13,6 +13,8 @@ export interface SidebarItem {
   label: string;
   icon: LucideIcon;
   separator?: false;
+  /** 子項目（active 時に展開表示） */
+  submenu?: { href: string; label: string }[];
 }
 
 export interface SidebarSeparator {
@@ -70,18 +72,40 @@ export default function Sidebar({ items }: SidebarProps) {
           const Icon = item.icon;
           const active = isActive(item.href);
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-medium transition-colors ${
-                active
-                  ? "bg-primary text-white"
-                  : "text-text2 hover:bg-bg-surface hover:text-text"
-              }`}
-            >
-              <Icon className="w-4.5 h-4.5 shrink-0" />
-              {item.label}
-            </Link>
+            <div key={item.href}>
+              <Link
+                href={item.href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-primary text-white"
+                    : "text-text2 hover:bg-bg-surface hover:text-text"
+                }`}
+              >
+                <Icon className="w-4.5 h-4.5 shrink-0" />
+                {item.label}
+              </Link>
+              {item.submenu && active && (
+                <div className="ml-9 mt-0.5 mb-1 flex flex-col gap-0.5">
+                  {item.submenu.map((sub) => {
+                    const subActive = pathname === sub.href ||
+                      pathname + (typeof window !== "undefined" ? window.location.search : "") === sub.href;
+                    return (
+                      <Link
+                        key={sub.href}
+                        href={sub.href}
+                        className={`px-2 py-1.5 rounded-md text-[12px] transition-colors ${
+                          subActive
+                            ? "text-primary font-semibold bg-primary/5"
+                            : "text-text2 hover:text-text hover:bg-bg-surface"
+                        }`}
+                      >
+                        {sub.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
       </nav>

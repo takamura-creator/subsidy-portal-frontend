@@ -12,7 +12,16 @@ const SIDEBAR_ITEMS: SidebarEntry[] = [
   { href: "/my/wizard", label: "申請ウィザード", icon: FilePlus },
   { href: "/my/applications", label: "申請一覧", icon: FileText },
   { separator: true },
-  { href: "/my/settings", label: "アカウント設定", icon: Settings },
+  {
+    href: "/my/settings",
+    label: "アカウント設定",
+    icon: Settings,
+    submenu: [
+      { href: "/my/settings?tab=profile", label: "プロフィール" },
+      { href: "/my/settings?tab=notifications", label: "通知設定" },
+      { href: "/my/settings?tab=security", label: "セキュリティ" },
+    ],
+  },
 ];
 
 /** ログイン済み & ロール OK かをクライアントサイドで同期チェック */

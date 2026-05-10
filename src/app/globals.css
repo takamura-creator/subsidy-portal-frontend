@@ -223,24 +223,33 @@ p {
    Components — モックアップ準拠
    ============================================ */
 
-.card {
-  background: var(--hc-white);
-  border: 1px solid var(--hc-border);
+/*
+ * カードの統一色調（ヒーロースライドカードと同一）
+ * primary 4% → bg → accent 6% のグラデーションで温かみのある自然な質感を持たせる
+ * .card / .form-card / .hc-industry-card / .hc-card-gradient はすべて同じ見た目
+ */
+.card,
+.form-card,
+.hc-card-gradient {
+  background:
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%,
+      var(--hc-bg) 55%,
+      color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%
+    );
+  border: 1px solid color-mix(in srgb, var(--hc-primary) 10%, var(--hc-border));
+  border-bottom-color: color-mix(in srgb, var(--hc-primary) 18%, var(--hc-border));
   border-radius: 10px;
-  padding: 16px;
   box-shadow: var(--hc-shadow);
-  transition: box-shadow 0.15s, transform 0.15s;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
+.card { padding: 16px; }
+.form-card { padding: 28px; }
 .card:hover {
+  transform: translateY(-2px);
+  border-color: var(--hc-primary-border);
   box-shadow: var(--hc-shadow-md);
-}
-
-.form-card {
-  background: var(--hc-white);
-  border: 1px solid var(--hc-border);
-  border-radius: 10px;
-  padding: 28px;
-  box-shadow: var(--hc-shadow);
 }
 
 .btn-primary {
@@ -614,6 +623,55 @@ button:focus-visible, a:focus-visible {
   font-weight: 500;
   color: var(--hc-text-muted);
   letter-spacing: 3px;
+}
+
+/* 対応エリアバナー（ヒーロー） */
+.hero-area-banner {
+  margin-top: 36px;
+  padding: 14px 22px;
+  border: 1.5px solid var(--hc-primary);
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--hc-primary) 6%, var(--hc-white)) 0%,
+      var(--hc-bg) 60%,
+      color-mix(in srgb, var(--hc-accent) 8%, var(--hc-bg)) 100%
+    );
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: var(--hc-shadow);
+}
+.hero-area-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--hc-primary);
+  letter-spacing: 0.12em;
+  font-family: 'Sora', sans-serif;
+  text-transform: uppercase;
+}
+.hero-area-list {
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--hc-navy);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+.hero-area-note {
+  font-size: 11px;
+  color: var(--hc-text-muted);
+  letter-spacing: 0.04em;
+}
+@media (max-width: 640px) {
+  .hero-area-banner {
+    padding: 12px 16px;
+  }
+  .hero-area-list {
+    font-size: 14px;
+  }
 }
 
 /* Terminal Typewriter — floating transparent */
