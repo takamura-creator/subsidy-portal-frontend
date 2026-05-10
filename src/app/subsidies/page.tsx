@@ -523,7 +523,7 @@ function SubsidiesContent() {
     <div>
       <span className="section-title">クイックアクション</span>
 
-      {/* CTA: AI補助金診断 */}
+      {/* CTA: 業種から探す */}
       <Link
         href="/match"
         style={{
@@ -532,7 +532,7 @@ function SubsidiesContent() {
           padding: "10px 12px",
           marginBottom: 6,
           background: "var(--hc-primary)",
-          color: "#fff",
+          color: "var(--hc-white)",
           border: "1px solid var(--hc-primary)",
           borderRadius: 6,
           fontSize: 12,
@@ -544,7 +544,7 @@ function SubsidiesContent() {
           transition: "all 0.15s",
         }}
       >
-        <span style={{ marginRight: 4 }}>&#9889;</span>AI補助金診断
+        業種から探す →
       </Link>
 
       {/* 申請書作成 */}

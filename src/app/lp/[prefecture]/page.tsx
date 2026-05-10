@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (inService) {
     return {
       title: `${name}の防犯カメラ補助金＋見積もり | HOJYO CAME`,
-      description: `${name}で使える防犯カメラ導入の補助金・助成金を一覧で確認。AVTECH日本正規代理店マルチック株式会社による直接施工対応エリア。AI診断・見積書自動生成まで無料で利用可能。`,
+      description: `${name}で使える防犯カメラ導入の補助金・助成金を一覧で確認。AVTECH日本正規代理店マルチック株式会社による直接施工対応エリア。業種別検索・見積書自動生成まで無料で利用可能。`,
       alternates: { canonical: `/lp/${prefecture}` },
       openGraph: { type: "website" },
     };
@@ -143,7 +143,7 @@ function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subs
           </h2>
           <ol className="grid md:grid-cols-3 gap-4">
             {[
-              { step: "STEP 1", title: "AI補助金診断", desc: "業種・規模・導入目的を入力して候補を絞り込みます。" },
+              { step: "STEP 1", title: "業種から補助金を探す", desc: "業種を選んで対象補助金を一覧表示。条件にあう制度を比較できます。" },
               { step: "STEP 2", title: "AVTECH製品で見積もり", desc: "ウィザードで構成と台数を選び、見積書PDFを出力できます。" },
               { step: "STEP 3", title: "マルチック施工", desc: `${prefecture}の現場へ直接お伺いし、施工・初期設定までワンストップ対応。` },
             ].map((f) => (

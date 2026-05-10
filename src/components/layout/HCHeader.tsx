@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { href: "/subsidies", label: "補助金を探す" },
   { href: "/results", label: "交付実績" },
   { href: "/partners/multik", label: "施工パートナー" },
-  { href: "/match", label: "AI診断" },
+  { href: "/match", label: "業種選択" },
   { href: "/contact", label: "お問い合わせ" },
 ];
 

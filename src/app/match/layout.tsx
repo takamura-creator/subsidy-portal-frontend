@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI補助金診断",
-  description: "防犯カメラ導入に使える補助金を無料で診断。業種・地域・導入目的から条件に合う補助金を約30秒で提案します。",
+  title: "業種から補助金を探す",
+  description: "あなたの業種に合った防犯カメラ補助金を一覧表示。登録不要で閲覧できます。マルチック対応6都県の補助金に対応。",
 };
 
 export default function MatchLayout({ children }: { children: React.ReactNode }) {
