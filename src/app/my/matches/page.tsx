@@ -61,9 +61,23 @@ export default function MyMatchesPage() {
       <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--hc-text-muted)", fontSize: 13 }}>
         <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
         マッチング履歴がありません
-        <div style={{ marginTop: 12 }}>
+        <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/match" className="btn-primary" style={{ fontSize: 12, padding: "8px 16px", width: "auto", display: "inline-block" }}>
-            AI診断を受ける
+            業種から補助金を探す
+          </Link>
+          <Link
+            href="/my"
+            style={{
+              fontSize: 12,
+              padding: "8px 16px",
+              border: "1px solid var(--hc-border)",
+              borderRadius: 6,
+              color: "var(--hc-text-muted)",
+              textDecoration: "none",
+              background: "var(--hc-white)",
+            }}
+          >
+            ダッシュボードに戻る
           </Link>
         </div>
       </div>

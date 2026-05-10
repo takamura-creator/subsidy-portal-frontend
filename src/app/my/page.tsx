@@ -322,8 +322,8 @@ export default function MyDashboardPage() {
           </Link>
 
           {/* セカンダリリンク */}
-          <ActionLink href="/match" icon="⚡" label="AI診断を受ける" />
-          <ActionLink href="/my/wizard" icon="📋" label="見積もり・書類ウィザード" />
+          <ActionLink href="/match" icon="🔍" label="業種から補助金を探す" />
+          <ActionLink href="/subsidies" icon="📋" label="補助金一覧を見る" />
           <ActionLink href="/partners/multik" icon="🔧" label="工事業者を探す" />
 
           {/* 施工相談カード */}

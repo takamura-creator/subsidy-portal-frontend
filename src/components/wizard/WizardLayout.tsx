@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 export interface WizardStepDef {
@@ -43,6 +44,40 @@ export default function WizardLayout({ currentStep, children, title, subtitle, s
   const stepDefs = steps ?? WIZARD_STEPS;
   return (
     <div className="max-w-[960px] mx-auto px-4 md:px-6 py-8">
+      {/* ナビゲーション補助: ダッシュボードへ戻る + 現在地表示 */}
+      <nav
+        aria-label="パンくずリスト"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+          fontSize: 12,
+          color: "var(--hc-text-muted)",
+          flexWrap: "wrap",
+          gap: 8,
+        }}
+      >
+        <Link
+          href="/my"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            color: "var(--hc-text-muted)",
+            textDecoration: "none",
+            padding: "4px 8px",
+            borderRadius: 6,
+            border: "1px solid var(--hc-border)",
+            background: "var(--hc-white)",
+          }}
+        >
+          ← ダッシュボードに戻る
+        </Link>
+        <span aria-current="page" style={{ fontWeight: 500 }}>
+          申請ウィザード（Step {currentStep} / {stepDefs.length}）
+        </span>
+      </nav>
       <ProgressBar currentStep={currentStep} steps={stepDefs} />
       {(title || subtitle) && (
         <div className="mt-6 mb-4">
