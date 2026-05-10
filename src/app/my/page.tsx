@@ -214,7 +214,7 @@ export default function MyDashboardPage() {
           <SectionTitle>次のステップ</SectionTitle>
           <div
             style={{
-              background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+              background: "var(--hc-card-bg)",
               border: BORDER_WHISPER,
               borderRadius: RADIUS_CARD,
               boxShadow: SHADOW_CARD,
@@ -276,7 +276,7 @@ export default function MyDashboardPage() {
           {wizardStep >= 1 && (
             <div
               style={{
-                background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+                background: "var(--hc-card-bg)",
                 border: BORDER_WHISPER,
                 borderRadius: RADIUS_CARD,
                 boxShadow: SHADOW_CARD,
@@ -312,7 +312,7 @@ export default function MyDashboardPage() {
               <div
                 style={{
                   background:
-                    "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+                    "var(--hc-card-bg)",
                   border: BORDER_WHISPER,
                   borderRadius: RADIUS_CARD,
                   boxShadow: SHADOW_CARD,
@@ -476,7 +476,7 @@ function SummaryCard({
   return (
     <div
       style={{
-        background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+        background: "var(--hc-card-bg)",
         border: BORDER_WHISPER,
         borderRadius: RADIUS_CARD,
         boxShadow: SHADOW_CARD,
@@ -526,7 +526,7 @@ function ActionLink({
         fontSize: 13,
         fontWeight: 400,
         color: "var(--hc-text)",
-        background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+        background: "var(--hc-card-bg)",
         border: BORDER_WHISPER,
         textDecoration: "none",
         transition: "all 0.15s",

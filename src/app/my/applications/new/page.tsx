@@ -357,7 +357,7 @@ export default function ApplicationNewPage() {
       <span className="section-title">PDFプレビュー</span>
       <div
         style={{
-          background: "var(--hc-white)",
+          background: "var(--hc-card-bg)",
           border: "1px solid var(--hc-border)",
           borderRadius: 8,
           padding: 14,

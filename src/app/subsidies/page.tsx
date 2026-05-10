@@ -366,7 +366,7 @@ function SubsidiesContent() {
             fontSize: 11,
             fontFamily: "inherit",
             color: "var(--hc-text-muted)",
-            background: "var(--hc-white)",
+            background: "var(--hc-card-bg)",
           }}
           value={sort}
           onChange={(e) => setSort(e.target.value)}
@@ -380,7 +380,7 @@ function SubsidiesContent() {
       {/* Table */}
       <div
         style={{
-          background: "var(--hc-white)",
+          background: "var(--hc-card-bg)",
           border: "1px solid var(--hc-border)",
           borderRadius: 8,
           overflow: "hidden",
@@ -555,7 +555,7 @@ function SubsidiesContent() {
           width: "100%",
           padding: "10px 12px",
           marginBottom: 6,
-          background: "var(--hc-white)",
+          background: "var(--hc-card-bg)",
           border: "1px solid var(--hc-border)",
           borderRadius: 6,
           fontSize: 12,
@@ -579,7 +579,7 @@ function SubsidiesContent() {
           width: "100%",
           padding: "10px 12px",
           marginBottom: 6,
-          background: "var(--hc-white)",
+          background: "var(--hc-card-bg)",
           border: "1px solid var(--hc-border)",
           borderRadius: 8,
           fontSize: 12,

@@ -115,7 +115,7 @@ export default function ContactPage() {
         <div
           className="w-full max-w-[520px] text-center"
           style={{
-            background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+            background: "var(--hc-card-bg)",
             border: "1px solid var(--hc-border)",
             borderRadius: 12,
             padding: "40px 32px",
@@ -204,7 +204,7 @@ export default function ContactPage() {
       <form onSubmit={handleSubmit}>
         <div
           style={{
-            background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+            background: "var(--hc-card-bg)",
             border: "1px solid var(--hc-border)",
             borderRadius: 12,
             padding: "28px 28px",

@@ -43,7 +43,7 @@ export default function JichikaiCasesIndex() {
             href={`/cases/jichikai/${c.slug}`}
             style={{
               display: "block",
-              background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+              background: "var(--hc-card-bg)",
               border: "1px solid var(--hc-border)",
               borderRadius: 10,
               padding: 20,

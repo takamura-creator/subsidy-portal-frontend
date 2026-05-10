@@ -4,6 +4,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { useDraft } from "@/lib/useDraft";
 import { useScore } from "@/lib/useScore";
 import { exportDraftBlob } from "@/lib/api";
+import { isServicePrefecture } from "@/lib/constants";
 import type { CompanyInfo, SubsidySelection } from "./types";
 import type { DraftChapter } from "@/lib/api";
 import DrillDownChat from "./DrillDownChat";
@@ -58,6 +59,7 @@ export default function Step8Draft({
   const [showDrillDown, setShowDrillDown] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [areaError, setAreaError] = useState(false);
 
   const appId = applicationId ?? "draft-preview";
   const subsidyId = subsidy?.id ?? "jizokuka-2026";
@@ -65,6 +67,14 @@ export default function Step8Draft({
 
   useEffect(() => {
     if (draft || loading) return;
+    // G3: 対応エリア制限チェック（直リンク対策）
+    const pref = company.prefecture
+      ?? (hpExtracted?.prefecture as string | undefined)
+      ?? "";
+    if (pref && !isServicePrefecture(pref)) {
+      setAreaError(true);
+      return;
+    }
     if (initialDraftId) {
       load(appId, initialDraftId);
     } else {
@@ -137,6 +147,12 @@ export default function Step8Draft({
 
   return (
     <div className="space-y-6">
+      {/* G3: 対応エリア外ガード（直リンク対策） */}
+      {areaError && (
+        <div className="rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+          現在は対応エリアではありません。
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-navy">事業計画書ドラフト</h2>
         <div className="flex items-center gap-3">

@@ -137,7 +137,7 @@ function PhaseBlock({ phase }: { phase: TimelinePhase }) {
   return (
     <section
       style={{
-        background: "var(--hc-white)",
+        background: "var(--hc-card-bg)",
         border: "1px solid var(--hc-border)",
         borderRadius: 12,
         padding: 16,
@@ -208,7 +208,7 @@ export default function ActionTimeline({ subsidyOptions, defaultSubsidyId }: Pro
       {/* 入力 */}
       <div
         style={{
-          background: "var(--hc-white)",
+          background: "var(--hc-card-bg)",
           border: "1px solid var(--hc-border)",
           borderRadius: 12,
           padding: 16,

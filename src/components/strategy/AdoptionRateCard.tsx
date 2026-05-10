@@ -10,7 +10,7 @@ export default function AdoptionRateCard() {
   return (
     <div
       style={{
-        background: "var(--hc-white)",
+        background: "var(--hc-card-bg)",
         border: "1px solid var(--hc-border)",
         borderRadius: 10,
         padding: 16,

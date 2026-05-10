@@ -67,7 +67,7 @@ export default function DeductionWarning() {
     fontSize: 12,
     border: "1px solid var(--hc-border)",
     borderRadius: 6,
-    background: "var(--hc-white)",
+    background: "var(--hc-card-bg)",
   };
 
   const overallStyle = result
@@ -77,7 +77,7 @@ export default function DeductionWarning() {
   return (
     <div
       style={{
-        background: "var(--hc-white)",
+        background: "var(--hc-card-bg)",
         border: "1px solid var(--hc-border)",
         borderRadius: 10,
         padding: 14,

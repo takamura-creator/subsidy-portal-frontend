@@ -19,7 +19,7 @@ export default function ScorePanel({ appId, subsidyId }: Props) {
   }, [appId, subsidyId, evaluate]);
 
   const containerStyle: React.CSSProperties = {
-    background: "var(--hc-white)",
+    background: "var(--hc-card-bg)",
     border: "1px solid var(--hc-border)",
     borderRadius: 8,
     padding: "14px 16px",

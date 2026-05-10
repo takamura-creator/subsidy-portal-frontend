@@ -245,7 +245,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
             marginBottom: 24,
             padding: 20,
             borderRadius: 10,
-            background: "var(--hc-white)",
+            background: "var(--hc-card-bg)",
             border: "1px solid var(--hc-primary-edge)",
             boxShadow: "var(--hc-shadow)",
           }}
@@ -575,7 +575,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           fontFamily: "inherit",
           textDecoration: "none",
           border: "2px solid var(--hc-primary)",
-          background: "var(--hc-white)",
+          background: "var(--hc-card-bg)",
           color: "var(--hc-primary)",
           transition: "all 0.3s",
         }}
@@ -587,7 +587,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
 
       {/* Info box */}
       <div style={{
-        background: "var(--hc-white)",
+        background: "var(--hc-card-bg)",
         border: "1px solid var(--hc-border)",
         borderRadius: 8,
         padding: 16,

@@ -61,7 +61,7 @@ export default function PrecommencementWarning() {
     fontSize: 12,
     border: "1px solid var(--hc-border)",
     borderRadius: 6,
-    background: "var(--hc-white)",
+    background: "var(--hc-card-bg)",
   };
 
   const style = result ? SEVERITY_STYLE[result.severity] ?? SEVERITY_STYLE.warning : null;
@@ -69,7 +69,7 @@ export default function PrecommencementWarning() {
   return (
     <div
       style={{
-        background: "var(--hc-white)",
+        background: "var(--hc-card-bg)",
         border: "1px solid var(--hc-border)",
         borderRadius: 10,
         padding: 14,

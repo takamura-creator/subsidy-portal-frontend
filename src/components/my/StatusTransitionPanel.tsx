@@ -75,7 +75,7 @@ export default function StatusTransitionPanel({ appId }: Props) {
   };
 
   const containerStyle: React.CSSProperties = {
-    background: "var(--hc-white)",
+    background: "var(--hc-card-bg)",
     border: "1px solid var(--hc-border)",
     borderRadius: 8,
     padding: "14px 16px",
@@ -217,7 +217,7 @@ export default function StatusTransitionPanel({ appId }: Props) {
               top: "calc(100% + 4px)",
               left: 0,
               right: 0,
-              background: "var(--hc-white)",
+              background: "var(--hc-card-bg)",
               border: "1px solid var(--hc-border)",
               borderRadius: 6,
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",

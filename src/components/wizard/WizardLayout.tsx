@@ -58,7 +58,7 @@ export default function WizardLayout({ currentStep, children, title, subtitle, s
             padding: "6px 10px",
             borderRadius: 6,
             border: "1px solid var(--hc-border)",
-            background: "var(--hc-white)",
+            background: "var(--hc-card-bg)",
           }}
         >
           ← ダッシュボードに戻る

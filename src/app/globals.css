@@ -64,6 +64,17 @@
   --hc-text-divider: color-mix(in srgb, var(--hc-text) 5%, transparent);
   --hc-text-line: color-mix(in srgb, var(--hc-text) 8%, transparent);
 
+  /* Unified Card Gradient（全ページのカード背景はこれを参照） */
+  --hc-card-bg:
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--hc-primary) 7%, var(--hc-white)) 0%,
+      var(--hc-bg) 55%,
+      color-mix(in srgb, var(--hc-accent) 10%, var(--hc-bg)) 100%
+    );
+  --hc-card-border: color-mix(in srgb, var(--hc-primary) 12%, var(--hc-border));
+  --hc-card-border-bottom: color-mix(in srgb, var(--hc-primary) 22%, var(--hc-border));
+
   /* Portal aliases (C-1 backward compat) */
   --portal-shadow: var(--hc-shadow);
   --portal-shadow-md: var(--hc-shadow-md);
@@ -231,15 +242,9 @@ p {
 .card,
 .form-card,
 .hc-card-gradient {
-  background:
-    linear-gradient(
-      168deg,
-      color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%,
-      var(--hc-bg) 55%,
-      color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%
-    );
-  border: 1px solid color-mix(in srgb, var(--hc-primary) 10%, var(--hc-border));
-  border-bottom-color: color-mix(in srgb, var(--hc-primary) 18%, var(--hc-border));
+  background: var(--hc-card-bg);
+  border: 1px solid var(--hc-card-border);
+  border-bottom-color: var(--hc-card-border-bottom);
   border-radius: 10px;
   box-shadow: var(--hc-shadow);
   transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
@@ -764,15 +769,9 @@ button:focus-visible, a:focus-visible {
   flex-shrink: 0;
   width: calc((min(100vw, 1200px) - 64px - 64px) / 5);
   min-width: 180px;
-  background:
-    linear-gradient(
-      168deg,
-      color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%,
-      var(--hc-bg) 55%,
-      color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%
-    );
-  border: 1px solid color-mix(in srgb, var(--hc-primary) 10%, var(--hc-border));
-  border-bottom-color: color-mix(in srgb, var(--hc-primary) 18%, var(--hc-border));
+  background: var(--hc-card-bg);
+  border: 1px solid var(--hc-card-border);
+  border-bottom-color: var(--hc-card-border-bottom);
   border-radius: 10px;
   padding: 14px 16px;
   display: flex;

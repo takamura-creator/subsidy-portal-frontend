@@ -46,7 +46,7 @@ const S = {
   } as React.CSSProperties,
   card: {
     background:
-      "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+      "var(--hc-card-bg)",
     border: "1px solid color-mix(in srgb, var(--hc-primary) 10%, var(--hc-border))",
     borderBottomColor: "color-mix(in srgb, var(--hc-primary) 18%, var(--hc-border))",
     borderRadius: 10,
@@ -76,7 +76,7 @@ const S = {
     borderRadius: 8,
     fontSize: 16,
     fontFamily: "inherit",
-    background: "var(--hc-white)",
+    background: "var(--hc-card-bg)",
     color: "var(--hc-text)",
   } as React.CSSProperties,
   primaryBtn: {
@@ -134,7 +134,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
           width: 18,
           height: 18,
           borderRadius: "50%",
-          background: "var(--hc-white)",
+          background: "var(--hc-card-bg)",
           position: "absolute",
           top: 2,
           left: on ? 20 : 2,

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useDraft } from "@/lib/useDraft";
+import { isServicePrefecture } from "@/lib/constants";
 import type { CompanyInfo, SubsidySelection } from "./types";
 
 interface Props {
@@ -28,6 +29,7 @@ export default function Step7Generate({
   const { draft, loading, error, generate } = useDraft();
   const [retryCount, setRetryCount] = useState(0);
   const [forwarded, setForwarded] = useState(false);
+  const [areaError, setAreaError] = useState(false);
   const generatingRef = useRef(false);
 
   useEffect(() => {
@@ -36,6 +38,14 @@ export default function Step7Generate({
       return;
     }
     if (!draft && !loading && !generatingRef.current) {
+      // G3: 対応エリア制限チェック（6都県外はブロック）
+      const pref = company.prefecture ?? (hpExtracted?.prefecture as string | undefined) ?? "";
+      if (pref && !isServicePrefecture(pref)) {
+        setAreaError(true);
+        generatingRef.current = false;
+        return;
+      }
+
       generatingRef.current = true;
       generate(applicationId, {
         subsidy_id: subsidy.id,
@@ -71,6 +81,11 @@ export default function Step7Generate({
 
   return (
     <div className="space-y-6">
+      {areaError && (
+        <div className="rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+          現在は対応エリアではありません。
+        </div>
+      )}
       <div className="text-center py-12">
         {loading && (
           <>

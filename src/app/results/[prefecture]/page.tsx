@@ -263,7 +263,7 @@ export default function PrefecturePage() {
                 <div
                   key={r.id}
                   className="p-4 rounded-[10px] border"
-                  style={{ background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)", borderColor: "var(--hc-border)", boxShadow: "var(--hc-shadow)" }}
+                  style={{ background: "var(--hc-card-bg)", borderColor: "var(--hc-border)", boxShadow: "var(--hc-shadow)" }}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <p className="text-sm font-medium" style={{ color: "var(--hc-text)" }}>{r.recipient_name}</p>

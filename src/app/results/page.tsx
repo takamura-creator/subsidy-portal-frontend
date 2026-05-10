@@ -98,7 +98,7 @@ export default function ResultsPage() {
               key={cat.category}
               className="flex items-center justify-between p-4 rounded-[10px] border transition-all"
               style={{
-                background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+                background: "var(--hc-card-bg)",
                 borderColor: "var(--hc-border)",
                 boxShadow: "var(--hc-shadow)",
               }}
@@ -134,7 +134,7 @@ export default function ResultsPage() {
               key={fy.fiscal_year}
               className="p-4 rounded-[10px] border text-center"
               style={{
-                background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+                background: "var(--hc-card-bg)",
                 borderColor: "var(--hc-border)",
                 boxShadow: "var(--hc-shadow)",
               }}
@@ -167,7 +167,7 @@ function StatCard({ label, value, unit }: { label: string; value: string; unit?:
     <div
       className="p-5 rounded-[10px] border text-center"
       style={{
-        background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+        background: "var(--hc-card-bg)",
         borderColor: "var(--hc-border)",
         boxShadow: "var(--hc-shadow)",
       }}
@@ -187,7 +187,7 @@ function PrefectureCard({ data }: { data: PrefectureSummary }) {
       href={`/results/${encodeURIComponent(data.prefecture)}`}
       className="p-4 rounded-[10px] border no-underline transition-all hover:shadow-md hover:-translate-y-0.5"
       style={{
-        background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
+        background: "var(--hc-card-bg)",
         borderColor: "var(--hc-border)",
         boxShadow: "var(--hc-shadow)",
       }}
