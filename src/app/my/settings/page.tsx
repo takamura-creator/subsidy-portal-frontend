@@ -7,9 +7,10 @@ import {
   updateProfile,
   changePassword,
   deleteAccount,
+  type UserProfileDetail,
 } from "@/lib/api";
 import { getUser } from "@/lib/auth";
-import { PREFECTURES } from "@/lib/constants";
+import { SERVICE_PREFECTURES } from "@/lib/constants";
 
 const WIZARD_KEY = "hc_wizard_state_v2";
 function loadWizardCompany(): Record<string, string | number> | null {
@@ -19,14 +20,102 @@ function loadWizardCompany(): Record<string, string | number> | null {
     if (!raw) return null;
     const snap = JSON.parse(raw) as { state?: { company?: Record<string, string | number> } };
     return snap?.state?.company ?? null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
-// --- トグルコンポーネント ---
+const SETTING_MENUS = [
+  { key: "profile", label: "プロフィール" },
+  { key: "notifications", label: "通知設定" },
+  { key: "security", label: "セキュリティ" },
+] as const;
+type MenuKey = (typeof SETTING_MENUS)[number]["key"];
+
+/* ─────────────────────────────────────────────
+ *  STYLE_GUIDE 準拠の共通スタイル
+ * ───────────────────────────────────────────── */
+
+const S = {
+  pageTitle: {
+    fontFamily: "'Sora', sans-serif",
+    fontSize: 20,
+    fontWeight: 700,
+    color: "var(--hc-navy)",
+    letterSpacing: "-0.3px",
+    margin: "0 0 16px",
+  } as React.CSSProperties,
+  card: {
+    background: "var(--hc-white)",
+    border: "1px solid var(--hc-border)",
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 16,
+    boxShadow: "var(--hc-shadow)",
+  } as React.CSSProperties,
+  cardTitle: {
+    fontFamily: "'Sora', sans-serif",
+    fontSize: 16,
+    fontWeight: 700,
+    color: "var(--hc-navy)",
+    letterSpacing: "-0.3px",
+    margin: "0 0 12px",
+  } as React.CSSProperties,
+  label: {
+    display: "block",
+    fontSize: 13,
+    fontWeight: 600,
+    color: "var(--hc-navy)",
+    margin: "0 0 6px",
+  } as React.CSSProperties,
+  input: {
+    width: "100%",
+    padding: "10px 14px",
+    border: "1px solid var(--hc-border)",
+    borderRadius: 8,
+    fontSize: 16,
+    fontFamily: "inherit",
+    background: "var(--hc-white)",
+    color: "var(--hc-text)",
+  } as React.CSSProperties,
+  primaryBtn: {
+    fontSize: 14,
+    fontWeight: 600,
+    padding: "12px 24px",
+    border: "2px solid var(--hc-primary)",
+    background: "var(--hc-primary)",
+    color: "var(--hc-white)",
+    borderRadius: 8,
+    cursor: "pointer",
+    fontFamily: "inherit",
+    transition: "all 0.2s",
+  } as React.CSSProperties,
+  dangerBtn: {
+    fontSize: 13,
+    fontWeight: 600,
+    padding: "10px 20px",
+    border: "1px solid var(--hc-error-border)",
+    background: "transparent",
+    color: "var(--hc-error)",
+    borderRadius: 8,
+    cursor: "pointer",
+    fontFamily: "inherit",
+  } as React.CSSProperties,
+  fieldHint: {
+    fontSize: 11,
+    color: "var(--hc-text-muted)",
+    margin: "4px 0 0",
+    lineHeight: 1.5,
+  } as React.CSSProperties,
+} as const;
+
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
+      type="button"
       onClick={() => onChange(!on)}
+      aria-checked={on}
+      role="switch"
       style={{
         width: 40,
         height: 22,
@@ -38,15 +127,13 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
         transition: "background 0.2s",
         flexShrink: 0,
       }}
-      aria-checked={on}
-      role="switch"
     >
       <span
         style={{
           width: 18,
           height: 18,
           borderRadius: "50%",
-          background: "#fff",
+          background: "var(--hc-white)",
           position: "absolute",
           top: 2,
           left: on ? 20 : 2,
@@ -58,27 +145,27 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
   );
 }
 
-// --- 入力フィールド ---
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div style={{ marginBottom: 14 }}>
-      <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 4 }}>
-        {label}
-      </label>
+      <label style={S.label}>{label}</label>
       {children}
+      {hint && <p style={S.fieldHint}>{hint}</p>}
     </div>
   );
 }
 
-const SETTING_MENUS = [
-  { key: "profile", label: "プロフィール" },
-  { key: "notifications", label: "通知設定" },
-  { key: "security", label: "セキュリティ" },
-];
-
 export default function SettingsPage() {
-  const [activeMenu, setActiveMenu] = useState("profile");
-  const [profile, setProfile] = useState<UserProfileDetail | null>(null);
+  const [activeMenu, setActiveMenu] = useState<MenuKey>("profile");
+  const [, setProfile] = useState<UserProfileDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
@@ -90,6 +177,7 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [prefecture, setPrefecture] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
 
   // 通知設定
   const [notifNewSubsidy, setNotifNewSubsidy] = useState(true);
@@ -105,30 +193,30 @@ export default function SettingsPage() {
   const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
-    // 同期: JWT + ウィザード localStorage から先読み（API遅延時のフォールバック）
     const jwtUser = getUser();
     const wiz = loadWizardCompany();
     const jwtCompany = jwtUser?.company_name ?? "";
-    const wizCompany   = String(wiz?.companyName ?? "");
-    const wizRep       = String(wiz?.representativeName ?? "");
-    const wizPref      = String(wiz?.prefecture ?? "");
+    const wizCompany = String(wiz?.companyName ?? "");
+    const wizRep = String(wiz?.representativeName ?? "");
+    const wizPref = String(wiz?.prefecture ?? "");
+    const wizUrl = String(wiz?.websiteUrl ?? "");
 
-    // 非同期: APIから取得し、保存済みデータを優先、空欄はwizard/JWTで補完
     fetchProfileDetail()
       .then((p) => {
         setProfile(p);
         const apiCompany = p.company_name || "";
-        const apiRep     = (p as { representative?: string }).representative || "";
-        const apiEmail   = p.email || "";
-        const apiPhone   = (p as { phone?: string }).phone || "";
-        const apiPref    = (p as { pref_code?: string }).pref_code || "";
+        const apiRep = p.representative || "";
+        const apiEmail = p.email || "";
+        const apiPhone = p.phone || "";
+        const apiPref = p.pref_code || "";
+        const apiUrl = p.website_url || "";
 
         setCompanyName(apiCompany || wizCompany || jwtCompany);
         setEmail(apiEmail || jwtUser?.email || "");
         setPhone(apiPhone);
         setPrefecture(apiPref || wizPref);
+        setWebsiteUrl(apiUrl || wizUrl);
 
-        // representative: API保存済みがあれば優先、なければウィザードから自動補完
         if (apiRep) {
           setRepresentative(apiRep);
         } else if (wizRep) {
@@ -137,12 +225,12 @@ export default function SettingsPage() {
         }
       })
       .catch(() => {
-        // API失敗時はJWT+ウィザードデータで補完
         setCompanyName(wizCompany || jwtCompany);
         setRepresentative(wizRep);
         setEmail(jwtUser?.email || "");
         setPrefecture(wizPref);
-        if (wizRep || wizCompany) setAutoFilled(true);
+        setWebsiteUrl(wizUrl);
+        if (wizRep || wizCompany || wizUrl) setAutoFilled(true);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -154,9 +242,10 @@ export default function SettingsPage() {
     try {
       await updateProfile({
         company_name: companyName,
-        representative,   // バックエンドフィールド名は representative
+        representative,
         phone,
         pref_code: prefecture,
+        website_url: websiteUrl,
       });
       setAutoFilled(false);
       setSaveMsg("保存しました");
@@ -201,51 +290,49 @@ export default function SettingsPage() {
     }
   }
 
-  // --- 左パネル ---
   const leftPanel = (
     <div>
       <span className="section-title">設定メニュー</span>
-      {SETTING_MENUS.map((m) => (
-        <button
-          key={m.key}
-          onClick={() => setActiveMenu(m.key)}
-          style={{
-            display: "block",
-            width: "100%",
-            textAlign: "left",
-            padding: "8px 10px",
-            marginBottom: 2,
-            borderRadius: 6,
-            fontSize: 13,
-            border: "none",
-            cursor: "pointer",
-            fontFamily: "inherit",
-            background: activeMenu === m.key ? "var(--hc-primary-muted)" : "transparent",
-            color: activeMenu === m.key ? "var(--hc-primary)" : "var(--hc-text-muted)",
-            fontWeight: activeMenu === m.key ? 500 : 400,
-          }}
-        >
-          {m.label}
-        </button>
-      ))}
+      {SETTING_MENUS.map((m) => {
+        const isActive = activeMenu === m.key;
+        return (
+          <button
+            key={m.key}
+            type="button"
+            onClick={() => setActiveMenu(m.key)}
+            style={{
+              display: "block",
+              width: "100%",
+              textAlign: "left",
+              padding: "8px 12px",
+              marginBottom: 4,
+              borderRadius: 8,
+              fontSize: 13,
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "inherit",
+              background: isActive ? "var(--hc-primary-light)" : "transparent",
+              color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
+              fontWeight: isActive ? 700 : 500,
+              transition: "all 0.15s",
+            }}
+          >
+            {m.label}
+          </button>
+        );
+      })}
     </div>
   );
 
-  // --- 中央コンテンツ ---
   const centerContent = (
     <div style={{ maxWidth: 640 }}>
-      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: "1.1rem", fontWeight: 700, color: "var(--hc-navy)", letterSpacing: "-0.3px", marginBottom: 20 }}>
-        アカウント設定
-      </h1>
+      <h1 style={S.pageTitle}>アカウント設定</h1>
 
-      {/* プロフィール */}
       {activeMenu === "profile" && (
-        <div className="form-card" style={{ marginBottom: 20 }}>
-          <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 14, marginTop: 0 }}>
-            プロフィール
-          </h2>
+        <section style={S.card}>
+          <h2 style={S.cardTitle}>プロフィール</h2>
           {loading ? (
-            <p style={{ fontSize: 13, color: "var(--hc-text-muted)" }}>読み込み中...</p>
+            <p style={{ fontSize: 13, color: "var(--hc-text-muted)", margin: 0 }}>読み込み中...</p>
           ) : (
             <form onSubmit={handleSaveProfile}>
               {autoFilled && (
@@ -253,7 +340,7 @@ export default function SettingsPage() {
                   style={{
                     marginBottom: 14,
                     padding: "10px 14px",
-                    background: "var(--hc-primary-muted)",
+                    background: "var(--hc-primary-faint)",
                     border: "1px solid var(--hc-primary-edge)",
                     borderRadius: 8,
                     fontSize: 12,
@@ -261,65 +348,99 @@ export default function SettingsPage() {
                     lineHeight: 1.6,
                   }}
                 >
-                  ✨ ウィザードで入力した情報を自動で補完しました。内容を確認して「保存する」を押してください。
+                  ウィザードで入力した情報を自動補完しました。内容を確認して「保存する」を押してください。
                 </div>
               )}
               <Field label="会社名">
-                <input className="form-input" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+                <input
+                  style={S.input}
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                />
               </Field>
               <Field label="代表者名">
-                <input className="form-input" value={representative} onChange={(e) => setRepresentative(e.target.value)} />
+                <input
+                  style={S.input}
+                  value={representative}
+                  onChange={(e) => setRepresentative(e.target.value)}
+                />
               </Field>
               <Field label="メールアドレス">
-                <input className="form-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input
+                  style={S.input}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </Field>
               <Field label="電話番号">
-                <input className="form-input" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <input
+                  style={S.input}
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
               </Field>
               <Field label="都道府県">
-                <select className="form-select" value={prefecture} onChange={(e) => setPrefecture(e.target.value)}>
+                <select
+                  style={S.input}
+                  value={prefecture}
+                  onChange={(e) => setPrefecture(e.target.value)}
+                >
                   <option value="">選択してください</option>
-                  {PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  {SERVICE_PREFECTURES.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
                 </select>
               </Field>
+              <Field
+                label="ホームページURL（任意）"
+                hint="保存しておくと、申請ウィザードで自動入力されます。"
+              >
+                <input
+                  style={S.input}
+                  type="url"
+                  placeholder="https://example.co.jp"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                />
+              </Field>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
                 <button
                   type="submit"
                   disabled={saving}
                   style={{
-                    padding: "10px 24px",
-                    background: "var(--hc-primary)",
-                    color: "#fff",
-                    border: "2px solid var(--hc-primary)",
-                    borderRadius: 8,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    fontFamily: "inherit",
+                    ...S.primaryBtn,
                     cursor: saving ? "default" : "pointer",
                     opacity: saving ? 0.7 : 1,
-                    transition: "all 0.3s",
                   }}
                 >
                   {saving ? "保存中..." : "保存する"}
                 </button>
                 {saveMsg && (
-                  <span style={{ fontSize: 13, color: saveMsg.includes("失敗") ? "var(--hc-error)" : "var(--hc-success)" }}>
+                  <span
+                    style={{
+                      fontSize: 13,
+                      color: saveMsg.includes("失敗")
+                        ? "var(--hc-error)"
+                        : "var(--hc-success)",
+                    }}
+                  >
                     {saveMsg}
                   </span>
                 )}
               </div>
             </form>
           )}
-        </div>
+        </section>
       )}
 
-      {/* 通知設定 */}
       {activeMenu === "notifications" && (
-        <div className="form-card" style={{ marginBottom: 20 }}>
-          <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 14, marginTop: 0 }}>
-            通知設定
-          </h2>
+        <section style={S.card}>
+          <h2 style={S.cardTitle}>通知設定</h2>
           {[
             { label: "新着補助金の通知", value: notifNewSubsidy, onChange: setNotifNewSubsidy },
             { label: "締切アラート", value: notifDeadline, onChange: setNotifDeadline },
@@ -332,37 +453,66 @@ export default function SettingsPage() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: "10px 0",
+                padding: "12px 0",
                 borderBottom: i < arr.length - 1 ? "1px solid var(--hc-border)" : "none",
-                fontSize: 13,
+                fontSize: 14,
+                color: "var(--hc-text)",
               }}
             >
               <span>{item.label}</span>
               <Toggle on={item.value} onChange={item.onChange} />
             </div>
           ))}
-        </div>
+        </section>
       )}
 
-      {/* セキュリティ */}
       {activeMenu === "security" && (
         <>
-          <div className="form-card" style={{ marginBottom: 20 }}>
-            <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 14, marginTop: 0 }}>
-              パスワード変更
-            </h2>
+          <section style={S.card}>
+            <h2 style={S.cardTitle}>パスワード変更</h2>
             <form onSubmit={handleChangePassword}>
               <Field label="現在のパスワード">
-                <input className="form-input" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+                <input
+                  style={S.input}
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
               </Field>
-              <Field label="新しいパスワード">
-                <input className="form-input" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} />
+              <Field label="新しいパスワード" hint="8文字以上で設定してください">
+                <input
+                  style={S.input}
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                />
               </Field>
               <Field label="新しいパスワード（確認）">
-                <input className="form-input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                <input
+                  style={S.input}
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                />
               </Field>
               {passwordMsg && (
-                <p style={{ fontSize: 13, color: passwordMsg.includes("失敗") || passwordMsg.includes("一致") ? "var(--hc-error)" : "var(--hc-success)", marginBottom: 12 }}>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color:
+                      passwordMsg.includes("失敗") || passwordMsg.includes("一致")
+                        ? "var(--hc-error)"
+                        : "var(--hc-success)",
+                    margin: "0 0 12px",
+                  }}
+                >
                   {passwordMsg}
                 </p>
               )}
@@ -370,49 +520,37 @@ export default function SettingsPage() {
                 type="submit"
                 disabled={changingPassword}
                 style={{
-                  padding: "10px 24px",
-                  background: "var(--hc-primary)",
-                  color: "#fff",
-                  border: "2px solid var(--hc-primary)",
-                  borderRadius: 8,
-                  fontSize: 14,
-                  fontWeight: 700,
-                  fontFamily: "inherit",
+                  ...S.primaryBtn,
                   cursor: changingPassword ? "default" : "pointer",
                   opacity: changingPassword ? 0.7 : 1,
-                  transition: "all 0.3s",
                 }}
               >
                 {changingPassword ? "変更中..." : "パスワードを変更"}
               </button>
             </form>
-          </div>
+          </section>
 
-          {/* 危険ゾーン */}
-          <div className="form-card" style={{ border: "1px solid var(--hc-error-line)" }}>
-            <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "var(--hc-error)", marginBottom: 8, marginTop: 0 }}>
-              アカウント削除
-            </h2>
-            <p style={{ fontSize: 13, color: "var(--hc-text-muted)", marginBottom: 14 }}>
-              アカウントを削除すると、すべての申請データが失われます。この操作は取り消せません。
-            </p>
-            <button
-              onClick={handleDeleteAccount}
+          <section
+            style={{
+              ...S.card,
+              border: "1px solid var(--hc-error-line)",
+            }}
+          >
+            <h2 style={{ ...S.cardTitle, color: "var(--hc-error)" }}>アカウント削除</h2>
+            <p
               style={{
-                padding: "10px 20px",
-                background: "transparent",
-                color: "var(--hc-error)",
-                border: "1px solid var(--hc-error-border)",
-                borderRadius: 8,
                 fontSize: 13,
-                fontWeight: 600,
-                cursor: "pointer",
-                fontFamily: "inherit",
+                color: "var(--hc-text-muted)",
+                margin: "0 0 14px",
+                lineHeight: 1.6,
               }}
             >
+              アカウントを削除すると、すべての申請データが失われます。この操作は取り消せません。
+            </p>
+            <button type="button" onClick={handleDeleteAccount} style={S.dangerBtn}>
               アカウントを削除する
             </button>
-          </div>
+          </section>
         </>
       )}
     </div>

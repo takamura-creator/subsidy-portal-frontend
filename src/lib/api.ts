@@ -290,6 +290,8 @@ export interface UserProfileDetail extends UserProfile {
   annual_revenue?: number;
   prefecture?: string;
   phone?: string;
+  /** ホームページURL（保存済みの場合は Step1 で自動入力に使う） */
+  website_url?: string;
 }
 
 export async function fetchApplication(id: string): Promise<ApplicationDetail> {

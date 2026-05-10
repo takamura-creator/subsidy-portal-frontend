@@ -95,6 +95,26 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
   const watchedIndustry = watch("industry");
   const isJichikai = watchedIndustry === "自治会・町会";
 
+  // アカウント設定に保存された website_url を初期入力に反映
+  // ウィザード保存値（defaults）があればそれを優先、なければプロフィールから補完
+  useEffect(() => {
+    if (defaults?.websiteUrl) return; // ウィザード状態にすでに値があればスキップ
+    let cancelled = false;
+    import("@/lib/api").then(({ fetchProfileDetail }) => {
+      fetchProfileDetail()
+        .then((p) => {
+          if (cancelled) return;
+          if (p.website_url) {
+            setValue("websiteUrl", p.website_url, { shouldDirty: false });
+          }
+        })
+        .catch(() => {});
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [defaults?.websiteUrl, setValue]);
+
   // HP extraction state
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState("");
