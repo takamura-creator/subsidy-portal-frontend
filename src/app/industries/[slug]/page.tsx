@@ -94,7 +94,7 @@ export default async function IndustryLPPage({ params }: Props) {
                 style={{
                   display: "block",
                   padding: 14,
-                  background: "var(--hc-white)",
+                  background: "linear-gradient(168deg, color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white)) 0%, var(--hc-bg) 55%, color-mix(in srgb, var(--hc-accent) 6%, var(--hc-bg)) 100%)",
                   border: "1px solid var(--hc-border)",
                   borderRadius: 8,
                   textDecoration: "none",

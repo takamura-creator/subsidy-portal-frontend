@@ -118,7 +118,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
       ) : loadError ? (
         <p className="text-[13px] text-error">{loadError}</p>
       ) : subsidies.length === 0 ? (
-        <div className="bg-bg border border-border rounded-[10px] p-5 text-[14px] text-text-muted">
+        <div className="hc-card-gradient rounded-[10px] p-5 text-[14px] text-text-muted">
           該当する補助金が見つかりませんでした。
           <Link href="/subsidies" className="text-primary hover:underline mx-1">
             補助金一覧
@@ -131,11 +131,16 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
             {subsidies.map((s) => (
               <li key={s.id}>
                 <label
-                  className={`block border rounded-[10px] p-4 cursor-pointer transition ${
+                  className={`block rounded-[10px] p-4 cursor-pointer transition hc-card-gradient ${
                     choice === s.id
-                      ? "border-primary bg-[var(--hc-primary-subtle)]"
-                      : "border-border bg-white hover:border-primary/50"
+                      ? "border-primary"
+                      : "hover:border-primary/50"
                   }`}
+                  style={
+                    choice === s.id
+                      ? { borderColor: "var(--hc-primary)", borderWidth: 2 }
+                      : undefined
+                  }
                 >
                   <div className="flex items-start gap-3">
                     <input
