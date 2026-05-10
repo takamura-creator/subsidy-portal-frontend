@@ -21,7 +21,7 @@ const CATEGORIES = [
 const GOV_LEVELS = [
   { label: "すべて", value: "" },
   { label: "国の補助金", value: "national" },
-  { label: "都道府県", value: "prefectural" },
+  { label: "都県", value: "prefectural" },
 ];
 
 const AMOUNT_OPTIONS = [
