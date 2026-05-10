@@ -188,7 +188,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           background: "var(--hc-text-subtle)",
           color: "var(--hc-text-muted)",
         }}>
-          出典: {s.ministry} ・ 4/10更新
+          出典: {s.ministry}{s.updated_at ? ` ・ ${s.updated_at} 更新` : ""}
         </span>
       </div>
 

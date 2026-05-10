@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import HCHeader from "@/components/layout/HCHeader";
 import StatusBar from "@/components/layout/StatusBar";
+import CookieConsent from "@/components/CookieConsent";
 import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyo-came.jp";
@@ -48,6 +49,7 @@ export default function RootLayout({
         <HCHeader />
         {children}
         <StatusBar />
+        <CookieConsent />
       </body>
     </html>
   );

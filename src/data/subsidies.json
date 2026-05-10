@@ -346,7 +346,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVR導入時は設置台数・場所を明示"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "jizokuka-2026",
@@ -657,7 +658,8 @@
           "required": false,
           "note": "AVTECH製品のカタログ添付で採択率向上"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kaigo-robot-2026",
@@ -905,7 +907,8 @@
           "required": true,
           "note": "入居者のプライバシー保護規程が必要"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "gyomu-kaizen-2026",
@@ -1215,7 +1218,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVR導入時は添付推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "tokyo-bouhan-2026",
@@ -1494,7 +1498,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kanagawa-dx-2026",
@@ -2183,7 +2188,8 @@
           "required": false
         }
       ],
-      "official_name": "令和8年度神奈川県小規模事業者デジタル化支援推進事業費補助金"
+      "official_name": "令和8年度神奈川県小規模事業者デジタル化支援推進事業費補助金",
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kaigo-ict-2026",
@@ -2431,7 +2437,8 @@
           "required": true,
           "note": "入居者のプライバシー保護規程が必要"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "saitama-bouhan-2026",
@@ -2710,7 +2717,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "chiba-chusho-2026",
@@ -3012,7 +3020,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVR導入時は添付推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "shizuoka-dx-2026",
@@ -3279,7 +3288,8 @@
           "accept": ".pdf",
           "required": false
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "yamanashi-bouhan-2026",
@@ -3558,7 +3568,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kaigo-chiiki-kikin-2026",
@@ -3806,7 +3817,8 @@
           "required": true,
           "note": "入居者のプライバシー保護規程が必要"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kaigo-shoguu-kaizen-2026",
@@ -4054,7 +4066,8 @@
           "required": true,
           "note": "入居者のプライバシー保護規程が必要"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kaigo-bcp-2026",
@@ -4302,7 +4315,8 @@
           "required": true,
           "note": "入居者のプライバシー保護規程が必要"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kaigo-minamori-2026",
@@ -4550,7 +4564,8 @@
           "required": true,
           "note": "入居者のプライバシー保護規程が必要"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "shizuoka-jichikai-2026",
@@ -4773,7 +4788,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "hamamatsu-jichikai-2026",
@@ -4996,7 +5012,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "chiba-bouhan-2026",
@@ -5219,7 +5236,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "yokohama-jichikai-2026",
@@ -5442,7 +5460,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "sagamihara-bouhan-camera-2026",
@@ -5665,7 +5684,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "hachioji-mimamori-2026",
@@ -5888,7 +5908,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "saitama-city-bouhan-2026",
@@ -6111,7 +6132,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kawaguchi-bouhan-camera-2026",
@@ -6334,7 +6356,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "kokudo-jutaku-kaihu-2026",
@@ -6557,7 +6580,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "minato-kyodo-bouhan-2026",
@@ -6780,7 +6804,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     },
     {
       "id": "fujisawa-bouhan-camera-2026",
@@ -7003,7 +7028,8 @@
           "required": false,
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
-      ]
+      ],
+      "updated_at": "2026-05-10"
     }
   ]
 }

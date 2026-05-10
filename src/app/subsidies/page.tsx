@@ -482,7 +482,7 @@ function SubsidiesContent() {
                 {s.deadline}
               </span>
               <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>
-                {UPDATED_MAP[s.id] || ""}
+                {s.updated_at ? `${s.updated_at} 更新` : UPDATED_MAP[s.id] || ""}
               </span>
               <span>
                 <Link

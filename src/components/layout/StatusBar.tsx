@@ -31,15 +31,14 @@ export default function StatusBar() {
         >
           運営者情報
         </Link>
-        {/* TODO: /privacy /terms ページ未作成。暫定的に /contact へリンク */}
         <Link
-          href="/contact"
+          href="/privacy"
           style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}
         >
           プライバシーポリシー
         </Link>
         <Link
-          href="/contact"
+          href="/terms"
           style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}
         >
           利用規約

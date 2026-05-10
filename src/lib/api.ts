@@ -39,6 +39,8 @@ export interface Subsidy {
   document_tier?: number;
   draft_subsidy_type?: string;
   required_documents?: SubsidyDocument[];
+  /** ISO8601 形式（YYYY-MM-DD）。最終更新日。表示用。 */
+  updated_at?: string;
 }
 
 export interface MatchRequest {

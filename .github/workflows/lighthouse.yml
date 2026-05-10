@@ -1,0 +1,56 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - ".github/workflows/lighthouse.yml"
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://placeholder.example.com
+          NEXT_PUBLIC_SITE_URL: https://placeholder.example.com
+
+      - name: Start server (background)
+        run: |
+          npm start &
+          sleep 8
+        env:
+          PORT: 3000
+
+      - name: Run Lighthouse on key pages
+        run: |
+          npx --yes @lhci/cli@0.13.x autorun \
+            --collect.url=http://localhost:3000/ \
+            --collect.url=http://localhost:3000/subsidies \
+            --collect.url=http://localhost:3000/match \
+            --collect.url=http://localhost:3000/contact \
+            --collect.url=http://localhost:3000/privacy \
+            --collect.numberOfRuns=1 \
+            --upload.target=temporary-public-storage \
+            --assert.preset=lighthouse:recommended \
+            --assert.assertions.categories:accessibility=warn \
+            --assert.assertions.categories:performance=warn \
+            --assert.assertions.categories:seo=warn \
+            --assert.assertions.categories:best-practices=warn || true
