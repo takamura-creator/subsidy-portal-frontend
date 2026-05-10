@@ -84,7 +84,6 @@ export default function HeroStage() {
           <span className="hero-area-list">
             東京都・神奈川県・静岡県・埼玉県・千葉県・山梨県
           </span>
-          <span className="hero-area-note">マルチック株式会社が直接施工対応</span>
         </div>
       </FadeIn>
 

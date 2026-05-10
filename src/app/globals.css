@@ -519,7 +519,7 @@ button:focus-visible, a:focus-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  padding: 16px 24px;
   position: relative;
   z-index: 1;
 }
@@ -531,9 +531,9 @@ button:focus-visible, a:focus-visible {
 }
 
 .home-welcome .turtle {
-  width: 112px;
-  height: 112px;
-  margin: 0 auto 28px;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.10));
 }
@@ -541,10 +541,10 @@ button:focus-visible, a:focus-visible {
 .home-welcome h1 {
   font-family: 'Sora', sans-serif;
   font-weight: 700;
-  font-size: 44px;
+  font-size: 36px;
   letter-spacing: -0.5px;
   color: var(--hc-navy);
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   line-height: 1.15;
   text-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
@@ -553,9 +553,9 @@ button:focus-visible, a:focus-visible {
 }
 
 .home-welcome .lede {
-  font-size: 17px;
+  font-size: 15px;
   color: var(--hc-text);
-  margin-bottom: 44px;
+  margin-bottom: 20px;
   text-shadow: 0 1px 6px rgba(0,0,0,0.05);
 }
 
@@ -567,8 +567,8 @@ button:focus-visible, a:focus-visible {
   color: var(--hc-white);
   border: 2px solid var(--hc-primary);
   border-radius: 8px;
-  padding: 18px 40px;
-  font-size: 16px;
+  padding: 12px 32px;
+  font-size: 15px;
   font-weight: 600;
   font-family: 'Noto Sans JP', sans-serif;
   text-decoration: none;
@@ -588,13 +588,13 @@ button:focus-visible, a:focus-visible {
 }
 
 .home-welcome .support-line {
-  margin-top: 20px;
+  margin-top: 12px;
   font-size: 12px;
   color: var(--hc-text-muted);
 }
 
 .home-welcome .support-items {
-  margin-top: 28px;
+  margin-top: 14px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -608,18 +608,18 @@ button:focus-visible, a:focus-visible {
   background: var(--hc-primary-faint);
   border: 1px solid var(--hc-primary-edge);
   border-radius: 20px;
-  padding: 6px 16px;
+  padding: 4px 14px;
   white-space: nowrap;
   letter-spacing: 0.02em;
 }
 
 .home-welcome .interactive-hint {
-  margin-top: 36px;
+  margin-top: 16px;
 }
 
 .home-welcome .wave-tagline {
   font-family: 'Sora', 'Noto Sans JP', sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--hc-text-muted);
   letter-spacing: 3px;
@@ -627,8 +627,8 @@ button:focus-visible, a:focus-visible {
 
 /* 対応エリアバナー（ヒーロー） */
 .hero-area-banner {
-  margin-top: 36px;
-  padding: 14px 22px;
+  margin-top: 18px;
+  padding: 10px 20px;
   border: 1.5px solid var(--hc-primary);
   border-radius: 12px;
   background:
@@ -641,11 +641,11 @@ button:focus-visible, a:focus-visible {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   box-shadow: var(--hc-shadow);
 }
 .hero-area-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--hc-primary);
   letter-spacing: 0.12em;
@@ -654,23 +654,18 @@ button:focus-visible, a:focus-visible {
 }
 .hero-area-list {
   font-family: 'Sora', 'Noto Sans JP', sans-serif;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--hc-navy);
   letter-spacing: 0.04em;
-  line-height: 1.5;
-}
-.hero-area-note {
-  font-size: 11px;
-  color: var(--hc-text-muted);
-  letter-spacing: 0.04em;
+  line-height: 1.4;
 }
 @media (max-width: 640px) {
   .hero-area-banner {
-    padding: 12px 16px;
+    padding: 8px 14px;
   }
   .hero-area-list {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 
@@ -732,7 +727,7 @@ button:focus-visible, a:focus-visible {
   width: 100vw;
   margin-left: calc(-50vw + 50%);
   overflow: hidden;
-  margin-top: 32px;
+  margin-top: 20px;
   mask-image: linear-gradient(
     to right,
     transparent 0%,
@@ -842,7 +837,7 @@ button:focus-visible, a:focus-visible {
   }
   .subsidy-card-name { font-size: 12px; }
   .subsidy-card-amount { font-size: 11px; }
-  .subsidy-carousel { margin-top: 24px; }
+  .subsidy-carousel { margin-top: 16px; }
 }
 
 /* 業種カード（/match ページ） — ヒーローカルーセルと同一色調 */
