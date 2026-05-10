@@ -102,15 +102,6 @@ export default function MatchPage() {
 
   const center = (
     <main style={{ padding: "32px 16px", maxWidth: 900, margin: "0 auto" }}>
-      <header style={{ marginBottom: 32, textAlign: "center" }}>
-        <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 8px", color: "var(--hc-navy)" }}>
-          業種からさがす
-        </h1>
-        <p style={{ fontSize: 14, color: "var(--hc-text-muted)", margin: 0 }}>
-          あなたの業種を選んで、使える補助金を確認してください
-        </p>
-      </header>
-
       <div
         style={{
           display: "grid",
