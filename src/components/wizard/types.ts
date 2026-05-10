@@ -18,6 +18,8 @@ export interface SubsidySelection {
   maxAmount: number;
   rateMax: number;
   prefecture?: string;
+  /** "jichitai_bouhan" の場合、maxAmount は 1 台あたり上限として扱う */
+  draftSubsidyType?: string;
 }
 
 export interface ProductSelection {

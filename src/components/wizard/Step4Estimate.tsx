@@ -33,11 +33,37 @@ export default function Step4Estimate({
   const [pdfLoading, setPdfLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  // 見積り前のローカル試算
+  // 見積り前のローカル試算（バックエンド routers/estimates.py と同じロジック）
+  // 設置費用の単価（バックエンドの _load_installation_costs() と一致させる）
+  const INSTALL_UNIT_COST = { ipCamera: 30000, analogCamera: 30000, nvr: 50000, networkSetup: 50000 };
   const productSubtotal = products.reduce((sum, it) => sum + it.unitPrice * it.quantity, 0);
-  const estSubsidy = Math.round(productSubtotal * subsidy.rateMax);
-  const appliedSubsidy = Math.min(subsidy.maxAmount, estSubsidy);
-  const localSelf = Math.max(0, productSubtotal - appliedSubsidy);
+  const ipCount = products
+    .filter((p) => p.categoryId.startsWith("ip-camera"))
+    .reduce((s, p) => s + p.quantity, 0);
+  const analogCount = products
+    .filter((p) => p.categoryId.startsWith("analog-camera"))
+    .reduce((s, p) => s + p.quantity, 0);
+  const nvrCount = products
+    .filter((p) => p.categoryId.startsWith("nvr") || p.categoryId === "xvr")
+    .reduce((s, p) => s + p.quantity, 0);
+  const localInstallCost =
+    ipCount * INSTALL_UNIT_COST.ipCamera +
+    analogCount * INSTALL_UNIT_COST.analogCamera +
+    nvrCount * INSTALL_UNIT_COST.nvr;
+  const localNetworkSetup =
+    ipCount + analogCount + nvrCount > 0 ? INSTALL_UNIT_COST.networkSetup : 0;
+  const localTotalBeforeSubsidy = productSubtotal + localInstallCost + localNetworkSetup;
+
+  // 自治会向け補助金は max_amount を「1台あたり上限」として扱い、台数を掛ける
+  const totalCameraCount = ipCount + analogCount;
+  const isJichikaiSubsidy = subsidy.draftSubsidyType === "jichitai_bouhan";
+  const effectiveMaxAmount = isJichikaiSubsidy
+    ? subsidy.maxAmount * Math.max(1, totalCameraCount)
+    : subsidy.maxAmount;
+
+  const estSubsidy = Math.round(localTotalBeforeSubsidy * subsidy.rateMax);
+  const appliedSubsidy = Math.min(effectiveMaxAmount, estSubsidy);
+  const localSelf = Math.max(0, localTotalBeforeSubsidy - appliedSubsidy);
 
   async function handleGenerate() {
     setError("");

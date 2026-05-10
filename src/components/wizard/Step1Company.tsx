@@ -19,13 +19,13 @@ const schema = z
     industry: z.string().min(1, "業種を選択してください"),
     employees: z
       .string()
-      .min(1, "従業員数を入力してください")
-      .regex(/^[0-9]+$/, "従業員数は半角数字で入力してください")
+      .min(1, "入力してください")
+      .regex(/^[0-9]+$/, "半角数字で入力してください")
       .refine((v) => Number(v) >= 1 && Number(v) <= 100000, "1〜100000の範囲で入力してください"),
     annualRevenue: z
       .string()
       .optional()
-      .refine((v) => !v || /^[0-9]+$/.test(v), "年商は半角数字で入力してください"),
+      .refine((v) => !v || /^[0-9]+$/.test(v), "半角数字で入力してください"),
     websiteUrl: z
       .string()
       .optional()
@@ -92,6 +92,8 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
   });
 
   const websiteUrl = watch("websiteUrl");
+  const watchedIndustry = watch("industry");
+  const isJichikai = watchedIndustry === "自治会・町会";
 
   // HP extraction state
   const [extracting, setExtracting] = useState(false);
@@ -413,20 +415,23 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
             ))}
           </select>
         </Field>
-        <Field label="従業員数" error={errors.employees?.message} required>
+        <Field label={isJichikai ? "世帯数" : "従業員数"} error={errors.employees?.message} required>
           <input
             {...register("employees")}
             className="wizard-input"
             inputMode="numeric"
-            placeholder="例: 20"
+            placeholder={isJichikai ? "例: 500" : "例: 20"}
           />
         </Field>
-        <Field label="年商（円・任意）" error={errors.annualRevenue?.message}>
+        <Field
+          label={isJichikai ? "年間予算（円・任意）" : "年商（円・任意）"}
+          error={errors.annualRevenue?.message}
+        >
           <input
             {...register("annualRevenue")}
             className="wizard-input"
             inputMode="numeric"
-            placeholder="例: 100000000"
+            placeholder={isJichikai ? "例: 5000000" : "例: 100000000"}
           />
         </Field>
       </div>

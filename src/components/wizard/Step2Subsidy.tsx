@@ -87,6 +87,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
       maxAmount: s.max_amount,
       rateMax: s.rate_max,
       prefecture: s.prefecture,
+      draftSubsidyType: s.draft_subsidy_type,
     });
   }
 
