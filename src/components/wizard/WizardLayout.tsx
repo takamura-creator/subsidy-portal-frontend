@@ -43,30 +43,19 @@ interface Props {
 export default function WizardLayout({ currentStep, children, title, subtitle, steps, hydrated }: Props) {
   const stepDefs = steps ?? WIZARD_STEPS;
   return (
-    <div className="max-w-[960px] mx-auto px-4 md:px-6 py-8">
-      {/* ナビゲーション補助: ダッシュボードへ戻る + 現在地表示 */}
-      <nav
-        aria-label="パンくずリスト"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 16,
-          fontSize: 12,
-          color: "var(--hc-text-muted)",
-          flexWrap: "wrap",
-          gap: 8,
-        }}
-      >
+    <div style={{ width: "100%", padding: "16px 4px" }}>
+      {/* ダッシュボードへの戻り口（パンくずは Step 表示と重複するため省略） */}
+      <div style={{ marginBottom: 12 }}>
         <Link
           href="/my"
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: 4,
+            fontSize: 12,
             color: "var(--hc-text-muted)",
             textDecoration: "none",
-            padding: "4px 8px",
+            padding: "6px 10px",
             borderRadius: 6,
             border: "1px solid var(--hc-border)",
             background: "var(--hc-white)",
@@ -74,10 +63,7 @@ export default function WizardLayout({ currentStep, children, title, subtitle, s
         >
           ← ダッシュボードに戻る
         </Link>
-        <span aria-current="page" style={{ fontWeight: 500 }}>
-          申請ウィザード（Step {currentStep} / {stepDefs.length}）
-        </span>
-      </nav>
+      </div>
       <ProgressBar currentStep={currentStep} steps={stepDefs} />
       {(title || subtitle) && (
         <div className="mt-6 mb-4">
