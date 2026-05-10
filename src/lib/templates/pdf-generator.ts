@@ -9,9 +9,17 @@ const FONT_SIZE_SMALL = 8;
 const MARGIN = 50;
 const LINE_GAP = 6;
 
+/**
+ * 日本語フォント検索パス。
+ * 1. HOJYOCAME_FONT_PATH 環境変数（最優先・本番設定用）
+ * 2. Linux 標準 Noto CJK パス（CI/Docker/Vercelビルド済みパス）
+ *
+ * 開発者個人パスは含めない（チーム間で再現性を保つため）。
+ * フォントが見つからない場合は console.warn を出して Helvetica にフォールバックし、
+ * 日本語が文字化けする状態でPDF生成しないよう警告を残す。
+ */
 const FONT_CANDIDATES = [
   process.env.HOJYOCAME_FONT_PATH,
-  "/Users/takamurayasuhiro1/Library/Fonts/NotoSansJP-Regular.ttf",
   "/usr/share/fonts/noto-cjk/NotoSansCJKjp-Regular.otf",
   "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
 ].filter(Boolean) as string[];
@@ -24,6 +32,13 @@ function findJapaneseFont(): string | null {
 }
 
 const _jpFont = findJapaneseFont();
+if (!_jpFont) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[pdf-generator] 日本語フォント未検出。HOJYOCAME_FONT_PATH を設定してください。" +
+      "現状は Helvetica にフォールバックし、日本語は文字化けします。",
+  );
+}
 
 function hasJapaneseFont(): boolean {
   return _jpFont !== null;

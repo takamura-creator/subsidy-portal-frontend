@@ -88,7 +88,7 @@ export default async function Image() {
             marginBottom: "40px",
           }}
         >
-          AIが無料診断
+          業種から無料検索
         </div>
 
         <div

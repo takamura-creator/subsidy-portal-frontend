@@ -29,11 +29,10 @@ function loadWizardSnapshot(): WizardSnapshot | null {
   }
 }
 
-/* ── DESIGN.md 準拠スタイル定数 ── */
-const SHADOW_CARD =
-  "rgba(13,82,95,0.08) 0px 12px 28px -12px, rgba(0,0,0,0.04) 0px 4px 12px -4px, rgba(0,0,0,0.02) 0px 1px 4px";
-const BORDER_WHISPER = "1px solid rgba(0,0,0,0.08)";
-const RADIUS_CARD = 12;
+/* ── STYLE_GUIDE 準拠スタイル定数（トークン参照） ── */
+const SHADOW_CARD = "var(--hc-shadow)";
+const BORDER_WHISPER = "1px solid var(--hc-text-line)";
+const RADIUS_CARD = 10; // STYLE_GUIDE §10: Card = 10px
 const RADIUS_STANDARD = 6;
 
 export default function MyDashboardPage() {
@@ -91,7 +90,7 @@ export default function MyDashboardPage() {
           fontFamily: "'Noto Sans JP', sans-serif",
           fontSize: 22,
           fontWeight: 500,
-          color: "#1E3A5F",
+          color: "var(--hc-navy)",
           letterSpacing: "-0.3px",
           lineHeight: 1.3,
           marginBottom: 8,
@@ -104,15 +103,15 @@ export default function MyDashboardPage() {
         <p
           style={{
             fontSize: 13,
-            color: "#6B6B7B",
+            color: "var(--hc-text-muted)",
             marginBottom: 24,
             fontWeight: 400,
           }}
         >
           選択中の補助金：
-          <span style={{ fontWeight: 500, color: "#1A1A1A" }}>{subsidyName}</span>
+          <span style={{ fontWeight: 500, color: "var(--hc-text)" }}>{subsidyName}</span>
           {productCount > 0 && (
-            <span style={{ marginLeft: 12, color: "#6B6B7B" }}>
+            <span style={{ marginLeft: 12, color: "var(--hc-text-muted)" }}>
               ／ 製品 {productCount} 点
             </span>
           )}
@@ -123,13 +122,13 @@ export default function MyDashboardPage() {
       {wizardStep === 0 && (
         <div
           style={{
-            background: "rgba(13,148,136,0.04)",
+            background: "var(--hc-primary-faint)",
             border: "1px solid rgba(13,148,136,0.15)",
             borderRadius: RADIUS_CARD,
             padding: "16px 20px",
             marginBottom: 24,
             fontSize: 14,
-            color: "#1A1A1A",
+            color: "var(--hc-text)",
             lineHeight: 1.7,
           }}
         >
@@ -153,21 +152,21 @@ export default function MyDashboardPage() {
           value={maxSubsidy ?? "—"}
           label="補助金概算額"
           sub="（参考値）"
-          color="#D97706"
+          color="var(--hc-accent-hover)"
           active={!!maxSubsidy}
         />
         <SummaryCard
           value={selfPayment ?? "—"}
           label="自己負担概算"
           sub="（参考値）"
-          color="#6B6B7B"
+          color="var(--hc-text-muted)"
           active={!!selfPayment}
         />
         <SummaryCard
           value={hasDraft ? "✓" : "—"}
           label="申請書下書き"
           sub={hasDraft ? "生成済み" : "未生成"}
-          color={hasDraft ? "var(--hc-teal)" : "#6B6B7B"}
+          color={hasDraft ? "var(--hc-teal)" : "var(--hc-text-muted)"}
           active={hasDraft}
         />
       </div>
@@ -176,10 +175,10 @@ export default function MyDashboardPage() {
         <p
           style={{
             fontSize: 12,
-            color: "#6B6B7B",
+            color: "var(--hc-text-muted)",
             marginBottom: 24,
             padding: "8px 12px",
-            background: "#F6F5F4",
+            background: "var(--hc-bg)",
             borderRadius: RADIUS_STANDARD,
             lineHeight: 1.6,
           }}
@@ -220,10 +219,10 @@ export default function MyDashboardPage() {
                   alignItems: "center",
                   gap: 12,
                   padding: "14px 18px",
-                  borderBottom: i < steps.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none",
+                  borderBottom: i < steps.length - 1 ? "1px solid var(--hc-text-divider)" : "none",
                   fontSize: 14,
                   fontWeight: 400,
-                  color: item.done ? "#9CA3AF" : "#1A1A1A",
+                  color: item.done ? "var(--hc-text-muted)" : "var(--hc-text)",
                   textDecoration: "none",
                   transition: "background 0.15s",
                 }}
@@ -239,8 +238,8 @@ export default function MyDashboardPage() {
                     fontSize: 11,
                     fontWeight: 500,
                     flexShrink: 0,
-                    background: item.done ? "var(--hc-teal)" : "rgba(0,0,0,0.08)",
-                    color: item.done ? "#fff" : "#6B6B7B",
+                    background: item.done ? "var(--hc-teal)" : "var(--hc-text-line)",
+                    color: item.done ? "var(--hc-white)" : "var(--hc-text-muted)",
                   }}
                 >
                   {item.done ? "✓" : item.step}
@@ -273,14 +272,14 @@ export default function MyDashboardPage() {
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: "#1E3A5F" }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: "var(--hc-navy)" }}>
                   ウィザード進行状況
                 </span>
-                <span style={{ fontSize: 12, color: "#6B6B7B" }}>
+                <span style={{ fontSize: 12, color: "var(--hc-text-muted)" }}>
                   Step {wizardStep} / 6（{progressPct}%）
                 </span>
               </div>
-              <div style={{ height: 6, borderRadius: 99, background: "rgba(0,0,0,0.06)" }}>
+              <div style={{ height: 6, borderRadius: 99, background: "var(--hc-text-divider)" }}>
                 <div
                   style={{
                     height: "100%",
@@ -312,7 +311,7 @@ export default function MyDashboardPage() {
               fontSize: 14,
               fontWeight: 500,
               background: "var(--hc-teal)",
-              color: "#fff",
+              color: "var(--hc-white)",
               textDecoration: "none",
               boxShadow: "rgba(13,82,95,0.15) 0px 8px 20px -8px, rgba(0,0,0,0.06) 0px 4px 8px -4px",
               transition: "all 0.2s",
@@ -331,18 +330,18 @@ export default function MyDashboardPage() {
             style={{
               marginTop: 6,
               padding: "16px",
-              background: "rgba(13,148,136,0.04)",
+              background: "var(--hc-primary-faint)",
               border: "1px solid rgba(13,148,136,0.15)",
               borderRadius: RADIUS_CARD,
               fontSize: 13,
-              color: "#1A1A1A",
+              color: "var(--hc-text)",
               lineHeight: 1.7,
             }}
           >
             <p style={{ fontWeight: 500, marginBottom: 4, fontSize: 13 }}>
               🔧 施工・詳細見積もりのご相談
             </p>
-            <p style={{ color: "#6B6B7B", marginBottom: 10, fontSize: 12, lineHeight: 1.6 }}>
+            <p style={{ color: "var(--hc-text-muted)", marginBottom: 10, fontSize: 12, lineHeight: 1.6 }}>
               施工依頼・詳細見積もりのご相談は、お問い合わせフォームからどうぞ。
             </p>
             <Link
@@ -372,7 +371,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
         fontFamily: "'Noto Sans JP', sans-serif",
         fontSize: 14,
         fontWeight: 500,
-        color: "#1E3A5F",
+        color: "var(--hc-navy)",
         marginBottom: 12,
         letterSpacing: 0,
       }}
@@ -411,17 +410,17 @@ function SummaryCard({
           fontFamily: "'Sora', sans-serif",
           fontSize: 22,
           fontWeight: 700,
-          color: active ? color : "#9CA3AF",
+          color: active ? color : "var(--hc-text-muted)",
           marginBottom: 4,
           letterSpacing: "-0.02em",
         }}
       >
         {value}
       </div>
-      <div style={{ fontSize: 12, color: "#6B6B7B", lineHeight: 1.5 }}>
+      <div style={{ fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.5 }}>
         {label}
         <br />
-        <span style={{ fontSize: 11, color: "#9CA3AF" }}>{sub}</span>
+        <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>{sub}</span>
       </div>
     </div>
   );
@@ -447,7 +446,7 @@ function ActionLink({
         borderRadius: RADIUS_STANDARD,
         fontSize: 13,
         fontWeight: 400,
-        color: "#1A1A1A",
+        color: "var(--hc-text)",
         background: "#FFFFFF",
         border: BORDER_WHISPER,
         textDecoration: "none",

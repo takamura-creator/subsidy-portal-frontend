@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     template: "%s — HOJYO CAME",
   },
   description:
-    "防犯カメラ・設備導入に使える補助金を無料で診断。全47都道府県対応。業種・規模に合わせて条件に合う補助金をご提案します。",
-  keywords: ["防犯カメラ", "補助金", "IT導入補助金", "監視カメラ", "助成金", "補助金診断", "HOJYO CAME"],
+    "防犯カメラ・設備導入に使える補助金を業種から検索。マルチック対応6都県の補助金を一覧で比較できます。業種・規模に合わせて条件に合う補助金をご提案します。",
+  keywords: ["防犯カメラ", "補助金", "IT導入補助金", "監視カメラ", "助成金", "HOJYO CAME"],
   openGraph: {
-    title: "HOJYO CAME | 工事費補助金をAIが無料診断",
-    description: "設備導入に使える補助金をAIが無料診断。全47都道府県対応。",
+    title: "HOJYO CAME | 防犯カメラ補助金を業種から検索",
+    description: "設備導入に使える補助金を業種から無料で検索。マルチック対応6都県に特化。",
     siteName: "HOJYO CAME",
     locale: "ja_JP",
     type: "website",
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HOJYO CAME | 工事費補助金をAIが無料診断",
-    description: "設備導入に使える補助金をAIが無料診断。全47都道府県対応。",
+    title: "HOJYO CAME | 防犯カメラ補助金を業種から検索",
+    description: "設備導入に使える補助金を業種から無料で検索。マルチック対応6都県に特化。",
   },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true },

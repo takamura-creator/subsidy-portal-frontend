@@ -105,6 +105,11 @@ export function detectDocumentTier(subsidy?: SubsidySelection): {
   draftType?: DraftSubsidyType;
 } {
   if (!subsidy) return { tier: "unknown" };
+  // 補助金マスタ（subsidies.json）の draft_subsidy_type を最優先。
+  // キーワードマッチで漏れる新補助金（地域安全等）も自治会パネルへ正しく流す。
+  if (subsidy.draftSubsidyType === "jichitai_bouhan") {
+    return { tier: "jichikai" };
+  }
   const hay = `${subsidy.name} ${subsidy.category ?? ""}`;
   if (hay.includes("神奈川") || hay.includes("デジタル化支援")) {
     return { tier: "tier1" };

@@ -13,6 +13,22 @@ export interface JwtPayload {
   iat: number;
 }
 
+/**
+ * JWT のクライアントサイド署名検証は意図的に**実施していません**。
+ *
+ * 理由:
+ *   - クライアントに秘密鍵を配布できないため、true な署名検証は不可能
+ *   - Asymmetric (RS256) なら公開鍵検証が可能だが、現在は HS256 運用
+ *
+ * セキュリティ前提:
+ *   1. **権限判定の真の責任はサーバー側**にある。バックエンドは jwt.decode(..., SECRET_KEY)
+ *      で署名検証してから処理する（routers/auth.py の require_role）。
+ *   2. このフロント関数の戻り値は**「UI を出すかどうか」の最適化用途のみ**で利用する。
+ *   3. 攻撃者が localStorage を改ざんしても、API 側で必ず弾かれる。
+ *
+ * 改ざんによる UI 露出が問題になる場合は、サーバーから /api/auth/me で都度確認すること
+ * （`fetchMe()` を使う設計を推奨）。
+ */
 function decodeJwt(token: string): JwtPayload | null {
   try {
     const base64 = token.split(".")[1];

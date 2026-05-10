@@ -246,9 +246,11 @@ export default function EligibilityChecker({ subsidyId, subsidyName }: Props) {
                     aria-checked={selected}
                     onClick={() => handleSelect(qIdx, opt.value)}
                     style={{
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: selected ? 700 : 500,
-                      padding: "8px 14px",
+                      // タッチターゲット最小44x44px（WCAG 2.5.5）— minHeight で確保
+                      padding: "12px 18px",
+                      minHeight: 44,
                       borderRadius: 8,
                       border: selected
                         ? "1.5px solid var(--hc-primary)"

@@ -24,7 +24,7 @@ export const JIZOKUKA_STEPS: WizardStepDef[] = [
   { id: 3, label: "製品・構成", shortLabel: "製品" },
   { id: 4, label: "見積もり", shortLabel: "見積" },
   { id: 5, label: "補足質問", shortLabel: "質問" },
-  { id: 6, label: "AI生成", shortLabel: "生成" },
+  { id: 6, label: "下書き生成", shortLabel: "生成" },
   { id: 7, label: "編集・出力", shortLabel: "出力" },
 ];
 
