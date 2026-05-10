@@ -190,29 +190,13 @@ export default function HCHeader() {
         )}
       </div>
 
-      {/* Mobile: 業種選択ミニCTA + ハンバーガー */}
-      <div className="md:hidden flex items-center gap-2">
-        <Link
-          href="/match"
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: "var(--hc-white)",
-            background: "var(--hc-primary)",
-            padding: "6px 10px",
-            borderRadius: 6,
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-          }}
-        >
-          業種から探す
-        </Link>
-        <button
-          className="p-1"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="メニュー"
-          aria-expanded={menuOpen}
-        >
+      {/* Mobile hamburger */}
+      <button
+        className="md:hidden p-1"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="メニュー"
+        aria-expanded={menuOpen}
+      >
         <svg
           width="20"
           height="20"
@@ -227,8 +211,7 @@ export default function HCHeader() {
             <path d="M3 5h14M3 10h14M3 15h14" />
           )}
         </svg>
-        </button>
-      </div>
+      </button>
 
       {/* Mobile dropdown */}
       {menuOpen && (
