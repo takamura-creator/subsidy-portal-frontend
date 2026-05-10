@@ -102,6 +102,19 @@ export default function MatchPage() {
 
   const center = (
     <main style={{ padding: "32px 16px", maxWidth: 900, margin: "0 auto" }}>
+      <h1
+        style={{
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+          fontSize: 28,
+          fontWeight: 700,
+          color: "var(--hc-navy)",
+          letterSpacing: "-0.3px",
+          textAlign: "center",
+          margin: "0 0 28px",
+        }}
+      >
+        業種選択
+      </h1>
       <div
         style={{
           display: "grid",
