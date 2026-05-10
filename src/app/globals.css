@@ -519,7 +519,7 @@ button:focus-visible, a:focus-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px 24px;
+  padding: 8px 24px;
   position: relative;
   z-index: 1;
 }
@@ -531,21 +531,21 @@ button:focus-visible, a:focus-visible {
 }
 
 .home-welcome .turtle {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 12px;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 16px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.10));
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
 }
 
 .home-welcome h1 {
   font-family: 'Sora', sans-serif;
   font-weight: 700;
-  font-size: 36px;
+  font-size: 56px;
   letter-spacing: -0.5px;
   color: var(--hc-navy);
-  margin-bottom: 8px;
-  line-height: 1.15;
+  margin-bottom: 10px;
+  line-height: 1.1;
   text-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .home-welcome h1 .came {
@@ -555,7 +555,7 @@ button:focus-visible, a:focus-visible {
 .home-welcome .lede {
   font-size: 15px;
   color: var(--hc-text);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   text-shadow: 0 1px 6px rgba(0,0,0,0.05);
 }
 
@@ -594,7 +594,7 @@ button:focus-visible, a:focus-visible {
 }
 
 .home-welcome .support-items {
-  margin-top: 14px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -627,8 +627,8 @@ button:focus-visible, a:focus-visible {
 
 /* 対応エリアバナー（ヒーロー） */
 .hero-area-banner {
-  margin-top: 18px;
-  padding: 10px 20px;
+  margin-top: 12px;
+  padding: 8px 20px;
   border: 1.5px solid var(--hc-primary);
   border-radius: 12px;
   background:

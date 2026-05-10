@@ -30,8 +30,8 @@ export default function HeroStage() {
             className="turtle"
             src="/images/turtle_wave.png"
             alt="HOJYO CAME キャラクター"
-            width={112}
-            height={112}
+            width={160}
+            height={160}
             priority
           />
         </FloatLoop>
