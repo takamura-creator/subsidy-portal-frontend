@@ -178,13 +178,30 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
               formFilled++;
             }
           }
-          // 業種: INDUSTRIES リストと照合
+          // 業種: INDUSTRIES リストと柔軟に照合
+          // 例: AI 抽出値「廃棄物処理・資源リサイクル」→「廃棄物処理業」
+          //     AI 抽出値「建設」→「建設業」
           else if (formKey === "industry") {
-            const matched = (INDUSTRIES as readonly string[]).find(
-              (i) => strValue.includes(i),
-            );
+            const list = INDUSTRIES as readonly string[];
+            const matched =
+              // (1) 完全一致／抽出値が業種名を含む
+              list.find((i) => strValue.includes(i)) ??
+              // (2) 業種名から「業」を取った語幹が抽出値に含まれる
+              list.find((i) => {
+                const stem = i.replace(/業$/, "");
+                return stem.length >= 2 && strValue.includes(stem);
+              }) ??
+              // (3) 抽出値の先頭ワードが業種名に含まれる
+              list.find((i) => {
+                const head = strValue.split(/[・、,\s\/]/)[0];
+                return head.length >= 2 && i.includes(head);
+              });
             if (matched) {
               setValue("industry", matched, { shouldDirty: true });
+              formFilled++;
+            } else {
+              // どれにも該当しなければ「その他」を選択（未選択のままにしない）
+              setValue("industry", "その他", { shouldDirty: true });
               formFilled++;
             }
           }

@@ -201,9 +201,9 @@ export default function Step4Estimate({
             </p>
             <ul style={{ margin: 0, paddingLeft: 14 }}>
               <li>上記は補助率上限を単純適用した<strong>試算値</strong>です。実際の補助金額は審査・採択結果により異なります。</li>
-              <li>補助対象経費の範囲（設備費・工事費の按分等）は補助金制度ごとに定められており、<strong>全額が対象になるとは限りません。</strong></li>
+              <li>補助対象経費の範囲は補助金制度ごとに異なります。例えば <strong>業務改善助成金</strong> は機器・設備が主な対象で、<strong>工事費・ネットワーク構築費は対象外もしくは限定対応</strong> の制度です。<strong>本試算では総額に補助率上限を機械的に適用しており、実際の対象経費の按分計算は反映していません。</strong></li>
               <li>補助金の上限額・加点条件・申請時期によって受給額は変動します。</li>
-              <li>正確な補助金額は申請前に所管機関または専門家にご確認ください。</li>
+              <li>正確な補助金額は申請前に<strong>所管機関または専門家</strong>にご確認ください。</li>
             </ul>
           </div>
         </section>
@@ -239,14 +239,22 @@ export default function Step4Estimate({
           >
             {generating ? "生成中..." : estimate ? "再生成する" : "見積もりを生成する"}
           </button>
-          <button
-            type="button"
-            onClick={handleDownloadPdf}
-            disabled={!estimate || pdfLoading}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-[8px] bg-accent text-white font-semibold hover:bg-[var(--hc-accent-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {pdfLoading ? "PDF準備中..." : "概算書PDFをダウンロード"}
-          </button>
+          <div className="flex flex-col items-start sm:items-end gap-1">
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              disabled={!estimate || pdfLoading}
+              title={!estimate ? "まず「見積もりを生成する」を押してください" : undefined}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-[8px] bg-accent text-white font-semibold hover:bg-[var(--hc-accent-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {pdfLoading ? "PDF準備中..." : "概算書PDFをダウンロード"}
+            </button>
+            {!estimate && (
+              <span className="text-[11px] text-text-muted">
+                先に「見積もりを生成する」を押してください
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
