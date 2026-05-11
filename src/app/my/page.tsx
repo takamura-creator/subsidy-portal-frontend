@@ -86,12 +86,15 @@ export default function MyDashboardPage() {
   // ウィザード完了度（%）
   const progressPct = wizardStep >= 6 ? 100 : wizardStep >= 1 ? Math.round((wizardStep / 6) * 100) : 0;
 
-  // 次のステップ定義
+  // 次のステップ定義（前段未完なら locked=true でクリック不可）
+  const step1Done = wizardStep >= 2;
+  const step2Done = wizardStep >= 4;
+  const step3Done = hasDraft;
   const steps = [
-    { step: 1, label: "会社情報・補助金を選択する", done: wizardStep >= 2, href: "/my/wizard" },
-    { step: 2, label: "製品構成と概算見積もりを確認する", done: wizardStep >= 4, href: "/my/wizard" },
-    { step: 3, label: "申請書類の下書きを生成する", done: hasDraft, href: "/my/wizard" },
-    { step: 4, label: "マルチックに施工・詳細見積もりを依頼する", done: false, href: "/contact" },
+    { step: 1, label: "会社情報・補助金を選択する", done: step1Done, locked: false, href: "/my/wizard" },
+    { step: 2, label: "製品構成と概算見積もりを確認する", done: step2Done, locked: !step1Done, href: "/my/wizard" },
+    { step: 3, label: "申請書類の下書きを生成する", done: step3Done, locked: !step2Done, href: "/my/wizard" },
+    { step: 4, label: "マルチックに施工・詳細見積もりを依頼する", done: false, locked: !step3Done, href: "/contact" },
   ];
 
   return (
@@ -222,54 +225,76 @@ export default function MyDashboardPage() {
               marginBottom: 24,
             }}
           >
-            {steps.map((item, i) => (
-              <Link
-                key={item.step}
-                href={item.href}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "14px 18px",
-                  borderBottom: i < steps.length - 1 ? "1px solid var(--hc-text-divider)" : "none",
-                  fontSize: 14,
-                  fontWeight: 400,
-                  color: item.done ? "var(--hc-text-muted)" : "var(--hc-text)",
-                  textDecoration: "none",
-                  transition: "background 0.15s",
-                }}
-              >
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 11,
-                    fontWeight: 500,
-                    flexShrink: 0,
-                    background: item.done ? "var(--hc-teal)" : "var(--hc-text-line)",
-                    color: item.done ? "var(--hc-white)" : "var(--hc-text-muted)",
-                  }}
-                >
-                  {item.done ? "✓" : item.step}
-                </span>
-                <span
-                  style={{
-                    flex: 1,
-                    textDecoration: item.done ? "line-through" : "none",
-                    opacity: item.done ? 0.5 : 1,
-                  }}
-                >
-                  {item.label}
-                </span>
-                {!item.done && (
-                  <span style={{ fontSize: 12, color: "var(--hc-teal)", fontWeight: 500 }}>→</span>
-                )}
-              </Link>
-            ))}
+            {steps.map((item, i) => {
+              const rowStyle: React.CSSProperties = {
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "14px 18px",
+                borderBottom: i < steps.length - 1 ? "1px solid var(--hc-text-divider)" : "none",
+                fontSize: 14,
+                fontWeight: 400,
+                color: item.locked
+                  ? "var(--hc-text-muted)"
+                  : item.done
+                  ? "var(--hc-text-muted)"
+                  : "var(--hc-text)",
+                textDecoration: "none",
+                transition: "background 0.15s",
+                cursor: item.locked ? "not-allowed" : "pointer",
+                opacity: item.locked ? 0.5 : 1,
+              };
+              const inner = (
+                <>
+                  <span
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 11,
+                      fontWeight: 500,
+                      flexShrink: 0,
+                      background: item.done ? "var(--hc-teal)" : "var(--hc-text-line)",
+                      color: item.done ? "var(--hc-white)" : "var(--hc-text-muted)",
+                    }}
+                  >
+                    {item.locked ? "🔒" : item.done ? "✓" : item.step}
+                  </span>
+                  <span
+                    style={{
+                      flex: 1,
+                      textDecoration: item.done ? "line-through" : "none",
+                      opacity: item.done ? 0.6 : 1,
+                    }}
+                  >
+                    {item.label}
+                    {item.locked && (
+                      <span style={{ fontSize: 11, marginLeft: 8, color: "var(--hc-text-muted)" }}>
+                        （前のステップを完了してください）
+                      </span>
+                    )}
+                  </span>
+                  {!item.done && !item.locked && (
+                    <span style={{ fontSize: 12, color: "var(--hc-teal)", fontWeight: 500 }}>→</span>
+                  )}
+                </>
+              );
+              if (item.locked) {
+                return (
+                  <div key={item.step} style={rowStyle} aria-disabled="true">
+                    {inner}
+                  </div>
+                );
+              }
+              return (
+                <Link key={item.step} href={item.href} style={rowStyle}>
+                  {inner}
+                </Link>
+              );
+            })}
           </div>
 
           {/* ウィザード進捗バー（開始済みの場合） */}
@@ -402,7 +427,6 @@ export default function MyDashboardPage() {
           {/* セカンダリリンク */}
           <ActionLink href="/match" icon="🔍" label="業種から補助金を探す" />
           <ActionLink href="/subsidies" icon="📋" label="補助金一覧を見る" />
-          <ActionLink href="/partners/multik" icon="🔧" label="工事業者を探す" />
 
           {/* 施工相談カード */}
           <div

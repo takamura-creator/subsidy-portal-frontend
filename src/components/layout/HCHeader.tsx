@@ -30,10 +30,23 @@ export default function HCHeader() {
     setUser(getUser());
   }, []);
 
-  // ルート変更時にメニューを閉じる
+  // ルート変更時にメニューを閉じる＋認証状態を再評価
+  // （ログイン直後にヘッダーが古い user=null のままになる問題を防止）
   useEffect(() => {
     setMenuOpen(false);
+    setUser(getUser());
   }, [pathname]);
+
+  // storage イベントで他タブからのログイン/ログアウトも検知
+  useEffect(() => {
+    function onStorage(e: StorageEvent) {
+      if (e.key === "access_token" || e.key === "user") {
+        setUser(getUser());
+      }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);

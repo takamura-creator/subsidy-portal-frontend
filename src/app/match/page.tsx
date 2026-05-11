@@ -2,6 +2,7 @@ import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { getAllSubsidies } from "@/lib/subsidies-server";
 import { INDUSTRIES } from "@/lib/constants";
+import { filterCameraOnly } from "@/lib/subsidyFilters";
 
 const INDUSTRY_META: Record<string, { icon: string; desc: string }> = {
   "小売業":             { icon: "🏪", desc: "店舗・スーパー・コンビニ" },
@@ -66,9 +67,8 @@ export default function MatchPage() {
   const allSubsidies = getAllSubsidies();
 
   function countForIndustry(ind: string): number {
-    return allSubsidies.filter(
-      (s) => Array.isArray(s.target_industries) && s.target_industries.includes(ind)
-    ).length;
+    // /subsidies?industry=X のリスト件数と同じロジックを適用（カメラ関連 & エリア & NG除外 & 業種）
+    return filterCameraOnly(allSubsidies, ind).length;
   }
 
   const left = (

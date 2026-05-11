@@ -73,8 +73,9 @@ function formatAmount(amount: number): string {
 }
 
 function formatAmountDisplay(s: Subsidy): string {
-  // 防犯カメラ系は「X万円/台」表示
-  if (s.name.includes("防犯") || s.name.includes("助成")) {
+  // 補助金の上限額は事業（申請）単位が原則。
+  // 1台あたり単価が定義されているのは自治会向け防犯カメラ事業のみ。
+  if (s.draft_subsidy_type === "jichitai_bouhan") {
     const man = Math.round(s.max_amount / 10000);
     return `${man}万円/台`;
   }
