@@ -13,6 +13,21 @@ import { isServicePrefecture } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
 import type { CompanyInfo, SubsidySelection } from "./types";
+import subsidiesJson from "@/data/subsidies.json";
+
+// バンドル同梱データ（バックエンドのデプロイ遅延による Step2 0件を防ぐ）
+const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
+
+function filterBundledForCompany(prefecture: string, industry: string): Subsidy[] {
+  // backend 相当のフィルタ + filterCameraOnly を適用
+  return filterCameraOnly(
+    BUNDLED_SUBSIDIES.filter((s) => {
+      const prefOk = !prefecture || s.prefecture === prefecture || s.prefecture === "全国" || s.pref_code === "00" || s.pref_code === "";
+      return prefOk;
+    }),
+    industry,
+  );
+}
 
 interface Props {
   company: CompanyInfo;
@@ -30,6 +45,9 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
 
   useEffect(() => {
     let cancelled = false;
+    // バンドルデータで即座に初期表示（API 待ち中も「0件」と表示しない）
+    const bundled = filterBundledForCompany(company.prefecture, company.industry);
+    setSubsidies(bundled);
     async function load() {
       setLoading(true);
       setLoadError("");
@@ -40,9 +58,12 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         ]);
         if (cancelled) return;
         if (subRes.status === "fulfilled") {
-          setSubsidies(filterCameraOnly(subRes.value.subsidies ?? [], company.industry));
+          const apiFiltered = filterCameraOnly(subRes.value.subsidies ?? [], company.industry);
+          // API が古いデータを返した場合に備え、件数が多い方を採用
+          setSubsidies(apiFiltered.length >= bundled.length ? apiFiltered : bundled);
         } else {
-          setLoadError("補助金一覧の取得に失敗しました。時間をおいて再度お試しください。");
+          // API 失敗時もバンドルデータで救う（loadError は表示しない）
+          setSubsidies(bundled);
         }
         if (areaRes.status === "fulfilled") {
           setArea(areaRes.value);
@@ -118,13 +139,25 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
       ) : loadError ? (
         <p className="text-[13px] text-error">{loadError}</p>
       ) : subsidies.length === 0 ? (
-        <div className="hc-card-gradient rounded-[10px] p-5 text-[14px] text-text-muted">
-          該当する補助金が見つかりませんでした。
-          <Link href="/subsidies" className="text-primary hover:underline mx-1">
-            補助金一覧
-          </Link>
-          から手動で確認してください。
-        </div>
+        <>
+          <div className="hc-card-gradient rounded-[10px] p-5 text-[14px] text-text-muted">
+            該当する補助金が見つかりませんでした。業種・都県の組み合わせに
+            合致する補助金が現状未登録です。
+            <Link href="/subsidies" className="text-primary hover:underline mx-1">
+              補助金一覧
+            </Link>
+            から手動で確認するか、Step1 に戻って業種を変更してください。
+          </div>
+          <div className="flex justify-start pt-4">
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center justify-center px-5 py-3 rounded-[8px] border border-border bg-white text-text font-medium hover:border-primary transition"
+            >
+              ← Step1 に戻る
+            </button>
+          </div>
+        </>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-3">
           <ul className="space-y-2" role="radiogroup" aria-label="補助金選択">

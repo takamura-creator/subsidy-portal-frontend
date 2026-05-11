@@ -77,6 +77,9 @@ export default function ContactPage() {
         if (p.company_name && !d.companyName) setCompanyName(p.company_name);
         const repName = p.representative_name || p.representative || "";
         if (repName && !d.representativeName) setContactName(repName);
+        // メールも DB が最も信頼できる（JWT 失効後・ウィザード未保存時の救済）
+        if (p.email && !d.email) setEmail(p.email);
+        if (p.phone) setPhone(p.phone);
       })
       .catch(() => {});
   }, []);

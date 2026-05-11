@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -14,6 +15,7 @@ import {
   GradientText,
 } from "@/components/motion";
 import SubsidyCarousel from "@/components/home/SubsidyCarousel";
+import { isAuthenticated } from "@/lib/auth";
 
 const CATCHPHRASES = [
   "防犯カメラ補助金の診断・申請書類作成まで無料で完結。",
@@ -22,6 +24,16 @@ const CATCHPHRASES = [
 ];
 
 export default function HeroStage() {
+  // ログイン済みなら CTA を /my/wizard へ、未ログインは /match へ
+  const [ctaHref, setCtaHref] = useState("/match");
+  const [ctaLabel, setCtaLabel] = useState("無料で補助金を診断する →");
+  useEffect(() => {
+    if (isAuthenticated()) {
+      setCtaHref("/my/wizard");
+      setCtaLabel("ウィザードを再開する →");
+    }
+  }, []);
+
   return (
     <div className="stage">
       <ScaleIn delay={0.1} duration={0.6}>
@@ -61,8 +73,8 @@ export default function HeroStage() {
       </FadeIn>
 
       <ButtonPulse delay={1.0} glowColor="rgba(21, 128, 61, 0.25)">
-        <Link href="/match" className="cta-primary">
-          無料で補助金を診断する →
+        <Link href={ctaHref} className="cta-primary" suppressHydrationWarning>
+          {ctaLabel}
         </Link>
       </ButtonPulse>
 

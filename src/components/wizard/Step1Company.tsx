@@ -95,25 +95,37 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
   const watchedIndustry = watch("industry");
   const isJichikai = watchedIndustry === "自治会・町会";
 
-  // アカウント設定に保存された website_url を初期入力に反映
-  // ウィザード保存値（defaults）があればそれを優先、なければプロフィールから補完
+  // アカウント設定のプロフィール情報を初期入力に反映（websiteUrl だけでなく主要項目すべて）
+  // ウィザード保存値（defaults）が空のフィールドのみ profile から補完
   useEffect(() => {
-    if (defaults?.websiteUrl) return; // ウィザード状態にすでに値があればスキップ
     let cancelled = false;
     import("@/lib/api").then(({ fetchProfileDetail }) => {
       fetchProfileDetail()
         .then((p) => {
           if (cancelled) return;
-          if (p.website_url) {
-            setValue("websiteUrl", p.website_url, { shouldDirty: false });
-          }
+          // 各フィールド: 既存値がない場合のみプロフィールで埋める（ユーザー入力を上書きしない）
+          const fill = (key: keyof FormValues, val?: string | number) => {
+            if (val === undefined || val === null || val === "") return;
+            const current = String((defaults as Record<string, unknown>)?.[key] ?? "").trim();
+            if (current) return; // ユーザー入力済なら触らない
+            setValue(key, String(val), { shouldDirty: false });
+          };
+          fill("companyName", p.company_name);
+          fill("representativeName", p.representative ?? p.representative_name);
+          fill("websiteUrl", p.website_url);
+          // 住所・電話は表示中フォームに用意がある場合のみ
+          // 都県は pref_code → 名称マッピング不要（profile.prefecture を採用）
+          if (p.prefecture) fill("prefecture", p.prefecture);
+          if (p.industry) fill("industry", p.industry);
+          if (p.employees) fill("employees", p.employees);
+          if (p.annual_revenue) fill("annualRevenue", p.annual_revenue);
         })
         .catch(() => {});
     });
     return () => {
       cancelled = true;
     };
-  }, [defaults?.websiteUrl, setValue]);
+  }, [defaults, setValue]);
 
   // HP extraction state
   const [extracting, setExtracting] = useState(false);
