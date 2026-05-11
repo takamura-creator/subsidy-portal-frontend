@@ -102,7 +102,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         </h2>
         <p className="text-[13px] text-text-muted leading-relaxed">
           {company.prefecture}で利用できる補助金から1つ選んでください。
-          診断結果がある場合は上位の補助金が表示されます。
+          御社の業種・事業規模に該当するものが表示されています。
         </p>
       </div>
 
