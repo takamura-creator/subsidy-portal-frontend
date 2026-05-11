@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import WizardLayout, {
   WIZARD_STEPS,
   JIZOKUKA_STEPS,
@@ -31,6 +32,7 @@ import { fetchProfileDetail } from "@/lib/api";
 const STORAGE_KEY = "hc_wizard_state_v2";
 
 export default function WizardPage() {
+  const router = useRouter();
   const [step, setStep] = useState<WizardStepId>(1);
   const [state, setState] = useState<WizardState>(EMPTY_WIZARD_STATE);
   const [hydrated, setHydrated] = useState(false);
@@ -280,8 +282,9 @@ export default function WizardPage() {
           qaAnswers={state.qaAnswers}
           onBack={() => setStep(6)}
           onNext={() => {
-            setStep(1);
-            setState(EMPTY_WIZARD_STATE);
+            // 完了 → ウィザード状態は保持したままダッシュボードへ遷移
+            // （戻ってきたときに編集を続けられるよう state はリセットしない）
+            router.push("/my");
           }}
         />
       ) : (

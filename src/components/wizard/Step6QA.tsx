@@ -2,10 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CompanyInfo, SubsidySelection } from "./types";
-import {
-  getIndustryChoices,
-  type QAQuestionKey,
-} from "@/data/qa-industry-choices";
 
 /* ─── Props ─── */
 interface Props {
@@ -20,13 +16,14 @@ interface Props {
 /* ─── 質問定義 ─── */
 interface QuestionDef {
   key: string;
-  label: string;
-  /** インタビュー時の質問文（話しかけるトーン） */
+  /** インタビュー時の質問文 */
   question: string;
-  /** 選択肢を生成する関数（company/subsidy/hpExtracted から動的に） */
-  choices: (ctx: QAContext) => string[];
+  /** 選択肢を生成する関数（company から動的に） */
+  choices?: (ctx: QAContext) => string[];
   /** HP抽出データから自動回答を生成（あれば） */
   autoFill?: (ctx: QAContext) => string | undefined;
+  /** 自由記載のみ（選択肢なし） */
+  freeFormOnly?: boolean;
   required: boolean;
 }
 
@@ -37,192 +34,87 @@ interface QAContext {
   answers: Record<string, string>;
 }
 
-/** 業種特化の選択肢があればそちらを優先し、汎用選択肢をフォールバックとして返す */
-function industryOr(
-  ctx: QAContext,
-  key: QAQuestionKey,
-  fallback: string[],
-): string[] {
-  const map = getIndustryChoices(ctx.company?.industry);
-  return map?.[key] ?? fallback;
-}
-
-/* ─── 送信時の結合マッピング（内部_r1/r2/r3 → バックエンド用正規キー） ─── */
-const CONCAT_TOPICS: { canonical: string; label: string; rounds: string[] }[] = [
-  { canonical: "current_challenge", label: "経営課題", rounds: ["current_challenge_r1", "current_challenge_r2", "current_challenge_r3"] },
-  { canonical: "expected_solution", label: "解決したいこと", rounds: ["expected_solution_r1", "expected_solution_r2", "expected_solution_r3"] },
-  { canonical: "expected_effect", label: "期待される効果", rounds: ["expected_effect_r1", "expected_effect_r2", "expected_effect_r3"] },
-];
-
-/* ─── レビュー表示用グループ定義（CONCAT_TOPICSから派生で重複排除） ─── */
-interface ReviewGroup {
-  label: string;
-  keys: string[];
-  showSupplement?: boolean;
-}
-
-const REVIEW_GROUPS: ReviewGroup[] = [
-  { label: "事業内容", keys: ["business_content"], showSupplement: true },
-  ...CONCAT_TOPICS.map((t) => ({ label: t.label, keys: t.rounds })),
-];
-
+/* ─── 6質問定義（重複を排除し1問1テーマ） ─── */
 const QUESTIONS: QuestionDef[] = [
   {
     key: "business_content",
-    label: "事業内容",
     question: "御社の主な事業内容を教えてください。",
     required: true,
     autoFill: (ctx) => {
-      const parts = [
-        ctx.hp?.business_description,
-        ctx.hp?.company_overview,
-      ].filter(Boolean);
+      const parts = [ctx.hp?.business_description, ctx.hp?.company_overview].filter(Boolean);
       return parts.length > 0 ? parts.join("。") : undefined;
     },
-    choices: (ctx) =>
-      industryOr(ctx, "business_content", [
-        ctx.company?.industry
-          ? `${ctx.company.industry}に関連するサービスを提供しています`
-          : "各種事業を営んでいます",
-        "防犯カメラ・監視カメラシステムの販売・施工・保守",
-        "セキュリティシステムの設計・導入コンサルティング",
-        "映像監視ソリューションの提供と運用支援",
-      ]),
-  },
-  /* ── 経営課題 R1〜R3 ── */
-  {
-    key: "current_challenge_r1",
-    label: "経営課題（1/3）",
-    question: "今、一番困っていることは何ですか？",
-    required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "current_challenge_r1", [
-        "人手不足で現場の安全管理が追いつかない",
-        "万引き・盗難による損失が増加している",
-        "夜間や休日の監視体制が不十分",
-        "既存カメラが老朽化して映像品質が低下",
-        "従業員の安全確認が目視頼りで事故発見が遅れる",
-        "来客数や動線の把握ができていない",
-      ]),
+    choices: (ctx) => [
+      ctx.company?.industry
+        ? `${ctx.company.industry}を中心に事業を展開しています`
+        : "各種事業を営んでいます",
+      "防犯カメラ・監視カメラの販売・施工・保守",
+      "セキュリティシステムの設計・導入コンサルティング",
+      "施設運営および顧客対応サービスの提供",
+    ],
   },
   {
-    key: "current_challenge_r2",
-    label: "経営課題（2/3）",
-    question: "その課題について、もう少し詳しく教えてください。いつ・どこで・どのくらいの頻度で起きていますか？",
+    key: "current_challenge",
+    question: "現在、防犯・安全管理で一番困っていることは何ですか？",
     required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "current_challenge_r2", [
-        "毎日の業務の中で常に発生している",
-        "週に数回、特定の時間帯に集中して発生する",
-        "既存設備の老朽化で対処が追いつかない状況",
-        "人的対応に限界があり、対応が後手に回っている",
-        "特定のエリア・現場で集中して問題が発生している",
-      ]),
+    choices: () => [
+      "人手不足で現場の安全管理・夜間監視が追いつかない",
+      "万引き・盗難・不正行為による損失が発生している",
+      "既存カメラが老朽化し映像品質・録画が不十分",
+      "高齢者・子どもの見守り、転倒検知など安全確認が必要",
+      "事故・トラブル発生時に証拠映像が残らず対応が後手",
+      "敷地が広く死角が多くて目視確認に限界がある",
+    ],
   },
   {
-    key: "current_challenge_r3",
-    label: "経営課題（3/3）",
-    question: "この課題による具体的な損失はどのくらいですか？金額・時間・件数など数値で教えてください。",
+    key: "expected_solution",
+    question: "この補助金で、どのようなシステム・機器を導入したいですか？",
     required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "current_challenge_r3", [
-        "年間の損失額は推定50〜100万円程度",
-        "月あたり10〜30時間の無駄な作業が発生している",
-        "年間数件の事故やインシデントが発生している",
-        "人件費として月20万円以上の追加コストがかかっている",
-        "正確な数値は把握できていない（導入後に測定したい）",
-      ]),
-  },
-  /* ── 解決したいこと R1〜R3 ── */
-  {
-    key: "expected_solution_r1",
-    label: "解決したいこと（1/3）",
-    question: "この補助金で、何を実現したいですか？",
-    required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "expected_solution_r1", [
-        "AI搭載カメラで異常を自動検知し、即時対応できる体制を構築したい",
-        "高画質カメラの導入で証拠映像の品質を向上させたい",
-        "遠隔監視システムで人件費を削減しつつ安全性を高めたい",
-        "来客分析で売上向上につながるデータを取得したい",
-        "転倒検知・侵入検知で安全管理体制を強化したい",
-        "カメラ映像のクラウド録画で災害時にもデータを保全したい",
-      ]),
+    choices: () => [
+      "AI搭載カメラで異常検知・自動通知できる体制を構築したい",
+      "高画質カメラとNVRで証拠映像を確実に残したい",
+      "クラウド録画で遠隔から映像確認・データ保全したい",
+      "見守りセンサーやカメラで利用者の安全を24時間見守りたい",
+      "既存アナログカメラをデジタル/IPカメラへ更新したい",
+      "まず最低限の構成で導入し、段階的に拡張したい",
+    ],
   },
   {
-    key: "expected_solution_r2",
-    label: "解決したいこと（2/3）",
-    question: "具体的にどのような機器・システムの導入をお考えですか？",
+    key: "expected_effect",
+    question: "導入後、どのような効果を期待していますか？",
     required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "expected_solution_r2", [
-        "AI検知機能付きカメラで異常時にスマホへ即時通知したい",
-        "クラウド録画で映像を遠隔から確認できるようにしたい",
-        "既存のアナログカメラを高画質デジタルカメラにリプレースしたい",
-        "ネットワークカメラとNVRの組み合わせで構築したい",
-        "まずは専門家のアドバイスを受けてから決めたい",
-      ]),
+    choices: () => [
+      "事故・インシデントの早期発見と対応時間の大幅短縮",
+      "犯罪・盗難の抑止と被害金額の削減",
+      "人件費・警備コストの削減と業務効率化",
+      "24時間365日の監視体制を少人数で実現",
+      "従業員・利用者の安心感向上と離職率改善",
+      "映像データを活用した運用改善・経営判断",
+    ],
   },
   {
-    key: "expected_solution_r3",
-    label: "解決したいこと（3/3）",
-    question: "導入規模はどの程度をお考えですか？（台数・設置場所など）",
+    key: "quantitative_target",
+    question: "効果の数値目標を教えてください。（採択率向上に重要）",
     required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "expected_solution_r3", [
-        "カメラ2〜3台の小規模導入で主要エリアをカバー",
-        "カメラ4〜6台程度で主要エリア＋死角をカバー",
-        "カメラ8台以上の大規模導入",
-        "まず主要エリア2〜3台から始め、段階的に拡張したい",
-        "台数は専門家のアドバイスを受けて決めたい",
-      ]),
-  },
-  /* ── 期待される効果 R1〜R3 ── */
-  {
-    key: "expected_effect_r1",
-    label: "期待される効果（1/3）",
-    question: "導入後、どんな効果を期待していますか？",
-    required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "expected_effect_r1", [
-        "事故・インシデントの早期発見と対応時間の短縮",
-        "犯罪抑止効果による被害削減",
-        "人件費削減と業務効率化",
-        "24時間監視体制の確立",
-        "従業員の安全意識向上と安心できる職場環境",
-        "データ活用による経営改善",
-      ]),
+    choices: () => [
+      "事故対応時間を 30分 → 3分以内 に短縮",
+      "盗難・損失額を 年間 30〜50% 削減",
+      "夜間警備コストを 月 5〜10万円 削減",
+      "見回り工数を 月 20〜30 時間削減",
+      "離職率を 前年比 20% 改善",
+      "数値は専門家と相談して決めたい",
+    ],
   },
   {
-    key: "expected_effect_r2",
-    label: "期待される効果（2/3）",
-    question: "その効果について、現在の数値はどのくらいですか？（改善前の状態）",
-    required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "expected_effect_r2", [
-        "事故対応に現在平均15〜30分かかっている",
-        "被害額は年間50〜200万円と推定される",
-        "夜間・休日の警備に月10〜30万円のコストがかかっている",
-        "目視確認に1日あたり1〜2時間を費やしている",
-        "具体的な現状数値は把握できていない（導入後に測定したい）",
-      ]),
-  },
-  {
-    key: "expected_effect_r3",
-    label: "期待される効果（3/3）",
-    question: "導入後の目標数値を教えてください。（改善後の目標）",
-    required: true,
-    choices: (ctx) =>
-      industryOr(ctx, "expected_effect_r3", [
-        "事故対応時間を3分以内に短縮したい",
-        "被害額を年間30〜50%削減したい",
-        "警備コストを月5〜10万円削減したい",
-        "監視業務の工数を50%以上削減したい",
-        "24時間365日の監視体制を0人追加で実現したい",
-        "具体的な数値目標は専門家と相談して決めたい",
-      ]),
+    key: "additional_notes",
+    question: "その他、申請に含めたい情報があれば自由にご記入ください（任意）。",
+    required: false,
+    freeFormOnly: true,
   },
 ];
+
+/** 丸数字 ①②③… */
+const CIRCLED = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
 
 /* ─── メインコンポーネント ─── */
 export default function Step6QA({
@@ -237,29 +129,16 @@ export default function Step6QA({
   const [currentIdx, setCurrentIdx] = useState(0);
   const [customInput, setCustomInput] = useState("");
   const [mode, setMode] = useState<"interview" | "review">("interview");
-  const [supplement, setSupplement] = useState<string>(
-    initialAnswers?.business_content_supplement ?? "",
-  );
 
   const ctx: QAContext = useMemo(
     () => ({ company, subsidy, hp: hpExtracted, answers }),
     [company, subsidy, hpExtracted, answers],
   );
 
-  // 初回マウント: HP自動入力 → 最初の未回答質問へジャンプ（単一Effectで race condition 防止）
+  // 初回マウント: HP自動入力を「下書き提案」として保持するが、currentIdx は 0 から始める
+  // → 質問1がスキップされる問題を解消
   useEffect(() => {
     const base = initialAnswers ?? {};
-
-    // 復元時: 必須が全回答済みならレビューモードへ直行
-    if (initialAnswers) {
-      const filled = QUESTIONS.filter((q) => (initialAnswers[q.key] ?? "").trim()).length;
-      if (filled >= QUESTIONS.filter((q) => q.required).length) {
-        setMode("review");
-        return;
-      }
-    }
-
-    // HP抽出データから自動入力（同期的に merged を構築）
     const autoFilled: Record<string, string> = {};
     const mountCtx: QAContext = { company, subsidy, hp: hpExtracted, answers: base };
     for (const q of QUESTIONS) {
@@ -268,41 +147,37 @@ export default function Step6QA({
         if (val) autoFilled[q.key] = val;
       }
     }
-
-    const merged = { ...base, ...autoFilled };
     if (Object.keys(autoFilled).length > 0) {
-      setAnswers(merged);
+      setAnswers({ ...base, ...autoFilled });
     }
-
-    // merged を使って最初の未回答へ（auto-filled 分はスキップされる）
-    const firstUnanswered = QUESTIONS.findIndex((q) => !(merged[q.key] ?? "").trim());
-    if (firstUnanswered >= 0) {
-      setCurrentIdx(firstUnanswered);
-    } else {
-      setMode("review");
+    // 復元時は必須が全回答済みならレビューへ
+    if (initialAnswers) {
+      const requiredKeys = QUESTIONS.filter((q) => q.required).map((q) => q.key);
+      const allFilled = requiredKeys.every((k) => (initialAnswers[k] ?? "").trim());
+      if (allFilled) {
+        setMode("review");
+        return;
+      }
     }
+    setCurrentIdx(0); // 常に質問1から開始
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const currentQ = QUESTIONS[currentIdx];
-  const choices = currentQ ? currentQ.choices(ctx) : [];
+  const choices = currentQ?.choices ? currentQ.choices(ctx) : [];
   const filledCount = QUESTIONS.filter((q) => (answers[q.key] ?? "").trim()).length;
   const requiredFilled = QUESTIONS.filter((q) => q.required).every(
     (q) => (answers[q.key] ?? "").trim(),
   );
 
-  /** 選択肢をクリックして回答 */
-  const selectChoice = useCallback(
+  /** 選択 or 自由入力で回答を確定し次へ */
+  const commitAnswer = useCallback(
     (value: string) => {
       const updated = { ...answers, [currentQ.key]: value };
       setAnswers(updated);
       setCustomInput("");
-      // 次の未回答へ（更新後の状態で判定）
-      const nextUnanswered = QUESTIONS.findIndex(
-        (q, i) => i > currentIdx && !(updated[q.key] ?? "").trim(),
-      );
-      if (nextUnanswered >= 0) {
-        setCurrentIdx(nextUnanswered);
+      if (currentIdx < QUESTIONS.length - 1) {
+        setCurrentIdx(currentIdx + 1);
       } else {
         setMode("review");
       }
@@ -310,52 +185,34 @@ export default function Step6QA({
     [currentQ, currentIdx, answers],
   );
 
-  /** 自由入力で回答 */
+  /** 自由記載のみの質問（最終質問）でスキップ */
+  const skipOptional = useCallback(() => {
+    if (currentIdx < QUESTIONS.length - 1) {
+      setCurrentIdx(currentIdx + 1);
+    } else {
+      setMode("review");
+    }
+  }, [currentIdx]);
+
   const submitCustom = useCallback(() => {
     if (!customInput.trim()) return;
-    selectChoice(customInput.trim());
-  }, [customInput, selectChoice]);
+    commitAnswer(customInput.trim());
+  }, [customInput, commitAnswer]);
 
-  /** レビューモードで回答を編集 */
   const editAnswer = useCallback((idx: number) => {
     setCurrentIdx(idx);
     setMode("interview");
     setCustomInput("");
   }, []);
 
-  /** ラウンドキーの回答を結合してプレビューテキストを返す */
-  const concatPreview = useCallback(
-    (keys: string[]) =>
-      keys
-        .map((k) => (answers[k] ?? "").trim())
-        .filter(Boolean)
-        .join("。"),
-    [answers],
-  );
-
-  /** 送信: 3ラウンドの回答を結合してバックエンドの正規キーに変換 */
   const handleSubmit = useCallback(() => {
     const out: Record<string, string> = {};
-
-    // business_content はそのまま
-    if ((answers.business_content ?? "").trim()) {
-      out.business_content = answers.business_content.trim();
+    for (const q of QUESTIONS) {
+      const v = (answers[q.key] ?? "").trim();
+      if (v) out[q.key] = v;
     }
-    if (supplement.trim()) {
-      out.business_content_supplement = supplement.trim();
-    }
-
-    // 3ラウンドトピックを結合
-    for (const topic of CONCAT_TOPICS) {
-      const joined = topic.rounds
-        .map((k) => (answers[k] ?? "").trim())
-        .filter(Boolean)
-        .join("。");
-      if (joined) out[topic.canonical] = joined;
-    }
-
     onNext(out);
-  }, [answers, supplement, onNext]);
+  }, [answers, onNext]);
 
   /* ─── インタビューモード ─── */
   if (mode === "interview" && currentQ) {
@@ -380,36 +237,50 @@ export default function Step6QA({
           ))}
         </div>
 
-        {/* Question */}
-        <div className="bg-white border border-border rounded-[12px] p-6">
-          <div className="flex items-start gap-3 mb-5">
-            <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white text-lg">
-              💬
-            </span>
-            <div>
-              <p className="text-[11px] text-text-muted mb-1">
-                質問 {currentIdx + 1}/{QUESTIONS.length}
-                {!currentQ.required && "（任意）"}
-              </p>
-              <h3 className="text-[16px] font-bold text-navy leading-snug">
-                {currentQ.question}
-              </h3>
-            </div>
-          </div>
+        {/* Question — 大きめ見出し */}
+        <div
+          style={{
+            background: "var(--hc-card-bg)",
+            border: "1px solid var(--hc-card-border)",
+            borderRadius: 12,
+            padding: 28,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+              fontSize: 22,
+              fontWeight: 700,
+              color: "var(--hc-primary)",
+              letterSpacing: "0.02em",
+              marginBottom: 8,
+            }}
+          >
+            質問 {currentIdx + 1} <span style={{ fontSize: 14, color: "var(--hc-text-muted)", fontWeight: 500 }}>/ {QUESTIONS.length}{!currentQ.required && "（任意）"}</span>
+          </p>
+          <h3
+            style={{
+              fontSize: 18,
+              fontWeight: 700,
+              color: "var(--hc-navy)",
+              lineHeight: 1.55,
+              marginBottom: 20,
+            }}
+          >
+            {currentQ.question}
+          </h3>
 
-          {/* 自動入力済みの場合 */}
-          {isAutoFilled && (
+          {/* HP自動入力済み */}
+          {isAutoFilled && !currentQ.freeFormOnly && (
             <div className="mb-4 rounded-[8px] border border-green-200 bg-green-50 p-3">
               <p className="text-[12px] font-semibold text-green-700 mb-1">
                 ✓ ホームページから自動入力しました
               </p>
-              <p className="text-[13px] text-green-800 leading-relaxed">
-                {currentAnswer}
-              </p>
+              <p className="text-[13px] text-green-800 leading-relaxed">{currentAnswer}</p>
               <div className="flex gap-2 mt-3">
                 <button
                   type="button"
-                  onClick={() => selectChoice(currentAnswer)}
+                  onClick={() => commitAnswer(currentAnswer)}
                   className="px-4 py-2 rounded-[8px] bg-primary text-white text-[13px] font-semibold hover:bg-[var(--hc-primary-hover)] transition"
                 >
                   この内容でOK
@@ -427,23 +298,26 @@ export default function Step6QA({
             </div>
           )}
 
-          {/* 選択肢 */}
-          {!isAutoFilled && (
+          {/* 選択肢（番号付き） */}
+          {!isAutoFilled && !currentQ.freeFormOnly && (
             <>
-              <div className="space-y-2 mb-4" role="radiogroup" aria-label={currentQ.label}>
-                {choices.map((c) => (
+              <div className="space-y-2 mb-4" role="radiogroup" aria-label={`質問${currentIdx + 1}`}>
+                {choices.map((c, i) => (
                   <button
                     key={c}
                     type="button"
                     role="radio"
                     aria-checked={answers[currentQ.key] === c}
-                    onClick={() => selectChoice(c)}
+                    onClick={() => commitAnswer(c)}
                     className={`w-full text-left px-4 py-3 rounded-[8px] border text-[13px] leading-relaxed transition hover:border-primary hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       answers[currentQ.key] === c
                         ? "border-primary bg-primary/10 text-navy font-medium"
                         : "border-border bg-white text-text"
                     }`}
                   >
+                    <span style={{ fontWeight: 700, color: "var(--hc-primary)", marginRight: 8 }}>
+                      {CIRCLED[i] ?? `(${i + 1})`}
+                    </span>
                     {c}
                   </button>
                 ))}
@@ -452,7 +326,7 @@ export default function Step6QA({
               {/* 自由入力 */}
               <div className="border-t border-border pt-3">
                 <p className="text-[11px] text-text-muted mb-2">
-                  上記に当てはまらない場合は、自由に入力できます
+                  上記に当てはまらない場合は自由に入力できます
                 </p>
                 <div className="flex gap-2">
                   <input
@@ -476,6 +350,35 @@ export default function Step6QA({
               </div>
             </>
           )}
+
+          {/* 自由記載のみ（最終質問） */}
+          {currentQ.freeFormOnly && (
+            <>
+              <textarea
+                value={customInput || currentAnswer}
+                onChange={(e) => setCustomInput(e.target.value)}
+                placeholder="例: 過去に発生した事故内容、特に強調したいアピールポイント、補助金審査員に伝えたい情報など..."
+                rows={6}
+                className="w-full px-3 py-3 border border-border rounded-[8px] text-[13px] outline-none focus:border-primary resize-y leading-relaxed"
+              />
+              <div className="flex gap-2 mt-3">
+                <button
+                  type="button"
+                  onClick={() => commitAnswer(customInput.trim() || currentAnswer.trim() || "（特になし）")}
+                  className="px-5 py-2.5 rounded-[8px] bg-primary text-white text-[13px] font-semibold hover:bg-[var(--hc-primary-hover)] transition"
+                >
+                  入力して次へ
+                </button>
+                <button
+                  type="button"
+                  onClick={skipOptional}
+                  className="px-5 py-2.5 rounded-[8px] border border-border bg-white text-text-muted text-[13px] hover:bg-gray-50 transition"
+                >
+                  スキップ
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Navigation */}
@@ -493,27 +396,12 @@ export default function Step6QA({
           >
             {currentIdx > 0 ? "前の質問" : "戻る"}
           </button>
-          {!currentQ.required && (
-            <button
-              type="button"
-              onClick={() => {
-                const next = QUESTIONS.findIndex(
-                  (q, i) => i > currentIdx && !(answers[q.key] ?? "").trim(),
-                );
-                if (next >= 0) setCurrentIdx(next);
-                else setMode("review");
-              }}
-              className="text-[13px] text-text-muted underline hover:text-navy transition"
-            >
-              スキップ
-            </button>
-          )}
         </div>
       </div>
     );
   }
 
-  /* ─── レビューモード（グループ表示で全回答確認） ─── */
+  /* ─── レビューモード ─── */
   return (
     <div className="space-y-6">
       <div>
@@ -524,58 +412,40 @@ export default function Step6QA({
       </div>
 
       <div className="space-y-3">
-        {REVIEW_GROUPS.map((group) => {
-          const preview = concatPreview(group.keys);
-          // グループ内の最初のキーのインデックスを取得（編集ジャンプ用）
-          const firstIdx = QUESTIONS.findIndex((q) => q.key === group.keys[0]);
-
+        {QUESTIONS.map((q, i) => {
+          const v = answers[q.key] ?? "";
           return (
-            <div key={group.label}>
-              <button
-                type="button"
-                onClick={() => editAnswer(firstIdx)}
-                aria-label={`${group.label}を変更`}
-                className="w-full text-left border border-border rounded-[10px] p-4 hover:border-primary/50 hover:bg-primary/5 transition group focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] text-text-muted mb-0.5">
-                      {group.label}
-                      <span className="text-red-500 ml-1">*</span>
+            <button
+              key={q.key}
+              type="button"
+              onClick={() => editAnswer(i)}
+              aria-label={`質問${i + 1}を変更`}
+              className="w-full text-left border border-border rounded-[10px] p-4 hover:border-primary/50 hover:bg-primary/5 transition group focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] text-text-muted mb-1">
+                    <span style={{ fontWeight: 700, color: "var(--hc-primary)", marginRight: 6 }}>
+                      質問 {i + 1}
+                    </span>
+                    {q.required && <span className="text-red-500 ml-1">*</span>}
+                  </p>
+                  <p className="text-[13px] text-navy mb-1" style={{ fontWeight: 500 }}>
+                    {q.question}
+                  </p>
+                  {v ? (
+                    <p className="text-[13px] text-text leading-relaxed mt-1">{v}</p>
+                  ) : (
+                    <p className="text-[13px] text-text-muted italic mt-1">
+                      {q.required ? "未入力（必須）" : "未入力（任意）"}
                     </p>
-                    {preview ? (
-                      <p className="text-[13px] text-navy leading-relaxed line-clamp-5">
-                        {preview}
-                      </p>
-                    ) : (
-                      <p className="text-[13px] text-text-muted italic">未入力</p>
-                    )}
-                  </div>
-                  <span className="text-[11px] text-text-muted group-hover:text-primary transition flex-shrink-0 mt-1">
-                    変更 →
-                  </span>
+                  )}
                 </div>
-              </button>
-              {/* 事業内容の補足説明（任意） */}
-              {group.showSupplement && (
-                <div className="mt-2 ml-1">
-                  <label
-                    htmlFor="supplement"
-                    className="text-[11px] text-text-muted cursor-pointer"
-                  >
-                    補足説明（任意）
-                  </label>
-                  <textarea
-                    id="supplement"
-                    value={supplement}
-                    onChange={(e) => setSupplement(e.target.value)}
-                    placeholder="事業内容について補足したいことがあれば入力してください"
-                    rows={2}
-                    className="mt-1 w-full px-3 py-2 border border-border rounded-[8px] text-[13px] outline-none focus:border-primary resize-y leading-relaxed"
-                  />
-                </div>
-              )}
-            </div>
+                <span className="text-[11px] text-text-muted group-hover:text-primary transition flex-shrink-0 mt-1">
+                  変更 →
+                </span>
+              </div>
+            </button>
           );
         })}
       </div>

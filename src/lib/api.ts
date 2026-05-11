@@ -792,7 +792,9 @@ export async function fetchEstimate(id: string): Promise<Estimate> {
   return authFetch(`${API_URL}/api/estimates/${id}`);
 }
 
-export async function generateEstimatePdf(id: string): Promise<Blob> {
+export async function generateEstimatePdf(
+  id: string,
+): Promise<{ blob: Blob; mime: string; extension: "pdf" | "html" }> {
   const token = localStorage.getItem("access_token");
   const res = await fetch(`${API_URL}/api/estimates/${id}/generate-pdf`, {
     method: "POST",
@@ -802,7 +804,11 @@ export async function generateEstimatePdf(id: string): Promise<Blob> {
   if (!res.ok) {
     throw new ApiError(res.status, "見積書PDFの生成に失敗しました");
   }
-  return res.blob();
+  const mime = res.headers.get("content-type") ?? "application/pdf";
+  // 本番で weasyprint が未インストールの場合は HTML 返却にフォールバックする。
+  // 拡張子を Content-Type から推定し、フロントで .pdf 偽装による壊れたファイル問題を防ぐ。
+  const extension: "pdf" | "html" = mime.includes("html") ? "html" : "pdf";
+  return { blob: await res.blob(), mime, extension };
 }
 
 export interface LeadCaptureRequest {

@@ -23,6 +23,8 @@ interface WizardSnapshot {
     estimate?: { totalBeforeSubsidy?: number; subsidyAmount?: number; selfPayment?: number };
     documents?: { draft?: { sections?: unknown[] }; tier1Generated?: unknown[] };
     products?: unknown[];
+    /** 持続化補助金フロー: Step7 で AI 生成が完了すると保存される */
+    draftId?: string;
   };
 }
 
@@ -73,7 +75,9 @@ export default function MyDashboardPage() {
   const estimate = snap?.state?.estimate;
   const hasDraft = !!(
     snap?.state?.documents?.draft?.sections?.length ||
-    snap?.state?.documents?.tier1Generated?.length
+    snap?.state?.documents?.tier1Generated?.length ||
+    // 持続化補助金フロー: Step7 生成完了で draftId が保存される
+    snap?.state?.draftId
   );
   const productCount = snap?.state?.products?.length ?? 0;
   const maxSubsidy = estimate?.subsidyAmount

@@ -119,15 +119,18 @@ export default function Step4Estimate({
     setPdfLoading(true);
     setError("");
     try {
-      const blob = await generateEstimatePdf(estimate.id);
+      const { blob, extension } = await generateEstimatePdf(estimate.id);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `estimate_${estimate.id}.pdf`;
+      a.download = `estimate_${estimate.id}.${extension}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+      if (extension === "html") {
+        setError("PDFエンジン未準備のため一時的にHTML版を出力しました。ブラウザで開いて印刷→PDF保存をご利用ください。");
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "PDFの取得に失敗しました。");
     } finally {

@@ -46,11 +46,11 @@ export default function Step6Preview({
     setPdfError("");
     setPdfLoading(true);
     try {
-      const blob = await generateEstimatePdf(estimate.id);
+      const { blob, extension } = await generateEstimatePdf(estimate.id);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `estimate_${estimate.id}.pdf`;
+      a.download = `estimate_${estimate.id}.${extension}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
