@@ -7,6 +7,12 @@ import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { SERVICE_PREFECTURES, INDUSTRIES } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
+import subsidiesJson from "@/data/subsidies.json";
+
+// バンドル同梱データ（/match の件数カウントと完全一致させるための truth source）
+// バックエンドAPIはこれより遅延してデプロイされるケースがあるため、初期表示と
+// API 失敗時のフォールバックに使う。
+const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
 
 // 事業カテゴリ（データの category フィールドに対応）
 const CATEGORIES = [
@@ -84,11 +90,21 @@ function formatAmountDisplay(s: Subsidy): string {
 
 function SubsidiesContent() {
   const searchParams = useSearchParams();
-  const [subsidies, setSubsidies] = useState<Subsidy[]>(CAMERA_SUBSIDIES);
+  // 初期表示はバンドル同梱データから即時計算（/match の件数と完全一致）
+  const initialIndustry = searchParams.get("industry") ?? "";
+  const initialList = filterCameraOnly(
+    BUNDLED_SUBSIDIES.filter((s) => {
+      const ti = s.target_industries ?? [];
+      return !initialIndustry || ti.length === 0 || ti.includes(initialIndustry);
+    }),
+  );
+  const [subsidies, setSubsidies] = useState<Subsidy[]>(
+    initialList.length > 0 ? initialList : CAMERA_SUBSIDIES,
+  );
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [prefecture, setPrefecture] = useState("");
-  const [industry, setIndustry] = useState(searchParams.get("industry") ?? "");
+  const [industry, setIndustry] = useState(initialIndustry);
   const [category, setCategory] = useState("");
   const [amountFilter, setAmountFilter] = useState("");
   const [deadlineFilter, setDeadlineFilter] = useState("");
@@ -96,15 +112,33 @@ function SubsidiesContent() {
   const [sort, setSort] = useState("deadline");
   const [loading, setLoading] = useState(false);
 
-  // F1: filterCameraOnly は共通モジュール（@/lib/subsidyFilters）から import済み
+  // F1: filterCameraOnly は共通モジュール
+  // 戦略: バックエンド API > バンドル（同件数以上の方を採用）
+  // → Railway のデプロイ遅延でAPIが古いデータを返している場合でも
+  //   バンドル側の最新データが必ず表示される（/match との件数齟齬を防ぐ）
   useEffect(() => {
     setLoading(true);
+    // バンドル同梱データを基準値として計算
+    const bundledFiltered = filterCameraOnly(
+      BUNDLED_SUBSIDIES.filter((s) => {
+        const ti = s.target_industries ?? [];
+        const indOk = !industry || ti.length === 0 || ti.includes(industry);
+        const prefOk = !prefecture || s.prefecture === prefecture || s.prefecture === "全国" || s.pref_code === "00";
+        const catOk = !category || s.category === category;
+        return indOk && prefOk && catOk;
+      }),
+    );
+
     fetchSubsidies({ prefecture: prefecture || undefined, category: category || undefined, industry: industry || undefined })
       .then((res) => {
-        const cameraOnly = filterCameraOnly(res.subsidies);
-        setSubsidies(cameraOnly.length > 0 ? cameraOnly : CAMERA_SUBSIDIES);
+        const apiFiltered = filterCameraOnly(res.subsidies);
+        // 件数が多い方を採用（API が古い/欠落データを返した場合の自衛）
+        setSubsidies(apiFiltered.length >= bundledFiltered.length ? apiFiltered : bundledFiltered);
       })
-      .catch(() => setSubsidies(CAMERA_SUBSIDIES))
+      .catch(() => {
+        // API 失敗時はバンドルデータ
+        setSubsidies(bundledFiltered.length > 0 ? bundledFiltered : CAMERA_SUBSIDIES);
+      })
       .finally(() => setLoading(false));
   }, [prefecture, category, industry]);
 
