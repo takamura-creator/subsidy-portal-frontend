@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ResultsSidebar from "./ResultsSidebar";
 
 export const metadata: Metadata = {
   title: "補助金交付実績データベース",
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function ResultsLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <ResultsSidebar>{children}</ResultsSidebar>;
 }
