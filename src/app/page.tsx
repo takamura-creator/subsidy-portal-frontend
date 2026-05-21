@@ -3,7 +3,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import { generateWebApplicationJsonLd } from "@/lib/structured-data";
 import HeroStage from "@/components/home/HeroStage";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojokin-portal.jp";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 
 export const metadata: Metadata = {
   title: "HOJYO CAME — 防犯カメラ導入×補助金活用ポータル",

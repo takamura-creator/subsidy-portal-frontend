@@ -26,6 +26,25 @@ export interface JsonLdObject {
   [key: string]: unknown;
 }
 
+/** Organization JSON-LD — サイト全体の組織情報 */
+export function generateOrganizationJsonLd(data: {
+  name: string;
+  url: string;
+  logo?: string;
+  description?: string;
+  sameAs?: string[];
+}): JsonLdObject {
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@type": "Organization",
+    name: data.name,
+    url: data.url,
+    ...(data.logo && { logo: data.logo }),
+    ...(data.description && { description: data.description }),
+    ...(data.sameAs && data.sameAs.length > 0 && { sameAs: data.sameAs }),
+  };
+}
+
 /** FAQPage JSON-LD — Google FAQ リッチリザルト用 */
 export function generateFaqJsonLd(
   faqs: { question: string; answer: string }[],

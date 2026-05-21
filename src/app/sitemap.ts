@@ -6,7 +6,7 @@ import { ARTICLES } from "@/data/articles";
 import { INDUSTRY_LPS } from "@/data/industry-lp";
 import { JICHIKAI_CASES } from "@/data/cases-jichikai";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojokin-portal.jp";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date().toISOString();

@@ -11,7 +11,7 @@ import {
   type CaseStudy,
 } from "@/data/cases";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojokin-portal.jp";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 const PAGE_PATH = "/cases";
 
 export const metadata: Metadata = {

@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "hojokin-portal.jp",
+        hostname: "hojyocame.jp",
       },
     ],
   },

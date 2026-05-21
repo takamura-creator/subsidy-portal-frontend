@@ -15,7 +15,7 @@ import {
 } from "@/lib/structured-data";
 import { getPrefectureContent } from "@/data/prefecture-content";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojokin-portal.jp";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 
 type Props = {
   params: Promise<{ prefecture: string }>;
