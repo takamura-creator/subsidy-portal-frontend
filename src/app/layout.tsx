@@ -41,7 +41,6 @@ export const metadata: Metadata = {
     description: "設備導入に使える補助金を業種から無料で検索。マルチック対応6都県に特化。",
     images: [`${SITE_URL}/images/og-default.png`],
   },
-  alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true },
 };
 
