@@ -22,7 +22,9 @@ export default function TerminalTypewriter({
 }: TerminalTypewriterProps) {
   const prefersReduced = useReducedMotion();
   const [displayText, setDisplayText] = useState("");
-  const [cursorVisible, setCursorVisible] = useState(true);
+  // SSR時はopacity:0で出力し、親FadeInのハイドレーション競合中の `|` 露出を防ぐ
+  // クライアント側で初回blink(530ms後)に切り替わる
+  const [cursorVisible, setCursorVisible] = useState(false);
   const [fading, setFading] = useState(false);
   const lineIndex = useRef(0);
   const phase = useRef<"typing" | "holding" | "fading" | "pausing">("typing");
