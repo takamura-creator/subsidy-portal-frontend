@@ -1,12 +1,15 @@
+/**
+ * ルート Suspense フォールバック。
+ *
+ * 以前は animate-pulse の横長スケルトンを返していたが、
+ * navigation transition 時にホームヒーロー（亀キャラ）の直前で
+ * 白い横長矩形がフラッシュして「亀の真後ろに一瞬出る」と
+ * ユーザー報告。スケルトン位置がヒーロー位置と重なるため
+ * 違和感が大きく、null 返却で透過にする。
+ *
+ * 個別の遅延ページ（/subsidies 等）は独自の loading.tsx を持つため
+ * このルートを null にしてもそれぞれの skeleton は維持される。
+ */
 export default function Loading() {
-  return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
-      <div className="card border border-border animate-pulse">
-        <div className="h-8 bg-border rounded w-1/3 mb-6" />
-        <div className="h-4 bg-border rounded w-full mb-3" />
-        <div className="h-4 bg-border rounded w-2/3 mb-3" />
-        <div className="h-4 bg-border rounded w-1/2" />
-      </div>
-    </div>
-  )
+  return null;
 }
