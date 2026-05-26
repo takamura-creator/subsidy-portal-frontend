@@ -7,6 +7,8 @@ import {
   SERVICE_PREFECTURES,
   isServicePrefecture,
 } from "@/lib/constants";
+
+const VALID_PREFECTURES = new Set<string>(PREFECTURES);
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
 import JsonLd from "@/components/seo/JsonLd";
 import {
@@ -22,10 +24,11 @@ type Props = {
 };
 
 export function generateStaticParams() {
+  // 47都道府県すべてを SSG 対象に拡張（2026-05-26）。
   // Next.js 16 は内部で URL エンコードするため、generateStaticParams では**生の文字列**を返す。
   // 旧 `encodeURIComponent(p)` を返すと二重エンコードされ、page 内の `decodeURIComponent(prefecture)`
   // でも復号が1層しか進まず `name = "%E6%9D%..."` になる（FAQPage 差込失敗の原因）。
-  return SERVICE_PREFECTURES.map((p) => ({ prefecture: p }));
+  return PREFECTURES.map((p) => ({ prefecture: p }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -54,8 +57,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PrefectureLPPage({ params }: Props) {
   const { prefecture } = await params;
   const name = decodeURIComponent(prefecture);
-  if (!isServicePrefecture(name)) notFound();
-  const inService = true;
+  // 47都道府県以外は 404（攻撃的なパスや誤入力を拒否）
+  if (!VALID_PREFECTURES.has(name)) notFound();
+  // 6都県は FullLP（施工対応）、それ以外41道府県は InformationLP（情報のみ）
+  const inService = isServicePrefecture(name);
 
   let subsidies: Subsidy[] = [];
   try {
@@ -340,13 +345,17 @@ function SubsidyList({
                   <div className="flex justify-between">
                     <dt>補助率上限</dt>
                     <dd className="text-navy font-semibold">
-                      {Math.round(s.rate_max * 100)}%
+                      {typeof s.rate_max === "number" && Number.isFinite(s.rate_max)
+                        ? `${Math.round(s.rate_max * 100)}%`
+                        : "要確認"}
                     </dd>
                   </div>
                   <div className="flex justify-between">
                     <dt>上限額</dt>
                     <dd className="text-navy font-semibold">
-                      {s.max_amount.toLocaleString("ja-JP")}円
+                      {typeof s.max_amount === "number" && Number.isFinite(s.max_amount)
+                        ? `${s.max_amount.toLocaleString("ja-JP")}円`
+                        : "要確認"}
                     </dd>
                   </div>
                   <div className="flex justify-between">
