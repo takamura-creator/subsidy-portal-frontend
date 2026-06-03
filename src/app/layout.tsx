@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AnalyticsWrapper } from "@/components/analytics/AnalyticsWrapper";
 import HCHeader from "@/components/layout/HCHeader";
 import StatusBar from "@/components/layout/StatusBar";
 import CookieConsent from "@/components/CookieConsent";
@@ -115,6 +116,7 @@ export default function RootLayout({
         {children}
         <StatusBar />
         <CookieConsent />
+        <AnalyticsWrapper />
       </body>
     </html>
   );
