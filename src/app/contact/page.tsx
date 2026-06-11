@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { submitContact, ApiError, fetchProfileDetail } from "@/lib/api";
 import { getUser } from "@/lib/auth";
 import { PREFECTURES } from "@/lib/constants";
@@ -56,6 +57,15 @@ export default function ContactPage() {
   const [submitted, setSubmitted]         = useState(false);
   const [inquiryId, setInquiryId]         = useState("");
   const [error, setError]                 = useState("");
+  const contactStartFired                 = useRef(false);
+
+  // contact_start イベント（フォーム表示時・1回のみ）
+  useEffect(() => {
+    if (!contactStartFired.current) {
+      contactStartFired.current = true;
+      track("contact_start");
+    }
+  }, []);
 
   // JWT + プロフィール + ウィザードデータから自動補完
   useEffect(() => {
@@ -101,6 +111,7 @@ export default function ContactPage() {
       });
       setInquiryId(res.inquiry_id);
       setSubmitted(true);
+      track("contact_submit", { inquiry_type: inquiryType });
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -150,7 +161,7 @@ export default function ContactPage() {
               display: "inline-block",
               padding: "10px 24px",
               background: "var(--hc-primary)",
-              color: "#fff",
+              color: "var(--hc-white)",
               borderRadius: 8,
               fontSize: 13,
               fontWeight: 600,
@@ -219,7 +230,7 @@ export default function ContactPage() {
               style={{
                 marginBottom: 16,
                 padding: "10px 14px",
-                background: "color-mix(in srgb, var(--hc-error) 6%, transparent)",
+                background: "var(--hc-error-subtle)",
                 border: "1px solid color-mix(in srgb, var(--hc-error) 20%, transparent)",
                 borderRadius: 8,
                 fontSize: 13,
@@ -357,7 +368,7 @@ export default function ContactPage() {
               width: "100%",
               padding: "14px 24px",
               background: submitting || !consent ? "var(--hc-border)" : "var(--hc-primary)",
-              color: submitting || !consent ? "var(--hc-text-muted)" : "#fff",
+              color: submitting || !consent ? "var(--hc-text-muted)" : "var(--hc-white)",
               border: "none",
               borderRadius: 8,
               fontSize: 15,

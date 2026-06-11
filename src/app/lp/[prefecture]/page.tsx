@@ -297,6 +297,26 @@ function InformationLP({ prefecture, subsidies }: { prefecture: string; subsidie
           </p>
         </div>
       </section>
+
+      <section className="py-12 bg-[color:var(--hc-primary)] text-white">
+        <div className="max-w-[720px] mx-auto px-6 text-center">
+          <h2
+            className="text-xl font-bold mb-3"
+            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
+          >
+            全国対応の補助金を業種から診断する
+          </h2>
+          <p className="text-white/70 text-[14px] mb-6 leading-relaxed">
+            業種と都道府県を選ぶだけで、対象補助金と上限額が分かります。登録不要・無料。
+          </p>
+          <Link
+            href="/match"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-[8px] bg-white text-[color:var(--hc-primary)] font-semibold transition hover:opacity-90"
+          >
+            無料で診断する →
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

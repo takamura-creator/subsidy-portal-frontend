@@ -1,8 +1,10 @@
+import type React from "react";
 import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { getAllSubsidies } from "@/lib/subsidies-server";
 import { INDUSTRIES } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";
+import MatchGrid from "./MatchGrid";
 
 const INDUSTRY_META: Record<string, { icon: string; desc: string }> = {
   "小売業":             { icon: "🏪", desc: "店舗・スーパー・コンビニ" },
@@ -40,7 +42,7 @@ const S = {
     width: 20, height: 20, borderRadius: "50%",
     display: "flex", alignItems: "center", justifyContent: "center",
     fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
-    background: "var(--hc-primary)", color: "#fff",
+    background: "var(--hc-primary)", color: "var(--hc-white)",
   },
   stepText: { fontSize: 12, color: "var(--hc-text-muted)", lineHeight: 1.5 },
   hr: { borderColor: "var(--hc-border)", margin: "12px 0" } as React.CSSProperties,
@@ -49,19 +51,17 @@ const S = {
     display: "block", width: "100%", textAlign: "left" as const,
     fontSize: 12, fontWeight: 500, padding: "8px 12px",
     borderRadius: 4, border: "1px solid var(--hc-border)",
-    marginBottom: 8, color: "var(--hc-navy)", background: "#fff",
+    marginBottom: 8, color: "var(--hc-navy)", background: "var(--hc-white)",
     textDecoration: "none",
   },
   navLinkPrimary: {
     display: "block", width: "100%", textAlign: "left" as const,
     fontSize: 12, fontWeight: 700, padding: "8px 12px",
     borderRadius: 4, border: "1px solid var(--hc-primary)",
-    marginBottom: 8, color: "var(--hc-primary)", background: "#fff",
+    marginBottom: 8, color: "var(--hc-primary)", background: "var(--hc-white)",
     textDecoration: "none",
   },
 } as const;
-
-import type React from "react";
 
 export default function MatchPage() {
   const allSubsidies = getAllSubsidies();
@@ -115,67 +115,22 @@ export default function MatchPage() {
       >
         業種選択
       </h1>
-      <div
+      <p
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
-          gap: 16,
+          fontSize: 14,
+          color: "var(--hc-text-muted)",
+          textAlign: "center",
+          margin: "-16px 0 28px",
         }}
       >
-        {INDUSTRIES.map((ind) => {
+        業種を選ぶと、対象補助金と上限額が分かります（登録不要・約30秒）
+      </p>
+      <MatchGrid
+        items={INDUSTRIES.map((ind) => {
           const meta = INDUSTRY_META[ind] ?? { icon: "📋", desc: "" };
-          const count = countForIndustry(ind);
-          return (
-            <Link
-              key={ind}
-              href={`/subsidies?industry=${encodeURIComponent(ind)}`}
-              style={{ textDecoration: "none", color: "inherit", display: "block" }}
-            >
-              <article
-                className="hc-industry-card"
-                style={{
-                  borderRadius: 10,
-                  padding: 16,
-                  cursor: "pointer",
-                  height: "100%",
-                  minHeight: 156,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <div style={{
-                  width: 40, height: 40, marginBottom: 8,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 28, lineHeight: 1, flexShrink: 0,
-                }}>
-                  {meta.icon}
-                </div>
-                <h2 style={{
-                  fontSize: 16, fontWeight: 700, margin: "0 0 4px",
-                  color: "var(--hc-navy)",
-                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
-                  letterSpacing: "-0.3px",
-                }}>
-                  {ind}
-                </h2>
-                <p style={{ fontSize: 13, color: "var(--hc-text-muted)", margin: 0, lineHeight: 1.6, flex: 1 }}>
-                  {meta.desc}
-                </p>
-                <div
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    marginTop: 8,
-                    color: count > 0 ? "var(--hc-primary)" : "var(--hc-text-muted)",
-                  }}
-                >
-                  {count > 0 ? `補助金 ${count}件 →` : "情報準備中"}
-                </div>
-              </article>
-            </Link>
-          );
+          return { industry: ind, icon: meta.icon, desc: meta.desc, count: countForIndustry(ind) };
         })}
-      </div>
+      />
 
       <p style={{ marginTop: 24, fontSize: 12, color: "var(--hc-text-muted)", textAlign: "center" }}>
         申請書の自動生成は{" "}

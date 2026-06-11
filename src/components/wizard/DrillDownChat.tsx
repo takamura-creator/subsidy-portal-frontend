@@ -30,14 +30,12 @@ export default function DrillDownChat({ chapters, applicationId, onComplete, onS
     fetchDrillDownQuestions(applicationId, chapterIds)
       .then(items => setQuestions(items))
       .catch(() => {
-        // フォールバック: モック質問
-        setQuestions([
-          { question_id: "ddq_001", chapter_id: chapterIds[0], question_text: "現在の年間作業時間を具体的に教えてください（例: 年間200時間）。", priority: 1 },
-          { question_id: "ddq_002", chapter_id: chapterIds[0], question_text: "削減目標のコスト割合（%）の根拠を教えてください。", priority: 2 },
-          { question_id: "ddq_003", chapter_id: chapterIds[0], question_text: "賃上げ原資として見込む削減コスト額（万円）を教えてください。", priority: 2 },
-        ]);
+        // 通信エラー時はモックを差し込まずエラー状態へ
+        setQuestions([]);
       })
       .finally(() => setLoadingQuestions(false));
+  // chapterIds は applicationId 確定時の初回スナップショットで固定する設計
+  // （親の chapters 更新で再fetchすると回答中の入力が消えるため意図的に除外）
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applicationId]);
 
@@ -59,7 +57,7 @@ export default function DrillDownChat({ chapters, applicationId, onComplete, onS
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-navy">深掘り質問</h2>
-        <span className="text-xs text-text-muted bg-gray-100 px-2 py-1 rounded">
+        <span className="text-xs text-text-muted bg-[color:var(--hc-bg)] px-2 py-1 rounded">
           ラウンド {round}/3
         </span>
       </div>
@@ -78,6 +76,20 @@ export default function DrillDownChat({ chapters, applicationId, onComplete, onS
         </div>
       )}
 
+      {!loadingQuestions && questions.length === 0 && (
+        <div className="py-4 text-center" role="alert">
+          <p className="text-sm text-text-muted mb-3">
+            質問の取得中に通信エラーが発生しました。
+          </p>
+          <button
+            onClick={onSkip}
+            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-[color:var(--hc-bg)]"
+          >
+            この手順をスキップして進む
+          </button>
+        </div>
+      )}
+
       <div className="space-y-4">
         {questions.map((q) => (
           <div key={q.question_id} className="border border-border rounded-lg p-4 space-y-3">
@@ -85,7 +97,7 @@ export default function DrillDownChat({ chapters, applicationId, onComplete, onS
               <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-xs font-bold text-primary">AI</span>
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed pt-1">{q.question_text}</p>
+              <p className="text-sm text-[color:var(--hc-text)] leading-relaxed pt-1">{q.question_text}</p>
             </div>
             <textarea
               value={answers[q.question_id] ?? ""}
