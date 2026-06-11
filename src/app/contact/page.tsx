@@ -101,7 +101,7 @@ export default function ContactPage() {
     try {
       const res = await submitContact({
         company_name: companyName,
-        contact_name: contactName,
+        name: contactName,
         email,
         phone: phone || undefined,
         inquiry_type: inquiryType,

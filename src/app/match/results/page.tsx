@@ -7,6 +7,7 @@ import Image from "next/image";
 import { track } from "@vercel/analytics";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
+import QuickConsultForm from "@/components/match/QuickConsultForm";
 import { isServicePrefecture } from "@/lib/constants";
 import { FadeIn, StaggerChildren, StaggerItem, ScaleIn } from "@/components/motion";
 import BonusChecklist from "@/components/strategy/BonusChecklist";
@@ -14,8 +15,11 @@ import AdoptionRateCard from "@/components/strategy/AdoptionRateCard";
 import IndustryStrategy from "@/components/strategy/IndustryStrategy";
 import type { BonusItem, IndustryContext, MatchedSubsidy } from "@/lib/api";
 import { fetchBonusItems, fetchIndustryContext, matchSubsidies } from "@/lib/api";
-import { SCORE_STYLES, parseEmployees, EmptyState, ErrorState, LoadingState } from "./states";
+import { parseEmployees, EmptyState, ErrorState, LoadingState } from "./states";
 import ResultsFilters from "./ResultsFilters";
+import MatchResultCard from "./MatchResultCard";
+import DeadlineTimeline from "./DeadlineTimeline";
+import { trackMicroCvDeadline } from "@/lib/analytics";
 
 function ResultsContent() {
   const router = useRouter();
@@ -97,7 +101,7 @@ function ResultsContent() {
 
   const inServiceArea = isServicePrefecture(prefecture);
 
-  /* ── Center column: Result cards ── */
+  /* ── Center column: MatchResultCards + DeadlineTimeline ── */
   const center = (
     <div>
       {!inServiceArea && (
@@ -141,119 +145,22 @@ function ResultsContent() {
       {!loading && error && <ErrorState message={error} />}
       {!loading && !error && matches.length === 0 && <EmptyState />}
       {!loading && !error && matches.length > 0 && (
-        <StaggerChildren stagger={0.1}>
-          {matches.map((item, idx) => (
-            <StaggerItem key={item.subsidy.id ?? idx}>
-              <div
-                style={{
-                  background: "var(--hc-card-bg)",
-                  border: "1px solid var(--hc-border)",
-                  borderRadius: 10,
-                  padding: 18,
-                  marginBottom: 10,
-                  display: "grid",
-                  gridTemplateColumns: "60px 1fr auto",
-                  gap: 14,
-                  alignItems: "center",
-                  transition: "all 0.15s",
-                  cursor: "pointer",
-                }}
-              >
-                {/* Match score circle */}
-                <div
-                  style={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontFamily: "'Sora', sans-serif",
-                    fontSize: 14,
-                    fontWeight: 700,
-                    ...(SCORE_STYLES[item.match_score] ?? SCORE_STYLES["低"]),
-                  }}
-                >
-                  {item.match_score}
-                </div>
+        <>
+          <StaggerChildren stagger={0.1}>
+            {matches.map((item, idx) => (
+              <StaggerItem key={item.subsidy.id ?? idx}>
+                <MatchResultCard item={item} prefecture={prefecture} />
+              </StaggerItem>
+            ))}
+          </StaggerChildren>
 
-                {/* Info */}
-                <div>
-                  <div
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: "var(--hc-navy)",
-                      marginBottom: 4,
-                    }}
-                  >
-                    {item.subsidy.name}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 12,
-                      color: "var(--hc-text-muted)",
-                      display: "flex",
-                      gap: 12,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <span>最大 {(item.subsidy.max_amount / 10000).toLocaleString()}万円</span>
-                    <span>{item.subsidy.ministry}</span>
-                    {item.subsidy.deadline && <span>締切 {item.subsidy.deadline}</span>}
-                  </div>
-                  {item.application_advice && (
-                    <p
-                      style={{
-                        fontSize: 11,
-                        color: "var(--hc-text-muted)",
-                        marginTop: 6,
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {item.application_advice}
-                    </p>
-                  )}
-                </div>
-
-                {/* Action buttons */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <Link
-                    href={`/subsidies/${encodeURIComponent(item.subsidy.id)}`}
-                    className="btn-primary"
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: 8,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      width: "auto",
-                      border: "1px solid var(--hc-primary)",
-                    }}
-                  >
-                    詳しく見る
-                  </Link>
-                  <button
-                    type="button"
-                    disabled
-                    className="btn-secondary"
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: 8,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      display: "block",
-                      opacity: 0.6,
-                      cursor: "not-allowed",
-                    }}
-                    aria-label="申請書作成はウィザードから開始します"
-                  >
-                    申請書作成
-                  </button>
-                </div>
-              </div>
-            </StaggerItem>
-          ))}
-        </StaggerChildren>
+          {/* DeadlineTimeline: 中央カラム末尾 */}
+          <FadeIn direction="up" delay={0.2} distance={10}>
+            <div style={{ marginTop: 24 }}>
+              <DeadlineTimeline matches={matches} />
+            </div>
+          </FadeIn>
+        </>
       )}
 
       {industryCtx && (
@@ -277,9 +184,29 @@ function ResultsContent() {
     </div>
   );
 
-  /* ── Right column: Next steps + celebration ── */
+  /* ── Right column: 段階CTA（リマインド登録→軽量相談→CTA群） ── */
   const right = (
     <div>
+      {/* F3 NSM: 締切リマインド登録（最上部・最初から展開） */}
+      <div style={{ marginBottom: 16 }}>
+        <EmailCaptureForm
+          defaultPrefecture={prefecture}
+          variant="a"
+          source="match_results_reminder"
+          compact
+          headlineOverride="締切が近づいたら教えます"
+          onSuccess={() => trackMicroCvDeadline(prefecture, "match_results_reminder")}
+        />
+      </div>
+
+      {/* F5: 軽量相談フォーム */}
+      <FadeIn direction="up" delay={0.2} distance={8}>
+        <div style={{ marginBottom: 16 }}>
+          <QuickConsultForm />
+        </div>
+      </FadeIn>
+
+      {/* 既存CTA群 */}
       <span className="section-title">次のステップ</span>
 
       <Link

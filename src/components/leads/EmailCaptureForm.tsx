@@ -28,6 +28,10 @@ interface Props {
   source?: string;
   /** コンパクトな見た目（LP埋め込み用） */
   compact?: boolean;
+  /** 登録成功時のコールバック（マイクロCV計測などに使用） */
+  onSuccess?: () => void;
+  /** 見出し文言を上書き（variant コピーをそのまま使いたくない設置箇所向け） */
+  headlineOverride?: string;
 }
 
 const HEADLINES: Record<Variant, (pref?: string) => string> = {
@@ -41,6 +45,8 @@ export default function EmailCaptureForm({
   variant = "a",
   source = "lp_generic",
   compact = false,
+  onSuccess,
+  headlineOverride,
 }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [apiError, setApiError] = useState<string>("");
@@ -68,6 +74,7 @@ export default function EmailCaptureForm({
         source,
       });
       setSubmitted(true);
+      onSuccess?.();
     } catch (err) {
       if (err instanceof ApiError) {
         setApiError(err.message);
@@ -117,7 +124,7 @@ export default function EmailCaptureForm({
     );
   }
 
-  const headline = HEADLINES[variant](defaultPrefecture);
+  const headline = headlineOverride ?? HEADLINES[variant](defaultPrefecture);
 
   return (
     <form

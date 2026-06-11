@@ -13,31 +13,7 @@ import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import EligibilityChecker from "@/components/subsidies/EligibilityChecker";
 import type { Subsidy } from "@/lib/api";
-
-/** deadlineテキストから次の日付を抽出し、残日数を返す。パース不能ならnullを返す */
-function getDaysUntil(dateStr: string): number | null {
-  // "2026年5月12日" or "2026/5/12" 形式を探す
-  const patterns = [
-    /(\d{4})年(\d{1,2})月(\d{1,2})日/g,
-    /(\d{4})\/(\d{1,2})\/(\d{1,2})/g,
-  ];
-  const now = new Date();
-  let nearest: number | null = null;
-  for (const re of patterns) {
-    let m;
-    while ((m = re.exec(dateStr)) !== null) {
-      const target = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-      const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      // 未来の日付のうち最も近いものを採用。すべて過去なら最も近い過去を採用
-      if (diff > 0 && (nearest === null || diff < nearest)) {
-        nearest = diff;
-      } else if (nearest === null || (nearest < 0 && diff > nearest)) {
-        nearest = diff;
-      }
-    }
-  }
-  return nearest;
-}
+import { getDaysUntil } from "@/lib/deadlineUtils";
 
 function formatAmount(amount: number): string {
   if (amount >= 10000000) return `${Math.round(amount / 10000000) * 1000}万円`;
@@ -206,7 +182,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
             <div style={{
               fontSize: 13, fontWeight: 700, color: "var(--hc-primary)",
-              padding: "4px 10px", borderRadius: 9999, background: "#fff", border: "1px solid var(--hc-primary-edge)",
+              padding: "4px 10px", borderRadius: 9999, background: "var(--hc-white)", border: "1px solid var(--hc-primary-edge)",
               fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px", flexShrink: 0,
             }}>
               湘南エリア 9件の施工実績
@@ -222,7 +198,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
             <Link
               href="/contact"
               style={{
-                fontSize: 12, fontWeight: 700, color: "#fff",
+                fontSize: 12, fontWeight: 700, color: "var(--hc-white)",
                 background: "var(--hc-primary)", padding: "8px 16px", borderRadius: 6,
                 textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0,
               }}
@@ -408,7 +384,7 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           <div style={{
             marginTop: 8,
             padding: "10px 14px",
-            background: "var(--hc-primary-muted, #f0f7f0)",
+            background: "var(--hc-primary-muted)",
             borderRadius: 8,
             fontSize: 13,
             color: "var(--hc-text-muted)",
@@ -544,16 +520,16 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           textDecoration: "none",
           border: "2px solid var(--hc-primary)",
           background: "var(--hc-primary)",
-          color: "#fff",
+          color: "var(--hc-white)",
           transition: "all 0.3s",
         }}
         onMouseOver={(e) => {
-          e.currentTarget.style.background = "#fff";
+          e.currentTarget.style.background = "var(--hc-white)";
           e.currentTarget.style.color = "var(--hc-primary)";
         }}
         onMouseOut={(e) => {
           e.currentTarget.style.background = "var(--hc-primary)";
-          e.currentTarget.style.color = "#fff";
+          e.currentTarget.style.color = "var(--hc-white)";
         }}
       >
         この補助金で申請書を作成

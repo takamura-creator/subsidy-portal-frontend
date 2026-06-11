@@ -66,3 +66,14 @@ export function trackDiagnosisStart(prefecture: string): void {
     metadata: { prefecture },
   });
 }
+
+/** 締切リマインド登録成功時のマイクロCVイベント（NSM計測用）。 */
+export function trackMicroCvDeadline(prefecture: string, source: string): void {
+  _eventLog.push({
+    event: "micro_cv_deadline",
+    step: 0,
+    stepLabel: "締切リマインド登録",
+    timestamp: Date.now(),
+    metadata: { prefecture, source },
+  });
+}

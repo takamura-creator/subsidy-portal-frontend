@@ -830,7 +830,8 @@ export async function submitLead(req: LeadCaptureRequest): Promise<{ message: st
 
 export interface ContactRequest {
   company_name: string;
-  contact_name: string;
+  /** バックエンド Pydantic モデルのフィールド名は `name`。contact_name は廃止。 */
+  name: string;
   email: string;
   phone?: string;
   inquiry_type: string;

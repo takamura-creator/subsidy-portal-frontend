@@ -8,6 +8,7 @@ import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { SERVICE_PREFECTURES, INDUSTRIES } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 import subsidiesJson from "@/data/subsidies.json";
+import { getDaysUntil } from "@/lib/deadlineUtils";
 
 // バンドル同梱データ（/match の件数カウントと完全一致させるための truth source）
 // バックエンドAPIはこれより遅延してデプロイされるケースがあるため、初期表示と
@@ -63,13 +64,6 @@ const UPDATED_MAP: Record<string, string> = {
   "8": "3/15更新",
 };
 
-function getDaysUntil(dateStr: string): number {
-  const parts = dateStr.split("/");
-  if (parts.length !== 3) return 999;
-  const target = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-  const now = new Date();
-  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-}
 
 function formatAmount(amount: number): string {
   if (amount >= 10000000) return `${Math.round(amount / 10000000) * 1000}万円`;
@@ -151,14 +145,14 @@ function SubsidiesContent() {
     if (govLevel === "national" && s.pref_code !== "00") return false;
     if (govLevel === "prefectural" && s.pref_code === "00") return false;
     if (deadlineFilter) {
-      const days = getDaysUntil(s.deadline);
+      const days = getDaysUntil(s.deadline) ?? 999;
       if (days > parseInt(deadlineFilter)) return false;
     }
     return true;
   });
 
   const sorted = [...filtered].sort((a, b) => {
-    if (sort === "deadline") return getDaysUntil(a.deadline) - getDaysUntil(b.deadline);
+    if (sort === "deadline") return (getDaysUntil(a.deadline) ?? 999) - (getDaysUntil(b.deadline) ?? 999);
     if (sort === "amount") return b.max_amount - a.max_amount;
     return 0;
   });
