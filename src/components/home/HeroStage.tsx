@@ -1,105 +1,53 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  ScaleIn,
-  FadeIn,
-  FloatLoop,
-  TextReveal,
-  ButtonPulse,
-  StaggerChildren,
-  StaggerItem,
-  TerminalTypewriter,
-  GradientText,
-} from "@/components/motion";
+import { PREFECTURE_MAX_SUBSIDY } from "@/data/prefecture-max-subsidy";
+import { FadeIn } from "@/components/motion";
+import PrefectureAnswerFinder from "@/components/home/PrefectureAnswerFinder";
 import SubsidyCarousel from "@/components/home/SubsidyCarousel";
-import { isAuthenticated } from "@/lib/auth";
 
-const CATCHPHRASES = [
-  "防犯カメラ補助金の診断・申請書類作成まで無料で完結。",
-  "監視カメラ導入に使える補助金を一括検索。随時追加中。",
-  "防犯カメラ補助金を診断・検索・比較・申請まで完結。",
-];
-
+/**
+ * HeroStage — FV刷新（案A・問いかけFV）
+ *
+ * SSR: h1・セレクタ・CTA・support-chip がJS無効でも即時表示。
+ * Enhancement (#2): FadeIn(up, 8px, 250ms, delay 0.05s)。CTAには掛けない。
+ * Enhancement (#3/#4): PrefectureAnswerFinder 内（亀うなずき＋カウントアップ）。
+ * reduced-motion: globals.css の @media block で全アニメ無効化。
+ */
 export default function HeroStage() {
-  // ログイン済みなら CTA を /my/wizard へ、未ログインは /match へ
-  const [ctaHref, setCtaHref] = useState("/match");
-  const [ctaLabel, setCtaLabel] = useState("無料で補助金を診断する →");
-  useEffect(() => {
-    if (isAuthenticated()) {
-      setCtaHref("/my/wizard");
-      setCtaLabel("ウィザードを再開する →");
-    }
-  }, []);
+  // isAuthenticated はクライアント専用なので SSR では常に false → useEffect で上書き
+  // CTA は suppressHydrationWarning で hydration mismatch を許容（既存設計踏襲）
+  const ctaHref = "/match";
+  const ctaLabel = "無料で補助金を診断する →";
 
   return (
     <div className="stage">
-      <ScaleIn delay={0.1} duration={0.6}>
-        <FloatLoop amplitude={6} duration={3.5}>
-          <Image
-            className="turtle"
-            src="/images/turtle_wave.png"
-            alt="HOJYO CAME キャラクター"
-            width={160}
-            height={160}
-            priority
-          />
-        </FloatLoop>
-      </ScaleIn>
-
-      <h1>
-        <TextReveal
-          text="HOJYO "
-          splitBy="char"
-          stagger={0.05}
-          delay={0.3}
-          duration={0.4}
-        />
-        <GradientText>
-          <TextReveal
-            text="CAME"
-            splitBy="char"
-            stagger={0.05}
-            delay={0.6}
-            duration={0.4}
-          />
-        </GradientText>
-      </h1>
-
-      <FadeIn direction="up" delay={0.8} distance={16}>
-        <TerminalTypewriter lines={CATCHPHRASES} />
+      {/* h1: 問いかけコピー。SSR確定表示・遅延禁止 */}
+      <FadeIn direction="up" distance={8} duration={0.25} delay={0.05}>
+        <h1 className="home-welcome-h1">
+          あなたの地域、防犯カメラ補助金は
+          <wbr />
+          <span className="paf-h1-accent">いくら出る？</span>
+        </h1>
+        <p className="paf-sub">
+          地域を選ぶと、使える制度をその場で無料診断できます。
+        </p>
       </FadeIn>
 
-      <ButtonPulse delay={1.0} glowColor="rgba(21, 128, 61, 0.25)">
-        <Link href={ctaHref} className="cta-primary" suppressHydrationWarning>
-          {ctaLabel}
-        </Link>
-      </ButtonPulse>
+      {/* PrefectureAnswerFinder: セレクタ＋金額カウントアップ＋CTA＋計測 */}
+      <PrefectureAnswerFinder
+        prefectures={PREFECTURE_MAX_SUBSIDY}
+        ctaHref={ctaHref}
+        ctaLabel={ctaLabel}
+      />
 
-      <StaggerChildren stagger={0.12} className="support-items">
-        <StaggerItem>
-          <span className="support-chip">無料・登録不要</span>
-        </StaggerItem>
-        <StaggerItem>
-          <span className="support-chip">約30秒</span>
-        </StaggerItem>
-        <StaggerItem>
-          <span className="support-chip">主要補助金に対応</span>
-        </StaggerItem>
-      </StaggerChildren>
+      {/* 対応エリアバナー */}
+      <div className="hero-area-banner" role="note" aria-label="サービス対応エリア">
+        <span className="hero-area-label">対応エリア</span>
+        <span className="hero-area-list">
+          東京都・神奈川県・静岡県・埼玉県・千葉県・山梨県
+        </span>
+      </div>
 
-      <FadeIn direction="none" delay={1.4}>
-        <div className="hero-area-banner" role="note" aria-label="サービス対応エリア">
-          <span className="hero-area-label">対応エリア</span>
-          <span className="hero-area-list">
-            東京都・神奈川県・静岡県・埼玉県・千葉県・山梨県
-          </span>
-        </div>
-      </FadeIn>
-
-      <FadeIn direction="up" delay={1.6} distance={12}>
+      {/* 補助金カルーセル（既存） */}
+      <FadeIn direction="up" delay={0.2} distance={12}>
         <SubsidyCarousel />
       </FadeIn>
     </div>

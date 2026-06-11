@@ -517,6 +517,21 @@ button:focus-visible, a:focus-visible {
 }
 
 /* ============================================
+   共用見出しクラス（fontFamily inline style 置換用）
+   ============================================ */
+
+/* Sora 見出し（letterSpacing なし） */
+.hc-heading-sora {
+  font-family: 'Sora', sans-serif;
+}
+
+/* Sora 見出し（letterSpacing -0.3px・タイトル用） */
+.hc-heading-sora-tight {
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -0.3px;
+}
+
+/* ============================================
    Home — X1a CTA一点型
    ============================================ */
 
@@ -624,6 +639,13 @@ button:focus-visible, a:focus-visible {
   margin-top: 16px;
 }
 
+.home-trust-wrap {
+  width: 100%;
+  max-width: 760px;
+  margin: 24px auto 0;
+  padding: 0 16px;
+}
+
 .home-welcome .wave-tagline {
   font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-size: 14px;
@@ -727,6 +749,217 @@ button:focus-visible, a:focus-visible {
   .home-welcome .lede { font-size: 15px; }
   .home-welcome .cta-primary { padding: 16px 32px; font-size: 15px; }
   .terminal-body { font-size: 13px; padding: 10px 16px; }
+}
+
+/* ============================================
+   TrustBlock — 「現場の本当の話」共有コンポーネント
+   ============================================ */
+
+.trust-block {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 28px;
+  background: var(--hc-accent-subtle);
+  border: 1px solid var(--hc-accent-line);
+  border-radius: 12px;
+}
+
+.trust-block-heading {
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--hc-navy);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.trust-block-body {
+  font-size: 13px;
+  color: var(--hc-text-muted);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.trust-block-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trust-block-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1 1 180px;
+  background: var(--hc-white);
+  border: 1px solid var(--hc-accent-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.trust-block-icon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.trust-block-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trust-block-item-heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--hc-navy);
+}
+
+.trust-block-item-body {
+  font-size: 12px;
+  color: var(--hc-text-muted);
+}
+
+@media (max-width: 640px) {
+  .trust-block {
+    padding: 18px 16px;
+  }
+  .trust-block-items {
+    flex-direction: column;
+  }
+}
+
+/* ============================================
+   PrefectureAnswerFinder (PAF) — FV刷新
+   ============================================ */
+
+/* h1 問いかけコピー */
+.home-welcome-h1 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  color: var(--hc-navy);
+  line-height: 1.4;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.paf-h1-accent {
+  color: var(--hc-primary);
+}
+
+/* サブコピー */
+.paf-sub {
+  font-size: 14px;
+  color: var(--hc-text-muted);
+  margin-bottom: 20px;
+}
+
+/* PAFラッパー全体 */
+.paf-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* 亀（96px・うなずき対象） */
+.paf-turtle {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px var(--hc-text-line));
+}
+
+/* セレクタグループ */
+.paf-select-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 360px;
+  gap: 4px;
+}
+.paf-select-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hc-navy);
+}
+.paf-select {
+  max-width: 360px;
+}
+
+/* 金額表示ブロック */
+.paf-amount-block {
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.paf-amount-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--hc-accent-hover);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+.paf-amount-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+}
+.paf-amount-number {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 8vw, 3rem);
+  color: var(--hc-navy);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.paf-amount-unit {
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--hc-text-muted);
+}
+.paf-amount-note {
+  font-size: 11px;
+  color: var(--hc-text-muted);
+  margin: 0;
+}
+.paf-fallback {
+  font-size: 14px;
+  color: var(--hc-text-muted);
+  margin: 0;
+}
+
+/* 亀うなずきアニメ（1回・ループ禁止） */
+@keyframes hc-turtle-nod {
+  0%   { transform: rotate(0deg); }
+  30%  { transform: rotate(-4deg); }
+  100% { transform: rotate(0deg); }
+}
+.hc-turtle-nod {
+  animation: hc-turtle-nod 0.3s ease-out 1 forwards;
+}
+
+/* reduced-motion: 全アニメ無効 */
+@media (prefers-reduced-motion: reduce) {
+  .hc-turtle-nod {
+    animation: none;
+  }
+  .paf-amount-number {
+    /* カウントアップは JS 側で即時 setState するため CSS は最終値表示のみ */
+    transition: none;
+  }
 }
 
 /* Subsidy Carousel */

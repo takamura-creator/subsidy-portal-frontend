@@ -15,9 +15,6 @@ export function trackStepEnter(step: number, stepLabel: string): void {
     stepLabel,
     timestamp: Date.now(),
   });
-  if (typeof window !== "undefined") {
-    console.debug("[analytics] step_enter", step, stepLabel);
-  }
 }
 
 export function trackStepComplete(step: number, stepLabel: string): void {
@@ -57,4 +54,15 @@ export function getWizardDuration(): number | null {
 
 export function getEventLog(): readonly WizardEvent[] {
   return _eventLog;
+}
+
+/** FV 地域選択イベント（diagnosis_start）。既存4イベントと非重複。 */
+export function trackDiagnosisStart(prefecture: string): void {
+  _eventLog.push({
+    event: "diagnosis_start",
+    step: 0,
+    stepLabel: "FV地域選択",
+    timestamp: Date.now(),
+    metadata: { prefecture },
+  });
 }

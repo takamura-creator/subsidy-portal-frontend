@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { fetchSubsidies, type Subsidy } from "@/lib/api";
 import {
@@ -7,6 +7,9 @@ import {
   SERVICE_PREFECTURES,
   isServicePrefecture,
 } from "@/lib/constants";
+import TrustBlock from "@/components/home/TrustBlock";
+import RelatedNoteLink from "@/components/lp/RelatedNoteLink";
+import { NOTE_ARTICLE_LINKS } from "@/data/note-article-links";
 
 const VALID_PREFECTURES = new Set<string>(PREFECTURES);
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
@@ -54,20 +57,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/** ローマ字スラッグ → 日本語正式URL 301リダイレクトマップ（出典: prefecture-content.ts の code フィールド） */
+const ROMAN_TO_JP: Record<string, string> = {
+  tokyo:    "東京都",
+  osaka:    "大阪府",
+  kanagawa: "神奈川県",
+  aichi:    "愛知県",
+  saitama:  "埼玉県",
+  hyogo:    "兵庫県",
+  hokkaido: "北海道",
+  fukuoka:  "福岡県",
+  chiba:    "千葉県",
+  kyoto:    "京都府",
+};
+
 export default async function PrefectureLPPage({ params }: Props) {
   const { prefecture } = await params;
   const name = decodeURIComponent(prefecture);
+
+  // ローマ字スラッグ → 日本語正式URL へ 301 リダイレクト
+  if (ROMAN_TO_JP[name]) {
+    permanentRedirect(`/lp/${encodeURIComponent(ROMAN_TO_JP[name])}`);
+  }
+
   // 47都道府県以外は 404（攻撃的なパスや誤入力を拒否）
   if (!VALID_PREFECTURES.has(name)) notFound();
   // 6都県は FullLP（施工対応）、それ以外41道府県は InformationLP（情報のみ）
   const inService = isServicePrefecture(name);
+
+  // TODO(I1): 上記 ROMAN_TO_JP は prefecture-content.ts の code フィールド10件のみ。
+  // 37道府県の旧ローマ字URLが他媒体に存在する場合はここへ追記すること（現状は 404 のまま）。
 
   let subsidies: Subsidy[] = [];
   try {
     const subsidyData = await fetchSubsidies({ prefecture: name });
     subsidies = subsidyData.subsidies ?? [];
   } catch {
-    // ビルド時にバックエンド不在の場合は空配列でフォールバック
+    // C2: バックエンド不在時のみ空配列フォールバック。他のエラーは握り潰さない（ビルド時限定）。
+    subsidies = [];
   }
 
   const content = getPrefectureContent(name);
@@ -105,10 +132,7 @@ function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subs
           <p className="text-[12px] font-medium tracking-widest text-white/60 mb-3">
             {prefecture} ／ 施工対応エリア
           </p>
-          <h1
-            className="text-3xl md:text-4xl font-bold mb-4"
-            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
-          >
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 hc-heading-sora-tight">
             {prefecture}の防犯カメラ補助金と見積もりをワンストップで
           </h1>
           <p className="text-white/80 text-[15px] md:text-base leading-relaxed max-w-[720px] mb-6">
@@ -140,10 +164,7 @@ function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subs
 
       <section className="py-14 bg-white">
         <div className="max-w-[1100px] mx-auto px-6">
-          <h2
-            className="text-xl font-bold text-navy mb-6"
-            style={{ fontFamily: "'Sora', sans-serif" }}
-          >
+          <h2 className="text-xl font-bold text-navy mb-6 hc-heading-sora">
             {prefecture}での導入フロー
           </h2>
           <ol className="grid md:grid-cols-3 gap-4">
@@ -156,7 +177,7 @@ function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subs
                 <p className="text-[11px] font-semibold tracking-widest text-[color:var(--hc-accent)]">
                   {f.step}
                 </p>
-                <p className="font-bold text-navy mt-1 mb-1" style={{ fontFamily: "'Sora', sans-serif" }}>
+                <p className="font-bold text-navy mt-1 mb-1 hc-heading-sora">
                   {f.title}
                 </p>
                 <p className="text-[13px] text-text-muted leading-relaxed">{f.desc}</p>
@@ -169,10 +190,7 @@ function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subs
       <section className="py-14 bg-bg">
         <div className="max-w-[1100px] mx-auto px-6">
           <div className="bg-white border border-border rounded-[10px] p-6 md:p-8">
-            <h2
-              className="text-xl font-bold text-navy mb-2"
-              style={{ fontFamily: "'Sora', sans-serif" }}
-            >
+            <h2 className="text-xl font-bold text-navy mb-2 hc-heading-sora">
               施工パートナー：マルチック株式会社
             </h2>
             <p className="text-[14px] text-text-muted leading-relaxed mb-4">
@@ -191,10 +209,7 @@ function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subs
 
       <section className="bg-navy text-white py-14">
         <div className="max-w-[900px] mx-auto px-6 text-center">
-          <h2
-            className="text-2xl font-bold mb-3"
-            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
-          >
+          <h2 className="text-2xl font-bold mb-3 hc-heading-sora-tight">
             まずは{prefecture}で使える補助金を診断
           </h2>
           <p className="text-white/70 text-[14px] mb-6 leading-relaxed">
@@ -222,10 +237,7 @@ function InformationLP({ prefecture, subsidies }: { prefecture: string; subsidie
           <p className="text-[12px] font-medium tracking-widest text-text-muted mb-3">
             {prefecture} ／ 補助金情報
           </p>
-          <h1
-            className="text-2xl md:text-3xl font-bold text-navy mb-4"
-            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
-          >
+          <h1 className="text-2xl md:text-3xl font-bold text-navy mb-4 hc-heading-sora-tight">
             {prefecture}の防犯カメラ補助金まとめ
           </h1>
           <p className="text-[14px] text-text-muted leading-relaxed">
@@ -246,10 +258,7 @@ function InformationLP({ prefecture, subsidies }: { prefecture: string; subsidie
 
       <section className="py-14 bg-bg">
         <div className="max-w-[720px] mx-auto px-6">
-          <h2
-            className="text-lg font-bold text-navy mb-3"
-            style={{ fontFamily: "'Sora', sans-serif" }}
-          >
+          <h2 className="text-lg font-bold text-navy mb-3 hc-heading-sora">
             {prefecture}の制度更新をメールで受け取る
           </h2>
           <p className="text-[13px] text-text-muted leading-relaxed mb-4">
@@ -265,10 +274,7 @@ function InformationLP({ prefecture, subsidies }: { prefecture: string; subsidie
 
       <section className="py-10 bg-white border-t border-border">
         <div className="max-w-[900px] mx-auto px-6">
-          <h2
-            className="text-base font-bold text-navy mb-3"
-            style={{ fontFamily: "'Sora', sans-serif" }}
-          >
+          <h2 className="text-base font-bold text-navy mb-3 hc-heading-sora">
             関連する情報ページ
           </h2>
           <ul className="text-[14px] space-y-1.5">
@@ -298,12 +304,19 @@ function InformationLP({ prefecture, subsidies }: { prefecture: string; subsidie
         </div>
       </section>
 
+      {/* 信頼ブロック（CTA直前） */}
+      <section className="py-8 bg-bg">
+        <div className="max-w-[900px] mx-auto px-6">
+          <TrustBlock />
+        </div>
+      </section>
+
+      {/* note根拠記事リンク（URL確定後に自動表示） */}
+      <RelatedNoteLink prefecture={prefecture} links={NOTE_ARTICLE_LINKS} />
+
       <section className="py-12 bg-[color:var(--hc-primary)] text-white">
         <div className="max-w-[720px] mx-auto px-6 text-center">
-          <h2
-            className="text-xl font-bold mb-3"
-            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
-          >
+          <h2 className="text-xl font-bold mb-3 hc-heading-sora-tight">
             全国対応の補助金を業種から診断する
           </h2>
           <p className="text-white/70 text-[14px] mb-6 leading-relaxed">
@@ -337,10 +350,7 @@ function SubsidyList({
   return (
     <section className="py-14">
       <div className="max-w-[1100px] mx-auto px-6">
-        <h2
-          className="text-xl font-bold text-navy mb-6"
-          style={{ fontFamily: "'Sora', sans-serif" }}
-        >
+        <h2 className="text-xl font-bold text-navy mb-6 hc-heading-sora">
           {heading}
         </h2>
         {subsidies.length === 0 ? (
@@ -358,7 +368,7 @@ function SubsidyList({
                 key={s.id}
                 className="bg-white border border-border rounded-[10px] p-5"
               >
-                <h3 className="font-bold text-navy text-[15px] mb-2" style={{ fontFamily: "'Sora', sans-serif" }}>
+                <h3 className="font-bold text-navy text-[15px] mb-2 hc-heading-sora">
                   {s.name}
                 </h3>
                 <dl className="text-[13px] text-text-muted space-y-1">

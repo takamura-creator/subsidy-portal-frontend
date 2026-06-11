@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/seo/JsonLd";
 import { generateWebApplicationJsonLd } from "@/lib/structured-data";
 import HeroStage from "@/components/home/HeroStage";
+import TrustBlock from "@/components/home/TrustBlock";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 
@@ -32,6 +33,9 @@ export default function HomePage() {
     <main className="home-welcome">
       <JsonLd data={homeJsonLd} id="jsonld-home" />
       <HeroStage />
+      <div className="home-trust-wrap">
+        <TrustBlock />
+      </div>
     </main>
   );
 }
