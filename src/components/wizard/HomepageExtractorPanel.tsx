@@ -80,7 +80,7 @@ export default function HomepageExtractorPanel({
           <h3
             id="extractor-heading"
             className="text-[14px] font-bold text-navy"
-            style={{ fontFamily: "'Sora', sans-serif" }}
+            style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
           >
             ホームページから自動取得
           </h3>

@@ -100,7 +100,7 @@ export default function PrefecturePage() {
         </Link>
         <h1
           className="text-xl md:text-2xl font-bold"
-          style={{ fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.5px" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", color: "var(--hc-navy)", letterSpacing: "-0.5px" }}
         >
           {prefecture} の補助金交付実績
         </h1>
@@ -231,7 +231,7 @@ export default function PrefecturePage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs" style={{ color: "var(--hc-text-muted)" }}>{r.subsidy_name}</td>
-                      <td className="px-4 py-3 text-right font-medium" style={{ color: "var(--hc-navy)", fontFamily: "'Sora', sans-serif" }}>
+                      <td className="px-4 py-3 text-right font-medium" style={{ color: "var(--hc-navy)", fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}>
                         {formatAmount(r.grant_amount)}
                       </td>
                       <td className="px-4 py-3 text-center text-xs" style={{ color: "var(--hc-text-muted)" }}>{r.fiscal_year}</td>
@@ -267,7 +267,7 @@ export default function PrefecturePage() {
                 >
                   <div className="flex justify-between items-start mb-2">
                     <p className="text-sm font-medium" style={{ color: "var(--hc-text)" }}>{r.recipient_name}</p>
-                    <p className="text-sm font-bold" style={{ color: "var(--hc-primary)", fontFamily: "'Sora', sans-serif" }}>
+                    <p className="text-sm font-bold" style={{ color: "var(--hc-primary)", fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}>
                       {formatAmount(r.grant_amount)}
                     </p>
                   </div>

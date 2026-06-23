@@ -8,6 +8,10 @@ interface Props {
   onSelect: (industry: string) => void;
 }
 
+/**
+ * IndustryCard v2 — 業種カード
+ * 見出し 22px / 絵文字は控えめサイズ（20px）/ 緑単一アクセント / 装飾なし
+ */
 export default function IndustryCard({ industry, icon, desc, count, onSelect }: Props) {
   return (
     <button
@@ -22,47 +26,49 @@ export default function IndustryCard({ industry, icon, desc, count, onSelect }: 
         background: "transparent",
         padding: 0,
         fontFamily: "inherit",
+        cursor: "pointer",
       }}
     >
       <article
         className="hc-industry-card"
         style={{
           borderRadius: 10,
-          padding: 16,
-          cursor: "pointer",
+          padding: "20px 18px",
           height: "100%",
-          minHeight: 156,
+          minHeight: 140,
           display: "flex",
           flexDirection: "column",
+          gap: 6,
         }}
       >
-        <div
+        {/* 絵文字アイコン — 控えめサイズ */}
+        <span
+          aria-hidden="true"
           style={{
-            width: 40,
-            height: 40,
-            marginBottom: 8,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 28,
+            fontSize: 20,
             lineHeight: 1,
             flexShrink: 0,
           }}
         >
           {icon}
-        </div>
+        </span>
+
+        {/* 業種名 */}
         <h2
           style={{
-            fontSize: 16,
+            fontSize: 22,
             fontWeight: 700,
-            margin: "0 0 4px",
+            margin: 0,
             color: "var(--hc-navy)",
             fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
-            letterSpacing: "-0.3px",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.2,
           }}
         >
           {industry}
         </h2>
+
+        {/* 説明文 */}
         <p
           style={{
             fontSize: 13,
@@ -74,12 +80,14 @@ export default function IndustryCard({ industry, icon, desc, count, onSelect }: 
         >
           {desc}
         </p>
+
+        {/* 件数バッジ — 緑アクセントのみ */}
         <div
           style={{
             fontSize: 12,
-            fontWeight: 500,
-            marginTop: 8,
+            fontWeight: 600,
             color: count > 0 ? "var(--hc-primary)" : "var(--hc-text-muted)",
+            marginTop: 4,
           }}
         >
           {count > 0 ? `補助金 ${count}件 →` : "情報準備中"}

@@ -121,7 +121,7 @@ export default function Step3Products({ selected, onBack, onNext }: Props) {
       <div>
         <h2
           className="text-lg font-bold text-navy mb-1"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           Step 3：製品・構成選択
         </h2>

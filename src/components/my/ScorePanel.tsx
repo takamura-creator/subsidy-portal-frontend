@@ -27,7 +27,7 @@ export default function ScorePanel({ appId, subsidyId }: Props) {
   };
 
   const titleStyle: React.CSSProperties = {
-    fontFamily: "'Sora', sans-serif",
+    fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
     fontSize: 14,
     fontWeight: 700,
     color: "var(--hc-navy)",

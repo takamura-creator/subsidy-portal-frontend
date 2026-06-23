@@ -70,7 +70,7 @@ export default function WizardLayout({ currentStep, children, title, subtitle, s
           {title && (
             <h1
               className="text-[22px] font-bold text-navy"
-              style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
+              style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", letterSpacing: "-0.3px" }}
             >
               {title}
             </h1>
@@ -106,7 +106,7 @@ function ProgressBar({ currentStep, steps }: { currentStep: WizardStepId; steps:
             <div className="flex flex-col items-center flex-shrink-0">
               <div
                 className={`w-7 h-7 rounded-full border-2 flex items-center justify-center font-bold text-[12px] transition-colors ${stateClass}`}
-                style={{ fontFamily: "'Sora', sans-serif" }}
+                style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
                 aria-current={isCurrent ? "step" : undefined}
               >
                 {isDone ? "✓" : step.id}

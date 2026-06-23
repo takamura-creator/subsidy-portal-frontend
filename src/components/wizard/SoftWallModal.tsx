@@ -22,7 +22,7 @@ export default function SoftWallModal({ onRegister, onLogin, onSkip }: Props) {
       >
         <h2
           className="text-[16px] font-bold text-navy mb-2"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           進捗を保存しませんか？
         </h2>

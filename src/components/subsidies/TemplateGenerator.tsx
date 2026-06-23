@@ -179,8 +179,8 @@ export default function TemplateGenerator({ subsidyId, subsidyName, prefecture }
       {/* 上部の参考資料注意 */}
       <section
         style={{
-          background: "var(--hc-accent-light)",
-          border: "1px solid var(--hc-accent-line)",
+          background: "var(--hc-warning-subtle)",
+          border: "1px solid color-mix(in srgb, var(--hc-warning-text) 20%, transparent)",
           borderRadius: 10,
           padding: 14,
           marginBottom: 16,
@@ -189,7 +189,7 @@ export default function TemplateGenerator({ subsidyId, subsidyName, prefecture }
         <p
           style={{
             fontSize: 12,
-            color: "var(--hc-accent-hover)",
+            color: "var(--hc-warning-text)",
             margin: 0,
             lineHeight: 1.6,
           }}

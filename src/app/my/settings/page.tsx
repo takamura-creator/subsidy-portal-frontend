@@ -37,7 +37,7 @@ function isMenuKey(v: string | null | undefined): v is MenuKey {
 
 const S = {
   pageTitle: {
-    fontFamily: "'Sora', sans-serif",
+    fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
     fontSize: 20,
     fontWeight: 700,
     color: "var(--hc-navy)",
@@ -55,7 +55,7 @@ const S = {
     boxShadow: "var(--hc-shadow)",
   } as React.CSSProperties,
   cardTitle: {
-    fontFamily: "'Sora', sans-serif",
+    fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
     fontSize: 16,
     fontWeight: 700,
     color: "var(--hc-navy)",

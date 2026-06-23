@@ -122,11 +122,11 @@ export default function AdminSubsidyEditPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>補助率（最小）</label>
-            <input name="rate_min" type="number" step="0.01" min="0" max="1" defaultValue={subsidy.rate_min} className={inputClass} />
+            <input name="rate_min" type="number" step="0.01" min="0" max="1" defaultValue={subsidy.rate_min ?? undefined} className={inputClass} />
           </div>
           <div>
             <label className={labelClass}>補助率（最大）</label>
-            <input name="rate_max" type="number" step="0.01" min="0" max="1" defaultValue={subsidy.rate_max} className={inputClass} />
+            <input name="rate_max" type="number" step="0.01" min="0" max="1" defaultValue={subsidy.rate_max ?? undefined} className={inputClass} />
           </div>
         </div>
 

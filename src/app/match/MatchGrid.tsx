@@ -119,8 +119,8 @@ export default function MatchGrid({ items }: { items: IndustryItem[] }) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
-          gap: 16,
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: 24,
         }}
       >
         {items.map((it) => (

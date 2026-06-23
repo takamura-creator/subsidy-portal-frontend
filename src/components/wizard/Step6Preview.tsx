@@ -74,7 +74,7 @@ export default function Step6Preview({
       <div>
         <h2
           className="text-lg font-bold text-navy mb-1"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           Step 6：プレビュー・PDF出力
         </h2>
@@ -93,7 +93,7 @@ export default function Step6Preview({
             {company.companyName}（{company.industry} / {company.employees}名 / {company.prefecture}）
           </Row>
           <Row label="補助金">
-            {subsidy.name}（上限 {Math.round(subsidy.rateMax * 100)}% / 最大{" "}
+            {subsidy.name}（上限 {subsidy.rateMax != null ? `${Math.round(subsidy.rateMax * 100)}%` : "—"} / 最大{" "}
             {subsidy.maxAmount.toLocaleString("ja-JP")}円）
           </Row>
           <Row label="製品構成">
@@ -408,7 +408,7 @@ function ContactMultikCard({
     <section className="bg-navy text-white rounded-[10px] p-6 space-y-3">
       <h3
         className="text-[16px] font-bold"
-        style={{ fontFamily: "'Sora', sans-serif" }}
+        style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
       >
         施工・詳細見積もりを依頼する
       </h3>
@@ -468,9 +468,7 @@ function buildMailBody({
     company.annualRevenue ? `年商: ${company.annualRevenue.toLocaleString("ja-JP")}円` : "",
     "",
     "--- 申請予定の補助金 ---",
-    `${subsidy.name}（上限 ${Math.round(subsidy.rateMax * 100)}% / 最大 ${subsidy.maxAmount.toLocaleString(
-      "ja-JP",
-    )}円）`,
+    `${subsidy.name}（上限 ${subsidy.rateMax != null ? `${Math.round(subsidy.rateMax * 100)}%` : "—"} / 最大 ${subsidy.maxAmount.toLocaleString("ja-JP")}円）`,
     "",
     "--- 見積もり ---",
     `見積ID: ${estimate.id}`,

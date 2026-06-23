@@ -99,9 +99,9 @@ function calcResult(answers: Answer[]): Result {
       level: "medium",
       title: "採択可能性：中",
       message: "未対応の項目がありますが、相談いただければ多くは解消可能です。藤沢市鵠沼地区など湘南エリアでの対応経験を活かしてご提案いたします。",
-      badgeBg: "var(--hc-accent-light)",
-      badgeColor: "var(--hc-accent-hover)",
-      borderColor: "var(--hc-accent-line)",
+      badgeBg: "var(--hc-warning-subtle)",
+      badgeColor: "var(--hc-warning-text)",
+      borderColor: "color-mix(in srgb, var(--hc-warning-text) 20%, transparent)",
     };
   }
   return {
@@ -293,7 +293,7 @@ export default function EligibilityChecker({ subsidyId, subsidyName }: Props) {
                 fontSize: 13,
                 fontWeight: 700,
                 color: result.badgeColor,
-                fontFamily: "'Sora', sans-serif",
+                fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
               }}
             >
               {result.title}

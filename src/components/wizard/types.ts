@@ -16,7 +16,7 @@ export interface SubsidySelection {
   name: string;
   category?: string;
   maxAmount: number;
-  rateMax: number;
+  rateMax: number | null;
   prefecture?: string;
   /** "jichitai_bouhan" の場合、maxAmount は 1 台あたり上限として扱う */
   draftSubsidyType?: string;

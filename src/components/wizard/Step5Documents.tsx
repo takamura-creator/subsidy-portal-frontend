@@ -48,7 +48,7 @@ export default function Step5Documents({
       <div>
         <h2
           className="text-lg font-bold text-navy mb-1"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           Step 5：申請書類の生成
         </h2>

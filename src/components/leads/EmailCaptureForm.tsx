@@ -91,7 +91,7 @@ export default function EmailCaptureForm({
       >
         <h3
           className="text-lg font-bold text-navy mb-2"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           ご登録ありがとうございます
         </h3>
@@ -135,7 +135,7 @@ export default function EmailCaptureForm({
     >
       <h3
         className="text-lg font-bold text-navy mb-2"
-        style={{ fontFamily: "'Sora', sans-serif" }}
+        style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
       >
         {headline}
       </h3>

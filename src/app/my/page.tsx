@@ -514,7 +514,7 @@ function SummaryCard({
     >
       <div
         style={{
-          fontFamily: "'Sora', sans-serif",
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           fontSize: 22,
           fontWeight: 700,
           color: active ? color : "var(--hc-text-muted)",

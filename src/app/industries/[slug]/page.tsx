@@ -44,7 +44,7 @@ export default async function IndustryLPPage({ params }: Props) {
       <header style={{ marginBottom: 28 }}>
         <h1
           style={{
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
             fontSize: 26,
             fontWeight: 700,
             color: "var(--hc-navy)",
@@ -103,7 +103,7 @@ export default async function IndustryLPPage({ params }: Props) {
               >
                 <strong style={{ fontSize: 14, color: "var(--hc-navy)" }}>{s.name}</strong>
                 <span style={{ fontSize: 12, color: "var(--hc-text-muted)", marginLeft: 8 }}>
-                  最大 {s.max_amount.toLocaleString()}円 / 補助率 {Math.round(s.rate_max * 100)}%
+                  最大 {s.max_amount.toLocaleString()}円{s.rate_max != null ? ` / 補助率 ${Math.round(s.rate_max * 100)}%` : ""}
                 </span>
               </Link>
             ))
@@ -152,7 +152,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <section style={{ marginBottom: 24 }}>
       <h2
         style={{
-          fontFamily: "'Sora', sans-serif",
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           fontSize: 18,
           fontWeight: 700,
           color: "var(--hc-navy)",

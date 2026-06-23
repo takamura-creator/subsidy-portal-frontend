@@ -103,7 +103,7 @@ export function ContactCTA({ subsidyName }: { subsidyName: string }) {
       style={{
         padding: 20,
         borderRadius: 10,
-        background: "linear-gradient(135deg, var(--hc-primary-faint) 0%, var(--hc-accent-light) 100%)",
+        background: "var(--hc-primary-faint)",
         border: "1px solid var(--hc-primary-edge)",
         textAlign: "center",
       }}

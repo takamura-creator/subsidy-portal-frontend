@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Settings, FilePlus } from "lucide-react";
 import { isAuthenticated, getUser } from "@/lib/auth";
 import SidebarLayout from "@/components/shared/SidebarLayout";
+import StatusBar from "@/components/layout/StatusBar";
 import type { SidebarEntry } from "@/components/shared/Sidebar";
 
 const SIDEBAR_ITEMS: SidebarEntry[] = [
@@ -59,8 +60,11 @@ export default function MyLayout({ children }: { children: React.ReactNode }) {
   if (!ready) return <div style={{ minHeight: "100vh" }} />;
 
   return (
-    <SidebarLayout sidebarItems={SIDEBAR_ITEMS}>
-      {children}
-    </SidebarLayout>
+    <>
+      <SidebarLayout sidebarItems={SIDEBAR_ITEMS}>
+        {children}
+      </SidebarLayout>
+      <StatusBar />
+    </>
   );
 }

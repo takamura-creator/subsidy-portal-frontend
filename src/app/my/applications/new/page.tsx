@@ -276,7 +276,7 @@ export default function ApplicationNewPage() {
 
       {/* Step 1: 会社情報サマリー */}
       <div className="summary-card">
-        <h3 style={{ fontFamily: "'Sora', sans-serif", fontSize: 12, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 8 }}>
+        <h3 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: 12, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 8 }}>
           Step 1: 会社情報
           {data.step > 0 && (
             <a href="#" style={{ fontSize: 11, color: "var(--hc-primary)", textDecoration: "none", float: "right" }}>修正</a>
@@ -317,7 +317,7 @@ export default function ApplicationNewPage() {
 
       {/* Step 2: 事業計画サマリー */}
       <div className="summary-card">
-        <h3 style={{ fontFamily: "'Sora', sans-serif", fontSize: 12, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 8 }}>
+        <h3 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: 12, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 8 }}>
           Step 2: 事業計画
         </h3>
         {[
@@ -584,7 +584,7 @@ export default function ApplicationNewPage() {
         <div style={{ height: "100%", width: `${progressPercent}%`, background: "var(--hc-primary)", borderRadius: 3, transition: "width 0.3s" }} />
       </div>
 
-      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: "1.1rem", fontWeight: 700, color: "var(--hc-navy)", letterSpacing: "-0.3px", marginBottom: 4 }}>
+      <h1 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: "1.1rem", fontWeight: 700, color: "var(--hc-navy)", letterSpacing: "-0.3px", marginBottom: 4 }}>
         Step {data.step + 1}: {STEPS[data.step].label}
       </h1>
       <p style={{ fontSize: 13, color: "var(--hc-text-muted)", marginBottom: 20 }}>

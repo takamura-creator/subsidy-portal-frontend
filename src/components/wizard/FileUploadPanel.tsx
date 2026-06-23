@@ -136,7 +136,7 @@ export default function FileUploadPanel({
       <h3
         id="upload-panel-heading"
         className="text-[14px] font-bold text-navy mb-4"
-        style={{ fontFamily: "'Sora', sans-serif" }}
+        style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
       >
         必要書類のアップロード
       </h3>

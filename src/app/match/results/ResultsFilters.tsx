@@ -58,7 +58,7 @@ export default function ResultsFilters({ conditions }: { conditions: Condition[]
             fontWeight: 700,
             color: "var(--hc-navy)",
             marginBottom: 8,
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           }}
         >
           入力内容

@@ -77,7 +77,7 @@ export default function QuickConsultForm({ subsidyName }: Props) {
       >
         <div
           style={{
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
             fontSize: 14,
             fontWeight: 700,
             color: "var(--hc-navy)",
@@ -107,7 +107,7 @@ export default function QuickConsultForm({ subsidyName }: Props) {
     >
       <div
         style={{
-          fontFamily: "'Sora', sans-serif",
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           fontSize: 13,
           fontWeight: 700,
           color: "var(--hc-navy)",

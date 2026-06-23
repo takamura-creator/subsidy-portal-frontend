@@ -23,7 +23,7 @@ function OwnerGuide() {
     <div>
       <h2
         style={{
-          fontFamily: "'Sora', sans-serif",
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           fontSize: 14,
           fontWeight: 700,
           color: "var(--hc-navy)",
@@ -206,7 +206,7 @@ function RegisterForm() {
         <div className="form-card">
           <h1
             style={{
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
               fontSize: "1.2rem",
               fontWeight: 700,
               color: "var(--hc-navy)",

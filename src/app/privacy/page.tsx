@@ -23,7 +23,7 @@ export default function PrivacyPage() {
     >
       <h1
         style={{
-          fontFamily: "'Sora', sans-serif",
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           fontSize: 24,
           fontWeight: 700,
           color: "var(--hc-navy)",
@@ -120,7 +120,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <section style={{ margin: "24px 0" }}>
       <h2
         style={{
-          fontFamily: "'Sora', sans-serif",
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           fontSize: 18,
           fontWeight: 700,
           color: "var(--hc-navy)",

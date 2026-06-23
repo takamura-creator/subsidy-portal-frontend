@@ -120,7 +120,7 @@ export default async function CaseDetailPage({ params }: Props) {
           <h1
             className="text-2xl md:text-3xl font-bold mb-4"
             style={{
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
               letterSpacing: "-0.3px",
             }}
           >
@@ -137,7 +137,7 @@ export default async function CaseDetailPage({ params }: Props) {
         <div className="max-w-[900px] mx-auto px-6 py-6">
           <h2
             className="text-[14px] font-bold text-navy mb-3"
-            style={{ fontFamily: "'Sora', sans-serif" }}
+            style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
           >
             費用内訳
           </h2>
@@ -162,7 +162,7 @@ export default async function CaseDetailPage({ params }: Props) {
           <article className="bg-white border border-border rounded-[10px] p-5">
             <h3
               className="text-[13px] font-bold text-text-muted mb-2 tracking-widest"
-              style={{ fontFamily: "'Sora', sans-serif" }}
+              style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
             >
               BEFORE — 導入前の状況
             </h3>
@@ -173,7 +173,7 @@ export default async function CaseDetailPage({ params }: Props) {
           <article className="bg-white border border-primary/40 rounded-[10px] p-5">
             <h3
               className="text-[13px] font-bold text-primary mb-2 tracking-widest"
-              style={{ fontFamily: "'Sora', sans-serif" }}
+              style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
             >
               AFTER — 導入後の状況
             </h3>
@@ -213,7 +213,7 @@ export default async function CaseDetailPage({ params }: Props) {
           <div className="max-w-[1100px] mx-auto px-6">
             <h2
               className="text-[16px] font-bold text-navy mb-4"
-              style={{ fontFamily: "'Sora', sans-serif" }}
+              style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
             >
               ほかの事例
             </h2>
@@ -243,7 +243,7 @@ export default async function CaseDetailPage({ params }: Props) {
         <div className="max-w-[800px] mx-auto px-6 text-center">
           <h2
             className="text-xl font-bold mb-3"
-            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
+            style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", letterSpacing: "-0.3px" }}
           >
             ご自身の条件で補助金を調べてみる
           </h2>
@@ -292,7 +292,7 @@ function CostCell({
               ? "text-primary"
               : "text-navy"
         }`}
-        style={{ fontFamily: "'Sora', sans-serif" }}
+        style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
       >
         {value < 0 ? "-" : ""}
         {Math.abs(value).toLocaleString("ja-JP")}円

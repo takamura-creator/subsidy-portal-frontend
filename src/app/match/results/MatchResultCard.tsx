@@ -2,13 +2,15 @@
 
 /**
  * 診断結果1件描画コンポーネント。
- * F1: 最大額・締切残日数・対応可否の3点表示
+ * F1: 上限額(目安)・補助率・締切残日数・対応可否の4点表示
  * F2: 高スコアのみ「交付決定前の発注は補助対象外」バナー
+ * 景表法ガード: max_amount は13px上限維持 / formatRate は null空文字ガード / 注記常時表示
  */
 
 import Link from "next/link";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { isServicePrefecture } from "@/lib/constants";
+import { formatRate } from "@/lib/formatRate";
 import { SCORE_STYLES } from "./states";
 import type { MatchedSubsidy } from "@/lib/api";
 
@@ -37,14 +39,17 @@ export default function MatchResultCard({ item, prefecture }: Props) {
       ? "var(--hc-accent)"
       : "var(--hc-navy)";
 
+  const rateText = formatRate(item.subsidy.rate_min, item.subsidy.rate_max);
+
   return (
     <div
       style={{
-        background: "var(--hc-card-bg)",
+        background: "var(--hc-white)",
         border: "1px solid var(--hc-border)",
         borderRadius: 10,
         padding: 18,
         marginBottom: 10,
+        boxShadow: "var(--hc-shadow)",
       }}
     >
       {/* F2: 高スコアのみ表示する交付決定前警告バナー */}
@@ -87,7 +92,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
             fontSize: 14,
             fontWeight: 700,
             flexShrink: 0,
@@ -122,7 +127,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
               marginBottom: 6,
             }}
           >
-            {/* 最大額 */}
+            {/* 上限額（目安）— 13px上限維持・景表法ガード */}
             <div
               style={{
                 flex: 1,
@@ -132,17 +137,44 @@ export default function MatchResultCard({ item, prefecture }: Props) {
               }}
             >
               <div style={{ fontSize: 10, color: "var(--hc-text-muted)", marginBottom: 2 }}>
-                最大額
+                上限額（目安）
+              </div>
+              {/* max_amount: 13px上限。特大カウント禁止。null/0 は "—" */}
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: "var(--hc-navy)",
+                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+                }}
+              >
+                {item.subsidy.max_amount != null && item.subsidy.max_amount > 0
+                  ? `${(item.subsidy.max_amount / 10000).toLocaleString()}万円`
+                  : "—"}
+              </div>
+            </div>
+
+            {/* 補助率 — nullガード付き */}
+            <div
+              style={{
+                flex: 1,
+                minWidth: 72,
+                padding: "6px 10px",
+                borderRight: "1px solid var(--hc-border)",
+              }}
+            >
+              <div style={{ fontSize: 10, color: "var(--hc-text-muted)", marginBottom: 2 }}>
+                補助率
               </div>
               <div
                 style={{
                   fontSize: 13,
                   fontWeight: 700,
                   color: "var(--hc-navy)",
-                  fontFamily: "'Sora', sans-serif",
+                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
                 }}
               >
-                {(item.subsidy.max_amount / 10000).toLocaleString()}万円
+                {rateText || "—"}
               </div>
             </div>
 
@@ -163,7 +195,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
                   fontSize: 13,
                   fontWeight: 700,
                   color: deadlineColor,
-                  fontFamily: "'Sora', sans-serif",
+                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
                 }}
               >
                 {deadlineText}
@@ -208,6 +240,11 @@ export default function MatchResultCard({ item, prefecture }: Props) {
               {item.application_advice}
             </p>
           )}
+
+          {/* 景表法注記 — 常時表示 */}
+          <p className="mc-disclaimer">
+            ※制度・条件により異なります。出典：公式資料。診断は目安です。
+          </p>
         </div>
 
         {/* アクションボタン */}

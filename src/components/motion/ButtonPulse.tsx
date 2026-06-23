@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { EASING } from "@/lib/motion-tokens";
 import type { ReactNode } from "react";
 
 interface ButtonPulseProps {
@@ -13,7 +14,7 @@ interface ButtonPulseProps {
 export default function ButtonPulse({
   children,
   className,
-  glowColor = "rgba(21, 128, 61, 0.3)",
+  glowColor = "color-mix(in srgb, var(--hc-primary) 30%, transparent)",
   delay = 0,
 }: ButtonPulseProps) {
   const prefersReduced = useReducedMotion();
@@ -27,7 +28,7 @@ export default function ButtonPulse({
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
-      transition={{ duration: 0.5, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 0.5, delay, ease: EASING.spring }}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       className={className}

@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { AnalyticsWrapper } from "@/components/analytics/AnalyticsWrapper";
 import HCHeader from "@/components/layout/HCHeader";
-import StatusBar from "@/components/layout/StatusBar";
 import CookieConsent from "@/components/CookieConsent";
 import JsonLd from "@/components/seo/JsonLd";
 import type { JsonLdObject } from "@/lib/structured-data";
 import "./globals.css";
+// StatusBar は admin/my/wizard の各 layout.tsx から呼び出す（公開ページ非表示）
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
@@ -114,7 +114,6 @@ export default function RootLayout({
         <JsonLd data={siteSchemas} id="jsonld-site" />
         <HCHeader />
         {children}
-        <StatusBar />
         <CookieConsent />
         <AnalyticsWrapper />
       </body>

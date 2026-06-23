@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { EASING } from "@/lib/motion-tokens";
 import type { ReactNode } from "react";
 
 interface FadeInProps {
@@ -58,7 +59,7 @@ export default function FadeIn({
       transition={{
         duration,
         delay,
-        ease: [0.25, 0.1, 0.25, 1],
+        ease: EASING.spring,
       }}
       className={className}
     >

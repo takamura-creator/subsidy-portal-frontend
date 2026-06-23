@@ -132,7 +132,7 @@ export default function BusinessPlanWizard({ appId, onSaved, onCancel }: Props) 
     return (
       <div style={{ borderRadius: 12, border: "1px solid var(--hc-border)", background: "white", overflow: "hidden" }}>
         <div style={{ padding: "16px 20px", background: "var(--hc-primary)", color: "white" }}>
-          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>事業計画プレビュー</h3>
+          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}>事業計画プレビュー</h3>
           <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.9 }}>内容を確認して「保存」を押してください</p>
         </div>
         <div style={{ padding: 20 }}>
@@ -185,7 +185,7 @@ export default function BusinessPlanWizard({ appId, onSaved, onCancel }: Props) 
       {/* ヘッダー */}
       <div style={{ padding: "16px 20px", background: "var(--hc-primary-faint)", borderBottom: "1px solid var(--hc-border)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, fontFamily: "'Sora', sans-serif", color: "var(--hc-navy)" }}>
+          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, fontFamily: "'Sora', 'Noto Sans JP', sans-serif", color: "var(--hc-navy)" }}>
             事業計画を作成
           </h3>
           <span style={{ fontSize: 12, color: "var(--hc-text-muted)", background: "white", padding: "2px 10px", borderRadius: 20, border: "1px solid var(--hc-border)" }}>

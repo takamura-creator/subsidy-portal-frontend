@@ -65,7 +65,7 @@ export default function CasesListPage() {
           </p>
           <h1
             className="text-2xl md:text-3xl font-bold mb-3"
-            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px" }}
+            style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", letterSpacing: "-0.3px" }}
           >
             防犯カメラ補助金の導入事例
           </h1>
@@ -107,7 +107,7 @@ export default function CasesListPage() {
         <div className="max-w-[800px] mx-auto px-6 text-center">
           <h2
             className="text-xl font-bold text-navy mb-3"
-            style={{ fontFamily: "'Sora', sans-serif" }}
+            style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
           >
             ご自身の条件で使える補助金を調べる
           </h2>
@@ -153,7 +153,7 @@ function CaseCard({ data }: { data: CaseStudy }) {
       </div>
       <h2
         className="font-bold text-navy text-[15px] mb-2 leading-snug"
-        style={{ fontFamily: "'Sora', sans-serif" }}
+        style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
       >
         {data.title}
       </h2>

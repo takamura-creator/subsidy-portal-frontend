@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import PublicPageLayout from "@/components/layout/PublicPageLayout";
 import { ARTICLES } from "@/data/articles";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -22,53 +23,68 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** 簡易 Markdown レンダラ（h2 / p / ul / strong のみ対応） */
+/** 簡易 Markdown レンダラ（h2 / p / ul / ol / strong 対応） */
 function renderMarkdown(md: string): React.ReactNode[] {
   const blocks = md.split(/\n\n+/);
   return blocks.map((block, i) => {
     const trimmed = block.trim();
+
     if (trimmed.startsWith("## ")) {
       return (
         <h2
           key={i}
           style={{
-            fontFamily: "'Sora', sans-serif",
-            fontSize: 18,
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+            fontSize: 22,
             fontWeight: 700,
             color: "var(--hc-navy)",
-            margin: "20px 0 8px",
-            letterSpacing: "-0.3px",
+            margin: "32px 0 10px",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.3,
           }}
         >
           {trimmed.slice(3)}
         </h2>
       );
     }
+
     if (trimmed.startsWith("---")) {
-      return <hr key={i} style={{ border: "none", borderTop: "1px solid var(--hc-border)", margin: "24px 0" }} />;
+      return (
+        <hr
+          key={i}
+          style={{ border: "none", borderTop: "1px solid var(--hc-border)", margin: "28px 0" }}
+        />
+      );
     }
+
     if (/^\d+\.\s/.test(trimmed)) {
       const lines = trimmed.split("\n").filter(Boolean);
       return (
-        <ol key={i} style={{ margin: "8px 0", paddingLeft: 20 }}>
+        <ol key={i} style={{ margin: "10px 0", paddingLeft: 22, lineHeight: 1.8 }}>
           {lines.map((line, j) => (
-            <li key={j} style={{ marginBottom: 4 }}>{renderInline(line.replace(/^\d+\.\s/, ""))}</li>
+            <li key={j} style={{ marginBottom: 6 }}>
+              {renderInline(line.replace(/^\d+\.\s/, ""))}
+            </li>
           ))}
         </ol>
       );
     }
+
     if (trimmed.startsWith("- ")) {
       const lines = trimmed.split("\n").filter(Boolean);
       return (
-        <ul key={i} style={{ margin: "8px 0", paddingLeft: 20 }}>
+        <ul key={i} style={{ margin: "10px 0", paddingLeft: 22, lineHeight: 1.8 }}>
           {lines.map((line, j) => (
-            <li key={j} style={{ marginBottom: 4 }}>{renderInline(line.replace(/^- /, ""))}</li>
+            <li key={j} style={{ marginBottom: 6 }}>
+              {renderInline(line.replace(/^- /, ""))}
+            </li>
           ))}
         </ul>
       );
     }
+
     return (
-      <p key={i} style={{ margin: "8px 0" }}>
+      <p key={i} style={{ margin: "10px 0", lineHeight: 1.8 }}>
         {renderInline(trimmed)}
       </p>
     );
@@ -76,7 +92,6 @@ function renderMarkdown(md: string): React.ReactNode[] {
 }
 
 function renderInline(text: string): React.ReactNode {
-  // **bold** のみ対応
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((p, i) =>
     p.startsWith("**") && p.endsWith("**") ? (
@@ -95,86 +110,114 @@ export default async function ArticlePage({ params }: Props) {
   if (!a) notFound();
 
   return (
-    <main
+    <PublicPageLayout>
+    <div
       style={{
         maxWidth: 760,
-        margin: "0 auto",
-        padding: "32px 16px 48px",
         fontFamily: "'Noto Sans JP', sans-serif",
         color: "var(--hc-text)",
-        lineHeight: 1.8,
-        fontSize: 14,
+        fontSize: 16,
       }}
     >
-      <nav aria-label="パンくずリスト" style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 12 }}>
-        <Link href="/articles" style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}>
+      {/* パンくず */}
+      <nav
+        aria-label="パンくずリスト"
+        style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 24 }}
+      >
+        <Link
+          href="/articles"
+          style={{ color: "var(--hc-text-muted)", textDecoration: "none" }}
+        >
           お役立ち記事
         </Link>
         <span style={{ margin: "0 6px" }}>›</span>
         <span>{a.title}</span>
       </nav>
 
-      <header style={{ marginBottom: 16 }}>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: "var(--hc-primary)",
-            background: "var(--hc-primary-light)",
-            padding: "2px 8px",
-            borderRadius: 4,
-            marginRight: 8,
-          }}
-        >
-          {a.category}
-        </span>
-        <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>{a.publishedAt}</span>
+      {/* 記事ヘッダー */}
+      <header style={{ marginBottom: 32 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          {/* カテゴリバッジ — 緑系 */}
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "var(--hc-primary)",
+              background: "var(--hc-primary-light)",
+              padding: "2px 8px",
+              borderRadius: 4,
+            }}
+          >
+            {a.category}
+          </span>
+          <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>{a.publishedAt}</span>
+        </div>
+
+        {/* h1 — Headline 級 */}
         <h1
           style={{
-            fontFamily: "'Sora', sans-serif",
-            fontSize: 24,
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+            fontSize: "clamp(22px, 3vw, 32px)",
             fontWeight: 700,
             color: "var(--hc-navy)",
-            letterSpacing: "-0.5px",
-            margin: "10px 0 6px",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.2,
+            margin: "0 0 12px",
           }}
         >
           {a.title}
         </h1>
-        <p style={{ fontSize: 13, color: "var(--hc-text-muted)", margin: 0 }}>{a.description}</p>
+
+        <p style={{ fontSize: 15, color: "var(--hc-text-muted)", margin: 0, lineHeight: 1.7 }}>
+          {a.description}
+        </p>
       </header>
 
-      <article>{renderMarkdown(a.body)}</article>
+      {/* 本文 — Body 16px */}
+      <article style={{ lineHeight: 1.85, fontSize: 16 }}>
+        {renderMarkdown(a.body)}
+      </article>
 
+      {/* CTA — プライマリ1本 */}
       <section
         style={{
-          marginTop: 32,
-          padding: 18,
+          marginTop: 48,
+          padding: 24,
           background: "var(--hc-primary-faint)",
           border: "1px solid var(--hc-primary-edge)",
           borderRadius: 10,
           textAlign: "center",
         }}
       >
-        <p style={{ fontSize: 14, fontWeight: 700, color: "var(--hc-navy)", margin: "0 0 10px" }}>
+        <p
+          style={{
+            fontSize: 15,
+            fontWeight: 700,
+            color: "var(--hc-navy)",
+            margin: "0 0 12px",
+            fontFamily: "'Noto Sans JP', sans-serif",
+          }}
+        >
           補助金申請・施工のご相談はマルチックまで
         </p>
         <Link
           href="/contact"
           style={{
             display: "inline-block",
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: 700,
             color: "var(--hc-white)",
             background: "var(--hc-primary)",
-            padding: "10px 22px",
+            padding: "12px 28px",
             borderRadius: 8,
             textDecoration: "none",
+            fontFamily: "'Noto Sans JP', sans-serif",
           }}
         >
           相談する →
         </Link>
       </section>
-    </main>
+    </div>
+    </PublicPageLayout>
   );
 }

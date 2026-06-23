@@ -117,7 +117,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
       <div>
         <h2
           className="text-lg font-bold text-navy mb-1"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           Step 2：補助金選択
         </h2>
@@ -193,7 +193,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
                       </div>
                       <div className="text-[12px] text-text-muted space-y-0.5">
                         <p>
-                          補助率上限: {Math.round(s.rate_max * 100)}% ／ 上限額:{" "}
+                          補助率上限: {s.rate_max != null ? `${Math.round(s.rate_max * 100)}%` : "—"} ／ 上限額:{" "}
                           {s.max_amount.toLocaleString("ja-JP")}円
                         </p>
                         <p>締切: {s.deadline || "要確認"}</p>
@@ -230,7 +230,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         <div className="pt-6 border-t border-border">
           <h3
             className="text-[14px] font-bold text-navy mb-2"
-            style={{ fontFamily: "'Sora', sans-serif" }}
+            style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
           >
             施工対応エリア外の方へ
           </h3>

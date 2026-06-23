@@ -65,7 +65,7 @@ export default function DeadlineTimeline({ matches }: Props) {
     <div>
       <h2
         style={{
-          fontFamily: "'Sora', sans-serif",
+          fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
           fontSize: "0.95rem",
           fontWeight: 700,
           color: "var(--hc-navy)",
@@ -136,7 +136,7 @@ export default function DeadlineTimeline({ matches }: Props) {
                         fontSize: 11,
                         fontWeight: 700,
                         color: dotColor,
-                        fontFamily: "'Sora', sans-serif",
+                        fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
                       }}
                     >
                       {isPast ? "締切済みの可能性" : `あと ${item.days} 日`}

@@ -27,8 +27,8 @@ export interface Subsidy {
   pref_code: string;
   prefecture: string;
   max_amount: number;
-  rate_min: number;
-  rate_max: number;
+  rate_min: number | null;
+  rate_max: number | null;
   target_industries: string[];
   max_employees: number | null;
   deadline: string;

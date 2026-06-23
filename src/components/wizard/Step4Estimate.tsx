@@ -61,7 +61,7 @@ export default function Step4Estimate({
     ? subsidy.maxAmount * Math.max(1, totalCameraCount)
     : subsidy.maxAmount;
 
-  const estSubsidy = Math.round(localTotalBeforeSubsidy * subsidy.rateMax);
+  const estSubsidy = Math.round(localTotalBeforeSubsidy * (subsidy.rateMax ?? 0));
   const appliedSubsidy = Math.min(effectiveMaxAmount, estSubsidy);
   const localSelf = Math.max(0, localTotalBeforeSubsidy - appliedSubsidy);
 
@@ -89,7 +89,7 @@ export default function Step4Estimate({
         ip_camera_count: ipCount,
         analog_camera_count: analogCount,
         nvr_count: nvrCount,
-        subsidy_rate: subsidy.rateMax,
+        subsidy_rate: subsidy.rateMax ?? undefined,
         subsidy_max: subsidy.maxAmount,
         company_name: company.companyName,
       });
@@ -143,7 +143,7 @@ export default function Step4Estimate({
       <div>
         <h2
           className="text-lg font-bold text-navy mb-1"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           Step 4：見積もり自動生成
         </h2>
@@ -155,7 +155,7 @@ export default function Step4Estimate({
       {/* サマリー */}
       <section className="bg-white border border-border rounded-[10px] p-5 space-y-3">
         <SummaryRow label="申込会社" value={`${company.companyName}（${company.prefecture} / ${company.industry}）`} />
-        <SummaryRow label="利用する補助金" value={`${subsidy.name}（上限 ${Math.round(subsidy.rateMax * 100)}% / 最大 ${subsidy.maxAmount.toLocaleString("ja-JP")}円）`} />
+        <SummaryRow label="利用する補助金" value={`${subsidy.name}（上限 ${subsidy.rateMax != null ? `${Math.round(subsidy.rateMax * 100)}%` : "—"} / 最大 ${subsidy.maxAmount.toLocaleString("ja-JP")}円）`} />
         <div>
           <p className="text-[12px] text-text-muted mb-1">製品構成（{products.length}品目）</p>
           <ul className="text-[13px] text-text space-y-0.5">

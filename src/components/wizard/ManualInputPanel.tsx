@@ -28,7 +28,7 @@ export default function ManualInputPanel({
       <h3
         id="manual-input-heading"
         className="text-[14px] font-bold text-navy mb-4"
-        style={{ fontFamily: "'Sora', sans-serif" }}
+        style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
       >
         補助情報の入力・確認
       </h3>

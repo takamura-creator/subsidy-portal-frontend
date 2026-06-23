@@ -1,90 +1,59 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
-import { fetchSubsidies, Subsidy } from "@/lib/api";
-import { SERVICE_PREFECTURES, INDUSTRIES } from "@/lib/constants";
-import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
-import subsidiesJson from "@/data/subsidies.json";
-import { getDaysUntil } from "@/lib/deadlineUtils";
+/**
+ * subsidies/page.tsx — 補助金一覧（左フィルターレール + カードグリッド Apple閲覧型）
+ *
+ * Sprint 2 カードグリッド化:
+ * - OUTER max1200 / 2カラム（248px レール + 右本体）
+ * - SubsidiesFilterRail（左sticky） + SubsidiesCardGrid（右）
+ * - SubsidiesToolbar（モバイルシートのみ）
+ * - state/filter/sort ロジックは現行維持
+ */
 
-// バンドル同梱データ（/match の件数カウントと完全一致させるための truth source）
-// バックエンドAPIはこれより遅延してデプロイされるケースがあるため、初期表示と
-// API 失敗時のフォールバックに使う。
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import PublicSectionHeader from "@/components/layout/PublicSectionHeader";
+import { fetchSubsidies, Subsidy } from "@/lib/api";
+import { filterCameraOnly } from "@/lib/subsidyFilters";
+import { getDaysUntil } from "@/lib/deadlineUtils";
+import { formatAmount } from "@/lib/subsidyFormatters";
+// getDaysUntil は sorted の sort ロジックで使用
+import subsidiesJson from "@/data/subsidies.json";
+import SubsidiesFilterRail from "./SubsidiesFilterRail";
+import SubsidiesCardGrid from "./SubsidiesCardGrid";
+import SubsidiesToolbar from "./SubsidiesToolbar";
+import SubsidiesFooterNote from "./SubsidiesFooterNote";
+
 const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
 
-// 事業カテゴリ（データの category フィールドに対応）
-const CATEGORIES = [
-  { label: "すべて", value: "" },
-  { label: "防犯カメラ", value: "防犯" },
-  { label: "IT導入・DX", value: "IT導入" },
-  { label: "設備投資", value: "設備投資" },
-  { label: "介護・福祉", value: "介護" },
-];
-
-// 管轄レベル（pref_code から判定）
-const GOV_LEVELS = [
-  { label: "すべて", value: "" },
-  { label: "国の補助金", value: "national" },
-  { label: "都県", value: "prefectural" },
-];
-
-const AMOUNT_OPTIONS = [
-  { label: "すべて", value: "" },
-  { label: "〜50万円", value: "50" },
-  { label: "〜100万円", value: "100" },
-  { label: "〜500万円", value: "500" },
-  { label: "500万円以上", value: "500plus" },
-];
-
-const DEADLINE_OPTIONS = [
-  { label: "すべて", value: "" },
-  { label: "30日以内", value: "30" },
-  { label: "60日以内", value: "60" },
-  { label: "90日以内", value: "90" },
-];
-
-// APIフォールバック用（国補助金 + 対応エリアのみ）
-const CAMERA_SUBSIDIES: Subsidy[] = [
+/** 開発環境専用フォールバック */
+const CAMERA_SUBSIDIES: Subsidy[] = process.env.NODE_ENV === "development" ? [
   { id: "1", name: "IT導入補助金（セキュリティ対策推進枠）", category: "国", ministry: "中小企業庁", pref_code: "", prefecture: "", max_amount: 1000000, rate_min: 0.5, rate_max: 0.75, target_industries: [], max_employees: 300, deadline: "2026/4/30", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "3", name: "小規模事業者持続化補助金", category: "国", ministry: "商工会議所", pref_code: "", prefecture: "", max_amount: 500000, rate_min: 0.667, rate_max: 0.667, target_industries: [], max_employees: 20, deadline: "2026/5/31", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "5", name: "東京都 防犯設備設置費助成事業", category: "都道府県", ministry: "東京都", pref_code: "13", prefecture: "東京都", max_amount: 100000, rate_min: 0.5, rate_max: 0.5, target_industries: [], max_employees: null, deadline: "2026/12/31", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "yoko1", name: "横浜市 地域防犯カメラ設置補助金", category: "防犯", ministry: "横浜市", pref_code: "14", prefecture: "神奈川県", max_amount: 280000, rate_min: 0.9, rate_max: 0.9, target_industries: ["自治会・町会"], max_employees: null, deadline: "毎年7月末", status: "open", description: "", application_tips: "", source_url: "" },
-];
+] : [];
 
-// 更新日のモックデータ
 const UPDATED_MAP: Record<string, string> = {
-  "1": "4/10更新",
-  "3": "4/5更新",
-  "5": "3/28更新",
-  "6": "3/25更新",
-  "7": "3/20更新",
-  "8": "3/15更新",
+  "1": "4/10更新", "3": "4/5更新", "5": "3/28更新",
+  "6": "3/25更新", "7": "3/20更新", "8": "3/15更新",
 };
 
-
-function formatAmount(amount: number): string {
-  if (amount >= 10000000) return `${Math.round(amount / 10000000) * 1000}万円`;
-  if (amount >= 1000000) return `${Math.round(amount / 10000).toLocaleString("ja-JP")}万円`;
-  if (amount >= 10000) return `${Math.round(amount / 10000)}万円`;
-  return `${amount.toLocaleString("ja-JP")}円`;
-}
-
 function formatAmountDisplay(s: Subsidy): string {
-  // 補助金の上限額は事業（申請）単位が原則。
-  // 1台あたり単価が定義されているのは自治会向け防犯カメラ事業のみ。
   if (s.draft_subsidy_type === "jichitai_bouhan") {
-    const man = Math.round(s.max_amount / 10000);
-    return `${man}万円/台`;
+    return `${Math.round(s.max_amount / 10000)}万円/台`;
   }
   return formatAmount(s.max_amount);
 }
 
+const OUTER: React.CSSProperties = {
+  maxWidth: 1200,
+  margin: "0 auto",
+  padding: "80px 24px 120px",
+};
+
 function SubsidiesContent() {
   const searchParams = useSearchParams();
-  // 初期表示はバンドル同梱データから即時計算（/match の件数と完全一致）
   const initialIndustry = searchParams.get("industry") ?? "";
   const initialList = filterCameraOnly(
     BUNDLED_SUBSIDIES.filter((s) => {
@@ -95,8 +64,6 @@ function SubsidiesContent() {
   const [subsidies, setSubsidies] = useState<Subsidy[]>(
     initialList.length > 0 ? initialList : CAMERA_SUBSIDIES,
   );
-  const [keyword, setKeyword] = useState("");
-  const [searchInput, setSearchInput] = useState("");
   const [prefecture, setPrefecture] = useState("");
   const [industry, setIndustry] = useState(initialIndustry);
   const [category, setCategory] = useState("");
@@ -106,13 +73,8 @@ function SubsidiesContent() {
   const [sort, setSort] = useState("deadline");
   const [loading, setLoading] = useState(false);
 
-  // F1: filterCameraOnly は共通モジュール
-  // 戦略: バックエンド API > バンドル（同件数以上の方を採用）
-  // → Railway のデプロイ遅延でAPIが古いデータを返している場合でも
-  //   バンドル側の最新データが必ず表示される（/match との件数齟齬を防ぐ）
   useEffect(() => {
     setLoading(true);
-    // バンドル同梱データを基準値として計算
     const bundledFiltered = filterCameraOnly(
       BUNDLED_SUBSIDIES.filter((s) => {
         const ti = s.target_industries ?? [];
@@ -122,22 +84,18 @@ function SubsidiesContent() {
         return indOk && prefOk && catOk;
       }),
     );
-
     fetchSubsidies({ prefecture: prefecture || undefined, category: category || undefined, industry: industry || undefined })
       .then((res) => {
         const apiFiltered = filterCameraOnly(res.subsidies);
-        // 件数が多い方を採用（API が古い/欠落データを返した場合の自衛）
         setSubsidies(apiFiltered.length >= bundledFiltered.length ? apiFiltered : bundledFiltered);
       })
       .catch(() => {
-        // API 失敗時はバンドルデータ
         setSubsidies(bundledFiltered.length > 0 ? bundledFiltered : CAMERA_SUBSIDIES);
       })
       .finally(() => setLoading(false));
   }, [prefecture, category, industry]);
 
   const filtered = subsidies.filter((s) => {
-    if (keyword && !s.name.includes(keyword) && !s.ministry.includes(keyword)) return false;
     if (amountFilter === "50" && s.max_amount > 500000) return false;
     if (amountFilter === "100" && s.max_amount > 1000000) return false;
     if (amountFilter === "500" && s.max_amount > 5000000) return false;
@@ -154,507 +112,83 @@ function SubsidiesContent() {
   const sorted = [...filtered].sort((a, b) => {
     if (sort === "deadline") return (getDaysUntil(a.deadline) ?? 999) - (getDaysUntil(b.deadline) ?? 999);
     if (sort === "amount") return b.max_amount - a.max_amount;
+    if (sort === "new") {
+      const ua = a.updated_at ?? "";
+      const ub = b.updated_at ?? "";
+      if (ub !== ua) return ub > ua ? 1 : -1;
+      return b.id.localeCompare(a.id);
+    }
     return 0;
   });
 
+  const activeFilterCount = [prefecture, industry, amountFilter, deadlineFilter, category, govLevel]
+    .filter(Boolean).length;
+
   const handleReset = () => {
-    setPrefecture("");
-    setCategory("");
-    setAmountFilter("");
-    setDeadlineFilter("");
-    setGovLevel("");
-    setIndustry("");
-    setKeyword("");
-    setSearchInput("");
+    setPrefecture(""); setCategory(""); setAmountFilter(""); setDeadlineFilter("");
+    setGovLevel(""); setIndustry("");
   };
 
-  /* ── Left column: Filters ── */
-  const left = (
-    <div>
-      <span className="section-title">フィルター</span>
-
-      <div style={{ marginBottom: 14 }}>
-        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
-          都道府県
-        </label>
-        <select
-          className="form-select"
-          style={{ fontSize: 13, padding: "8px 10px" }}
-          value={prefecture}
-          onChange={(e) => setPrefecture(e.target.value)}
-        >
-          <option value="">すべて</option>
-          {SERVICE_PREFECTURES.map((p) => <option key={p} value={p}>{p}</option>)}
-        </select>
-      </div>
-
-      <div style={{ marginBottom: 14 }}>
-        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
-          業種
-        </label>
-        <select
-          className="form-select"
-          style={{ fontSize: 13, padding: "8px 10px" }}
-          value={industry}
-          onChange={(e) => setIndustry(e.target.value)}
-        >
-          <option value="">すべて</option>
-          {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
-        </select>
-      </div>
-
-      <div style={{ marginBottom: 14 }}>
-        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
-          補助上限額
-        </label>
-        <select
-          className="form-select"
-          style={{ fontSize: 13, padding: "8px 10px" }}
-          value={amountFilter}
-          onChange={(e) => setAmountFilter(e.target.value)}
-        >
-          {AMOUNT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-      </div>
-
-      <div style={{ marginBottom: 14 }}>
-        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--hc-text)", marginBottom: 4 }}>
-          締切
-        </label>
-        <select
-          className="form-select"
-          style={{ fontSize: 13, padding: "8px 10px" }}
-          value={deadlineFilter}
-          onChange={(e) => setDeadlineFilter(e.target.value)}
-        >
-          {DEADLINE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-      </div>
-
-      <button
-        onClick={handleReset}
-        style={{
-          background: "none",
-          border: "none",
-          fontSize: 11,
-          color: "var(--hc-primary)",
-          fontWeight: 500,
-          cursor: "pointer",
-          padding: 0,
-          marginTop: 6,
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
-        onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
-      >
-        リセット
-      </button>
-
-      <div className="divider" />
-
-      <span className="section-title">カテゴリ</span>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-        {CATEGORIES.map((c) => {
-          const isActive = category === c.value;
-          const count = c.value === ""
-            ? subsidies.length
-            : subsidies.filter((s) => s.category === c.value).length;
-          return (
-            <li key={c.value}>
-              <button
-                onClick={() => setCategory(c.value)}
-                style={{
-                  width: "100%",
-                  textAlign: "left",
-                  padding: "6px 8px",
-                  fontSize: 12,
-                  color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
-                  background: isActive ? "var(--hc-primary-muted)" : "transparent",
-                  fontWeight: isActive ? 500 : 400,
-                  border: "none",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  fontFamily: "inherit",
-                  transition: "background 0.15s",
-                }}
-              >
-                <span>{c.label}</span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    background: "var(--hc-text-subtle)",
-                    padding: "1px 6px",
-                    borderRadius: 9999,
-                  }}
-                >
-                  {count}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-
-      <div className="divider" />
-
-      <span className="section-title">管轄</span>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-        {GOV_LEVELS.map((g) => {
-          const isActive = govLevel === g.value;
-          const count = g.value === ""
-            ? subsidies.length
-            : g.value === "national"
-            ? subsidies.filter((s) => s.pref_code === "00").length
-            : subsidies.filter((s) => s.pref_code !== "00").length;
-          return (
-            <li key={g.value}>
-              <button
-                onClick={() => setGovLevel(g.value)}
-                style={{
-                  width: "100%",
-                  textAlign: "left",
-                  padding: "6px 8px",
-                  fontSize: 12,
-                  color: isActive ? "var(--hc-primary)" : "var(--hc-text-muted)",
-                  background: isActive ? "var(--hc-primary-muted)" : "transparent",
-                  fontWeight: isActive ? 500 : 400,
-                  border: "none",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  fontFamily: "inherit",
-                  transition: "background 0.15s",
-                }}
-              >
-                <span>{g.label}</span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    background: "var(--hc-text-subtle)",
-                    padding: "1px 6px",
-                    borderRadius: 9999,
-                  }}
-                >
-                  {count}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-
-  /* ── Center column: Search + Table ── */
-  const center = (
-    <div style={{ padding: "0" }}>
-      {/* Search row */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="補助金名、キーワードで検索..."
-          style={{ flex: 1, fontSize: 14, padding: "10px 14px" }}
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && setKeyword(searchInput)}
-        />
-        <button
-          onClick={() => setKeyword(searchInput)}
-          style={{
-            background: "var(--hc-primary)",
-            color: "#fff",
-            padding: "10px 18px",
-            borderRadius: 6,
-            fontSize: 13,
-            fontWeight: 700,
-            border: "none",
-            cursor: "pointer",
-            fontFamily: "inherit",
-            transition: "background 0.2s",
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.background = "var(--hc-primary-hover)")}
-          onMouseOut={(e) => (e.currentTarget.style.background = "var(--hc-primary)")}
-        >
-          検索
-        </button>
-      </div>
-
-      {/* List meta: count + sort */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, fontSize: 12, color: "var(--hc-text-muted)" }}>
-        <span>{loading ? "読み込み中..." : `${sorted.length}件の補助金`}</span>
-        <select
-          style={{
-            padding: "4px 8px",
-            border: "1px solid var(--hc-border)",
-            borderRadius: 4,
-            fontSize: 11,
-            fontFamily: "inherit",
-            color: "var(--hc-text-muted)",
-            background: "var(--hc-card-bg)",
-          }}
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-        >
-          <option value="deadline">締切が近い順</option>
-          <option value="amount">金額が大きい順</option>
-          <option value="new">新着順</option>
-        </select>
-      </div>
-
-      {/* Table */}
-      <div
-        style={{
-          background: "var(--hc-card-bg)",
-          border: "1px solid var(--hc-border)",
-          borderRadius: 8,
-          overflow: "hidden",
-          boxShadow: "var(--hc-shadow)",
-        }}
-      >
-        {/* Table header */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2.5fr 1fr 1fr 1fr 100px",
-            padding: "8px 14px",
-            background: "var(--hc-primary-faint)",
-            borderBottom: "1px solid var(--hc-border)",
-            fontSize: 11,
-            fontWeight: 600,
-            color: "var(--hc-text-muted)",
-            textTransform: "uppercase",
-            letterSpacing: "0.3px",
-          }}
-        >
-          <span>補助金名</span>
-          <span>上限額</span>
-          <span>締切</span>
-          <span>更新日</span>
-          <span />
-        </div>
-
-        {sorted.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px 0", fontSize: 13, color: "var(--hc-text-muted)" }}>
-            条件に合う補助金が見つかりませんでした
-          </div>
-        )}
-
-        {/* Table rows */}
-        {sorted.map((s, idx) => {
-          const days = getDaysUntil(s.deadline);
-          const isUrgent = days <= 30;
-          const isNew = false; // H7: カメラ無関係補助金除外後はNEWバッジ対象なし
-          return (
-            <div
-              key={s.id}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "2.5fr 1fr 1fr 1fr 100px",
-                padding: "10px 14px",
-                borderBottom: idx < sorted.length - 1 ? "1px solid var(--hc-border)" : "none",
-                fontSize: 13,
-                alignItems: "center",
-                cursor: "pointer",
-                transition: "background 0.1s",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "var(--hc-primary-faint)")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
-            >
-              <span style={{ fontWeight: 600, color: "var(--hc-navy)" }}>
-                {s.name}
-                {isUrgent && (
-                  <span
-                    style={{
-                      fontSize: 10,
-                      color: "var(--hc-accent)",
-                      background: "var(--hc-accent-light)",
-                      padding: "1px 6px",
-                      borderRadius: 4,
-                      fontWeight: 600,
-                      marginLeft: 4,
-                    }}
-                  >
-                    あと{days}日
-                  </span>
-                )}
-                {isNew && (
-                  <span
-                    style={{
-                      fontSize: 10,
-                      color: "var(--hc-primary)",
-                      background: "var(--hc-primary-soft)",
-                      padding: "1px 6px",
-                      borderRadius: 4,
-                      fontWeight: 600,
-                      marginLeft: 4,
-                    }}
-                  >
-                    NEW
-                  </span>
-                )}
-              </span>
-              <span style={{ color: "var(--hc-primary)", fontWeight: 700 }}>
-                {formatAmountDisplay(s)}
-              </span>
-              <span
-                style={{
-                  fontSize: 12,
-                  color: isUrgent ? "var(--hc-accent)" : undefined,
-                  fontWeight: isUrgent ? 600 : undefined,
-                }}
-              >
-                {s.deadline}
-              </span>
-              <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>
-                {s.updated_at ? `${s.updated_at} 更新` : UPDATED_MAP[s.id] || ""}
-              </span>
-              <span>
-                <Link
-                  href={`/subsidies/${s.id}`}
-                  style={{
-                    padding: "4px 10px",
-                    border: "1px solid var(--hc-border)",
-                    borderRadius: 4,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "var(--hc-primary)",
-                    background: "none",
-                    textDecoration: "none",
-                    transition: "all 0.15s",
-                    display: "inline-block",
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = "var(--hc-primary)";
-                    e.currentTarget.style.background = "var(--hc-primary-subtle)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = "var(--hc-border)";
-                    e.currentTarget.style.background = "none";
-                  }}
-                >
-                  詳しく見る
-                </Link>
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  /* ── Right column: Quick actions ── */
-  const right = (
-    <div>
-      <span className="section-title">クイックアクション</span>
-
-      {/* CTA: 業種から探す */}
-      <Link
-        href="/match"
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "10px 12px",
-          marginBottom: 6,
-          background: "var(--hc-primary)",
-          color: "var(--hc-white)",
-          border: "1px solid var(--hc-primary)",
-          borderRadius: 6,
-          fontSize: 12,
-          fontWeight: 600,
-          textAlign: "center",
-          cursor: "pointer",
-          fontFamily: "inherit",
-          textDecoration: "none",
-          transition: "all 0.15s",
-        }}
-      >
-        業種から探す →
-      </Link>
-
-      {/* 申請書作成 */}
-      <Link
-        href="#"
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "10px 12px",
-          marginBottom: 6,
-          background: "var(--hc-card-bg)",
-          border: "1px solid var(--hc-border)",
-          borderRadius: 6,
-          fontSize: 12,
-          fontWeight: 500,
-          color: "var(--hc-text)",
-          textAlign: "left",
-          cursor: "pointer",
-          fontFamily: "inherit",
-          textDecoration: "none",
-          transition: "all 0.15s",
-        }}
-      >
-        <span style={{ marginRight: 4 }}>&#128196;</span>選択した補助金で申請書作成
-      </Link>
-
-      {/* 施工パートナー */}
-      <Link
-        href="/partners/multik"
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "10px 12px",
-          marginBottom: 6,
-          background: "var(--hc-card-bg)",
-          border: "1px solid var(--hc-border)",
-          borderRadius: 8,
-          fontSize: 12,
-          fontWeight: 500,
-          color: "var(--hc-text)",
-          textAlign: "left",
-          cursor: "pointer",
-          fontFamily: "inherit",
-          textDecoration: "none",
-          transition: "all 0.15s",
-        }}
-      >
-        <span style={{ marginRight: 4 }}>&#128295;</span>施工パートナーを見る
-      </Link>
-
-      <div className="divider" />
-
-      <span className="section-title">補助金情報について</span>
-      <p style={{ fontSize: 11, color: "var(--hc-text-muted)", lineHeight: 1.5, marginBottom: 8 }}>
-        掲載情報は各省庁・自治体の公式データに基づきます。最終更新日を必ずご確認ください。
-      </p>
-
-      {/* マスコット */}
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: 20,
-          padding: 12,
-          background: "var(--hc-primary-faint)",
-          borderRadius: 6,
-        }}
-      >
-        <p style={{ fontSize: 10, color: "var(--hc-text-muted)", margin: 0 }}>
-          キーワードで絞り込むと<br />条件に合う補助金が見つかります
-        </p>
-      </div>
-    </div>
-  );
+  const commonFilterProps = {
+    subsidies,
+    sort,
+    prefecture,
+    industry,
+    category,
+    govLevel,
+    amountFilter,
+    deadlineFilter,
+    activeFilterCount,
+    onSort: setSort,
+    onPrefecture: setPrefecture,
+    onIndustry: setIndustry,
+    onCategory: setCategory,
+    onGovLevel: setGovLevel,
+    onAmountFilter: setAmountFilter,
+    onDeadlineFilter: setDeadlineFilter,
+    onReset: handleReset,
+  };
 
   return (
-    <ThreeColumnLayout
-      left={left}
-      center={center}
-      right={right}
-      gridCols="220px 1fr 240px"
-    />
+    <div style={OUTER}>
+      {/* ヘッダー帯（フル幅・CTAなし） */}
+      <div style={{ marginBottom: 40 }}>
+        <PublicSectionHeader
+          overline="Subsidies"
+          title="補助金一覧"
+          sub="防犯カメラ導入に使える補助金を、業種・地域・金額でしぼり込めます。"
+          as="h1"
+          titleClass="hc-headline"
+          align="left"
+        />
+      </div>
+
+      {/* 2カラムグリッド（≤900px はブロック） */}
+      <div className="subsidies-grid">
+        {/* 左: フィルターレール（デスクトップのみ・sticky） */}
+        <SubsidiesFilterRail {...commonFilterProps} />
+
+        {/* 右: 本体 */}
+        <main style={{ minWidth: 0 }}>
+          {/* モバイルバー（≤900px 時に表示） */}
+          <SubsidiesToolbar {...commonFilterProps} />
+
+          {/* カードグリッド（件数+ソート行 + auto-fill カード） */}
+          <SubsidiesCardGrid
+            sorted={sorted}
+            loading={loading}
+            sort={sort}
+            formatAmountDisplay={formatAmountDisplay}
+            onSort={setSort}
+          />
+
+          {/* フットノート（景表法注記維持） */}
+          <div style={{ marginTop: 48 }}>
+            <SubsidiesFooterNote />
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
 

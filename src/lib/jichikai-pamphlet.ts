@@ -50,7 +50,7 @@ h2 { font-size: 12pt; color: #15803D; margin: 14px 0 4px; border-left: 4px solid
 .box { border: 1px solid #E7E5E4; padding: 10px 14px; margin: 10px 0; background: #FAFAF5; }
 table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 10pt; }
 th, td { border: 1px solid #E7E5E4; padding: 6px 10px; text-align: left; }
-th { background: #FEF9C3; width: 38%; }
+th { background: #f0fdf4; width: 38%; } /* hc-primary-faint 相当（accent-light黄を撤去） */
 .note { font-size: 9pt; color: #57534E; }
 .footer { margin-top: 14pt; border-top: 1px solid #E7E5E4; padding-top: 6pt; font-size: 9pt; color: #57534E; }
 .amount { font-size: 14pt; font-weight: bold; color: #15803D; }

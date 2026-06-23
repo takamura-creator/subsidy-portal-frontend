@@ -290,7 +290,7 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
         <h2
           id="step1-heading"
           className="text-lg font-bold text-navy mb-1"
-          style={{ fontFamily: "'Sora', sans-serif" }}
+          style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
         >
           Step 1：会社情報
         </h2>
@@ -315,7 +315,7 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
             <h3
               id="hp-extract-heading"
               className="text-[14px] font-bold text-navy"
-              style={{ fontFamily: "'Sora', sans-serif" }}
+              style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}
             >
               ホームページから自動取得
             </h3>

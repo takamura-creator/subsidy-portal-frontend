@@ -268,7 +268,7 @@ export default function ApplicationDetailPage({
         <div style={{ height: "100%", width: progressWidth, background: "var(--hc-primary)", borderRadius: 3 }} />
       </div>
 
-      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: "1.2rem", fontWeight: 700, color: "var(--hc-navy)", letterSpacing: "-0.3px", marginBottom: 8 }}>
+      <h1 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: "1.2rem", fontWeight: 700, color: "var(--hc-navy)", letterSpacing: "-0.3px", marginBottom: 8 }}>
         {app.subsidy_name ?? app.subsidy_id}
         <span style={{ fontSize: 13, fontWeight: 500, color: "var(--hc-text-muted)", marginLeft: 8 }}>
           {progressWidth.replace("%", "")}%
@@ -277,7 +277,7 @@ export default function ApplicationDetailPage({
 
       {/* 会社情報 */}
       <div id="company" style={{ marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
+        <h2 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
           会社情報
           <a href={`/my/wizard?id=${id}&step=0`} style={{ fontSize: 12, color: "var(--hc-primary)", fontWeight: 500, textDecoration: "none", float: "right", display: "inline-flex", alignItems: "center", gap: 4 }}>
             修正
@@ -296,7 +296,7 @@ export default function ApplicationDetailPage({
 
       {/* 事業計画 */}
       <div id="plan" style={{ marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
+        <h2 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
           事業計画
           <span style={{ fontSize: 11, color: "var(--hc-accent)", fontWeight: 500, marginLeft: 8 }}>入力中</span>
         </h2>
@@ -312,7 +312,7 @@ export default function ApplicationDetailPage({
 
       {/* 見積書 */}
       <div id="estimate" style={{ marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
+        <h2 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
           見積書
           <span style={{ fontSize: 11, color: "var(--hc-text-muted)", marginLeft: 8 }}>未着手</span>
         </h2>
@@ -323,7 +323,7 @@ export default function ApplicationDetailPage({
 
       {/* 添付書類 */}
       <div id="docs" style={{ marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
+        <h2 style={{ fontFamily: "'Sora', 'Noto Sans JP', sans-serif", fontSize: 15, fontWeight: 700, color: "var(--hc-navy)", marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid var(--hc-border)" }}>
           添付書類
           <span style={{ fontSize: 11, color: "var(--hc-text-muted)", marginLeft: 8 }}>未着手</span>
         </h2>

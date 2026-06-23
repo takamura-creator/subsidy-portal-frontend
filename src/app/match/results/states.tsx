@@ -10,9 +10,9 @@ export const SCORE_STYLES: Record<string, React.CSSProperties> = {
     border: "2px solid var(--hc-success)",
   },
   中: {
-    background: "var(--hc-accent-subtle)",
-    color: "var(--hc-accent)",
-    border: "2px solid var(--hc-accent)",
+    background: "var(--hc-text-subtle)",
+    color: "var(--hc-text-muted)",
+    border: "2px solid var(--hc-border)",
   },
   低: {
     background: "var(--hc-text-subtle)",

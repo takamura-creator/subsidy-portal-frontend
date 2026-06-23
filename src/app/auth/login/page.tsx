@@ -75,7 +75,7 @@ function LoginForm() {
         >
           <h1
             style={{
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
               fontSize: "1.2rem",
               fontWeight: 700,
               color: "var(--hc-navy)",

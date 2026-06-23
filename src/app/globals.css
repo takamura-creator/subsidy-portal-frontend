@@ -25,19 +25,23 @@
   /* Semantic Colors */
   --hc-success: #16A34A;
   --hc-warning: #EAB308;
+  --hc-warning-subtle: #FFF7ED;   /* warning 背景（ブランド金と別系統・落ち着いた暖色） */
+  --hc-warning-text: #92400E;     /* warning 文字（amber-800 相当） */
   --hc-error: #DC2626;
+  --hc-overlay: color-mix(in srgb, var(--hc-text) 40%, transparent); /* モーダル/シートオーバーレイ */
 
   /* Neutral Colors */
-  --hc-bg: #FAFAF5;
+  /* v2.1: #F2F0EB(ピンク/モーブ味) → #F6F3E9（黄み寄りアイボリー・ピンク味除去） */
+  --hc-bg: #F6F3E9;
   --hc-bg-dark: #1C1917;
   --hc-text: #1C1917;
   --hc-text-muted: #57534E;
-  --hc-border: #E7E5E4;
-  --hc-white: #FFFFFF;
+  --hc-border: #E2DDD5;
+  --hc-white: #FFFEFB;   /* カードをアイボリー背景から僅かに浮かせる暖色白 */
 
-  /* Elevation */
-  --hc-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  --hc-shadow-md: 0 4px 16px rgba(0,0,0,0.04);
+  /* Elevation — v2: 影を強化してカードを地から分離（白on白ギラつき解消） */
+  --hc-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  --hc-shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
   --hc-focus-ring: 0 0 0 2px rgba(21,128,61,0.1);
 
   /* Transparent aliases（HF-8 / Sprint 4 Task 2: ハードコードRGBA置換用） */
@@ -67,12 +71,12 @@
   /* Unified Card Gradient（全ページのカード背景はこれを参照）
      ヒーロー subsidy-card と同じ視認性: cream の page 背景上で明確に浮き上がる
      白ベースに primary/accent をブレンドし、中央は純白に近い */
+  /* v2: 金グラデ除去。純白系＋極淡緑のみ */
   --hc-card-bg:
     linear-gradient(
       168deg,
-      color-mix(in srgb, var(--hc-primary) 10%, var(--hc-white)) 0%,
-      var(--hc-white) 50%,
-      color-mix(in srgb, var(--hc-accent) 14%, var(--hc-white)) 100%
+      color-mix(in srgb, var(--hc-primary) 5%, var(--hc-white)) 0%,
+      var(--hc-white) 100%
     );
   --hc-card-border: color-mix(in srgb, var(--hc-primary) 14%, var(--hc-border));
   --hc-card-border-bottom: color-mix(in srgb, var(--hc-primary) 24%, var(--hc-border));
@@ -129,38 +133,29 @@ html {
 
 body {
   min-height: 100%;
-  /* fixed StatusBar (28px) の下にコンテンツが隠れないようパディング */
-  padding-bottom: var(--hc-status-h, 28px);
+  /* StatusBar は admin/my 配下のみ表示。公開ページでは不要 */
 }
 
 body {
   font-family: 'Noto Sans JP', 'Sora', sans-serif;
   color: var(--hc-text);
   background:
-    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(21,128,61,0.15), transparent),
-    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(202,138,4,0.08), transparent),
-    linear-gradient(175deg, #f0fdf4 0%, #fefce8 40%, #fafaf5 100%);
+    radial-gradient(ellipse 80% 60% at 20% 80%, var(--hc-primary-faint), transparent),
+    var(--hc-bg);
   background-attachment: fixed;
   line-height: 1.6;
   display: flex;
   flex-direction: column;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 26L30 52L0 26Z' fill='none' stroke='rgba(21,128,61,0.12)' stroke-width='1'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-}
+/* body::before — 公開ページでは非表示（管理画面のみ必要ならクラス化） */
 
 /* ============================================
    Typography
    ============================================ */
 
 h1, h2, h3 {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   color: var(--hc-navy);
   letter-spacing: -0.5px;
@@ -350,7 +345,7 @@ p {
 }
 .cb.selected, .cb.on {
   border-color: var(--hc-primary);
-  background: rgba(21,128,61,0.04);
+  background: var(--hc-primary-subtle);
   color: var(--hc-primary);
   font-weight: 500;
 }
@@ -363,7 +358,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: 12px;
   border: 2px solid var(--hc-border);
@@ -379,7 +374,7 @@ p {
 
 /* Section title (sidebar) */
 .section-title {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-size: 12px;
   font-weight: 700;
   color: var(--hc-navy);
@@ -406,7 +401,7 @@ p {
   cursor: pointer;
   transition: background 0.15s;
 }
-.guide-item:hover { background: rgba(21,128,61,0.04); }
+.guide-item:hover { background: var(--hc-primary-subtle); }
 
 /* Link list */
 .link-list a {
@@ -420,7 +415,7 @@ p {
   transition: all 0.15s;
 }
 .link-list a:hover {
-  background: rgba(21,128,61,0.04);
+  background: var(--hc-primary-subtle);
   color: var(--hc-primary);
 }
 
@@ -522,12 +517,12 @@ button:focus-visible, a:focus-visible {
 
 /* Sora 見出し（letterSpacing なし） */
 .hc-heading-sora {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
 }
 
 /* Sora 見出し（letterSpacing -0.3px・タイトル用） */
 .hc-heading-sora-tight {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   letter-spacing: -0.3px;
 }
 
@@ -561,7 +556,7 @@ button:focus-visible, a:focus-visible {
 }
 
 .home-welcome h1 {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: 56px;
   letter-spacing: -0.5px;
@@ -678,7 +673,7 @@ button:focus-visible, a:focus-visible {
   font-weight: 700;
   color: var(--hc-primary);
   letter-spacing: 0.12em;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   text-transform: uppercase;
 }
 .hero-area-list {
@@ -766,7 +761,7 @@ button:focus-visible, a:focus-visible {
 }
 
 .trust-block-heading {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-size: 15px;
   font-weight: 700;
   color: var(--hc-navy);
@@ -839,7 +834,7 @@ button:focus-visible, a:focus-visible {
 
 /* h1 問いかけコピー */
 .home-welcome-h1 {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: clamp(1.6rem, 5vw, 2.2rem);
   color: var(--hc-navy);
@@ -916,7 +911,7 @@ button:focus-visible, a:focus-visible {
   margin: 0;
 }
 .paf-amount-number {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: clamp(2rem, 8vw, 3rem);
   color: var(--hc-navy);
@@ -925,7 +920,7 @@ button:focus-visible, a:focus-visible {
   line-height: 1;
 }
 .paf-amount-unit {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-size: 1rem;
   font-weight: 400;
   color: var(--hc-text-muted);
@@ -1049,7 +1044,7 @@ button:focus-visible, a:focus-visible {
 }
 
 .subsidy-card-amount {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: var(--hc-primary);
@@ -1105,4 +1100,101 @@ button:focus-visible, a:focus-visible {
   .hc-status-bar .hc-status-copy {
     font-size: 10px;
   }
+}
+
+/* ============================================
+   公開LP タイポスケール（art direction v2）
+   管理画面の h1(1.3rem) には適用しない — home-v2 配下のみ有効
+   ============================================ */
+
+/* Display: ヒーロー h1 のみ。1ページ1回。 */
+.hc-display {
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
+  font-size: clamp(40px, 7vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* Headline: セクション見出し */
+.hc-headline {
+  font-family: 'Sora', 'Noto Sans JP', sans-serif;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* Section padding 96px（公開ページのみ） */
+.hc-section {
+  padding-top: 96px;
+  padding-bottom: 96px;
+}
+
+/* Hero padding 120px */
+.hc-hero {
+  padding-top: 120px;
+  padding-bottom: 140px;
+}
+
+/* 景表法注記 — 11px muted・常時表示 */
+.mc-disclaimer {
+  font-size: 11px;
+  color: var(--hc-text-muted);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+/* home-v2 — 公開LP ラッパー */
+.home-v2 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+/* hero-v2-grid — HeroInteractive の2カラムレイアウト（inline style 禁止・CSS統一） */
+.hero-v2-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* モバイル: 縦積み */
+@media (max-width: 768px) {
+  .hero-v2-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-display, .hc-headline { transition: none; }
+}
+
+/* SubsidiesToolbar: デスクトップ=select群表示 / モバイル=絞り込みボタン表示 */
+.desktop-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+.mobile-filter-btn { display: none; }
+@media (max-width: 640px) {
+  .desktop-filters { display: none !important; }
+  .mobile-filter-btn { display: flex !important; }
+}
+
+/* 補助金一覧 カードグリッドレイアウト出し分け（左レール248px ⇔ モバイルシート） */
+.subsidies-grid { display: grid; grid-template-columns: 248px 1fr; gap: 40px; align-items: start; }
+.subsidies-rail { display: block; }
+.subsidies-mobilebar { display: none; }
+@media (max-width: 900px) {
+  .subsidies-grid { display: block; }
+  .subsidies-rail { display: none !important; }
+  .subsidies-mobilebar { display: flex !important; }
+}
+@media (max-width: 640px) {
+  .subsidies-cardgrid { grid-template-columns: 1fr !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .subsidies-cardgrid a { transition: none !important; transform: none !important; }
 }

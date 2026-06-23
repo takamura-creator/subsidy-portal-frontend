@@ -1,613 +1,222 @@
 "use client";
 
 /**
- * 補助金詳細ページのクライアントインタラクション層。
- *
- * - Sprint 4 Task 0 で Server Component 化（`page.tsx`）した際に、
- *   クライアント側の state（目次 active / 書類チェックリスト）を本ファイルに分離。
- * - propsで `subsidy` を受け取り、fetch は行わない（データは Server Component がビルド時に確定）。
+ * 補助金詳細ページ — 単一カラム（Apple スタイル）。
+ * Sprint 2 Wave 単一カラム化: ThreeColumnLayout 廃止。
+ * - AnchorNav（sticky top 横並びTOC）
+ * - 本文 max-width 760px centered
+ * - StickyCtaBar（sticky bottom）
+ * - 本文末インラインCTA
+ * - 景表法注記 mc-disclaimer 維持
  */
 
-import { useState } from "react";
 import Link from "next/link";
-import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
-import EligibilityChecker from "@/components/subsidies/EligibilityChecker";
+import AnchorNav from "@/components/subsidies/AnchorNav";
+import SubsidyJichikaiBlocks from "@/components/subsidies/SubsidyJichikaiBlocks";
+import SubsidyInfoSections from "@/components/subsidies/SubsidyInfoSections";
+import StickyCtaBar from "@/components/subsidies/StickyCtaBar";
 import type { Subsidy } from "@/lib/api";
-import { getDaysUntil } from "@/lib/deadlineUtils";
-
-function formatAmount(amount: number): string {
-  if (amount >= 10000000) return `${Math.round(amount / 10000000) * 1000}万円`;
-  if (amount >= 10000) return `${Math.round(amount / 10000)}万円`;
-  return `${amount.toLocaleString("ja-JP")}円`;
-}
-
-/** 補助率を人間用テキストに変換 */
-function formatRate(rateMin: number, rateMax: number): string {
-  const minPct = Math.round(rateMin * 100);
-  const maxPct = Math.round(rateMax * 100);
-  if (minPct === maxPct) return `${minPct}%（${formatFraction(rateMin)}）`;
-  return `${formatFraction(rateMin)}〜${formatFraction(rateMax)}`;
-}
-
-function formatFraction(rate: number): string {
-  if (rate === 0.5) return "1/2";
-  if (rate === 0.67 || Math.abs(rate - 2/3) < 0.01) return "2/3";
-  if (rate === 0.75) return "3/4";
-  if (rate === 1) return "全額";
-  if (rate === 0.25) return "1/4";
-  if (rate === 0.33 || Math.abs(rate - 1/3) < 0.01) return "1/3";
-  return `${Math.round(rate * 100)}%`;
-}
-
-const TOC_ITEMS = [
-  { href: "#overview", label: "概要" },
-  { href: "#requirements", label: "対象要件" },
-  { href: "#amount", label: "補助額・補助率" },
-  { href: "#deadline", label: "締切・スケジュール" },
-  { href: "#howto", label: "申請方法" },
-  { href: "#industries", label: "対象業種" },
-  { href: "#documents", label: "必要書類一覧" },
-];
+import { getDaysUntil, isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
+import { formatAmount } from "@/lib/subsidyFormatters";
 
 export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }) {
-  const [activeSection, setActiveSection] = useState("#overview");
-  const docs = s.required_documents ?? [];
-
   const days = getDaysUntil(s.deadline);
+  // H-3: status と deadline の両方でガード
+  const ctaActive = isCtaActive(s.status, s.deadline);
+  const disabledReason = ctaActive ? "" : getCtaDisabledReason(s.status, s.deadline);
+  const isJichikai = s.target_industries?.includes("自治会・町会") ?? false;
 
-  /* ── Left column: Back + TOC ── */
-  const left = (
-    <div>
-      <Link
-        href="/subsidies"
+  return (
+    <>
+      {/* sticky 横並び TOC ナビ */}
+      <AnchorNav />
+
+      {/* 本文エリア（max-width 760px centered） */}
+      <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 4,
-          fontSize: 12,
-          color: "var(--hc-text-muted)",
-          textDecoration: "none",
-          marginBottom: 16,
-          transition: "color 0.2s",
+          maxWidth: 760,
+          margin: "0 auto",
+          padding: "40px 20px 120px",
         }}
-        onMouseOver={(e) => (e.currentTarget.style.color = "var(--hc-primary)")}
-        onMouseOut={(e) => (e.currentTarget.style.color = "var(--hc-text-muted)")}
       >
-        &larr; 補助金一覧
-      </Link>
+        {/* パンくずリスト */}
+        <div style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 20 }}>
+          <Link href="/subsidies" style={{ color: "var(--hc-primary)", textDecoration: "none" }}>
+            補助金一覧
+          </Link>
+          {" › "}
+          {s.name}
+        </div>
 
-      <span className="section-title">目次</span>
+        {/* h1 — clamp(32px, 4vw, 48px) */}
+        <h1
+          style={{
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+            fontSize: "clamp(32px, 4vw, 48px)",
+            fontWeight: 700,
+            color: "var(--hc-navy)",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.2,
+            marginBottom: 16,
+            marginTop: 0,
+          }}
+        >
+          {s.name}
+        </h1>
 
-      <div className="link-list">
-        {TOC_ITEMS.map((item) => (
-          <a
-            key={item.href}
-            href={item.href}
-            onClick={() => setActiveSection(item.href)}
+        {/* メタタグ行 */}
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+          {/* 締切バッジ */}
+          <span
             style={{
-              display: "block",
-              padding: "8px 10px",
-              marginBottom: 2,
-              borderRadius: 6,
-              fontSize: 13,
-              color: activeSection === item.href ? "var(--hc-primary)" : "var(--hc-text-muted)",
-              textDecoration: "none",
-              transition: "all 0.15s",
-              background: activeSection === item.href ? "var(--hc-primary-muted)" : "transparent",
-              fontWeight: activeSection === item.href ? 500 : 400,
-              borderLeft: activeSection === item.href ? "3px solid var(--hc-primary)" : "3px solid transparent",
-              paddingLeft: activeSection === item.href ? 7 : 10,
+              fontSize: 12,
+              padding: "4px 10px",
+              borderRadius: 9999,
+              fontWeight: 600,
+              background: "var(--hc-accent-subtle)",
+              color: "var(--hc-accent)",
             }}
           >
-            {item.label}
-          </a>
-        ))}
-      </div>
-    </div>
-  );
+            {/* H-3: status/deadline 両方チェックしたバッジ表示 */}
+              {!ctaActive
+                ? (disabledReason || `締切: ${s.deadline}`)
+                : days !== null && days > 0
+                  ? `締切まであと${days}日`
+                  : `締切: ${s.deadline}`}
+          </span>
 
-  /* ── Center column: Content ── */
-  const center = (
-    <div style={{ padding: 0 }}>
-      {/* Breadcrumb */}
-      <div style={{ fontSize: 12, color: "var(--hc-text-muted)", marginBottom: 16 }}>
-        <Link href="/subsidies" style={{ color: "var(--hc-primary)", textDecoration: "none" }}>
-          補助金一覧
-        </Link>
-        {" > "}
-        {s.name}
-      </div>
+          {/* 上限額バッジ（景表法: Caption級・無彩色） */}
+          <span
+            style={{
+              fontSize: 12,
+              padding: "4px 10px",
+              borderRadius: 9999,
+              fontWeight: 500,
+              background: "var(--hc-bg)",
+              color: "var(--hc-text-muted)",
+            }}
+          >
+            上限額（目安）{formatAmount(s.max_amount)}
+          </span>
 
-      {/* Title */}
-      <h1 style={{
-        fontFamily: "'Sora', sans-serif",
-        fontSize: "1.4rem",
-        fontWeight: 700,
-        color: "var(--hc-navy)",
-        letterSpacing: "-0.5px",
-        marginBottom: 8,
-      }}>
-        {s.name}
-      </h1>
+          {/* 出典バッジ */}
+          <span
+            style={{
+              fontSize: 12,
+              padding: "4px 10px",
+              borderRadius: 9999,
+              fontWeight: 500,
+              background: "var(--hc-bg)",
+              color: "var(--hc-text-muted)",
+            }}
+          >
+            出典: {s.ministry}{s.updated_at ? ` ・ ${s.updated_at} 更新` : ""}
+          </span>
+        </div>
 
-      {/* Meta tags */}
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
-        <span style={{
-          fontSize: 12,
-          padding: "4px 10px",
-          borderRadius: 9999,
-          fontWeight: 600,
-          background: "var(--hc-accent-light)",
-          color: "var(--hc-accent)",
-        }}>
-          {days !== null && days > 0
-            ? `締切まであと${days}日`
-            : days !== null && days <= 0
-              ? "締切済み（次回公募をお待ちください）"
-              : `締切: ${s.deadline}`}
-        </span>
-        <span style={{
-          fontSize: 12,
-          padding: "4px 10px",
-          borderRadius: 9999,
-          fontWeight: 600,
-          background: "var(--hc-primary-soft)",
-          color: "var(--hc-primary)",
-        }}>
-          最大 {formatAmount(s.max_amount)}
-        </span>
-        <span style={{
-          fontSize: 12,
-          padding: "4px 10px",
-          borderRadius: 9999,
-          fontWeight: 600,
-          background: "var(--hc-text-subtle)",
-          color: "var(--hc-text-muted)",
-        }}>
-          出典: {s.ministry}{s.updated_at ? ` ・ ${s.updated_at} 更新` : ""}
-        </span>
-      </div>
+        {/* 景表法注記 */}
+        <p className="mc-disclaimer" style={{ marginBottom: 32 }}>
+          ※制度・条件により異なります。出典：公式資料。診断は目安です。
+        </p>
 
-      {/* 自治会向け補助金の場合：鵠沼地区実績バナー */}
-      {s.target_industries?.includes("自治会・町会") && (
-        <section
-          style={{
-            marginBottom: 24,
-            padding: "16px 18px",
-            borderRadius: 10,
-            background: "linear-gradient(135deg, var(--hc-primary-faint) 0%, var(--hc-accent-light) 100%)",
-            border: "1px solid var(--hc-primary-edge)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
-            <div style={{
-              fontSize: 13, fontWeight: 700, color: "var(--hc-primary)",
-              padding: "4px 10px", borderRadius: 9999, background: "var(--hc-white)", border: "1px solid var(--hc-primary-edge)",
-              fontFamily: "'Sora', sans-serif", letterSpacing: "-0.3px", flexShrink: 0,
-            }}>
-              湘南エリア 9件の施工実績
-            </div>
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "var(--hc-navy)", margin: "0 0 4px", lineHeight: 1.5 }}>
-                藤沢市鵠沼地区での街頭防犯カメラ施工実績多数
-              </p>
-              <p style={{ fontSize: 12, color: "var(--hc-text-muted)", margin: 0, lineHeight: 1.6 }}>
-                自治会様の補助金申請から設置・運用まで、近隣自治会様の事例を踏まえてご提案いたします。
-              </p>
-            </div>
-            <Link
-              href="/contact"
+        {/* 自治会ブロック（条件付き） */}
+        {isJichikai && (
+          <div style={{ marginBottom: 96 }}>
+            <SubsidyJichikaiBlocks subsidyId={s.id} subsidyName={s.name} />
+          </div>
+        )}
+
+        {/* 各情報セクション */}
+        <SubsidyInfoSections subsidy={s} />
+
+        {/* 本文末インライン CTA — H-3: status/deadline 両方でガード */}
+        <div style={{ marginTop: 56, textAlign: "center" }}>
+          {!ctaActive ? (
+            <span
+              role="button"
+              aria-disabled="true"
+              aria-label={disabledReason || "現在は申請を受け付けていません"}
               style={{
-                fontSize: 12, fontWeight: 700, color: "var(--hc-white)",
-                background: "var(--hc-primary)", padding: "8px 16px", borderRadius: 6,
-                textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0,
+                display: "inline-block",
+                padding: "16px 32px",
+                borderRadius: 8,
+                fontSize: 15,
+                fontWeight: 600,
+                color: "var(--hc-text-muted)",
+                background: "var(--hc-bg)",
+                border: "1px solid var(--hc-border)",
+                cursor: "not-allowed",
+                fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
               }}
             >
-              まずは相談する →
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* 自治会向け補助金の場合：採択適合チェッカー */}
-      {s.target_industries?.includes("自治会・町会") && (
-        <EligibilityChecker key={s.id} subsidyId={s.id} subsidyName={s.name} />
-      )}
-
-      {/* 自治会向け補助金の場合：参考書類テンプレ生成への誘導 */}
-      {s.target_industries?.includes("自治会・町会") && (
-        <section
-          style={{
-            marginBottom: 24,
-            padding: 20,
-            borderRadius: 10,
-            background: "var(--hc-card-bg)",
-            border: "1px solid var(--hc-primary-edge)",
-            boxShadow: "var(--hc-shadow)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
-            <div style={{ fontSize: 32, lineHeight: 1, flexShrink: 0 }}>📝</div>
-            <div style={{ flex: 1, minWidth: 240 }}>
-              <h3
-                style={{
-                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "var(--hc-navy)",
-                  margin: "0 0 4px",
-                  letterSpacing: "-0.3px",
-                }}
-              >
-                参考書類テンプレを作成する
-              </h3>
-              <p style={{ fontSize: 13, color: "var(--hc-text-muted)", margin: 0, lineHeight: 1.6 }}>
-                設置目的書・管理運用規程・個人情報保護方針・撮影範囲説明書の 4 種類を、選択式で5分で作成できます（参考資料）。
-              </p>
-            </div>
+              {disabledReason || "現在は申請を受け付けていません"}
+            </span>
+          ) : (
             <Link
-              href={`/subsidies/${s.id}/templates`}
+              href={`/my/wizard?subsidy_id=${s.id}`}
               style={{
-                fontSize: 13,
+                display: "inline-block",
+                padding: "16px 32px",
+                borderRadius: 8,
+                fontSize: 16,
                 fontWeight: 700,
                 color: "var(--hc-white)",
                 background: "var(--hc-primary)",
-                padding: "10px 18px",
-                borderRadius: 8,
                 textDecoration: "none",
-                whiteSpace: "nowrap",
-                flexShrink: 0,
+                fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+                letterSpacing: "-0.2px",
               }}
             >
-              テンプレを作成する →
+              この補助金で申請書を作成する
             </Link>
-          </div>
-        </section>
-      )}
+          )}
+          <p style={{ fontSize: 12, color: "var(--hc-text-muted)", marginTop: 10 }}>
+            <Link href="/partners/multik" style={{ color: "var(--hc-primary)", textDecoration: "none" }}>
+              施工パートナーを探す →
+            </Link>
+          </p>
+        </div>
 
-      {/* 概要 */}
-      <section id="overview" style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontFamily: "'Sora', sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 10,
-          paddingBottom: 6,
-          borderBottom: "1px solid var(--hc-border)",
-          letterSpacing: "-0.3px",
-          marginTop: 0,
-        }}>
-          概要
-        </h2>
-        <p style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
-          {s.description || "詳細情報は公式サイトをご確認ください。"}
-        </p>
-      </section>
-
-      {/* 対象要件 */}
-      <section id="requirements" style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontFamily: "'Sora', sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 10,
-          paddingBottom: 6,
-          borderBottom: "1px solid var(--hc-border)",
-          letterSpacing: "-0.3px",
-          marginTop: 0,
-        }}>
-          対象要件
-        </h2>
-        <table className="info-table">
-          <tbody>
-            <tr>
-              <th>対象者</th>
-              <td>中小企業・小規模事業者（資本金3億円以下 or 従業員{s.max_employees || 300}人以下）</td>
-            </tr>
-            <tr>
-              <th>対象設備</th>
-              <td>防犯カメラ・監視カメラ関連設備</td>
-            </tr>
-            <tr>
-              <th>補助率</th>
-              <td>{formatRate(s.rate_min, s.rate_max)}</td>
-            </tr>
-            <tr>
-              <th>補助上限</th>
-              <td>{formatAmount(s.max_amount)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      {/* 補助額・補助率 */}
-      <section id="amount" style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontFamily: "'Sora', sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 10,
-          paddingBottom: 6,
-          borderBottom: "1px solid var(--hc-border)",
-          letterSpacing: "-0.3px",
-          marginTop: 0,
-        }}>
-          補助額・補助率
-        </h2>
-        <table className="info-table">
-          <tbody>
-            <tr>
-              <th>補助率</th>
-              <td>{formatRate(s.rate_min, s.rate_max)}</td>
-            </tr>
-            <tr>
-              <th>補助上限</th>
-              <td>{formatAmount(s.max_amount)}</td>
-            </tr>
-            <tr>
-              <th>自己負担</th>
-              <td>{Math.round((1 - s.rate_max) * 100)}%{s.rate_min !== s.rate_max ? `〜${Math.round((1 - s.rate_min) * 100)}%` : ""}</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      {/* 締切・スケジュール */}
-      <section id="deadline" style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontFamily: "'Sora', sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 10,
-          paddingBottom: 6,
-          borderBottom: "1px solid var(--hc-border)",
-          letterSpacing: "-0.3px",
-          marginTop: 0,
-        }}>
-          締切・スケジュール
-        </h2>
-        <ul style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
-          <li style={{ marginBottom: 6 }}>
-            申請締切: <strong style={{ color: "var(--hc-accent)" }}>
-              {s.deadline}
-              {days !== null && days > 0 && `（あと${days}日）`}
-              {days !== null && days <= 0 && "（締切済み）"}
-            </strong>
-          </li>
-          <li style={{ marginBottom: 6 }}>ステータス: {s.status === "open" ? "公募中" : s.status === "upcoming" ? "公募予定" : "締切済み"}</li>
-        </ul>
-        {s.application_tips && (
-          <div style={{
-            marginTop: 8,
-            padding: "10px 14px",
-            background: "var(--hc-primary-muted)",
-            borderRadius: 8,
+        {/* 補助金サマリー（本文末 info 定義リスト） */}
+        <dl
+          style={{
+            marginTop: 48,
+            borderTop: "1px solid var(--hc-border)",
+            paddingTop: 24,
+            display: "grid",
+            gridTemplateColumns: "120px 1fr",
+            rowGap: 12,
+            columnGap: 16,
             fontSize: 13,
-            color: "var(--hc-text-muted)",
-            lineHeight: 1.7,
-          }}>
-            <strong style={{ color: "var(--hc-navy)" }}>申請のポイント:</strong> {s.application_tips}
-          </div>
-        )}
-      </section>
-
-      {/* 申請方法 */}
-      <section id="howto" style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontFamily: "'Sora', sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 10,
-          paddingBottom: 6,
-          borderBottom: "1px solid var(--hc-border)",
-          letterSpacing: "-0.3px",
-          marginTop: 0,
-        }}>
-          申請方法
-        </h2>
-        <ol style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
-          <li style={{ marginBottom: 6 }}>gBizIDプライムを取得</li>
-          <li style={{ marginBottom: 6 }}>必要書類を準備</li>
-          <li style={{ marginBottom: 6 }}>電子申請システムから申請</li>
-        </ol>
-        {s.source_url && (
-          <p style={{ fontSize: 13, marginTop: 8 }}>
-            <a
-              href={s.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "var(--hc-primary)", textDecoration: "underline" }}
-            >
-              公式サイトで詳細を確認 →
-            </a>
-          </p>
-        )}
-      </section>
-
-      {/* 対象業種 */}
-      <section id="industries" style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontFamily: "'Sora', sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 10,
-          paddingBottom: 6,
-          borderBottom: "1px solid var(--hc-border)",
-          letterSpacing: "-0.3px",
-          marginTop: 0,
-        }}>
-          対象業種
-        </h2>
-        <p style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
-          {s.target_industries.length > 0
-            ? `${s.target_industries.join("、")} 等（中小企業基本法に定める中小企業に該当する全業種）`
-            : "製造業、小売業、飲食業、サービス業、医療・介護、建設業、宿泊業、運輸業 等（中小企業基本法に定める中小企業に該当する全業種）"}
-        </p>
-      </section>
-
-      {/* 必要書類一覧 */}
-      <section id="documents" style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontFamily: "'Sora', sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 10,
-          paddingBottom: 6,
-          borderBottom: "1px solid var(--hc-border)",
-          letterSpacing: "-0.3px",
-          marginTop: 0,
-        }}>
-          必要書類
-        </h2>
-        {docs.length > 0 ? (
-          <table className="info-table">
-            <thead>
-              <tr>
-                <th style={{ width: "45%" }}>書類名</th>
-                <th style={{ width: "15%", textAlign: "center" }}>必須</th>
-                <th>備考</th>
-              </tr>
-            </thead>
-            <tbody>
-              {docs.map((doc) => (
-                <tr key={doc.key}>
-                  <td style={{ fontWeight: 500 }}>{doc.label}</td>
-                  <td style={{ textAlign: "center" }}>
-                    {doc.required
-                      ? <span style={{ color: "var(--hc-accent)", fontWeight: 600 }}>必須</span>
-                      : <span style={{ color: "var(--hc-text-muted)" }}>任意</span>}
-                  </td>
-                  <td style={{ fontSize: 12, color: "var(--hc-text-muted)" }}>{doc.note || "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p style={{ fontSize: 14, color: "var(--hc-text-muted)" }}>
-            必要書類の詳細は公式サイトをご確認ください。
-          </p>
-        )}
-      </section>
-    </div>
-  );
-
-  /* ── Right column: Actions + Info ── */
-  const right = (
-    <div>
-      <span className="section-title">アクション</span>
-
-      {/* Primary: 申請書作成 */}
-      <Link
-        href={`/my/wizard?subsidy_id=${s.id}`}
-        style={{
-          display: "block",
-          width: "100%",
-          padding: 12,
-          marginBottom: 8,
-          borderRadius: 8,
-          fontSize: 14,
-          fontWeight: 700,
-          textAlign: "center",
-          cursor: "pointer",
-          fontFamily: "inherit",
-          textDecoration: "none",
-          border: "2px solid var(--hc-primary)",
-          background: "var(--hc-primary)",
-          color: "var(--hc-white)",
-          transition: "all 0.3s",
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.background = "var(--hc-white)";
-          e.currentTarget.style.color = "var(--hc-primary)";
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.background = "var(--hc-primary)";
-          e.currentTarget.style.color = "var(--hc-white)";
-        }}
-      >
-        この補助金で申請書を作成
-      </Link>
-
-      {/* Secondary: 施工パートナー */}
-      <Link
-        href="/partners/multik"
-        style={{
-          display: "block",
-          width: "100%",
-          padding: 12,
-          marginBottom: 8,
-          borderRadius: 8,
-          fontSize: 14,
-          fontWeight: 700,
-          textAlign: "center",
-          cursor: "pointer",
-          fontFamily: "inherit",
-          textDecoration: "none",
-          border: "2px solid var(--hc-primary)",
-          background: "var(--hc-card-bg)",
-          color: "var(--hc-primary)",
-          transition: "all 0.3s",
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.background = "var(--hc-primary-subtle)")}
-        onMouseOut={(e) => (e.currentTarget.style.background = "var(--hc-white)")}
-      >
-        施工パートナーを見る
-      </Link>
-
-      {/* Info box */}
-      <div style={{
-        background: "var(--hc-card-bg)",
-        border: "1px solid var(--hc-border)",
-        borderRadius: 8,
-        padding: 16,
-        marginTop: 12,
-      }}>
-        <h3 style={{
-          fontSize: 13,
-          fontWeight: 700,
-          color: "var(--hc-navy)",
-          marginBottom: 8,
-          fontFamily: "'Sora', sans-serif",
-        }}>
-          補助金情報
-        </h3>
-        {[
-          ["管轄", s.ministry],
-          ["カテゴリ", s.category],
-          ["地域", s.prefecture],
-          ["データID", s.id],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "6px 0",
-              borderBottom: "1px solid var(--hc-border)",
-              fontSize: 12,
-            }}
-          >
-            <span style={{ color: "var(--hc-text-muted)" }}>{label}</span>
-            <span style={{ fontWeight: 600, color: "var(--hc-text)" }}>{value}</span>
-          </div>
-        ))}
+          }}
+        >
+          {[
+            ["管轄", s.ministry],
+            ["カテゴリ", s.category],
+            ["地域", s.prefecture],
+          ].map(([label, value]) => (
+            value ? (
+              <>
+                <dt
+                  key={`dt-${label}`}
+                  style={{ color: "var(--hc-text-muted)", fontWeight: 500 }}
+                >
+                  {label}
+                </dt>
+                <dd
+                  key={`dd-${label}`}
+                  style={{ color: "var(--hc-text)", fontWeight: 600, margin: 0 }}
+                >
+                  {value}
+                </dd>
+              </>
+            ) : null
+          ))}
+        </dl>
       </div>
-    </div>
-  );
 
-  return (
-    <ThreeColumnLayout
-      left={left}
-      center={center}
-      right={right}
-      gridCols="200px 1fr 260px"
-    />
+      {/* sticky 下部 CTA バー */}
+      <StickyCtaBar subsidy={s} />
+    </>
   );
 }

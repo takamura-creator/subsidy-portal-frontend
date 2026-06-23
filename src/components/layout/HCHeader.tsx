@@ -77,7 +77,7 @@ export default function HCHeader() {
         style={{ textDecoration: "none", background: "none", border: "none", boxShadow: "none", outline: "none" }}
       >
         <Image
-          src="/images/turtle_logo.png"
+          src="/images/turtle_wave.png"
           alt=""
           width={22}
           height={22}
