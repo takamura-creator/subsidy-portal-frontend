@@ -94,6 +94,17 @@ export default function HeroLivePreview({ mode, url }: HeroLivePreviewProps) {
         }}>
           {mode === "live" && url ? url : "example.co.jp"}
         </span>
+        {mode === "demo" && (
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: "var(--hc-primary)",
+            background: "color-mix(in srgb, var(--hc-primary) 10%, var(--hc-white))",
+            border: "1px solid var(--hc-primary-line)",
+            borderRadius: 4, padding: "1px 6px", flexShrink: 0,
+            fontFamily: "'Sora', 'Noto Sans JP', sans-serif", letterSpacing: "0.06em",
+          }}>
+            DEMO
+          </span>
+        )}
       </div>
 
       {/* プログレスバー（live analyzing のみ） */}

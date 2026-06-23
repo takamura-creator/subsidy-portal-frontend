@@ -119,7 +119,7 @@ export default function HeroUrlInput({ onSubmit, onFocus: onFocusProp }: HeroUrl
             (e.currentTarget as HTMLButtonElement).style.color = "var(--hc-white)";
           }}
         >
-          URLで無料診断する
+          無料で診断を始める
         </button>
       </form>
 

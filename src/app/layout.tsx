@@ -8,7 +8,7 @@ import "./globals.css";
 // StatusBar は admin/my/wizard の各 layout.tsx から呼び出す（公開ページ非表示）
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
-const LOGO_URL = `${SITE_URL}/images/logo.png`;
+const LOGO_URL = `${SITE_URL}/images/turtle_logo.png`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,21 +26,14 @@ export const metadata: Metadata = {
     locale: "ja_JP",
     type: "website",
     url: SITE_URL,
-    images: [
-      {
-        url: `${SITE_URL}/images/og-default.png`,
-        width: 1200,
-        height: 630,
-        alt: "HOJYO CAME — 防犯カメラ導入×補助金活用ポータル",
-      },
-    ],
+    // OG画像は src/app/opengraph-image.tsx の自動生成を使用（og-default.png は不在のため削除）
   },
   twitter: {
     card: "summary_large_image",
     site: "@HOJYOCAME",
     title: "HOJYO CAME | 防犯カメラ補助金を業種から検索",
     description: "設備導入に使える補助金を業種から無料で検索。マルチック対応6都県に特化。",
-    images: [`${SITE_URL}/images/og-default.png`],
+    // Twitter OG画像は opengraph-image.tsx の自動生成を使用
   },
   robots: { index: true, follow: true },
 };

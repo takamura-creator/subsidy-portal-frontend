@@ -57,18 +57,55 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** ローマ字スラッグ → 日本語正式URL 301リダイレクトマップ（出典: prefecture-content.ts の code フィールド） */
+/** ローマ字スラッグ → 日本語正式URL 301リダイレクトマップ（全47都道府県・標準ヘボン式） */
 const ROMAN_TO_JP: Record<string, string> = {
-  tokyo:    "東京都",
-  osaka:    "大阪府",
-  kanagawa: "神奈川県",
-  aichi:    "愛知県",
-  saitama:  "埼玉県",
-  hyogo:    "兵庫県",
-  hokkaido: "北海道",
-  fukuoka:  "福岡県",
-  chiba:    "千葉県",
-  kyoto:    "京都府",
+  tokyo:     "東京都",
+  osaka:     "大阪府",
+  kanagawa:  "神奈川県",
+  aichi:     "愛知県",
+  saitama:   "埼玉県",
+  hyogo:     "兵庫県",
+  hokkaido:  "北海道",
+  fukuoka:   "福岡県",
+  chiba:     "千葉県",
+  kyoto:     "京都府",
+  aomori:    "青森県",
+  iwate:     "岩手県",
+  miyagi:    "宮城県",
+  akita:     "秋田県",
+  yamagata:  "山形県",
+  fukushima: "福島県",
+  ibaraki:   "茨城県",
+  tochigi:   "栃木県",
+  gunma:     "群馬県",
+  niigata:   "新潟県",
+  toyama:    "富山県",
+  ishikawa:  "石川県",
+  fukui:     "福井県",
+  yamanashi: "山梨県",
+  nagano:    "長野県",
+  gifu:      "岐阜県",
+  shizuoka:  "静岡県",
+  mie:       "三重県",
+  shiga:     "滋賀県",
+  nara:      "奈良県",
+  wakayama:  "和歌山県",
+  tottori:   "鳥取県",
+  shimane:   "島根県",
+  okayama:   "岡山県",
+  hiroshima: "広島県",
+  yamaguchi: "山口県",
+  tokushima: "徳島県",
+  kagawa:    "香川県",
+  ehime:     "愛媛県",
+  kochi:     "高知県",
+  saga:      "佐賀県",
+  nagasaki:  "長崎県",
+  kumamoto:  "熊本県",
+  oita:      "大分県",
+  miyazaki:  "宮崎県",
+  kagoshima: "鹿児島県",
+  okinawa:   "沖縄県",
 };
 
 export default async function PrefectureLPPage({ params }: Props) {
@@ -84,9 +121,6 @@ export default async function PrefectureLPPage({ params }: Props) {
   if (!VALID_PREFECTURES.has(name)) notFound();
   // 6都県は FullLP（施工対応）、それ以外41道府県は InformationLP（情報のみ）
   const inService = isServicePrefecture(name);
-
-  // TODO(I1): 上記 ROMAN_TO_JP は prefecture-content.ts の code フィールド10件のみ。
-  // 37道府県の旧ローマ字URLが他媒体に存在する場合はここへ追記すること（現状は 404 のまま）。
 
   let subsidies: Subsidy[] = [];
   try {
@@ -207,6 +241,34 @@ function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subs
         </div>
       </section>
 
+      <section className="py-10 bg-white border-t border-border">
+        <div className="max-w-[1100px] mx-auto px-6">
+          <h2 className="text-base font-bold text-navy mb-3 hc-heading-sora">
+            関連する情報ページ
+          </h2>
+          <ul className="text-[14px] space-y-1.5">
+            <li>
+              <Link href="/subsidies" className="text-primary hover:underline">
+                全国の補助金一覧を見る
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/results/${encodeURIComponent(prefecture)}`}
+                className="text-primary hover:underline"
+              >
+                {prefecture}の補助金交付実績を見る
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" className="text-primary hover:underline">
+                運営者情報（マルチック株式会社）
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </section>
+
       <section className="bg-navy text-white py-14">
         <div className="max-w-[900px] mx-auto px-6 text-center">
           <h2 className="text-2xl font-bold mb-3 hc-heading-sora-tight">
@@ -281,14 +343,6 @@ function InformationLP({ prefecture, subsidies }: { prefecture: string; subsidie
             <li>
               <Link href="/subsidies" className="text-primary hover:underline">
                 全国の補助金一覧を見る
-              </Link>
-            </li>
-            <li>
-              <Link
-                href={`/results/${encodeURIComponent(prefecture)}`}
-                className="text-primary hover:underline"
-              >
-                {prefecture}の補助金交付実績を見る
               </Link>
             </li>
             <li>
