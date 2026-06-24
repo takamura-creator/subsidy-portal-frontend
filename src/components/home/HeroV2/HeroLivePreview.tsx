@@ -5,7 +5,8 @@
  *
  * mode="demo": HeroDemoTimeline（7.8秒/周 自動ループ）を表示
  * mode="live": url prop 駆動の実解析表示（idle→analyzing→done）
- *
+ *   - diagnoseResult が渡れば実データ表示（モック値は撤去済み）
+ *   - fallback=true 時は「簡易診断（AI混雑）」を小さく表示
  * useReducedMotion 時: デモ起動せず done 静止1枚（P3）
  * 景表法ガード: 金額13px以下・mc-disclaimer 常時（P4）
  */
@@ -16,12 +17,14 @@ import TypeWriter from "@/components/motion/TypeWriter";
 import HeroDemoTimeline from "./HeroDemoTimeline";
 import { EASING, DURATION, STAGGER } from "@/lib/motion-tokens";
 import { formatRate } from "@/lib/formatRate";
+import type { DiagnoseResponse } from "@/lib/api";
 
 type LivePhase = "idle" | "analyzing" | "done";
 
 interface HeroLivePreviewProps {
   mode: "demo" | "live";
   url: string | null;
+  diagnoseResult: DiagnoseResponse | null;
 }
 
 const TRAFFIC_LIGHTS = [
@@ -43,32 +46,46 @@ const OVERLINE_STYLE: React.CSSProperties = {
   textTransform: "uppercase",
 };
 
-export default function HeroLivePreview({ mode, url }: HeroLivePreviewProps) {
+export default function HeroLivePreview({ mode, url, diagnoseResult }: HeroLivePreviewProps) {
   const prefersReduced = useReducedMotion();
-  const [livePhase, setLivePhase] = useState<LivePhase>("idle");
+
+  // livePhase は props から直接 derive（setState-in-effect を最小化）
+  const livePhase: LivePhase =
+    mode !== "live" || !url ? "idle"
+    : diagnoseResult ? "done"
+    : "analyzing";
+
   const [scanProgress, setScanProgress] = useState(0);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // live モード: url 変化 → analyzing → done
+  // scanProgress のみ interval で管理。livePhase は props 由来の derived 値。
+  // setScanProgress はすべて interval/timeout コールバック内（非同期）から呼ぶことで
+  // effect body 内での synchronous setState を回避する。
   useEffect(() => {
-    if (mode !== "live") return;
-    if (!url) { setLivePhase("idle"); return; }
-    setLivePhase("analyzing");
-    setScanProgress(0);
-    const stepVal = 95 / (DURATION.livePreview * 1000 / 60);
-    progressRef.current = setInterval(() => {
-      setScanProgress((p) => Math.min(p + stepVal, 95));
-    }, 60);
-    const timer = setTimeout(() => {
-      if (progressRef.current) clearInterval(progressRef.current);
-      setScanProgress(100);
-      setLivePhase("done");
-    }, DURATION.livePreview * 1000);
-    return () => {
-      clearTimeout(timer);
-      if (progressRef.current) clearInterval(progressRef.current);
-    };
-  }, [mode, url]);
+    if (progressRef.current) clearInterval(progressRef.current);
+
+    if (livePhase === "analyzing") {
+      const stepVal = 90 / (DURATION.livePreview * 1000 / 60);
+      let first = true;
+      progressRef.current = setInterval(() => {
+        setScanProgress((p) => {
+          if (first) { first = false; return 0; }
+          return Math.min(p + stepVal, 90);
+        });
+      }, 60);
+      return () => { if (progressRef.current) clearInterval(progressRef.current); };
+    }
+
+    if (livePhase === "done") {
+      const t = setTimeout(() => setScanProgress(100), 0);
+      return () => clearTimeout(t);
+    }
+
+    if (livePhase === "idle") {
+      const t = setTimeout(() => setScanProgress(0), 0);
+      return () => clearTimeout(t);
+    }
+  }, [livePhase]);
 
   const demoStopped = mode === "live" || !!prefersReduced;
 
@@ -149,21 +166,113 @@ export default function HeroLivePreview({ mode, url }: HeroLivePreviewProps) {
                 <p style={{ fontSize: 13, color: "var(--hc-primary)", fontWeight: 600, margin: 0 }}>
                   <TypeWriter text="AIが御社のサイトを解析中..." speed={40} />
                 </p>
-                <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: 0 }}>完了見込み: 約2秒</p>
+                <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: 0 }}>
+                  完了見込み: 約10〜30秒（AI解析中）
+                </p>
                 {[80, 60, 90, 40].map((w, i) => (
                   <div key={i} className="skeleton" style={{ height: 14, width: `${w}%`, borderRadius: 4 }} />
                 ))}
               </div>
             )}
-            {livePhase === "done" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {[<CompanyInfo key="c" />, <SubsidyCard key="s" />, <DraftInfo key="d" />, <EstimateInfo key="e" />]
-                  .map((el, i) => <LiveStep key={i} index={i}>{el}</LiveStep>)}
-              </div>
+            {livePhase === "done" && diagnoseResult && (
+              <LiveDoneView result={diagnoseResult} />
             )}
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+// --- ライブ完了: 実データ表示 ---
+
+function LiveDoneView({ result }: { result: DiagnoseResponse }) {
+  const { extracted, matches, estimate, fallback } = result;
+
+  const industryText = [
+    extracted.industry,
+    extracted.employees != null ? `従業員 ${extracted.employees}名` : null,
+    extracted.prefecture,
+  ].filter(Boolean).join("・");
+
+  const matchCount = matches.length;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* 企業情報 */}
+      <LiveStep index={0}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <span style={OVERLINE_STYLE}>企業情報</span>
+          {extracted.company_name && (
+            <div style={{ fontSize: 12, color: "var(--hc-text-muted)" }}>
+              {extracted.company_name}
+            </div>
+          )}
+          <div style={{ fontSize: 13, color: "var(--hc-navy)", fontWeight: 600 }}>
+            {industryText || "（業種情報取得中）"}
+          </div>
+        </div>
+      </LiveStep>
+
+      {/* マッチ補助金 */}
+      <LiveStep index={1}>
+        <div style={{ padding: "10px 14px",
+          background: "color-mix(in srgb, var(--hc-primary) 8%, var(--hc-white))",
+          border: "1px solid var(--hc-primary-line)", borderRadius: 8 }}>
+          <span style={{ ...OVERLINE_STYLE, color: "var(--hc-primary)" }}>マッチした補助金</span>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-primary)", marginTop: 4 }}>
+            {matchCount > 0 ? (
+              <TypeWriter text={`${matchCount}件 見つかりました`} speed={40} />
+            ) : (
+              <span style={{ fontSize: 13 }}>診断条件で詳しく探します</span>
+            )}
+          </div>
+          {matchCount > 0 && (
+            <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 3 }}>
+              {matches.slice(0, 2).map((m) => (
+                <div key={m.subsidy.id} style={{
+                  fontSize: 11, color: "var(--hc-text)",
+                  display: "flex", gap: 4, alignItems: "center",
+                }}>
+                  <span style={{
+                    padding: "1px 5px", borderRadius: 4, fontSize: 10, fontWeight: 700,
+                    background: m.match_score === "高"
+                      ? "color-mix(in srgb, var(--hc-primary) 15%, var(--hc-white))"
+                      : "var(--hc-border)",
+                    color: m.match_score === "高" ? "var(--hc-primary)" : "var(--hc-text-muted)",
+                  }}>{m.match_score}</span>
+                  <span>{m.subsidy.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </LiveStep>
+
+      {/* 概算見積り */}
+      {estimate.max_amount > 0 && (
+        <LiveStep index={2}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={OVERLINE_STYLE}>概算見積り（目安）</span>
+            <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--hc-navy)", fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}>
+                上限額（目安）: ¥{estimate.max_amount.toLocaleString("ja-JP")}
+              </span>
+              <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>
+                {formatRate(Math.round(estimate.rate_min * 100), Math.round(estimate.rate_max * 100))} 補助
+              </span>
+            </div>
+            {fallback && (
+              <p style={{ fontSize: 10, color: "var(--hc-text-muted)", margin: 0 }}>
+                ※ 簡易診断（AI混雑のためルールベース）
+              </p>
+            )}
+            <p className="mc-disclaimer">
+              ※制度・条件により異なります。出典：公式資料。診断は目安です。
+            </p>
+          </div>
+        </LiveStep>
+      )}
     </div>
   );
 }
@@ -179,61 +288,28 @@ function LiveStep({ index, children }: { index: number; children: React.ReactNod
   );
 }
 
-function CompanyInfo() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <span style={OVERLINE_STYLE}>企業情報</span>
-      <div style={{ fontSize: 13, color: "var(--hc-navy)", fontWeight: 600 }}>製造業・従業員 50名・東京都</div>
-    </div>
-  );
-}
-
-function SubsidyCard() {
-  return (
-    <div style={{ padding: "10px 14px",
-      background: "color-mix(in srgb, var(--hc-primary) 8%, var(--hc-white))",
-      border: "1px solid var(--hc-primary-line)", borderRadius: 8 }}>
-      <span style={{ ...OVERLINE_STYLE, color: "var(--hc-primary)" }}>マッチした補助金</span>
-      <div style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-primary)", marginTop: 4 }}>
-        <TypeWriter text="3件 見つかりました" speed={40} />
-      </div>
-    </div>
-  );
-}
-
-function DraftInfo() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <span style={OVERLINE_STYLE}>申請書ドラフト</span>
-      <div style={{ fontSize: 12, color: "var(--hc-text)", lineHeight: 1.6 }}>
-        <TypeWriter text="事業計画・設備導入の目的・費用内訳を自動生成しました。" speed={20} />
-      </div>
-    </div>
-  );
-}
-
-function EstimateInfo() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <span style={OVERLINE_STYLE}>概算見積り</span>
-      <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--hc-navy)", fontFamily: "'Sora', 'Noto Sans JP', sans-serif" }}>
-          上限額（目安）: ¥740,000
-        </span>
-        <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>{formatRate(50, 75)} 補助</span>
-      </div>
-      <p className="mc-disclaimer">
-        ※これはデモ表示です。実際の診断結果は企業情報に基づき異なります。<br />
-        ※制度・条件により異なります。出典：公式資料。診断は目安です。
-      </p>
-    </div>
-  );
-}
-
+// reduced-motion 用デモ静止1枚（デモ時のみ使用）
 function ReducedFallback() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <CompanyInfo /><SubsidyCard /><DraftInfo /><EstimateInfo />
+      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <span style={OVERLINE_STYLE}>企業情報</span>
+        <div style={{ fontSize: 13, color: "var(--hc-navy)", fontWeight: 600 }}>URLを入力して診断</div>
+      </div>
+      <div style={{ padding: "10px 14px",
+        background: "color-mix(in srgb, var(--hc-primary) 8%, var(--hc-white))",
+        border: "1px solid var(--hc-primary-line)", borderRadius: 8 }}>
+        <span style={{ ...OVERLINE_STYLE, color: "var(--hc-primary)" }}>マッチした補助金</span>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-primary)", marginTop: 4 }}>
+          AIが見つけてきます
+        </div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <span style={OVERLINE_STYLE}>概算見積り</span>
+        <p className="mc-disclaimer">
+          ※制度・条件により異なります。診断は目安です。
+        </p>
+      </div>
     </div>
   );
 }

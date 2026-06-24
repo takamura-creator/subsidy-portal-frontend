@@ -180,6 +180,68 @@ export async function matchSubsidies(
   });
 }
 
+// --- 公開URL診断 ---
+
+export interface DiagnoseEstimate {
+  max_amount: number;
+  rate_min: number;
+  rate_max: number;
+}
+
+export interface ExtractedCompanyInfo {
+  industry: string | null;
+  employees: number | null;
+  prefecture: string | null;
+  company_name: string | null;
+}
+
+export interface DiagnoseResponse {
+  extracted: ExtractedCompanyInfo;
+  matches: MatchedSubsidy[];
+  estimate: DiagnoseEstimate;
+  fallback: boolean;
+  source_url: string;
+}
+
+/**
+ * POST /api/public/diagnose
+ * URLを渡すとHP抽出 → AI補助金マッチ → 概算を返す（認証不要）。
+ * タイムアウト: HP取得 + LLM推論で最大30秒。
+ * signal を渡さず apiFetch のデフォルトタイムアウト変数を上書きすることで
+ * TimeoutError メッセージに正しい「30秒」が表示される。
+ */
+export async function diagnosePublic(url: string): Promise<DiagnoseResponse> {
+  const DIAGNOSE_TIMEOUT = 30000;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), DIAGNOSE_TIMEOUT);
+  try {
+    // apiFetch に customSignal を渡すと timeoutMs=undefined になり "—秒" 表示になるため
+    // ここで fetch を直接呼び、タイムアウト時は ApiError(408) を投げる
+    const res = await fetch(`${API_URL}/api/public/diagnose`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const message =
+        res.status === 429
+          ? "リクエストが多すぎます。しばらく時間をおいてから再度お試しください。"
+          : `APIエラーが発生しました（ステータス: ${res.status}）`;
+      throw new ApiError(res.status, message);
+    }
+    return res.json() as Promise<DiagnoseResponse>;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new ApiError(408, `リクエストがタイムアウトしました（${DIAGNOSE_TIMEOUT / 1000}秒）`);
+    }
+    throw new ApiError(0, "ネットワークエラーが発生しました");
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // --- 認証付きAPI（マイページ用） ---
 
 export interface ApplicationSummary {
