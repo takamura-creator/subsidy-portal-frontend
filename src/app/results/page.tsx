@@ -1,4 +1,17 @@
+import type { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
+import { generateDatasetJsonLd, generateBreadcrumbJsonLd } from "@/lib/structured-data";
+import { SERVICE_PREFECTURES } from "@/lib/constants";
 import ResultsClient from "./ResultsClient";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
+
+export const metadata: Metadata = {
+  title: "補助金交付実績データベース",
+  description:
+    "官公庁が公表した防犯カメラ・監視カメラ向け補助金の交付実績を、都道府県・年度・カテゴリ別に閲覧できるデータベースです。",
+  alternates: { canonical: "/results" },
+};
 
 /**
  * /results — サーバーコンポーネント
@@ -7,10 +20,28 @@ import ResultsClient from "./ResultsClient";
  * クライアントデータ取得は ResultsClient に委譲。
  * Google のソフト404判定を回避する。
  * レイアウト: ResultsSidebar（SidebarLayout）が外殻を担当。
+ *
+ * AEO Phase 5: Dataset JSON-LD（官公庁公表データの引用元）＋ BreadcrumbList を追加。
  */
 export default function ResultsPage() {
+  const jsonLdBlocks = [
+    generateDatasetJsonLd({
+      name: "補助金交付実績データベース",
+      description:
+        "官公庁が公表した防犯カメラ・監視カメラ向け補助金の交付実績データ。都道府県・年度・カテゴリ別に閲覧可能。",
+      url: `${SITE_URL}/results`,
+      creator: "マルチック株式会社",
+      keywords: ["防犯カメラ補助金", "交付実績", ...SERVICE_PREFECTURES],
+    }),
+    generateBreadcrumbJsonLd([
+      { name: "HOJYO CAME", url: SITE_URL },
+      { name: "交付実績データベース", url: `${SITE_URL}/results` },
+    ]),
+  ];
+
   return (
     <>
+      <JsonLd data={jsonLdBlocks} id="jsonld-results" />
       {/* SEO header — サーバーサイドで確実に配信 */}
       <header className="pt-6 pb-8 text-center">
         <h1

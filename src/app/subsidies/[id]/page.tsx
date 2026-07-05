@@ -10,6 +10,7 @@ import {
   getAllSubsidyIds,
   getSubsidyById,
 } from "@/lib/subsidies-server";
+import { formatAmount, formatRate } from "@/lib/subsidyFormatters";
 import SubsidyDetailClient from "./SubsidyDetailClient";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
@@ -108,6 +109,18 @@ export default async function SubsidyDetailPage({ params }: Props) {
         },
       ];
 
+  // AEO Phase 5: データ由来の機械抽出FAQ（誇大化不能・数値はformatAmount/formatRate経由のみ）
+  const machineFaqItems = [
+    {
+      question: `${subsidy.name}の補助率はどれくらいですか？`,
+      answer: `補助率は${formatRate(subsidy.rate_min, subsidy.rate_max)}です。`,
+    },
+    {
+      question: `${subsidy.name}の補助上限額はいくらですか？`,
+      answer: `補助上限額は${formatAmount(subsidy.max_amount)}です。`,
+    },
+  ];
+
   const jsonLdBlocks = [
     generateGovernmentServiceJsonLd({
       name: subsidy.name,
@@ -122,7 +135,7 @@ export default async function SubsidyDetailPage({ params }: Props) {
       { name: "補助金一覧", url: `${SITE_URL}/subsidies` },
       { name: subsidy.name, url: `${SITE_URL}/subsidies/${subsidy.id}` },
     ]),
-    generateFaqJsonLd(faqItems),
+    generateFaqJsonLd([...faqItems, ...machineFaqItems]),
   ];
 
   return (

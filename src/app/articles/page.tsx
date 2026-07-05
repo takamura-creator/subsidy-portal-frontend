@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PublicPageLayout from "@/components/layout/PublicPageLayout";
 import PublicSectionHeader from "@/components/layout/PublicSectionHeader";
+import JsonLd from "@/components/seo/JsonLd";
+import { generateItemListJsonLd, generateBreadcrumbJsonLd } from "@/lib/structured-data";
 import { ARTICLES } from "@/data/articles";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 
 export const metadata: Metadata = {
   title: "お役立ち記事",
@@ -14,8 +18,19 @@ export const metadata: Metadata = {
 const sorted = [...ARTICLES].sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
 
 export default function ArticlesIndex() {
+  const jsonLdBlocks = [
+    generateItemListJsonLd(
+      sorted.map((a) => ({ name: a.title, url: `${SITE_URL}/articles/${a.slug}` })),
+    ),
+    generateBreadcrumbJsonLd([
+      { name: "HOJYO CAME", url: SITE_URL },
+      { name: "お役立ち記事", url: `${SITE_URL}/articles` },
+    ]),
+  ];
+
   return (
     <PublicPageLayout>
+      <JsonLd data={jsonLdBlocks} id="jsonld-articles" />
       <PublicSectionHeader
         overline="Articles"
         title="お役立ち記事"

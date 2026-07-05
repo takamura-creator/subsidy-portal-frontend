@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { AnalyticsWrapper } from "@/components/analytics/AnalyticsWrapper";
 import HCHeader from "@/components/layout/HCHeader";
 import CookieConsent from "@/components/CookieConsent";
+import Footer from "@/components/Footer";
 import JsonLd from "@/components/seo/JsonLd";
 import type { JsonLdObject } from "@/lib/structured-data";
 import "./globals.css";
@@ -107,6 +108,7 @@ export default function RootLayout({
         <JsonLd data={siteSchemas} id="jsonld-site" />
         <HCHeader />
         {children}
+        <Footer />
         <CookieConsent />
         <AnalyticsWrapper />
       </body>

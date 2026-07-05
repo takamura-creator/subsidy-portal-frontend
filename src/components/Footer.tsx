@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { INDUSTRY_LPS } from "@/data/industry-lp";
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary text-white/60 mt-auto">
+    <footer className="text-white/60 mt-auto" style={{ backgroundColor: "var(--hc-navy)" }}>
       <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
           {/* ブランド */}
           <div className="sm:col-span-2 md:col-span-1">
             <h3 className="text-white text-lg font-medium mb-3">
@@ -33,15 +34,33 @@ export default function Footer() {
             <ul className="text-sm space-y-2">
               <li><Link href="/match" className="hover:text-white transition">補助金診断</Link></li>
               <li><Link href="/subsidies" className="hover:text-white transition">補助金一覧</Link></li>
+              <li><Link href="/results" className="hover:text-white transition">交付実績データベース</Link></li>
+              <li><Link href="/articles" className="hover:text-white transition">お役立ち記事</Link></li>
               <li><Link href="/partners/multik" className="hover:text-white transition">施工パートナー</Link></li>
               <li><Link href="/contact" className="hover:text-white transition">お問い合わせ</Link></li>
             </ul>
           </div>
 
-          {/* 地域別 */}
+          {/* 業種別 */}
           <div>
-            <h4 className="text-white font-medium mb-3 text-sm">地域別</h4>
+            <h4 className="text-white font-medium mb-3 text-sm">業種別</h4>
             <ul className="text-sm space-y-2">
+              {INDUSTRY_LPS.map((lp) => (
+                <li key={lp.slug}>
+                  <Link href={`/industries/${lp.slug}`} className="hover:text-white transition">
+                    {lp.industry}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 導入事例・地域別 */}
+          <div>
+            <h4 className="text-white font-medium mb-3 text-sm">導入事例・地域別</h4>
+            <ul className="text-sm space-y-2">
+              <li><Link href="/cases" className="hover:text-white transition">導入事例一覧</Link></li>
+              <li><Link href="/cases/jichikai" className="hover:text-white transition">自治会向け施工事例</Link></li>
               {["東京都", "大阪府", "神奈川県", "愛知県", "福岡県"].map((p) => (
                 <li key={p}>
                   <Link href={`/lp/${p}`} className="hover:text-white transition">
@@ -87,8 +106,8 @@ export default function Footer() {
         <div className="border-t border-white/10 mt-8 pt-6">
           <div className="flex flex-wrap justify-center gap-4 text-xs text-white/40 mb-4">
             <Link href="/about" className="hover:text-white/60 transition">運営者情報</Link>
-            <a href="https://multik.jp/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white/60 transition">プライバシーポリシー</a>
-            <a href="https://multik.jp/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white/60 transition">利用規約</a>
+            <Link href="/privacy" className="hover:text-white/60 transition">プライバシーポリシー</Link>
+            <Link href="/terms" className="hover:text-white/60 transition">利用規約</Link>
             <a href="https://multik.jp/tokushoho" target="_blank" rel="noopener noreferrer" className="hover:text-white/60 transition">特定商取引法に基づく表記</a>
           </div>
           <p className="text-sm text-center text-white/40">

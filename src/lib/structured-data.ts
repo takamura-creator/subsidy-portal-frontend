@@ -195,3 +195,38 @@ export function generateBreadcrumbJsonLd(
     })),
   };
 }
+
+/** ItemList JSON-LD — 補助金一覧・記事一覧などのリストページで使用（AEO Phase 5） */
+export function generateItemListJsonLd(
+  items: { name: string; url: string }[],
+): JsonLdObject {
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@type": "ItemList",
+    itemListElement: items.map((it, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: it.name,
+      url: it.url,
+    })),
+  };
+}
+
+/** Dataset JSON-LD — 官公庁公表データの引用元（/results 交付実績DB）で使用（AEO Phase 5） */
+export function generateDatasetJsonLd(data: {
+  name: string;
+  description: string;
+  url: string;
+  creator?: string;
+  keywords?: string[];
+}): JsonLdObject {
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@type": "Dataset",
+    name: data.name,
+    description: data.description,
+    url: data.url,
+    ...(data.creator && { creator: { "@type": "Organization", name: data.creator } }),
+    ...(data.keywords && data.keywords.length > 0 && { keywords: data.keywords }),
+  };
+}

@@ -47,7 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  // Sprint 4 Task 0 で SSG 化された補助金詳細（57 件）を Search Console に発見させる
+  // Sprint 4 Task 0 で SSG 化された補助金詳細（getAllSubsidies() の実件数）を Search Console に発見させる
   const subsidyPages: MetadataRoute.Sitemap = getAllSubsidies().map((s) => ({
     url: `${SITE_URL}/subsidies/${s.id}`,
     lastModified: now,
