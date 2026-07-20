@@ -37,3 +37,13 @@ export function filterCameraOnly(items: Subsidy[], industry?: string): Subsidy[]
     );
   });
 }
+
+// LP6ブラッシュアップ（2026-07-20）: 県固有制度（例: 静岡市の街頭防犯カメラ補助）が
+// 全国制度（IT導入補助金等）に埋もれないよう、「県・市区町村固有 → 全国」の順に並べ替える。
+// 判定は prefecture フィールドのみ（"全国"/空/pref_code "00" が全国制度）。件数は変えない（並べ替えのみ）。
+// Array.prototype.sort は安定ソートのため、各グループ内の元の順序（API返却順）は保持される。
+export function sortLocalFirst(items: Subsidy[]): Subsidy[] {
+  const isNational = (s: Subsidy) =>
+    !s.prefecture || s.prefecture === "全国" || s.pref_code === "00";
+  return [...items].sort((a, b) => Number(isNational(a)) - Number(isNational(b)));
+}
