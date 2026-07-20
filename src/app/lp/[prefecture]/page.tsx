@@ -52,7 +52,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${name}の防犯カメラ補助金まとめ | HOJYO CAME`,
     description: `${name}で利用できる防犯カメラ設置の補助金・助成金情報。制度名・上限額・締切・公式制度リンクを事実ベースでまとめています。`,
     alternates: { canonical: `/lp/${prefecture}` },
-    robots: { index: true, follow: true },
+    // 施工対応外41県は near-duplicate（本文が県間でほぼ同一）のためnoindex（followは維持=内部リンク evaluation継続）。
+    // 施工対応6都県は上のinService分岐（robots未指定→layout.tsxの既定 index:true, follow:true を継承）のため、
+    // ここを noindex にしても6都県には一切影響しない（可逆: エリア拡大時はここを削除すれば復元）。
+    robots: { index: false, follow: true },
     openGraph: { type: "article" },
   };
 }

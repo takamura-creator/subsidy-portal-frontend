@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { PREFECTURES, SERVICE_PREFECTURES } from "@/lib/constants";
+import { SERVICE_PREFECTURES } from "@/lib/constants";
 import { listPublishedCases } from "@/data/cases";
 import { getAllSubsidies } from "@/lib/subsidies-server";
 import { ARTICLES } from "@/data/articles";
@@ -62,13 +62,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  // 47都道府県すべてを /lp/* で配信（2026-05-26）。
-  // 6都県（SERVICE_PREFECTURES）は FullLP（施工対応）、41道府県は InformationLP。
-  const lpPages: MetadataRoute.Sitemap = PREFECTURES.map((pref) => ({
+  // 施工対応6都県（SERVICE_PREFECTURES）のみ sitemap に投入（2026-07-10）。
+  // 41道府県のInformationLPはnoindex化（lp/[prefecture]/page.tsx）に伴いsitemapからも除外。
+  // ページ自体は削除しない（レンダリングは維持し直接流入・内部リンクは生かす）。
+  const lpPages: MetadataRoute.Sitemap = SERVICE_PREFECTURES.map((pref) => ({
     url: `${SITE_URL}/lp/${encodeURIComponent(pref)}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: SERVICE_PREFECTURES.includes(pref as (typeof SERVICE_PREFECTURES)[number]) ? 1.0 : 0.6,
+    priority: 1.0,
   }));
 
   const resultsPrefecturePages: MetadataRoute.Sitemap = SERVICE_PREFECTURES.map((pref) => ({
