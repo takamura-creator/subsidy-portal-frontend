@@ -1154,7 +1154,7 @@ button:focus-visible, a:focus-visible {
   z-index: 1;
 }
 
-/* hero-v2-grid — HeroInteractive の2カラムレイアウト（inline style 禁止・CSS統一） */
+/* hero-v2-grid — HeroClientShell の2カラムレイアウト（inline style 禁止・CSS統一） */
 .hero-v2-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
