@@ -4,11 +4,17 @@
  * HeroLivePreview — デモ/ライブ分岐ハブ
  *
  * mode="demo": HeroDemoTimeline（7.8秒/周 自動ループ）を表示
- * mode="live": url prop 駆動の実解析表示（idle→analyzing→done）
+ * mode="live": 親の状態機械が導出した phase 駆動の実解析表示（idle→analyzing→done）
  *   - diagnoseResult が渡れば実データ表示（モック値は撤去済み）
  *   - fallback=true 時は「簡易診断（AI混雑）」を小さく表示
  * useReducedMotion 時: デモ起動せず done 静止1枚（P3）
  * 景表法ガード: 金額13px以下・mc-disclaimer 常時（P4）
+ *
+ * 台本『診断卓』A9/A12/E6/§5.5:
+ *   受信パルス + 解析中リング脈動は .hc-card-live（CSS delay で t 値を保持）。
+ *   phase は親（HeroClientShell）の状態機械が決めるため error/aborted では必ず idle に落ちる
+ *   ＝「解析中表示が残る」不具合の閉塞点。
+ *   進捗の読み上げはコンソールに一本化するため 3px 行は aria-hidden（progressbar ロール撤去）。
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -18,11 +24,12 @@ import HeroDemoTimeline from "./HeroDemoTimeline";
 import { EASING, DURATION, STAGGER } from "@/lib/motion-tokens";
 import { formatRate } from "@/lib/formatRate";
 import type { DiagnoseResponse } from "@/lib/api";
-
-type LivePhase = "idle" | "analyzing" | "done";
+import type { CardPhase } from "./useAnalysisTimeline";
 
 interface HeroLivePreviewProps {
   mode: "demo" | "live";
+  /** 親の状態機械が導出した表示フェーズ（§6.3） */
+  phase: CardPhase;
   url: string | null;
   diagnoseResult: DiagnoseResponse | null;
 }
@@ -46,14 +53,12 @@ const OVERLINE_STYLE: React.CSSProperties = {
   textTransform: "uppercase",
 };
 
-export default function HeroLivePreview({ mode, url, diagnoseResult }: HeroLivePreviewProps) {
+export default function HeroLivePreview({ mode, phase, url, diagnoseResult }: HeroLivePreviewProps) {
   const prefersReduced = useReducedMotion();
 
-  // livePhase は props から直接 derive（setState-in-effect を最小化）
-  const livePhase: LivePhase =
-    mode !== "live" || !url ? "idle"
-    : diagnoseResult ? "done"
-    : "analyzing";
+  // livePhase は親の状態機械（AnalysisState）から受け取った phase をそのまま使う。
+  // mode !== "live" は常に idle（§6.3 の導出式）。
+  const livePhase: CardPhase = mode !== "live" ? "idle" : phase;
 
   const [scanProgress, setScanProgress] = useState(0);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -90,11 +95,10 @@ export default function HeroLivePreview({ mode, url, diagnoseResult }: HeroLiveP
   const demoStopped = mode === "live" || !!prefersReduced;
 
   return (
-    <div style={{
-      width: "100%", maxWidth: 480, background: "var(--hc-white)",
-      border: "1px solid var(--hc-border)", borderRadius: 12, overflow: "hidden",
-      boxShadow: "0 0 0 1px rgba(0,0,0,0.04), var(--hc-shadow-md)",
-    }}>
+    <div
+      className={`hc-preview-card${livePhase === "analyzing" ? " hc-card-live" : ""}`}
+      data-phase={livePhase}
+    >
       {/* ブラウザ chrome */}
       <div style={{
         display: "flex", alignItems: "center", gap: 6,
@@ -124,17 +128,16 @@ export default function HeroLivePreview({ mode, url, diagnoseResult }: HeroLiveP
         )}
       </div>
 
-      {/* プログレスバー（live analyzing のみ） */}
+      {/* プログレスバー（live analyzing のみ）— 二重通知回避のため aria-hidden（§5.5） */}
       {mode === "live" && livePhase === "analyzing" && (
-        <div role="progressbar" aria-valuenow={Math.round(scanProgress)}
-          aria-valuemin={0} aria-valuemax={100} aria-label="解析中"
+        <div aria-hidden="true"
           style={{ height: 3, background: "var(--hc-border)", overflow: "hidden" }}>
           <div style={{ height: "100%", width: `${scanProgress}%`,
             background: "var(--hc-primary)", transition: "width 0.06s linear" }} />
         </div>
       )}
       {mode === "live" && livePhase === "done" && (
-        <div style={{ height: 3, background: "var(--hc-primary)", opacity: 0.3 }} />
+        <div aria-hidden="true" style={{ height: 3, background: "var(--hc-primary)", opacity: 0.3 }} />
       )}
 
       {/* 本体 */}
@@ -166,9 +169,7 @@ export default function HeroLivePreview({ mode, url, diagnoseResult }: HeroLiveP
                 <p style={{ fontSize: 13, color: "var(--hc-primary)", fontWeight: 600, margin: 0 }}>
                   <TypeWriter text="AIが御社のサイトを解析中..." speed={40} />
                 </p>
-                <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: 0 }}>
-                  完了見込み: 約10〜30秒（AI解析中）
-                </p>
+                {/* 経過秒はコンソール側に一本化（台本 申し送り）ため「完了見込み」行は撤去 */}
                 {[80, 60, 90, 40].map((w, i) => (
                   <div key={i} className="skeleton" style={{ height: 14, width: `${w}%`, borderRadius: 4 }} />
                 ))}

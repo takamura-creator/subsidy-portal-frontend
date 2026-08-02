@@ -1,0 +1,521 @@
+<!doctype html>
+<!--
+  凍結判断用デモ（本番実装ではない）。台本: 2026-08-01_hero_analyzing_fx_script.md
+  自己完結1ファイル（外部CDN/画像/フォント読込なし）。簡易化した点:
+    1) 亀は turtle_search.png / turtle_celebration.png の代わりに絵文字🐢で簡易表現（指示書item1で許可）。
+    2) console の height:0→auto は CSS で直接遷移できないため max-height 近似を使用。
+    3) エラー500/422デモの「応答到達」時刻(1.8s)は台本に値の指定が無い箇所のためデモ用に仮設（台本はE区間をt_error起点の相対値でのみ規定しており、そこは全てt値どおり実装）。
+    4) 早送りコラプスの最短表示保証(1.32s)は本デモの成功シナリオ(2.1s/25s)がいずれも上回るため、フロア処理は明示実装せず自然に満たしている。
+    5) 別シナリオボタンを解析中に押した場合の割込リセットは台本に無いデモ専用の利便機能（明記: デモ専用）。
+    6) reduced-motionの手動シミュレートON/OFFチェックボックスは台本要件(OS検知)に加えたデモ専用の追加機能。
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>デモ: 診断卓（解析中演出） — 凍結判断用</title>
+<style>
+:root{
+  --hc-primary:#15803D;
+  --hc-primary-hover:#0d6c4a;
+  --hc-error:#DC2626;
+  --hc-bg:#F6F3E9;
+  --hc-text:#1C1917;
+  --hc-text-muted:#57534E;
+  --hc-border:#E2DDD5;
+  --hc-white:#FFFEFB;
+  --hc-shadow-md:0 4px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
+  --hc-focus-ring:0 0 0 2px rgba(21,128,61,.1);
+  --hc-primary-soft:color-mix(in srgb, var(--hc-primary) 10%, transparent);
+  --hc-primary-line:color-mix(in srgb, var(--hc-primary) 15%, transparent);
+  --hc-primary-border:color-mix(in srgb, var(--hc-primary) 25%, transparent);
+  --hc-error-line:color-mix(in srgb, var(--hc-error) 20%, transparent);
+  --hc-console-bg:color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white));
+  --hc-header-h:52px;
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--hc-bg); color:var(--hc-text); font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; -webkit-font-smoothing:antialiased;}
+.notice-ribbon{background:#111; color:#fbbf24; font-size:12px; text-align:center; padding:8px 12px;}
+.page-header{height:var(--hc-header-h); display:flex; align-items:center; padding:0 24px; border-bottom:1px solid var(--hc-border); background:var(--hc-white); font-weight:700; font-size:14px; position:sticky; top:0; z-index:100;}
+.page-header .tag{font-weight:400; color:var(--hc-text-muted); margin-left:8px; font-size:12px;}
+
+.hero-grid{position:relative; display:grid; grid-template-columns:1.15fr 1fr; gap:56px; max-width:1160px; margin:0 auto; padding:64px 24px 140px;}
+@media(max-width:767px){.hero-grid{grid-template-columns:1fr; gap:32px; padding:32px 20px 160px;}}
+h1{font-size:32px; line-height:1.35; margin:0 0 16px; font-weight:700;}
+.lead{font-size:15px; color:var(--hc-text-muted); margin:0 0 28px; line-height:1.7;}
+
+.url-form{display:flex; gap:10px; flex-wrap:wrap;}
+.url-field{flex:1 1 260px; position:relative; overflow:hidden; border-radius:6px;}
+.url-field::after{content:""; position:absolute; top:0; bottom:0; left:0; width:88px; background:linear-gradient(90deg,transparent,rgba(21,128,61,.35),transparent); transform:translateX(-100%); opacity:0;}
+.url-field.is-scanning::after{opacity:1; animation:hc-input-scan 1.6s linear infinite;}
+@keyframes hc-input-scan{0%{transform:translateX(-100%);}34%{transform:translateX(420%);}34.01%{opacity:0;}100%{opacity:0;transform:translateX(420%);}}
+#urlInput{width:100%; padding:13px 14px; font-size:14px; border:1px solid var(--hc-border); border-radius:6px; background:var(--hc-white); color:var(--hc-text); outline:none;}
+#urlInput.is-locked{border:2px solid var(--hc-primary); box-shadow:var(--hc-focus-ring); padding:12px 13px;}
+
+.cta{position:relative; flex:0 0 auto; padding:13px 24px; font-size:14px; font-weight:700; color:#fff; background:var(--hc-primary); border:none; border-radius:6px; cursor:pointer; transform:scale(1); transition:transform .12s cubic-bezier(.16,1,.3,1);}
+.cta:hover:not(:disabled){background:var(--hc-primary-hover);}
+.cta.is-pressed{transform:scale(.96);}
+.cta:disabled{cursor:default; opacity:.92;}
+.btn-spinner{display:none; width:12px; height:12px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; margin-right:6px; vertical-align:-2px;}
+.cta.is-busy .btn-spinner{display:inline-block; animation:hc-spin .8s linear infinite;}
+@keyframes hc-spin{to{transform:rotate(360deg);}}
+.ripple-ring{position:absolute; left:50%; top:50%; width:0; height:0; margin:0; border-radius:50%; border:2px solid var(--hc-primary-border); transform:translate(-50%,-50%); pointer-events:none; animation:hc-ripple .48s ease-out forwards;}
+@keyframes hc-ripple{from{width:0;height:0;opacity:.45;} to{width:220px;height:220px;opacity:0;}}
+.sub-note{font-size:12px; color:var(--hc-text-muted); margin:10px 0 0;}
+
+.topbar{position:fixed; top:0; left:0; right:0; height:3px; width:0%; background:var(--hc-primary); z-index:101; opacity:1; transition:width .25s ease-out, background-color .2s;}
+.topbar.is-error{background:var(--hc-error);}
+
+/* --- 解析コンソール（診断卓） --- */
+.console{margin-top:18px; max-height:0; opacity:0; overflow:hidden; transform:translateY(-8px); border:1px solid var(--hc-primary-line); background:var(--hc-console-bg); border-radius:10px; padding:0 16px; transition:max-height .32s cubic-bezier(.16,1,.3,1), opacity .32s ease, transform .32s cubic-bezier(.16,1,.3,1);}
+.console.is-open{max-height:640px; opacity:1; transform:translateY(0); padding:16px;}
+.console.is-closing{max-height:0!important; opacity:0!important; transform:translateY(-8px)!important; transition:max-height .28s cubic-bezier(.16,1,.3,1), opacity .28s ease, transform .28s cubic-bezier(.16,1,.3,1)!important;}
+.console.is-summary{max-height:56px!important;}
+.console.is-summary .console-head,.console.is-summary .step-list,.console.is-summary .target-line,.console.is-summary .error-block,.console.is-summary .footnote{display:none;}
+.console-head{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+.turtle{display:inline-block; font-size:26px; line-height:1;}
+.turtle.is-nodding{animation:hc-turtle-nod .3s ease;}
+.turtle.is-popping{animation:hc-turtle-pop .32s cubic-bezier(.16,1,.3,1);}
+.console.turtle-idle .turtle:not(.is-nodding):not(.is-popping){animation:hc-analyze-peek 3.2s ease-in-out infinite;}
+@keyframes hc-turtle-nod{0%{transform:rotate(0);}40%{transform:rotate(-8deg);}100%{transform:rotate(0);}}
+@keyframes hc-turtle-pop{0%{transform:scale(.9);}55%{transform:scale(1.06);}100%{transform:scale(1);}}
+@keyframes hc-analyze-peek{0%,100%{transform:rotate(0) translateX(0);}28%{transform:rotate(-5deg) translateX(2px);}56%{transform:rotate(0) translateX(0);}}
+#consoleTitle{font-size:14px; font-weight:700; margin:0; flex:1; color:var(--hc-primary);}
+.elapsed{font-size:11px; color:var(--hc-text-muted); font-variant-numeric:tabular-nums;}
+.abort-btn{display:none; font-size:12px; color:var(--hc-text-muted); background:none; border:none; cursor:pointer; padding:2px 4px;}
+.console.is-live .abort-btn{display:inline-flex;}
+.target-line{font-size:11px; color:var(--hc-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:0 0 10px;}
+.footnote{font-size:10px; color:var(--hc-text-muted); margin:12px 0 0; padding-top:10px; border-top:1px solid var(--hc-border);}
+.summary-line{font-size:13px; color:var(--hc-primary); margin:14px 0;}
+
+.step-list{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:10px;}
+.step{display:flex; flex-direction:column; gap:2px; transition:opacity .12s;}
+.step.is-dimming{opacity:.25;}
+.step-row{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
+.step-label{font-size:13px; color:var(--hc-text); font-weight:400;}
+.step[data-state="active"] .step-label{font-weight:600;}
+.step-suffix{font-size:13px; white-space:nowrap; color:var(--hc-text-muted);}
+.step[data-state="active"] .step-suffix,.step[data-state="active"] .step-label{color:var(--hc-primary);}
+.step[data-state="done"] .step-suffix,.step[data-state="done"] .step-label{color:var(--hc-primary);}
+.step[data-state="error"] .step-suffix,.step[data-state="error"] .step-label{color:var(--hc-error);}
+.step-sub{font-size:12px; color:var(--hc-text-muted); min-height:15px; opacity:0; visibility:hidden; transition:opacity .1s;}
+.step[data-state="active"] .step-sub{opacity:1; visibility:visible;}
+.step-sub.is-fading{opacity:0;}
+
+.error-block{margin-top:14px; padding-top:12px; border-top:1px solid var(--hc-error-line);}
+.error-reason{font-size:13px; color:var(--hc-text); margin:0 0 10px;}
+.error-actions{display:flex; gap:8px; flex-wrap:wrap;}
+.btn-sm{font-size:12px; padding:8px 14px; border-radius:6px; cursor:pointer; border:1px solid var(--hc-primary);}
+.btn-sm-primary{background:var(--hc-primary); color:#fff;}
+.btn-sm-secondary{background:transparent; color:var(--hc-primary);}
+.err-3rd{font-size:12px; color:var(--hc-text-muted); margin:10px 0 0;}
+
+/* --- 右カラム：プレビューカード + 送信ビーム --- */
+.col-left{position:relative;}
+.col-right{position:relative;}
+#beam{position:absolute; right:-40px; bottom:38px; height:6px; width:120px; background:linear-gradient(90deg,transparent,var(--hc-primary),transparent); opacity:0; pointer-events:none;}
+#beam.run-h{animation:hc-beam-run .24s cubic-bezier(.4,0,.2,1);}
+@keyframes hc-beam-run{0%{opacity:0; transform:translateX(-60px);}15%{opacity:1;}85%{opacity:1;}100%{opacity:0; transform:translateX(260px);}}
+@media(max-width:767px){
+  #beam{right:auto; left:50%; bottom:-24px; width:6px; height:60px; background:linear-gradient(180deg,transparent,var(--hc-primary),transparent); transform:translateX(-50%);}
+  #beam.run-h{animation:none;}
+  #beam.run-v{animation:hc-beam-run-v .18s cubic-bezier(.4,0,.2,1);}
+}
+@keyframes hc-beam-run-v{0%{opacity:0; transform:translate(-50%,-40px);}15%{opacity:1;}85%{opacity:1;}100%{opacity:0; transform:translate(-50%,80px);}}
+
+.preview-card{position:relative; min-height:340px; background:var(--hc-white); border:1px solid var(--hc-border); border-radius:12px; box-shadow:var(--hc-shadow-md); padding:24px; display:flex; flex-direction:column; justify-content:center; gap:12px; transition:border-color .2s;}
+.preview-card[data-phase="analyzing"],.preview-card[data-phase="done"]{border-color:var(--hc-primary-border);}
+.preview-card.pulse-receive{animation:hc-receive .2s ease;}
+@keyframes hc-receive{50%{transform:scale(1.006);}}
+.preview-card.is-analyzing-ring{animation:hc-ring 2.4s ease-in-out infinite;}
+@keyframes hc-ring{0%,100%{box-shadow:0 0 0 0 var(--hc-primary-soft);}50%{box-shadow:0 0 0 6px var(--hc-primary-soft);}}
+.card-idle{text-align:center; color:var(--hc-text-muted);}
+.card-idle-icon{font-size:32px; margin-bottom:10px;}
+.card-analyzing-text{font-size:14px; color:var(--hc-text); margin:0 0 14px;}
+.skeleton-row{height:12px; border-radius:4px; background:var(--hc-primary-soft); margin-bottom:8px; animation:hc-skel 1.4s ease-in-out infinite;}
+.skeleton-row:nth-child(2){width:80%;}
+.skeleton-row:nth-child(3){width:60%;}
+@keyframes hc-skel{0%,100%{opacity:.5;}50%{opacity:1;}}
+.result-row{font-size:14px; margin:0 0 10px; opacity:0; transform:translateY(6px); animation:hc-row-in .3s cubic-bezier(.16,1,.3,1) forwards; animation-delay:var(--d,0ms);}
+@keyframes hc-row-in{to{opacity:1; transform:translateY(0);}}
+
+/* --- デモ専用UI --- */
+.demo-panel{position:fixed; right:16px; bottom:16px; width:246px; background:#111; color:#fff; border:2px dashed #f59e0b; border-radius:10px; padding:12px; font-size:12px; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,.35);}
+.demo-panel-title{font-weight:700; margin:0 0 8px; font-size:11px;}
+.demo-panel-title span{display:block; font-weight:400; color:#f59e0b; font-size:10px; margin-top:2px;}
+.demo-panel-grid{display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+.demo-btn{font-size:11px; padding:7px 4px; border-radius:6px; border:1px solid #444; background:#222; color:#fff; cursor:pointer;}
+.demo-btn:hover{background:#333;}
+.demo-btn-ghost{grid-column:1/3; background:transparent; border-style:dashed;}
+.demo-motion-toggle{display:flex; align-items:center; gap:6px; margin-top:10px; font-size:11px;}
+.demo-motion-status{margin:4px 0 0; font-size:10px; color:#9ca3af;}
+.toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--hc-text); color:#fff; padding:10px 16px; border-radius:8px; font-size:13px; z-index:1000; max-width:90vw; text-align:center;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important; animation-iteration-count:1!important; transition:none!important; scroll-behavior:auto!important;}
+}
+.force-reduced-motion,.force-reduced-motion *{animation-duration:.001ms!important; animation-iteration-count:1!important; transition:none!important; scroll-behavior:auto!important;}
+</style>
+</head>
+<body>
+<div class="notice-ribbon">このページは凍結判断用の体感デモです。実際のAPIには接続していません。右下の操作盤で4つの終わり方を確認できます。</div>
+<div id="topbar" class="topbar" aria-hidden="true" hidden></div>
+<header class="page-header">HOJYO CAME<span class="tag">（デモ簡易ヘッダー）</span></header>
+
+<main class="hero-grid">
+  <section class="col-left">
+    <h1>あなたの会社が使える補助金を、<br>AIが今すぐ診断</h1>
+    <p class="lead">会社のホームページURLを入力するだけ。AIが自動で情報を読み取り、使える可能性のある補助金を提示します。</p>
+
+    <form id="diagForm" class="url-form" novalidate>
+      <div class="url-field" id="urlField">
+        <input id="urlInput" type="text" inputmode="url" autocomplete="off" value="https://multik.jp" aria-label="会社のホームページURL">
+      </div>
+      <button id="ctaBtn" type="submit" class="cta">
+        <span class="btn-spinner" aria-hidden="true"></span><span id="ctaLabel">無料で診断を始める</span>
+      </button>
+    </form>
+    <p id="subNote" class="sub-note">登録不要・無料。60秒ほどで結果の目安がわかります。</p>
+
+    <section id="consoleEl" class="console" role="status" aria-live="polite" aria-atomic="false" aria-label="解析の進行状況" hidden>
+      <div class="console-head">
+        <span id="turtle" class="turtle" aria-hidden="true">🐢</span>
+        <h2 id="consoleTitle">AIが解析しています</h2>
+        <span id="elapsedEl" class="elapsed" aria-hidden="true">経過 0:00</span>
+        <button id="abortBtn" type="button" class="abort-btn" aria-label="解析を中止する">中止</button>
+      </div>
+      <p id="targetLine" class="target-line">対象: https://multik.jp</p>
+      <ol id="stepList" class="step-list">
+        <li class="step" data-state="wait" aria-current="false">
+          <span class="step-row"><span class="step-label">ホームページを取得</span><span class="step-suffix"><span class="step-mark" aria-hidden="true">－</span> <span class="step-word">待機中</span></span></span>
+          <span class="step-sub">サイトの本文を読み込んでいます</span>
+        </li>
+        <li class="step" data-state="wait" aria-current="false">
+          <span class="step-row"><span class="step-label">企業情報をAIで読み取り</span><span class="step-suffix"><span class="step-mark" aria-hidden="true">－</span> <span class="step-word">待機中</span></span></span>
+          <span class="step-sub">会社名・業種・従業員数・所在地を探しています</span>
+        </li>
+        <li class="step" data-state="wait" aria-current="false">
+          <span class="step-row"><span class="step-label">補助金データベースと照合</span><span class="step-suffix"><span class="step-mark" aria-hidden="true">－</span> <span class="step-word">待機中</span></span></span>
+          <span class="step-sub" id="holdSub">登録されている補助金制度と条件を突き合わせています</span>
+        </li>
+        <li class="step" data-state="wait" aria-current="false">
+          <span class="step-row"><span class="step-label">概算を算出</span><span class="step-suffix"><span class="step-mark" aria-hidden="true">－</span> <span class="step-word">待機中</span></span></span>
+          <span class="step-sub">補助率と上限額から目安を計算しています</span>
+        </li>
+      </ol>
+      <div id="errorBlock" class="error-block" hidden>
+        <p id="errorReason" class="error-reason" role="alert"></p>
+        <div class="error-actions">
+          <button id="errPrimary" type="button" class="btn-sm btn-sm-primary"></button>
+          <button id="errSecondary" type="button" class="btn-sm btn-sm-secondary"></button>
+        </div>
+        <p id="err3rd" class="err-3rd" hidden>このサイトからは情報を読み取りにくいようです。手入力での診断が確実です。</p>
+      </div>
+      <p id="summaryLine" class="summary-line" hidden></p>
+      <p class="footnote">※ 工程の進み具合は目安表示です。結果は解析完了時にまとめて表示されます。</p>
+    </section>
+  </section>
+
+  <section class="col-right">
+    <div id="beam" aria-hidden="true"></div>
+    <div id="previewCard" class="preview-card" data-phase="idle">
+      <div class="card-idle" id="cardIdle">
+        <div class="card-idle-icon" aria-hidden="true">🔍</div>
+        <p>URLを入力すると解析が始まります</p>
+      </div>
+      <div class="card-analyzing" id="cardAnalyzing" hidden>
+        <p class="card-analyzing-text">AIが会社情報を読み取っています…</p>
+        <div aria-hidden="true"><div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div></div>
+      </div>
+      <div class="card-done" id="cardDone" hidden>
+        <p class="result-row" style="--d:0ms">対象企業: 株式会社サンプル</p>
+        <p class="result-row" style="--d:120ms">該当しそうな補助金候補: 3件</p>
+        <p class="result-row" style="--d:240ms">概算合計の目安: 最大240万円相当</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<aside class="demo-panel" aria-label="デモ専用操作盤（本番UIには存在しません）">
+  <p class="demo-panel-title">デモ専用操作盤<span>本番UIには存在しません</span></p>
+  <div class="demo-panel-grid">
+    <button type="button" class="demo-btn" data-scenario="success-fast">成功・速い(2.1s)</button>
+    <button type="button" class="demo-btn" data-scenario="success-slow">成功・遅い(25s)</button>
+    <button type="button" class="demo-btn" data-scenario="error-500">エラー500</button>
+    <button type="button" class="demo-btn" data-scenario="error-422">エラー422</button>
+    <button type="button" class="demo-btn" data-scenario="abort-try">中止を試す</button>
+    <button type="button" class="demo-btn demo-btn-ghost" id="resetBtn">リセット</button>
+  </div>
+  <label class="demo-motion-toggle"><input type="checkbox" id="motionOverride"> reduced-motionを模擬する</label>
+  <p class="demo-motion-status" id="motionStatus"></p>
+</aside>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+(function(){
+'use strict';
+const $ = (id)=> document.getElementById(id);
+const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+const topbar=$('topbar'), ctaBtn=$('ctaBtn'), ctaLabel=$('ctaLabel'), urlField=$('urlField'), urlInput=$('urlInput'),
+      subNote=$('subNote'), consoleEl=$('consoleEl'), consoleTitle=$('consoleTitle'), elapsedEl=$('elapsedEl'),
+      abortBtn=$('abortBtn'), targetLine=$('targetLine'), errorBlock=$('errorBlock'), errorReason=$('errorReason'),
+      errPrimary=$('errPrimary'), errSecondary=$('errSecondary'), err3rd=$('err3rd'), summaryLine=$('summaryLine'),
+      holdSub=$('holdSub'), beam=$('beam'), previewCard=$('previewCard'), cardIdle=$('cardIdle'),
+      cardAnalyzing=$('cardAnalyzing'), cardDone=$('cardDone'), turtle=$('turtle'), toast=$('toast'),
+      form=$('diagForm'), motionOverride=$('motionOverride'), motionStatus=$('motionStatus');
+const stepEls = [...document.querySelectorAll('.step')];
+
+const ERROR_REASONS = {
+  422:{text:'ホームページの情報を読み取れませんでした。', primary:'手入力で診断する', secondary:'もう一度試す'},
+  429:{text:'アクセスが集中しています。1分ほどおいてから、もう一度お試しください。', primary:'もう一度試す', secondary:'手入力で診断する'},
+  408:{text:'30秒以内に解析が終わりませんでした。', primary:'もう一度試す', secondary:'手入力で診断する'},
+  other:{text:'通信エラーが発生しました。接続をご確認ください。', primary:'もう一度試す', secondary:'手入力で診断する'}
+};
+const HOLD_TEXTS=['登録されている補助金制度と条件を突き合わせています','AIが精査しています。そのままお待ちください。','解析を続けています。最大30秒で結果をお返しします。'];
+const STATE_META={wait:{mark:'－',word:'待機中'},active:{mark:'●',word:'処理中'},done:{mark:'✓',word:'完了'},error:{mark:'！',word:'中断'}};
+const DELAY={'success-fast':2100,'success-slow':25000,'error-500':1800,'error-422':1800};
+
+const session={kind:'idle', attempt:0, consecutiveFailures:0};
+let timers=[], tickHandle=null, runStartTs=0, holdStartOffsetMs=null, lastKind='success-fast', toastTimer=null;
+
+function at(ms, fn){ const id=setTimeout(fn, ms); timers.push(id); return id; }
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; if (tickHandle){ clearInterval(tickHandle); tickHandle=null; } }
+function isMobile(){ return window.matchMedia('(max-width:767px)').matches; }
+function isReduced(){ return mql.matches || motionOverride.checked; }
+function actionKind(label){ return label==='手入力で診断する' ? 'manual' : 'retry'; }
+
+function setStep(i, state){
+  const el=stepEls[i], m=STATE_META[state];
+  el.dataset.state=state;
+  el.setAttribute('aria-current', state==='active' ? 'step' : 'false');
+  el.querySelector('.step-mark').textContent=m.mark;
+  el.querySelector('.step-word').textContent=m.word;
+}
+function resetSteps(){ stepEls.forEach((_,i)=> setStep(i,'wait')); }
+
+function setBar(normalPct, reducedPct){ topbar.style.width=(isReduced()?reducedPct:normalPct)+'%'; }
+
+function updateElapsed(sec){ const m=Math.floor(sec/60), s=sec%60; elapsedEl.textContent='経過 '+m+':'+String(s).padStart(2,'0'); }
+
+function startElapsedTick(){
+  runStartTs=performance.now(); holdStartOffsetMs=null; updateElapsed(0);
+  if (tickHandle) clearInterval(tickHandle);
+  tickHandle=setInterval(()=>{
+    const el=performance.now()-runStartTs;
+    updateElapsed(Math.floor(el/1000));
+    if (!isReduced() && holdStartOffsetMs!==null && el>=holdStartOffsetMs){
+      const pct=Math.min(88, 58 + (30/25.8) * ((el-holdStartOffsetMs)/1000));
+      topbar.style.width=pct+'%';
+    }
+  }, 100);
+}
+
+function setHoldText(text){ holdSub.classList.add('is-fading'); at(100, ()=>{ holdSub.textContent=text; holdSub.classList.remove('is-fading'); }); }
+
+function fireBeam(){ const m=isMobile(); beam.classList.remove('run-h','run-v'); void beam.offsetWidth; beam.classList.add(m?'run-v':'run-h'); }
+function spawnRipple(){ const r=document.createElement('span'); r.className='ripple-ring'; ctaBtn.appendChild(r); r.addEventListener('animationend', ()=> r.remove()); }
+function nodTurtle(){ turtle.classList.remove('is-nodding'); void turtle.offsetWidth; turtle.classList.add('is-nodding'); }
+function popTurtle(){ turtle.classList.remove('is-popping'); void turtle.offsetWidth; turtle.classList.add('is-popping'); }
+function swapTurtle(kind){ turtle.textContent = kind==='celebration' ? '🐢🎉' : '🐢'; }
+
+function showIdleCard(){ previewCard.dataset.phase='idle'; cardIdle.hidden=false; cardAnalyzing.hidden=true; cardDone.hidden=true; }
+function showAnalyzingCard(){ previewCard.dataset.phase='analyzing'; cardIdle.hidden=true; cardAnalyzing.hidden=false; cardDone.hidden=true; }
+function showDoneCard(){ previewCard.dataset.phase='done'; cardIdle.hidden=true; cardAnalyzing.hidden=true; cardDone.hidden=false; }
+
+function openConsole(){ consoleEl.hidden=false; subNote.hidden=true; requestAnimationFrame(()=> requestAnimationFrame(()=> consoleEl.classList.add('is-open'))); }
+function collapseConsoleToSummary(){
+  summaryLine.textContent = isMobile() ? '解析完了 — 結果を下に表示しました' : '解析完了 — 結果を右のカードに表示しました';
+  summaryLine.hidden=false; consoleEl.classList.add('is-summary');
+}
+
+function showErrorBlock(status){
+  const r = ERROR_REASONS[status] || ERROR_REASONS.other;
+  errorReason.textContent=r.text; errorBlock.hidden=false;
+  const forced = session.consecutiveFailures>=3;
+  const p = forced ? '手入力で診断する' : r.primary;
+  const s = forced ? 'もう一度試す' : r.secondary;
+  errPrimary.textContent=p; errPrimary.dataset.action=actionKind(p);
+  errSecondary.textContent=s; errSecondary.dataset.action=actionKind(s);
+  err3rd.hidden = !forced;
+}
+
+function showToast(msg){ toast.textContent=msg; toast.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=> toast.hidden=true, 3000); }
+
+// --- B: 進行シーケンス（工程1→4・holdランプ・タイムアウト安全網） base=このRUNの開始からstep1がactiveになるまでの相対ms ---
+function runBProgression(base){
+  startElapsedTick();
+  at(base, ()=> setStep(0,'active'));
+  at(base+1250, ()=> { setStep(0,'done'); setStep(1,'active'); setBar(28,25); });
+  at(base+3850, ()=>{
+    setStep(1,'done'); setStep(2,'active'); setBar(58,50);
+    holdStartOffsetMs=base+3850;
+    at(260, ()=> { topbar.style.transition='width .1s linear, background-color .2s'; });
+  });
+  at(base+3850+5800, ()=> setHoldText(HOLD_TEXTS[1]));
+  at(base+3850+15800, ()=> setHoldText(HOLD_TEXTS[2]));
+  at(base+3850+12900, ()=> { if (isReduced() && session.kind==='analyzing') topbar.style.width='75%'; });
+  at(base+29650, ()=> { if (session.kind==='analyzing') resolveError(408); });
+}
+
+// --- A: 導入シーケンス（フレッシュ送信） ---
+function beginIntro(url){
+  session.kind='analyzing'; session.attempt=1;
+  clearTimers(); resetSteps();
+  errorBlock.hidden=true; err3rd.hidden=true; summaryLine.hidden=true;
+  consoleEl.classList.remove('is-summary');
+  targetLine.textContent='対象: '+url;
+  consoleTitle.textContent='AIが解析しています'; consoleTitle.style.color='';
+  consoleEl.classList.add('is-live');
+
+  ctaBtn.style.transition='transform .08s ease-out'; ctaBtn.classList.add('is-pressed');
+  at(20, ()=>{ ctaLabel.textContent='解析中…'; ctaBtn.disabled=true; ctaBtn.setAttribute('aria-busy','true'); ctaBtn.classList.add('is-busy'); spawnRipple(); });
+  at(80, ()=>{ ctaBtn.style.transition='transform .12s cubic-bezier(.16,1,.3,1)'; ctaBtn.classList.remove('is-pressed'); });
+  at(60, ()=>{ urlInput.readOnly=true; urlInput.classList.add('is-locked'); urlField.classList.add('is-scanning'); });
+  at(80, ()=>{ topbar.hidden=false; topbar.style.opacity='1'; topbar.style.transition='width .25s ease-out, background-color .2s'; setBar(8,25); });
+  at(100, fireBeam);
+  at(120, openConsole);
+  at(150, nodTurtle);
+  at(340, ()=>{ previewCard.classList.add('pulse-receive'); showAnalyzingCard(); at(200, ()=> previewCard.classList.remove('pulse-receive')); });
+  at(400, ()=> previewCard.classList.add('is-analyzing-ring'));
+  at(450, ()=> consoleEl.classList.add('turtle-idle'));
+
+  runBProgression(350);
+}
+
+// --- R: リトライ後の再演出（コンソールは閉じない） ---
+function beginRetry(url){
+  session.kind='analyzing'; session.attempt+=1;
+  clearTimers();
+  errorBlock.hidden=true; err3rd.hidden=true; summaryLine.hidden=true;
+  consoleEl.classList.remove('is-summary'); consoleEl.classList.add('is-live');
+  targetLine.textContent='対象: '+url; consoleTitle.style.color='';
+
+  ctaLabel.textContent='解析中…'; ctaBtn.disabled=true; ctaBtn.setAttribute('aria-busy','true'); ctaBtn.classList.add('is-busy');
+  urlInput.readOnly=true; urlInput.classList.add('is-locked'); urlField.classList.add('is-scanning');
+
+  stepEls.forEach((el,i)=> at(i*40, ()=> el.classList.add('is-dimming')));
+  at(160, ()=>{ resetSteps(); stepEls.forEach(el=> el.classList.remove('is-dimming')); });
+
+  at(100, fireBeam);
+  at(180, ()=>{ consoleTitle.textContent='AIが解析しています（'+session.attempt+'回目）'; });
+  at(200, nodTurtle);
+  at(200, ()=>{ topbar.hidden=false; topbar.classList.remove('is-error'); topbar.style.opacity='1'; topbar.style.transition='none'; topbar.style.width='0%'; });
+  at(210, ()=>{ topbar.style.transition='width .25s ease-out, background-color .2s'; });
+  at(450, ()=> consoleEl.classList.add('turtle-idle'));
+
+  showAnalyzingCard();
+  previewCard.classList.add('is-analyzing-ring');
+
+  runBProgression(250);
+}
+
+// --- S: 成功 ---
+function resolveSuccess(){
+  if (tickHandle){ clearInterval(tickHandle); tickHandle=null; }
+  session.kind='success'; session.consecutiveFailures=0;
+  const incomplete=[0,1,2].filter(i=> stepEls[i].dataset.state!=='done');
+  incomplete.forEach((idx,n)=> at(n*90, ()=> setStep(idx,'done')));
+  at(90, ()=> setStep(3,'active'));
+  at(360, ()=> setStep(3,'done'));
+  at(420, ()=>{
+    consoleTitle.textContent='解析が完了しました'; consoleTitle.style.color='';
+    swapTurtle('celebration'); popTurtle();
+    topbar.style.transition='width .25s ease-out'; topbar.style.width='100%';
+  });
+  at(550, ()=>{ previewCard.classList.remove('is-analyzing-ring'); consoleEl.classList.remove('is-live','turtle-idle'); showDoneCard(); });
+  at(1020, collapseConsoleToSummary);
+  at(1100, ()=>{ if (isMobile()) previewCard.scrollIntoView({behavior:isReduced()?'auto':'smooth', block:'center'}); });
+  at(1220, ()=>{ topbar.style.transition='opacity .3s'; topbar.style.opacity='0'; });
+  at(1300, ()=>{
+    ctaLabel.textContent='もう一度診断する'; ctaBtn.disabled=false; ctaBtn.removeAttribute('aria-busy'); ctaBtn.classList.remove('is-busy');
+    urlInput.readOnly=false; urlInput.classList.remove('is-locked'); urlField.classList.remove('is-scanning');
+  });
+  at(1520, ()=>{ topbar.hidden=true; topbar.style.opacity='1'; topbar.style.transition=''; });
+}
+
+// --- E: エラー（右カードは必ずidleへ・completed済み✓は残す） ---
+function resolveError(status){
+  if (tickHandle){ clearInterval(tickHandle); tickHandle=null; }
+  session.kind='error'; session.consecutiveFailures+=1;
+  const curIdx=stepEls.findIndex(el=> el.dataset.state==='active');
+  if (curIdx>=0) setStep(curIdx,'error');
+  at(120, ()=> topbar.classList.add('is-error'));
+  at(200, ()=>{ consoleTitle.textContent='解析を完了できませんでした'; consoleTitle.style.color='var(--hc-error)'; swapTurtle('search'); consoleEl.classList.remove('is-live','turtle-idle'); });
+  at(250, ()=> showErrorBlock(status));
+  at(300, ()=>{
+    previewCard.classList.remove('is-analyzing-ring'); showIdleCard();
+    ctaLabel.textContent='もう一度診断する'; ctaBtn.disabled=false; ctaBtn.removeAttribute('aria-busy'); ctaBtn.classList.remove('is-busy');
+    urlInput.readOnly=false; urlInput.classList.remove('is-locked'); urlField.classList.remove('is-scanning');
+  });
+  at(320, ()=>{ topbar.style.transition='opacity .35s'; topbar.style.opacity='0'; });
+  at(670, ()=>{ topbar.hidden=true; topbar.style.opacity='1'; topbar.style.transition=''; topbar.classList.remove('is-error'); });
+}
+
+// --- A': 中止（AbortController相当・エラー色にしない・入力値は保持） ---
+function doAbort(){
+  if (session.kind!=='analyzing') return;
+  if (tickHandle){ clearInterval(tickHandle); tickHandle=null; }
+  const pending=[...timers]; timers=[]; pending.forEach(clearTimeout);
+  session.kind='aborted';
+  resetSteps();
+  consoleTitle.textContent='解析を中止しました'; consoleTitle.style.color='var(--hc-text-muted)';
+  consoleEl.classList.remove('is-live','turtle-idle');
+  topbar.classList.remove('is-error');
+  topbar.style.transition='opacity .25s'; topbar.style.opacity='0';
+  at(250, ()=>{ topbar.hidden=true; topbar.style.opacity='1'; topbar.style.transition=''; });
+  at(300, ()=>{
+    showIdleCard();
+    ctaLabel.textContent='無料で診断を始める'; ctaBtn.disabled=false; ctaBtn.removeAttribute('aria-busy'); ctaBtn.classList.remove('is-busy');
+    urlInput.readOnly=false; urlInput.classList.remove('is-locked'); urlField.classList.remove('is-scanning');
+    consoleEl.classList.add('is-closing');
+  });
+  at(580, ()=>{ consoleEl.hidden=true; consoleEl.classList.remove('is-closing','is-open','is-summary'); subNote.hidden=false; errorBlock.hidden=true; err3rd.hidden=true; summaryLine.hidden=true; });
+}
+
+// --- デモ専用: シナリオ再生・割込リセット ---
+function hardReset(){
+  clearTimers(); resetSteps();
+  session.kind='idle'; session.attempt=0; session.consecutiveFailures=0;
+  consoleEl.hidden=true; consoleEl.classList.remove('is-open','is-live','turtle-idle','is-closing','is-summary');
+  errorBlock.hidden=true; err3rd.hidden=true; summaryLine.hidden=true;
+  topbar.hidden=true; topbar.classList.remove('is-error'); topbar.style.transition=''; topbar.style.opacity='1'; topbar.style.width='0%';
+  previewCard.classList.remove('is-analyzing-ring','pulse-receive');
+  showIdleCard();
+  ctaLabel.textContent='無料で診断を始める'; ctaBtn.disabled=false; ctaBtn.removeAttribute('aria-busy'); ctaBtn.classList.remove('is-busy','is-pressed');
+  urlInput.readOnly=false; urlInput.classList.remove('is-locked'); urlField.classList.remove('is-scanning');
+  subNote.hidden=false; swapTurtle('search');
+}
+
+function playScenario(kind){
+  if (session.kind==='analyzing') hardReset();
+  const fresh = session.kind==='idle' || session.kind==='aborted';
+  const url = urlInput.value.trim() || 'https://multik.jp';
+  lastKind=kind;
+  if (fresh) beginIntro(url); else beginRetry(url);
+  if (kind==='abort-try'){ at(1500, doAbort); return; }
+  if (kind==='success-fast' || kind==='success-slow') at(DELAY[kind], resolveSuccess);
+  else if (kind==='error-500') at(DELAY[kind], ()=> resolveError(500));
+  else if (kind==='error-422') at(DELAY[kind], ()=> resolveError(422));
+}
+
+// --- 配線 ---
+form.addEventListener('submit', (e)=>{ e.preventDefault(); if (!ctaBtn.disabled) playScenario(lastKind); });
+abortBtn.addEventListener('click', doAbort);
+[errPrimary, errSecondary].forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if (btn.dataset.action==='manual') showToast('デモ: 本番では /match へ遷移します（このデモは単一ページのため遷移は行いません）');
+    else playScenario(lastKind);
+  });
+});
+document.querySelectorAll('.demo-btn[data-scenario]').forEach(b=> b.addEventListener('click', ()=> playScenario(b.dataset.scenario)));
+$('resetBtn').addEventListener('click', hardReset);
+function renderMotionStatus(){ motionStatus.textContent='reduced-motion: '+(isReduced()?'有効':'無効'); }
+motionOverride.addEventListener('change', ()=>{ document.body.classList.toggle('force-reduced-motion', motionOverride.checked); renderMotionStatus(); });
+mql.addEventListener('change', renderMotionStatus);
+
+hardReset();
+renderMotionStatus();
+})();
+</script>
+</body>
+</html>

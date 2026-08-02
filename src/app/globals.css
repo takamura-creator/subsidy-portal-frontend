@@ -1198,3 +1198,284 @@ button:focus-visible, a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .subsidies-cardgrid a { transition: none !important; transform: none !important; }
 }
+
+/* ==========================================================================
+   診断卓（解析中演出）— 台本 specs/2026-08-01_hero_analyzing_fx_script.md（🔒凍結）
+   時刻(ms)・ピクセル値は台本の確定値。変更は Phase 3 差し戻しが必要（禁止事項14）。
+   色は既存 --hc-* トークンと color-mix 合成のみ（新色の追加なし・禁止事項6）。
+   サブ 100ms のオフセット（A2/A5/A6/A7/A8/A10/A11/A9/A12）は
+   animation-delay / transition-delay で保持し、100ms tick には依存させない。
+   ========================================================================== */
+
+/* --- keyframes（§6.2 の7種 + 押し込み / 受信パルス / 解析中リング / 補足行フェード） --- */
+@keyframes hc-ripple-ring {
+  from { width: 0; height: 0; opacity: 0.45; }
+  to   { width: 220px; height: 220px; opacity: 0; }
+}
+@keyframes hc-input-scan {
+  0%       { left: -88px; opacity: 1; }
+  34.375%  { left: 100%; opacity: 1; }   /* 550ms / 1600ms 周期 */
+  34.376%  { left: 100%; opacity: 0; }
+  100%     { left: 100%; opacity: 0; }
+}
+@keyframes hc-beam-run {
+  0%   { opacity: 0; transform: translateX(-60px); }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(260px); }
+}
+@keyframes hc-beam-run-v {
+  0%   { opacity: 0; transform: translate(-50%, -40px); }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, 80px); }
+}
+@keyframes hc-analyze-peek {
+  0%      { transform: rotate(0deg) translateX(0); }
+  14%     { transform: rotate(-5deg) translateX(2px); }
+  28.125% { transform: rotate(0deg) translateX(0); }   /* 900ms / 3200ms 周期 */
+  100%    { transform: rotate(0deg) translateX(0); }
+}
+@keyframes hc-step-spin { to { transform: rotate(360deg); } }
+@keyframes hc-turtle-pop {
+  0%   { transform: scale(0.90); }
+  55%  { transform: scale(1.06); }
+  100% { transform: scale(1.00); }
+}
+@keyframes hc-cta-press {
+  0%   { transform: scale(1);    animation-timing-function: ease-out; }
+  40%  { transform: scale(0.96); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  100% { transform: scale(1); }
+}
+@keyframes hc-card-receive {
+  0%, 100% { transform: scale(1.000); }
+  50%      { transform: scale(1.006); }
+}
+@keyframes hc-card-ring {
+  0%, 100% { box-shadow: 0 0 0 0 var(--hc-primary-soft), 0 0 0 1px var(--hc-text-subtle), var(--hc-shadow-md); }
+  50%      { box-shadow: 0 0 0 6px var(--hc-primary-soft), 0 0 0 1px var(--hc-text-subtle), var(--hc-shadow-md); }
+}
+@keyframes hc-console-error-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hc-sub-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* --- 上端バー（A7 / B / S5 / E1・E3・E8 / A'2） --- */
+.hc-top-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0;
+  background: var(--hc-primary);
+  z-index: 101;              /* 既存ヘッダー z-index:100 の直上 */
+  opacity: 1; pointer-events: none;
+  transition: width 0.25s ease-out, background-color 0.2s linear, opacity 0.3s linear;
+}
+.hc-top-progress.is-hold   { transition: width 0.1s linear, background-color 0.2s linear, opacity 0.3s linear; }
+.hc-top-progress.is-frozen { transition: background-color 0.2s linear, opacity 0.35s linear; }
+.hc-top-progress.is-abort  { transition: opacity 0.25s linear; }
+.hc-top-progress.is-error  { background: var(--hc-error); }
+.hc-top-progress.is-fading { opacity: 0; }
+
+/* --- CTA: 押し込み / 発火リング / スピナー（A1・A3・A4・A2） --- */
+.hc-cta-press { animation: hc-cta-press 0.2s 1 both; }
+.hc-ripple-ring {
+  position: absolute; left: 50%; top: 50%;
+  width: 0; height: 0; border-radius: 50%;
+  border: 2px solid var(--hc-primary-border);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: hc-ripple-ring 0.48s ease-out 20ms 1 forwards;
+}
+.hc-cta-spinner {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid color-mix(in srgb, var(--hc-white) 40%, transparent);
+  border-top-color: var(--hc-white);
+  border-radius: 50%; margin-right: 6px; vertical-align: -2px;
+  animation: hc-step-spin 0.9s linear infinite;
+}
+
+/* --- 入力欄ロック + 走査光（A5・A6） --- */
+.hc-scan-field {
+  position: relative; flex: 1; display: flex;
+  border-radius: 8px; overflow: hidden;
+  transition: box-shadow 0.2s linear 60ms;
+}
+.hc-scan-field:focus-within,
+.hc-scan-field.is-scanning { box-shadow: var(--hc-focus-ring); }
+.hc-scan-field::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -88px; width: 88px;
+  background: linear-gradient(90deg, transparent, var(--hc-primary-border), transparent);
+  opacity: 0; pointer-events: none;
+}
+.hc-scan-field.is-scanning::after { animation: hc-input-scan 1.6s linear 60ms infinite; }
+
+/* --- 送信ビーム（A8 / R2） --- */
+.hc-submit-beam { position: absolute; pointer-events: none; z-index: 2; opacity: 0; }
+.hc-submit-beam-h {
+  top: 96px; left: -56px; width: 120px; height: 6px;
+  background: linear-gradient(90deg, transparent, var(--hc-primary), transparent);
+  animation: hc-beam-run 0.24s cubic-bezier(0.4, 0, 0.2, 1) 100ms 1 both;
+}
+.hc-submit-beam-v { display: none; }
+@media (max-width: 768px) {
+  .hc-submit-beam-h { display: none; }
+  .hc-submit-beam-v {
+    display: block; top: -14px; left: 50%; width: 6px; height: 60px;
+    background: linear-gradient(180deg, transparent, var(--hc-primary), transparent);
+    animation: hc-beam-run-v 0.18s cubic-bezier(0.4, 0, 0.2, 1) 100ms 1 both;
+  }
+}
+
+/* --- プレビューカード（A9 受信パルス / A12 解析中リング） --- */
+.hc-preview-card {
+  width: 100%; max-width: 480px;
+  background: var(--hc-white);
+  border: 1px solid var(--hc-border);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 0 0 1px var(--hc-text-subtle), var(--hc-shadow-md);
+  transition: border-color 0.2s linear;
+}
+.hc-preview-card[data-phase="analyzing"] { border-color: var(--hc-primary); transition-delay: 340ms; }
+.hc-preview-card[data-phase="done"]      { border-color: var(--hc-primary-border); }
+.hc-card-live {
+  animation: hc-card-receive 0.2s ease 340ms 1 both,
+             hc-card-ring 2.4s ease-in-out 400ms infinite;
+}
+
+/* --- 診断卓スロット（補足文 ⇔ コンソールの入れ替え・h1は動かさない） --- */
+.hc-hero-console-slot { position: relative; display: flex; flex-direction: column; }
+.hc-hero-subnote { font-size: 12px; color: var(--hc-text-muted); margin: 0; line-height: 1.6; }
+
+/* --- 解析コンソール本体（A10 / S8 / A'4 / Cut 3・Cut 5） --- */
+.hc-console {
+  border: 1px solid var(--hc-primary-line);
+  background: color-mix(in srgb, var(--hc-primary) 4%, var(--hc-white));
+  border-radius: 10px;
+  padding: 0 16px;
+  max-height: 0; opacity: 0; overflow: hidden;
+  transform: translateY(-8px);
+  transition: max-height 0.32s cubic-bezier(0.16, 1, 0.3, 1) 120ms,
+              opacity 0.32s ease 120ms,
+              transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) 120ms,
+              padding 0.32s cubic-bezier(0.16, 1, 0.3, 1) 120ms;
+}
+.hc-console.is-open { max-height: 640px; opacity: 1; transform: translateY(0); padding: 16px; }
+.hc-console.is-error-tone {
+  background: color-mix(in srgb, var(--hc-error) 6%, var(--hc-white));
+  border-color: var(--hc-error-line);
+}
+.hc-console.is-closing {
+  max-height: 0; opacity: 0; transform: translateY(-8px); padding: 0 16px;
+  transition: max-height 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.28s ease,
+              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hc-console.is-summary {
+  max-height: 36px; padding: 8px 16px;
+  transition: max-height 0.28s cubic-bezier(0.16, 1, 0.3, 1), padding 0.28s ease;
+}
+.hc-console.is-summary .hc-console-head,
+.hc-console.is-summary .hc-console-target,
+.hc-console.is-summary .hc-step-list,
+.hc-console.is-summary .hc-console-error,
+.hc-console.is-summary .hc-console-note { display: none; }
+
+.hc-console-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.hc-console-turtle { display: inline-flex; width: 44px; height: 44px; flex: 0 0 auto; }
+.hc-console-turtle img { width: 100%; height: 100%; object-fit: contain; }
+.hc-console-turtle.is-peek { animation: hc-analyze-peek 3.2s ease-in-out infinite; }
+.hc-console-turtle.is-pop  { animation: hc-turtle-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1) 1 forwards; }
+.hc-console-title {
+  font-size: 14px; font-weight: 700; margin: 0; flex: 1;
+  color: var(--hc-primary); font-family: 'Noto Sans JP', sans-serif;
+}
+.hc-console-title.is-error   { color: var(--hc-error); }
+.hc-console-title.is-aborted { color: var(--hc-text-muted); }
+.hc-console-elapsed {
+  font-size: 11px; color: var(--hc-text-muted);
+  font-variant-numeric: tabular-nums; flex: 0 0 auto;
+}
+.hc-console-abort {
+  font-size: 12px; color: var(--hc-text-muted);
+  background: none; border: none; cursor: pointer;
+  padding: 2px 4px; font-family: inherit; flex: 0 0 auto;
+}
+.hc-console-abort:hover { color: var(--hc-text); }
+.hc-console-target {
+  font-size: 11px; color: var(--hc-text-muted); margin: 0 0 10px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hc-console-note {
+  font-size: 10px; color: var(--hc-text-muted); margin: 12px 0 0;
+  padding-top: 10px; border-top: 1px solid var(--hc-border);
+}
+.hc-console-summary { font-size: 13px; line-height: 1.5; color: var(--hc-primary); margin: 0; }
+.hc-summary-narrow { display: none; }
+@media (max-width: 768px) {
+  .hc-summary-wide { display: none; }
+  .hc-summary-narrow { display: inline; }
+  .hc-console-turtle { width: 36px; height: 36px; }
+}
+
+/* --- 4段の工程リスト（記号＋文字。色だけに意味を持たせない） --- */
+.hc-step-list {
+  list-style: none; margin: 8px 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.hc-step { display: flex; flex-direction: column; gap: 2px; transition: opacity 0.12s linear; }
+.hc-step.is-dimming { opacity: 0.25; }
+.hc-step-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.hc-step-label { font-size: 13px; color: var(--hc-text); font-weight: 400; }
+.hc-step-suffix { font-size: 13px; color: var(--hc-text-muted); white-space: nowrap; }
+.hc-step[data-state="active"] .hc-step-label { font-weight: 600; color: var(--hc-primary); }
+.hc-step[data-state="active"] .hc-step-suffix { color: var(--hc-primary); }
+.hc-step[data-state="done"] .hc-step-label,
+.hc-step[data-state="done"] .hc-step-suffix { color: var(--hc-primary); }
+.hc-step[data-state="error"] .hc-step-label,
+.hc-step[data-state="error"] .hc-step-suffix { color: var(--hc-error); }
+.hc-step-sub {
+  font-size: 12px; color: var(--hc-text-muted); min-height: 15px;
+  opacity: 0; visibility: hidden; transition: opacity 0.2s linear;
+}
+.hc-step[data-state="active"] .hc-step-sub { opacity: 1; visibility: visible; }
+.hc-step-sub-text { animation: hc-sub-fade 0.2s ease 1 both; }
+
+/* --- エラー理由行 + 導線（E5 / 3連続失敗行） --- */
+.hc-console-error {
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hc-error-line);
+  animation: hc-console-error-in 0.22s ease 1 both;
+}
+.hc-console-reason { font-size: 13px; color: var(--hc-text); margin: 0 0 10px; }
+.hc-console-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.hc-btn-sm {
+  font-size: 12px; padding: 8px 14px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--hc-primary); font-family: inherit; font-weight: 600;
+}
+.hc-btn-sm-primary { background: var(--hc-primary); color: var(--hc-white); }
+.hc-btn-sm-secondary { background: transparent; color: var(--hc-primary); }
+.hc-console-3rd { font-size: 12px; color: var(--hc-text-muted); margin: 10px 0 0; }
+
+/* 読み上げ専用（画面内で唯一の progressbar をコンソール側に置く・禁止事項13） */
+.hc-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* --- reduced-motion 代替（§5.4）: 動きは全停止し、記号＋文字＋経過秒＋5段階バーで伝える --- */
+@media (prefers-reduced-motion: reduce) {
+  .hc-ripple-ring,
+  .hc-cta-press,
+  .hc-cta-spinner,
+  .hc-scan-field.is-scanning::after,
+  .hc-submit-beam-h,
+  .hc-submit-beam-v,
+  .hc-console-turtle.is-peek,
+  .hc-console-turtle.is-pop,
+  .hc-card-live,
+  .hc-console-error,
+  .hc-step-sub-text { animation: none !important; }
+  .hc-ripple-ring, .hc-submit-beam { display: none !important; }
+  /* コンソールは A10 の 0.120s に「表示切替のみ」で出す（delay は保持・duration を 0 に） */
+  .hc-console, .hc-console.is-closing, .hc-console.is-summary { transition-duration: 0s !important; }
+  .hc-top-progress, .hc-preview-card, .hc-step, .hc-step-sub, .hc-scan-field { transition: none !important; }
+}

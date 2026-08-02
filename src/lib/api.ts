@@ -209,11 +209,22 @@ export interface DiagnoseResponse {
  * タイムアウト: HP取得 + LLM推論で最大30秒。
  * signal を渡さず apiFetch のデフォルトタイムアウト変数を上書きすることで
  * TimeoutError メッセージに正しい「30秒」が表示される。
+ *
+ * externalSignal: 呼び出し側の中止（台本『診断卓』終わり方④）を実 fetch へ伝搬させる。
+ * 中止由来の abort は ApiError(499) として区別する（タイムアウト 408 と混同させない）。
  */
-export async function diagnosePublic(url: string): Promise<DiagnoseResponse> {
+export async function diagnosePublic(
+  url: string,
+  externalSignal?: AbortSignal,
+): Promise<DiagnoseResponse> {
   const DIAGNOSE_TIMEOUT = 30000;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), DIAGNOSE_TIMEOUT);
+  const onExternalAbort = () => controller.abort();
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener("abort", onExternalAbort);
+  }
   try {
     // apiFetch に customSignal を渡すと timeoutMs=undefined になり "—秒" 表示になるため
     // ここで fetch を直接呼び、タイムアウト時は ApiError(408) を投げる
@@ -234,11 +245,13 @@ export async function diagnosePublic(url: string): Promise<DiagnoseResponse> {
   } catch (err) {
     if (err instanceof ApiError) throw err;
     if (err instanceof DOMException && err.name === "AbortError") {
+      if (externalSignal?.aborted) throw new ApiError(499, "解析を中止しました");
       throw new ApiError(408, `リクエストがタイムアウトしました（${DIAGNOSE_TIMEOUT / 1000}秒）`);
     }
     throw new ApiError(0, "ネットワークエラーが発生しました");
   } finally {
     clearTimeout(timer);
+    if (externalSignal) externalSignal.removeEventListener("abort", onExternalAbort);
   }
 }
 
