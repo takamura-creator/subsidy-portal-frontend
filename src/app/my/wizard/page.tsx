@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import WizardLayout, {
   WIZARD_STEPS,
   JIZOKUKA_STEPS,
@@ -27,12 +27,20 @@ import {
   EMPTY_WIZARD_STATE,
 } from "@/components/wizard/types";
 import { getUser } from "@/lib/auth";
-import { fetchProfileDetail } from "@/lib/api";
+import { fetchProfileDetail, fetchSubsidy } from "@/lib/api";
 
 const STORAGE_KEY = "hc_wizard_state_v2";
 
-export default function WizardPage() {
+/**
+ * 補助金詳細ページ（SubsidyDetailClient / StickyCtaBar / SubsidyActionPanel）が
+ * `?subsidy_id=` 付きで遷移してくるケースを Step2 の初期選択に反映する（診断結果からの導線）。
+ * useSearchParams() は CSR bailout を避けるため Suspense 境界が必須
+ * （src/app/auth/login/page.tsx・src/app/match/results/page.tsx と同型）。
+ */
+function WizardPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const subsidyIdParam = searchParams.get("subsidy_id");
   const [step, setStep] = useState<WizardStepId>(1);
   const [state, setState] = useState<WizardState>(EMPTY_WIZARD_STATE);
   const [hydrated, setHydrated] = useState(false);
@@ -103,6 +111,40 @@ export default function WizardPage() {
         console.warn("[wizard] fetchProfileDetail failed:", err);
       });
   }, [hydrated]);
+
+  // 診断結果/補助金詳細からの `?subsidy_id=` を Step2 の初期選択に反映。
+  // 復元済み下書き（state.subsidy が既にある）は壊さない＝上書きせず補完のみ。
+  // 識別子が不正・該当補助金なし・パラメータ無しの場合は何もしない
+  // → Step2 は従来どおりユーザーが選ぶ画面にフォールバックする。
+  useEffect(() => {
+    if (!hydrated || !subsidyIdParam) return;
+    let cancelled = false;
+    fetchSubsidy(subsidyIdParam)
+      .then((s) => {
+        if (cancelled) return;
+        setState((prev) => {
+          if (prev.subsidy) return prev; // 復元下書きの選択を優先し上書きしない
+          return {
+            ...prev,
+            subsidy: {
+              id: s.id,
+              name: s.name,
+              category: s.category,
+              maxAmount: s.max_amount,
+              rateMax: s.rate_max,
+              prefecture: s.prefecture,
+              draftSubsidyType: s.draft_subsidy_type,
+            },
+          };
+        });
+      })
+      .catch((err: unknown) => {
+        console.warn("[wizard] fetchSubsidy(subsidy_id) failed:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, subsidyIdParam]);
 
   const setCompany = useCallback((c: CompanyInfo) => {
     setState((prev) => ({ ...prev, company: c }));
@@ -291,6 +333,14 @@ export default function WizardPage() {
         <MissingPrereq onReset={() => setStep(1)} currentStep={step} />
       )}
     </WizardLayout>
+  );
+}
+
+export default function WizardPage() {
+  return (
+    <Suspense>
+      <WizardPageContent />
+    </Suspense>
   );
 }
 

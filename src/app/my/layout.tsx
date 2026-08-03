@@ -44,7 +44,14 @@ export default function MyLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isAuthenticated()) {
       setReady(false);
-      router.replace(`/auth/login?returnUrl=${encodeURIComponent(pathname)}`);
+      // クエリ文字列(例: 診断結果から来た ?subsidy_id=)を戻り先に保持する。
+      // pathname は Next.js が組み立てる同一オリジンのルートパスで必ず単一の "/" から
+      // 始まるため、search をどう足してもここで "//" 始まりにはなり得ない
+      // （オープンリダイレクト対策は auth/login/page.tsx 側の検証をそのまま維持・不変更）。
+      // 既存規約 = lib/api.ts の authFetch 401 リダイレクトと同型
+      // （window.location.pathname + window.location.search）。
+      const search = typeof window !== "undefined" ? window.location.search : "";
+      router.replace(`/auth/login?returnUrl=${encodeURIComponent(pathname + search)}`);
       return;
     }
     const user = getUser();

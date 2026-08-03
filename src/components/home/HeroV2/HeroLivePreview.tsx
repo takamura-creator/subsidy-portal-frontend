@@ -18,6 +18,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import TypeWriter from "@/components/motion/TypeWriter";
 import HeroDemoTimeline from "./HeroDemoTimeline";
@@ -197,6 +198,15 @@ function LiveDoneView({ result }: { result: DiagnoseResponse }) {
   ].filter(Boolean).join("・");
 
   const matchCount = matches.length;
+  // 上位2件を超える分の行き止まり防止。表示件数(2件)自体は変更しない（指示書要件）。
+  // 既存の一覧ページの industry クエリ規約（src/app/subsidies/page.tsx）にそのまま乗せる。
+  const moreHref = extracted.industry
+    ? `/subsidies?industry=${encodeURIComponent(extracted.industry)}`
+    : "/subsidies";
+  // 次の一手CTA: 最有力（先頭）マッチの詳細へ。0件時は一覧へ（行き止まり防止）。
+  const primaryHref = matchCount > 0
+    ? `/subsidies/${encodeURIComponent(matches[0].subsidy.id)}`
+    : "/subsidies";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -231,10 +241,19 @@ function LiveDoneView({ result }: { result: DiagnoseResponse }) {
           {matchCount > 0 && (
             <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 3 }}>
               {matches.slice(0, 2).map((m) => (
-                <div key={m.subsidy.id} style={{
-                  fontSize: 11, color: "var(--hc-text)",
-                  display: "flex", gap: 4, alignItems: "center",
-                }}>
+                <Link
+                  key={m.subsidy.id}
+                  href={`/subsidies/${encodeURIComponent(m.subsidy.id)}`}
+                  aria-label={`${m.subsidy.name} の詳細を見る`}
+                  style={{
+                    fontSize: 11, color: "var(--hc-text)",
+                    display: "flex", gap: 4, alignItems: "center",
+                    textDecoration: "none", borderRadius: 4, padding: "3px 4px",
+                    transition: "background 0.15s",
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = "var(--hc-primary-soft)"; }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
+                >
                   <span style={{
                     padding: "1px 5px", borderRadius: 4, fontSize: 10, fontWeight: 700,
                     background: m.match_score === "高"
@@ -242,9 +261,23 @@ function LiveDoneView({ result }: { result: DiagnoseResponse }) {
                       : "var(--hc-border)",
                     color: m.match_score === "高" ? "var(--hc-primary)" : "var(--hc-text-muted)",
                   }}>{m.match_score}</span>
-                  <span>{m.subsidy.name}</span>
-                </div>
+                  <span style={{ flex: 1 }}>{m.subsidy.name}</span>
+                  <span aria-hidden="true" style={{ color: "var(--hc-primary)", fontWeight: 700, flexShrink: 0 }}>›</span>
+                </Link>
               ))}
+              {matchCount > 2 && (
+                <Link
+                  href={moreHref}
+                  style={{
+                    fontSize: 11, color: "var(--hc-text-muted)", textDecoration: "none",
+                    alignSelf: "flex-end", marginTop: 2,
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.textDecoration = "underline"; }}
+                  onMouseOut={(e) => { e.currentTarget.style.textDecoration = "none"; }}
+                >
+                  ほか{matchCount - 2}件 → すべて見る
+                </Link>
+              )}
             </div>
           )}
         </div>
@@ -274,6 +307,17 @@ function LiveDoneView({ result }: { result: DiagnoseResponse }) {
           </div>
         </LiveStep>
       )}
+
+      {/* 次の一手 — 診断後にまず何をすべきかを明示するCTA（行き止まり防止） */}
+      <LiveStep index={estimate.max_amount > 0 ? 3 : 2}>
+        <Link
+          href={primaryHref}
+          className="btn-primary"
+          style={{ fontSize: 13, padding: "10px 14px" }}
+        >
+          {matchCount > 0 ? "詳しく見る" : "補助金一覧を見る"}
+        </Link>
+      </LiveStep>
     </div>
   );
 }
