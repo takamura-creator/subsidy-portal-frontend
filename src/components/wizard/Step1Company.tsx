@@ -1,73 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { INDUSTRIES, SERVICE_PREFECTURES } from "@/lib/constants";
 import { authFetch, ApiError } from "@/lib/api";
 import type { CompanyInfo } from "./types";
+import { Field, Spinner } from "./FormField";
+import {
+  applyExtractedFields,
+  companySchema,
+  FIELD_LABELS,
+  toCompanyForm,
+  type CompanyFormValues,
+} from "./step1CompanyForm";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-const schema = z
-  .object({
-    companyName: z.string().min(1, "会社名を入力してください").max(120),
-    representativeName: z.string().min(1, "代表者名を入力してください").max(60),
-    address: z.string().min(1, "住所を入力してください").max(200),
-    prefecture: z.string().min(1, "都道府県を選択してください"),
-    industry: z.string().min(1, "業種を選択してください"),
-    employees: z
-      .string()
-      .min(1, "入力してください")
-      .regex(/^[0-9]+$/, "半角数字で入力してください")
-      .refine((v) => Number(v) >= 1 && Number(v) <= 100000, "1〜100000の範囲で入力してください"),
-    annualRevenue: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^[0-9]+$/.test(v), "半角数字で入力してください"),
-    websiteUrl: z
-      .string()
-      .optional()
-      .refine(
-        (v) => !v || /^https?:\/\/.+/.test(v),
-        "URLは http:// または https:// から始めてください",
-      ),
-  })
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = CompanyFormValues;
 
 interface ExtractionResponse {
   extracted_fields: Record<string, string>;
   fallback: boolean;
   errors?: string[];
 }
-
-/** 抽出結果 → フォームフィールドのマッピング */
-const FIELD_MAP: Record<string, keyof FormValues> = {
-  company_name: "companyName",
-  representative_name: "representativeName",
-  address: "address",
-  prefecture: "prefecture",
-  employees: "employees",
-  annual_revenue: "annualRevenue",
-  industry: "industry",
-};
-
-/** 抽出フィールドのラベル（結果表示用） */
-const FIELD_LABELS: Record<string, string> = {
-  company_name: "会社名",
-  representative_name: "代表者名",
-  address: "住所",
-  prefecture: "都道府県",
-  industry: "業種",
-  employees: "従業員数",
-  annual_revenue: "年商",
-  company_overview: "事業概要",
-  capital: "資本金",
-  established_date: "設立年月日",
-  business_description: "主要事業",
-};
 
 interface Props {
   defaults: Partial<CompanyInfo>;
@@ -85,8 +41,8 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: toForm(defaults),
+    resolver: zodResolver(companySchema),
+    defaultValues: toCompanyForm(defaults),
     mode: "onTouched",
     reValidateMode: "onChange",
   });
@@ -94,6 +50,17 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
   const websiteUrl = watch("websiteUrl");
   const watchedIndustry = watch("industry");
   const isJichikai = watchedIndustry === "自治会・町会";
+
+  /**
+   * トップ診断から引き継がれた URL（初回レンダー時に確定させる）。
+   * 会社名が既に入っている下書きは「ユーザーが作業済み」とみなし自動取得しない。
+   * 引き継ぎが無い／URL が壊れている場合は空 → 従来どおり手入力の画面になる。
+   */
+  const [handedOverUrl] = useState<string>(() => {
+    const url = (defaults.websiteUrl ?? "").trim();
+    if (defaults.companyName) return "";
+    return /^https?:\/\/.+/.test(url) ? url : "";
+  });
 
   // アカウント設定のプロフィール情報を初期入力に反映（websiteUrl だけでなく主要項目すべて）
   // ウィザード保存値（defaults）が空のフィールドのみ profile から補完
@@ -130,6 +97,8 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
   // HP extraction state
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState("");
+  /** 自動実行（引き継ぎ）が失敗したときの控えめな案内。手入力へ静かに縮退させる */
+  const [autoNotice, setAutoNotice] = useState("");
   const [extractResult, setExtractResult] = useState<{
     count: number;
     formFilled: number;
@@ -137,131 +106,96 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
   } | null>(null);
 
   useEffect(() => {
-    reset(toForm(defaults));
+    reset(toCompanyForm(defaults));
   }, [defaults, reset]);
 
-  /** ホームページから会社情報を自動取得 → フォームに反映 */
-  const handleExtract = useCallback(async () => {
-    if (!websiteUrl || !/^https?:\/\/.+/.test(websiteUrl)) return;
-    setExtracting(true);
-    setExtractError("");
-    setExtractResult(null);
+  /**
+   * ホームページから会社情報を自動取得 → フォームに反映。
+   * @param auto true = 引き継ぎURLによる自動実行（失敗時は赤いエラーではなく控えめな案内）
+   * @param urlOverride 自動実行時に使う URL（フォーム watch の反映待ちを避ける）
+   */
+  const runExtract = useCallback(
+    async (auto: boolean, urlOverride?: string) => {
+      const target = (urlOverride ?? websiteUrl ?? "").trim();
+      if (!target || !/^https?:\/\/.+/.test(target)) return;
+      setExtracting(true);
+      setExtractError("");
+      setAutoNotice("");
+      setExtractResult(null);
 
-    try {
-      const res = await authFetch<ExtractionResponse>(
-        `${API_BASE}/api/extractions/homepage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: websiteUrl, subsidy_id: "" }),
-        },
-      );
-
-      const fields = res.extracted_fields;
-      let formFilled = 0;
-      const extraFields: Record<string, string> = {};
-
-      // 抽出結果をフォームフィールドにマッピング
-      for (const [extractKey, value] of Object.entries(fields)) {
-        if (!value) continue;
-        const strValue = String(value);
-        const formKey = FIELD_MAP[extractKey];
-
-        if (formKey) {
-          // 都道府県: SERVICE_PREFECTURES リストと照合
-          if (formKey === "prefecture") {
-            const matched = (SERVICE_PREFECTURES as readonly string[]).find(
-              (p) => strValue.includes(p),
-            );
-            if (matched) {
-              setValue("prefecture", matched, { shouldDirty: true });
-              formFilled++;
-            }
-          }
-          // 業種: INDUSTRIES リストと柔軟に照合
-          // 例: AI 抽出値「廃棄物処理・資源リサイクル」→「廃棄物処理業」
-          //     AI 抽出値「建設」→「建設業」
-          else if (formKey === "industry") {
-            const list = INDUSTRIES as readonly string[];
-            const matched =
-              // (1) 完全一致／抽出値が業種名を含む
-              list.find((i) => strValue.includes(i)) ??
-              // (2) 業種名から「業」を取った語幹が抽出値に含まれる
-              list.find((i) => {
-                const stem = i.replace(/業$/, "");
-                return stem.length >= 2 && strValue.includes(stem);
-              }) ??
-              // (3) 抽出値の先頭ワードが業種名に含まれる
-              list.find((i) => {
-                const head = strValue.split(/[・、,\s\/]/)[0];
-                return head.length >= 2 && i.includes(head);
-              });
-            if (matched) {
-              setValue("industry", matched, { shouldDirty: true });
-              formFilled++;
-            } else {
-              // どれにも該当しなければ「その他」を選択（未選択のままにしない）
-              setValue("industry", "その他", { shouldDirty: true });
-              formFilled++;
-            }
-          }
-          // 数値フィールド
-          else if (formKey === "employees" || formKey === "annualRevenue") {
-            const numStr = String(value).replace(/[,、]/g, "");
-            if (/^\d+$/.test(numStr)) {
-              setValue(formKey, numStr, { shouldDirty: true });
-              formFilled++;
-            }
-          }
-          // テキストフィールド
-          else {
-            setValue(formKey, strValue, { shouldDirty: true });
-            formFilled++;
-          }
-        }
-
-        // フォームに直接マッピングできないフィールドも保持（後続ステップ用）
-        if (!formKey) {
-          extraFields[extractKey] = strValue;
-        }
-      }
-
-      setExtractResult({
-        count: Object.keys(fields).length,
-        formFilled,
-        extraFields,
-      });
-
-      // 全抽出結果を親に通知（事業計画書 Step 7/8 で使用）
-      if (onHpExtracted) {
-        const allFields: Record<string, string> = {};
-        for (const [k, v] of Object.entries(fields)) {
-          if (v) allFields[k] = String(v);
-        }
-        onHpExtracted(allFields);
-      }
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setExtractError(
-          err.status === 401
-            ? "ログインが必要です。ページを再読み込みしてログインし直してください。"
-            : err.status === 403
-              ? "アクセス権限がありません。"
-              : err.status === 408 || err.message?.includes("タイムアウト")
-                ? "ホームページの取得がタイムアウトしました。URLを確認して再度お試しください。"
-                : `自動取得に失敗しました（${err.message}）`,
+      try {
+        const res = await authFetch<ExtractionResponse>(
+          `${API_BASE}/api/extractions/homepage`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: target, subsidy_id: "" }),
+          },
         );
-      } else {
-        setExtractError("自動取得に失敗しました。しばらく待ってから再度お試しください。");
+
+        const fields = res.extracted_fields ?? {};
+        const { formFilled, extraFields } = applyExtractedFields(fields, setValue);
+
+        setExtractResult({
+          count: Object.keys(fields).length,
+          formFilled,
+          extraFields,
+        });
+
+        // 全抽出結果を親に通知（事業計画書 Step 7/8 で使用）
+        if (onHpExtracted) {
+          const allFields: Record<string, string> = {};
+          for (const [k, v] of Object.entries(fields)) {
+            if (v) allFields[k] = String(v);
+          }
+          onHpExtracted(allFields);
+        }
+      } catch (err) {
+        const message =
+          err instanceof ApiError
+            ? err.status === 401
+              ? "ログインが必要です。ページを再読み込みしてログインし直してください。"
+              : err.status === 403
+                ? "アクセス権限がありません。"
+                : err.status === 408 || err.message?.includes("タイムアウト")
+                  ? "ホームページの取得がタイムアウトしました。URLを確認して再度お試しください。"
+                  : `自動取得に失敗しました（${err.message}）`
+            : "自動取得に失敗しました。しばらく待ってから再度お試しください。";
+        if (auto) {
+          // ユーザーが押していない処理の失敗で驚かせない。フォームはそのまま手入力できる
+          setAutoNotice("自動取得できませんでした。下のフォームに直接ご入力ください。");
+        } else {
+          setExtractError(message);
+        }
+        // O6: 失敗時も空オブジェクトで通知（Step6QA の autoFill が undefined 安全に動作）
+        if (onHpExtracted) {
+          onHpExtracted({});
+        }
+      } finally {
+        setExtracting(false);
       }
-      // O6: 失敗時も空オブジェクトで通知（Step6QA の autoFill が undefined 安全に動作）
-      if (onHpExtracted) {
-        onHpExtracted({});
-      }
-    } finally {
-      setExtracting(false);
-    }
-  }, [websiteUrl, setValue]);
+    },
+    [websiteUrl, setValue],
+  );
+
+  /** 手動の「自動取得」ボタン */
+  const handleExtract = useCallback(() => {
+    void runExtract(false);
+  }, [runExtract]);
+
+  /**
+   * 引き継がれた URL があれば、ユーザーの再入力・再クリックなしで 1 度だけ自動取得する。
+   * 失敗しても手入力フォームは常に操作可能（行き止まりを作らない）。
+   */
+  const autoRanRef = useRef(false);
+  useEffect(() => {
+    if (autoRanRef.current || !handedOverUrl) return;
+    autoRanRef.current = true;
+    // effect 内での同期 setState を避けるため次のタスクで起動する
+    setTimeout(() => {
+      void runExtract(true, handedOverUrl);
+    }, 0);
+  }, [handedOverUrl, runExtract]);
 
   function submit(values: FormValues) {
     const info: CompanyInfo = {
@@ -322,6 +256,11 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
             <p className="text-[12px] text-text-muted mt-0.5 leading-relaxed">
               URLを入力して「自動取得」を押すと、AIが会社情報を読み取ってフォームに反映します。
             </p>
+            {handedOverUrl && (
+              <p className="text-[12px] text-primary mt-1 leading-relaxed" role="status">
+                トップページの診断で入力したURLを引き継ぎました。内容はこの画面で修正できます。
+              </p>
+            )}
           </div>
         </div>
 
@@ -407,7 +346,7 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
           </div>
         )}
 
-        {/* Error */}
+        {/* Error（ユーザーが「自動取得」を押した場合） */}
         {extractError && !extracting && (
           <div
             className="rounded-[8px] border border-red-200 bg-red-50 p-3 mt-3 text-[12px] text-red-700"
@@ -415,6 +354,17 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
             aria-live="assertive"
           >
             {extractError}
+          </div>
+        )}
+
+        {/* 自動実行の失敗（引き継ぎURL）— 手入力へ静かに縮退させる案内 */}
+        {autoNotice && !extracting && (
+          <div
+            className="rounded-[8px] border border-[var(--hc-border)] bg-[var(--hc-white)] p-3 mt-3 text-[12px] text-text-muted"
+            role="status"
+            aria-live="polite"
+          >
+            {autoNotice}（URLを直して「自動取得」をもう一度押すこともできます）
           </div>
         )}
       </section>
@@ -515,53 +465,3 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
   );
 }
 
-function toForm(d: Partial<CompanyInfo>): FormValues {
-  return {
-    companyName: d.companyName ?? "",
-    representativeName: d.representativeName ?? "",
-    address: d.address ?? "",
-    prefecture: d.prefecture ?? "",
-    industry: d.industry ?? "",
-    employees: d.employees ? String(d.employees) : "",
-    annualRevenue: d.annualRevenue ? String(d.annualRevenue) : "",
-    websiteUrl: d.websiteUrl ?? "",
-  };
-}
-
-function Field({
-  label,
-  error,
-  required,
-  children,
-}: {
-  label: string;
-  error?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="block text-[12px] text-text-muted mb-1">
-        {label}
-        {required && <span className="text-error ml-1">*</span>}
-      </label>
-      {children}
-      {error && <p className="mt-1 text-[12px] text-error">{error}</p>}
-    </div>
-  );
-}
-
-function Spinner() {
-  return (
-    <svg
-      className="animate-spin"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.8" strokeDasharray="22 10" />
-    </svg>
-  );
-}

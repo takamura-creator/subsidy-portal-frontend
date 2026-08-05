@@ -16,6 +16,7 @@ import {
   type StepState,
 } from "./useAnalysisTimeline";
 import { diagnosePublic, DiagnoseResponse, ApiError } from "@/lib/api";
+import { saveDiagnosedUrl } from "@/components/wizard/handoff";
 
 interface HeroClientShellProps {
   /** Server Component（h1+リード）を左カラムに差し込む */
@@ -121,6 +122,10 @@ export default function HeroClientShell({ headingSlot }: HeroClientShellProps) {
       diagnosePublic(url, controller.signal)
         .then((result) => {
           if (tokenRef.current !== token) return;
+          // 診断が成功して初めて URL をウィザードへ引き継ぐ（ユーザー入力のURLのみ・PIIは載せない）。
+          // 送信時点で確定させると、打ち間違い→訂正して再送信しても最初のURLが残ってしまう。
+          // 保存できなくても診断は続行する（会社情報ステップで手入力に縮退）。
+          saveDiagnosedUrl(url);
           setDiagnoseResult(result);
           setRunState((prev) =>
             prev && prev.runKey === token
