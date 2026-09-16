@@ -12,10 +12,12 @@ import {
 import { isServicePrefecture } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
+import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { CompanyInfo, SubsidySelection } from "./types";
 import subsidiesJson from "@/data/subsidies.json";
 
-// バンドル同梱データ（バックエンドのデプロイ遅延による Step2 0件を防ぐ）
+// 最終フォールバック用の同梱データ（2026-09-15 注文書: APIが優先ソース。
+// バックエンドのデプロイ遅延・到達不能時のみ使用し、使用中は StaleDataNotice で明示する）
 const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
 
 function filterBundledForCompany(prefecture: string, industry: string): Subsidy[] {
@@ -40,14 +42,17 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
   const [subsidies, setSubsidies] = useState<Subsidy[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string>("");
+  // 表示中のデータが同梱フォールバック（API不達）かどうか。黙って古いデータを出さないための明示。
+  const [stale, setStale] = useState(true);
   const [area, setArea] = useState<AreaCheckResponse | null>(null);
   const [choice, setChoice] = useState<string>(selected?.id ?? "");
 
   useEffect(() => {
     let cancelled = false;
-    // バンドルデータで即座に初期表示（API 待ち中も「0件」と表示しない）
+    // バンドルデータで即座に初期表示（API 待ち中も「0件」と表示しない。あくまで一時表示）
     const bundled = filterBundledForCompany(company.prefecture, company.industry);
     setSubsidies(bundled);
+    setStale(true);
     async function load() {
       setLoading(true);
       setLoadError("");
@@ -58,12 +63,14 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         ]);
         if (cancelled) return;
         if (subRes.status === "fulfilled") {
-          const apiFiltered = filterCameraOnly(subRes.value.subsidies ?? [], company.industry);
-          // API が古いデータを返した場合に備え、件数が多い方を採用
-          setSubsidies(apiFiltered.length >= bundled.length ? apiFiltered : bundled);
+          // API成功時は常にAPI結果を正とする（件数比較で同梱データに差し替えていた旧ロジックは削除。
+          // 古いが件数の多い同梱データで新しいAPI結果を隠すと「黙って古いデータを出す」ことになるため）
+          setSubsidies(filterCameraOnly(subRes.value.subsidies ?? [], company.industry));
+          setStale(false);
         } else {
-          // API 失敗時もバンドルデータで救う（loadError は表示しない）
+          // API 失敗時は同梱データで救うが、古い可能性があることを表示する
           setSubsidies(bundled);
+          setStale(true);
         }
         if (areaRes.status === "fulfilled") {
           setArea(areaRes.value);
@@ -93,7 +100,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
     return () => {
       cancelled = true;
     };
-  }, [company.prefecture]);
+  }, [company.prefecture, company.industry]);  // 差し戻し#5 (2026-09-15): company.industry も effect 内で使用しているため依存に追加
 
   const inServiceArea = area?.in_service_area ?? isServicePrefecture(company.prefecture);
 
@@ -133,6 +140,9 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         inServiceArea={inServiceArea}
         servicePrefectures={area?.service_prefectures ?? []}
       />
+
+      {/* API不達フォールバック中の注記（黙って古いデータを出さない） */}
+      {!loading && stale && <StaleDataNotice />}
 
       {loading ? (
         <p className="text-[13px] text-text-muted">読み込み中...</p>

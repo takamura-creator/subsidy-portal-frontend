@@ -30,12 +30,13 @@ type Props = {
  *   `SubsidyDetailClient.tsx` に分離
  */
 export async function generateStaticParams() {
-  return getAllSubsidyIds().map((id) => ({ id }));
+  const ids = await getAllSubsidyIds();
+  return ids.map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const subsidy = getSubsidyById(id);
+  const { subsidy } = await getSubsidyById(id);
   if (!subsidy) {
     return {
       title: "補助金が見つかりません",
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SubsidyDetailPage({ params }: Props) {
   const { id } = await params;
-  const subsidy = getSubsidyById(id);
+  const { subsidy, stale } = await getSubsidyById(id);
   if (!subsidy) {
     notFound();
   }
@@ -141,7 +142,7 @@ export default async function SubsidyDetailPage({ params }: Props) {
   return (
     <>
       <JsonLd data={jsonLdBlocks} id="jsonld-subsidy-detail" />
-      <SubsidyDetailClient subsidy={subsidy} />
+      <SubsidyDetailClient subsidy={subsidy} stale={stale} />
     </>
   );
 }

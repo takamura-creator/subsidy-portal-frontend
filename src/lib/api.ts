@@ -121,7 +121,9 @@ export async function fetchSubsidies(params?: {
 }
 
 export async function fetchSubsidy(id: string): Promise<Subsidy> {
-  return apiFetch(`${API_URL}/api/subsidies/${id}`, {
+  // 追加指摘#12 (2026-09-15): 呼び出し経路が5箇所に増えたため、idに含まれる可能性のある
+  // "?" "#" "&" 等でパス/クエリ境界が崩れないよう防御的に encodeURIComponent する。
+  return apiFetch(`${API_URL}/api/subsidies/${encodeURIComponent(id)}`, {
     next: { revalidate: 300 },
   });
 }
@@ -442,9 +444,9 @@ export interface AdminDashboard {
   }>;
 }
 
-export interface AdminSubsidy extends Subsidy {
-  admin_status: "active" | "expired" | "draft";
-}
+// 追加指摘#13 (2026-09-15): backend の status 語彙が公開APIと同じ open/upcoming/closed に統一され、
+// admin_status という独自フィールドは backend レスポンスに存在しない（Subsidy 継承の status を使う）。
+export type AdminSubsidy = Subsidy;
 
 export async function fetchAdminDashboard(): Promise<AdminDashboard> {
   return authFetch(`${API_URL}/api/admin/dashboard`);

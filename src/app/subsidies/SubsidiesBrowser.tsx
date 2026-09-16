@@ -16,6 +16,13 @@
  * - SubsidiesFilterRail（左sticky） + SubsidiesCardGrid（右）
  * - SubsidiesToolbar（モバイルシートのみ）
  * - state/filter/sort ロジックは現行維持
+ *
+ * 2026-09-15 注文書（frontend API切替）: `@/data/subsidies.json` の直接importを廃止。
+ * 初期表示は page.tsx（Server Component）が `subsidies-server.ts` 経由でAPI優先取得した
+ * `initialSubsidies` / `initialStale` を使う。マウント後の絞り込みは `fetchSubsidies()` を
+ * 直接叩き、失敗時は直前の一覧を保持したまま `StaleDataNotice` で「古い可能性」を明示する
+ * （件数比較でAPI結果を静的データに差し替える旧ロジックは削除 — API成功時は常にAPI結果を
+ * 正とする。黙って古いデータを出さないため）。
  */
 
 import { useState, useEffect } from "react";
@@ -25,15 +32,14 @@ import { filterCameraOnly } from "@/lib/subsidyFilters";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { formatAmount } from "@/lib/subsidyFormatters";
 // getDaysUntil は sorted の sort ロジックで使用
-import subsidiesJson from "@/data/subsidies.json";
+import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import SubsidiesFilterRail from "./SubsidiesFilterRail";
 import SubsidiesCardGrid from "./SubsidiesCardGrid";
 import SubsidiesToolbar from "./SubsidiesToolbar";
 import SubsidiesFooterNote from "./SubsidiesFooterNote";
+import subsidiesJson from "@/data/subsidies.json";
 
-const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
-
-/** 開発環境専用フォールバック */
+/** 開発環境専用フォールバック（API・同梱データが両方空の場合の最終防衛。実データではない） */
 const CAMERA_SUBSIDIES: Subsidy[] = process.env.NODE_ENV === "development" ? [
   { id: "1", name: "IT導入補助金（セキュリティ対策推進枠）", category: "国", ministry: "中小企業庁", pref_code: "", prefecture: "", max_amount: 1000000, rate_min: 0.5, rate_max: 0.75, target_industries: [], max_employees: 300, deadline: "2026/4/30", status: "open", description: "", application_tips: "", source_url: "" },
   { id: "3", name: "小規模事業者持続化補助金", category: "国", ministry: "商工会議所", pref_code: "", prefecture: "", max_amount: 500000, rate_min: 0.667, rate_max: 0.667, target_industries: [], max_employees: 20, deadline: "2026/5/31", status: "open", description: "", application_tips: "", source_url: "" },
@@ -41,10 +47,23 @@ const CAMERA_SUBSIDIES: Subsidy[] = process.env.NODE_ENV === "development" ? [
   { id: "yoko1", name: "横浜市 地域防犯カメラ設置補助金", category: "防犯", ministry: "横浜市", pref_code: "14", prefecture: "神奈川県", max_amount: 280000, rate_min: 0.9, rate_max: 0.9, target_industries: ["自治会・町会"], max_employees: null, deadline: "毎年7月末", status: "open", description: "", application_tips: "", source_url: "" },
 ] : [];
 
-const UPDATED_MAP: Record<string, string> = {
-  "1": "4/10更新", "3": "4/5更新", "5": "3/28更新",
-  "6": "3/25更新", "7": "3/20更新", "8": "3/15更新",
-};
+/**
+ * 差し戻し#3 (2026-09-15): API失敗時のローカルフィルタ用フォールバック（ビルド時点の同梱スナップショット）。
+ * 失敗時に「条件と無関係な直前の一覧」を残さないよう、同梱データに現在のフィルタ条件
+ * （都道府県・カテゴリ・業種）を適用してから表示する。
+ */
+const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
+
+function filterBundledLocally(prefecture: string, category: string, industry: string): Subsidy[] {
+  // backend `/api/subsidies` のフィルタ条件（prefecture: 完全一致 or 全国／category: 完全一致）を
+  // 同梱データに再現する。業種・カメラ関連・対応エリアの絞り込みは既存の filterCameraOnly に委譲。
+  const scoped = BUNDLED_SUBSIDIES.filter((s) => {
+    if (prefecture && s.prefecture !== prefecture && s.prefecture !== "全国") return false;
+    if (category && s.category !== category) return false;
+    return true;
+  });
+  return filterCameraOnly(scoped, industry || undefined);
+}
 
 function formatAmountDisplay(s: Subsidy): string {
   if (s.draft_subsidy_type === "jichitai_bouhan") {
@@ -62,23 +81,16 @@ const OUTER: React.CSSProperties = {
 function SubsidiesContent({
   initialSubsidies,
   initialIndustry,
+  initialStale = false,
 }: {
   initialSubsidies: Subsidy[];
   initialIndustry: string;
+  initialStale?: boolean;
 }) {
-  const initialList = filterCameraOnly(
-    BUNDLED_SUBSIDIES.filter((s) => {
-      const ti = s.target_industries ?? [];
-      return !initialIndustry || ti.length === 0 || ti.includes(initialIndustry);
-    }),
-  );
   const [subsidies, setSubsidies] = useState<Subsidy[]>(
-    initialSubsidies.length > 0
-      ? initialSubsidies
-      : initialList.length > 0
-        ? initialList
-        : CAMERA_SUBSIDIES,
+    initialSubsidies.length > 0 ? initialSubsidies : CAMERA_SUBSIDIES,
   );
+  const [stale, setStale] = useState(initialStale);
   const [prefecture, setPrefecture] = useState("");
   const [industry, setIndustry] = useState(initialIndustry);
   const [category, setCategory] = useState("");
@@ -89,25 +101,29 @@ function SubsidiesContent({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
-    const bundledFiltered = filterCameraOnly(
-      BUNDLED_SUBSIDIES.filter((s) => {
-        const ti = s.target_industries ?? [];
-        const indOk = !industry || ti.length === 0 || ti.includes(industry);
-        const prefOk = !prefecture || s.prefecture === prefecture || s.prefecture === "全国" || s.pref_code === "00";
-        const catOk = !category || s.category === category;
-        return indOk && prefOk && catOk;
-      }),
-    );
     fetchSubsidies({ prefecture: prefecture || undefined, category: category || undefined, industry: industry || undefined })
       .then((res) => {
-        const apiFiltered = filterCameraOnly(res.subsidies);
-        setSubsidies(apiFiltered.length >= bundledFiltered.length ? apiFiltered : bundledFiltered);
+        if (cancelled) return;
+        setSubsidies(filterCameraOnly(res.subsidies ?? []));
+        setStale(false);
       })
       .catch(() => {
-        setSubsidies(bundledFiltered.length > 0 ? bundledFiltered : CAMERA_SUBSIDIES);
+        if (cancelled) return;
+        // 差し戻し#3: API失敗時は「条件と無関係な直前の一覧」を残さない。
+        // 同梱データに現在のフィルタ条件を適用した結果を表示し、StaleDataNotice で明示する。
+        setSubsidies(filterBundledLocally(prefecture, category, industry));
+        setStale(true);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    // 差し戻し#4: フィルタを連続操作した際に古いレスポンスが後勝ちしないよう、
+    // 前回の effect 実行の結果は cancelled フラグで無視する。
+    return () => {
+      cancelled = true;
+    };
   }, [prefecture, category, industry]);
 
   const filtered = subsidies.filter((s) => {
@@ -178,6 +194,9 @@ function SubsidiesContent({
         />
       </div>
 
+      {/* API不達フォールバック中の注記（黙って古いデータを出さない） */}
+      {!loading && stale && <StaleDataNotice />}
+
       {/* 2カラムグリッド（≤900px はブロック） */}
       <div className="subsidies-grid">
         {/* 左: フィルターレール（デスクトップのみ・sticky） */}
@@ -210,11 +229,17 @@ function SubsidiesContent({
 export default function SubsidiesBrowser({
   initialSubsidies,
   initialIndustry = "",
+  initialStale = false,
 }: {
   initialSubsidies: Subsidy[];
   initialIndustry?: string;
+  initialStale?: boolean;
 }) {
   return (
-    <SubsidiesContent initialSubsidies={initialSubsidies} initialIndustry={initialIndustry} />
+    <SubsidiesContent
+      initialSubsidies={initialSubsidies}
+      initialIndustry={initialIndustry}
+      initialStale={initialStale}
+    />
   );
 }

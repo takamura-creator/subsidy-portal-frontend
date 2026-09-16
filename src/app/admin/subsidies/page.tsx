@@ -17,23 +17,25 @@ import {
   ApiError,
 } from "@/lib/api";
 
+// 追加指摘#13 (2026-09-15): backend の status 語彙が open/upcoming/closed に統一されたため、
+// 旧語彙（active/expired/draft）のままだと絞り込み送信・表示ラベルが本番で崩れる（500の実害あり）。
 const TABS = [
   { key: "all", label: "すべて" },
-  { key: "active", label: "有効" },
-  { key: "expired", label: "期限切れ" },
-  { key: "draft", label: "下書き" },
+  { key: "open", label: "募集中" },
+  { key: "upcoming", label: "公募前" },
+  { key: "closed", label: "受付終了" },
 ];
 
 const STATUS_LABEL: Record<string, string> = {
-  active: "有効",
-  expired: "期限切れ",
-  draft: "下書き",
+  open: "募集中",
+  upcoming: "公募前",
+  closed: "受付終了",
 };
 
 const STATUS_CLASS: Record<string, string> = {
-  active: "bg-success/10 text-success",
-  expired: "bg-border/30 text-text2",
-  draft: "bg-accent/10 text-accent",
+  open: "bg-success/10 text-success",
+  upcoming: "bg-accent/10 text-accent",
+  closed: "bg-border/30 text-text2",
 };
 
 const PER_PAGE = 10;
@@ -137,11 +139,11 @@ export default function AdminSubsidiesPage() {
       render: (row: AdminSubsidy) => <span className="text-text2 tabular-nums text-xs">{row.deadline}</span>,
     },
     {
-      key: "admin_status",
+      key: "status",
       label: "ステータス",
       render: (row: AdminSubsidy) => (
-        <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_CLASS[row.admin_status] ?? STATUS_CLASS.draft}`}>
-          {STATUS_LABEL[row.admin_status] ?? row.admin_status}
+        <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_CLASS[row.status] ?? STATUS_CLASS.closed}`}>
+          {STATUS_LABEL[row.status] ?? row.status}
         </span>
       ),
     },

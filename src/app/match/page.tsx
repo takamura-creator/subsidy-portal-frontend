@@ -5,6 +5,7 @@ import PublicSectionHeader from "@/components/layout/PublicSectionHeader";
 import { getAllSubsidies } from "@/lib/subsidies-server";
 import { INDUSTRIES } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";
+import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import MatchGrid from "./MatchGrid";
 
 const INDUSTRY_META: Record<string, { icon: string; desc: string }> = {
@@ -33,8 +34,10 @@ export const metadata = {
   description: "あなたの業種に合った防犯カメラ補助金を探せます。登録不要で閲覧可能。",
 };
 
-export default function MatchPage() {
-  const allSubsidies = getAllSubsidies();
+export default async function MatchPage() {
+  // 追加指摘#7 (2026-09-15): getAllSubsidies() の stale を握り潰さず表示する
+  // （API不達時、業種ごとの件数=countForIndustry が古い可能性があることを明示する）
+  const { subsidies: allSubsidies, stale } = await getAllSubsidies();
 
   function countForIndustry(ind: string): number {
     return filterCameraOnly(allSubsidies, ind).length;
@@ -49,6 +52,8 @@ export default function MatchPage() {
         as="h1"
         titleClass="hc-headline"
       />
+
+      {stale && <StaleDataNotice />}
 
       <MatchGrid
         items={INDUSTRIES.map((ind) => {

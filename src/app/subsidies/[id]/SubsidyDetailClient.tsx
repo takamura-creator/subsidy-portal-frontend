@@ -15,11 +15,19 @@ import AnchorNav from "@/components/subsidies/AnchorNav";
 import SubsidyJichikaiBlocks from "@/components/subsidies/SubsidyJichikaiBlocks";
 import SubsidyInfoSections from "@/components/subsidies/SubsidyInfoSections";
 import StickyCtaBar from "@/components/subsidies/StickyCtaBar";
+import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil, isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
 import { formatAmount } from "@/lib/subsidyFormatters";
 
-export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }) {
+export default function SubsidyDetailClient({
+  subsidy: s,
+  stale = false,
+}: {
+  subsidy: Subsidy;
+  /** true: API取得に失敗し同梱データ（古い可能性）で表示中（2026-09-15 注文書） */
+  stale?: boolean;
+}) {
   const days = getDaysUntil(s.deadline);
   // H-3: status と deadline の両方でガード
   const ctaActive = isCtaActive(s.status, s.deadline);
@@ -47,6 +55,9 @@ export default function SubsidyDetailClient({ subsidy: s }: { subsidy: Subsidy }
           {" › "}
           {s.name}
         </div>
+
+        {/* API不達フォールバック中の注記（黙って古いデータを出さない） */}
+        {stale && <StaleDataNotice />}
 
         {/* h1 — clamp(32px, 4vw, 48px) */}
         <h1

@@ -33,7 +33,7 @@ type Props = {
 export default async function SubsidiesPage({ searchParams }: Props) {
   const { industry: initialIndustry = "" } = await searchParams;
 
-  const allSubsidies = getAllSubsidies();
+  const { subsidies: allSubsidies, stale } = await getAllSubsidies();
   const allFiltered = filterCameraOnly(allSubsidies);
   const initialSubsidies = filterCameraOnly(allSubsidies, initialIndustry || undefined);
 
@@ -47,7 +47,11 @@ export default async function SubsidiesPage({ searchParams }: Props) {
   return (
     <>
       <JsonLd data={itemListJsonLd} id="jsonld-subsidies-list" />
-      <SubsidiesBrowser initialSubsidies={initialSubsidies} initialIndustry={initialIndustry} />
+      <SubsidiesBrowser
+        initialSubsidies={initialSubsidies}
+        initialIndustry={initialIndustry}
+        initialStale={stale}
+      />
     </>
   );
 }

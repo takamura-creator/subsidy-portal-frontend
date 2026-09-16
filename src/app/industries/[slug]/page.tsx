@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { INDUSTRY_LPS } from "@/data/industry-lp";
 import { getSubsidyById } from "@/lib/subsidies-server";
+import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -27,9 +28,15 @@ export default async function IndustryLPPage({ params }: Props) {
   const lp = INDUSTRY_LPS.find((x) => x.slug === slug);
   if (!lp) notFound();
 
-  const subsidies = lp.recommendedSubsidies
-    .map((id) => getSubsidyById(id))
+  const subsidyResults = await Promise.all(
+    lp.recommendedSubsidies.map((id) => getSubsidyById(id)),
+  );
+  const subsidies = subsidyResults
+    .map((r) => r.subsidy)
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
+  // 追加指摘#8 (2026-09-15): getSubsidyById() の stale を握り潰さず表示する
+  // （API不達時、このLPの「活用できる補助金」カードの金額・補助率が古い可能性がある）
+  const stale = subsidyResults.some((r) => r.stale);
 
   return (
     <main style={{ maxWidth: 880, margin: "0 auto", padding: "32px 16px 48px" }}>
@@ -81,6 +88,7 @@ export default async function IndustryLPPage({ params }: Props) {
       </Section>
 
       <Section title="活用できる補助金">
+        {stale && <StaleDataNotice />}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {subsidies.length === 0 ? (
             <p style={{ fontSize: 13, color: "var(--hc-text-muted)", margin: 0 }}>

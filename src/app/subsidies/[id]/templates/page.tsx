@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllSubsidyIds, getSubsidyById } from "@/lib/subsidies-server";
+import { getAllSubsidies, getSubsidyById } from "@/lib/subsidies-server";
 import TemplateGenerator from "@/components/subsidies/TemplateGenerator";
+import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -22,19 +23,15 @@ function isJichikaiSubsidy(targetIndustries: string[] | undefined): boolean {
 
 export async function generateStaticParams() {
   // 自治会向け補助金のみページを生成
-  const ids: { id: string }[] = [];
-  for (const id of getAllSubsidyIds()) {
-    const subsidy = getSubsidyById(id);
-    if (subsidy && isJichikaiSubsidy(subsidy.target_industries)) {
-      ids.push({ id });
-    }
-  }
-  return ids;
+  const { subsidies } = await getAllSubsidies();
+  return subsidies
+    .filter((s) => isJichikaiSubsidy(s.target_industries))
+    .map((s) => ({ id: s.id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const subsidy = getSubsidyById(id);
+  const { subsidy } = await getSubsidyById(id);
   if (!subsidy) {
     return {
       title: "ページが見つかりません",
@@ -51,7 +48,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TemplatesPage({ params }: Props) {
   const { id } = await params;
-  const subsidy = getSubsidyById(id);
+  // 追加指摘#9 (2026-09-15): getSubsidyById() の stale を握り潰さず表示する
+  // （API不達時、テンプレ生成の元になる補助金名・都道府県が古い可能性がある）
+  const { subsidy, stale } = await getSubsidyById(id);
   if (!subsidy) notFound();
   if (!isJichikaiSubsidy(subsidy.target_industries)) notFound();
 
@@ -91,6 +90,8 @@ export default async function TemplatesPage({ params }: Props) {
           {subsidy.name} の申請に使える 4 種の参考書類を、選択式で生成できます。
         </p>
       </header>
+
+      {stale && <StaleDataNotice />}
 
       <TemplateGenerator
         subsidyId={subsidy.id}

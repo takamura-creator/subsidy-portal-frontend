@@ -34,7 +34,8 @@ function sanitizeArticleTitle(title: string): string {
 }
 
 export async function GET() {
-  const subsidies = filterCameraOnly(getAllSubsidies());
+  const { subsidies: rawSubsidies } = await getAllSubsidies();
+  const subsidies = filterCameraOnly(rawSubsidies);
 
   const subsidyLines = subsidies
     .map((s) => {

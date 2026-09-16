@@ -1,6 +1,19 @@
 import { NextResponse } from "next/server";
+import { fetchSubsidy, ApiError } from "@/lib/api";
 import subsidiesData from "@/data/subsidies.json";
 import { DOCUMENT_REQUIREMENTS } from "@/lib/templates/template-data";
+
+/**
+ * 2026-09-15 注文書（frontend API切替）: 静的JSON直読みを廃止し、バックエンド
+ * `/api/subsidies/{id}`（`fetchSubsidy`）を優先ソースにする。
+ * - 404（該当補助金なし）はそのまま404として返す
+ * - それ以外のAPI到達不能（ネットワーク・タイムアウト等）のみ同梱データにフォールバックし、
+ *   レスポンスに `stale: true` を含める（呼び出し側で「古い可能性」表示に使える。
+ *   黙って古いデータを返さないための明示フィールド）
+ */
+type BundledSubsidy = { id: string; name: string; category?: string };
+const BUNDLED_SUBSIDIES: BundledSubsidy[] =
+  (subsidiesData as { subsidies: BundledSubsidy[] }).subsidies ?? [];
 
 function inferCategory(subsidy: { category?: string; name?: string }): string | null {
   const cat = subsidy.category?.toLowerCase() ?? "";
@@ -21,7 +34,20 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const subsidy = subsidiesData.subsidies.find((s) => s.id === id);
+  let subsidy: BundledSubsidy | undefined;
+  let stale = false;
+
+  try {
+    subsidy = await fetchSubsidy(id);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      return NextResponse.json({ error: "Subsidy not found" }, { status: 404 });
+    }
+    // ネットワークエラー・タイムアウト等のみ同梱データにフォールバック
+    subsidy = BUNDLED_SUBSIDIES.find((s) => s.id === id);
+    stale = true;
+  }
+
   if (!subsidy) {
     return NextResponse.json({ error: "Subsidy not found" }, { status: 404 });
   }
@@ -34,5 +60,6 @@ export async function GET(
     subsidy_name: subsidy.name,
     category,
     documents,
+    stale,
   });
 }

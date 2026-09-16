@@ -1,21 +1,51 @@
 "use client";
 
-import { useMemo } from "react";
-import subsidiesData from "@/data/subsidies.json";
+/**
+ * SubsidyCarousel — トップページの「最新補助金情報」横流れカルーセル。
+ *
+ * 2026-09-15 注文書（frontend API切替）: 静的JSON直読みを廃止し `fetchSubsidies()`
+ * （lib/api.ts・バックエンド `/api/subsidies`）を優先ソースにする。API不達時のみ
+ * 同梱データ（ビルド時スナップショット）にフォールバックし、その間は
+ * StaleDataNotice（compact）で「古い可能性」を明示する（黙って古いデータを出さない）。
+ */
 
-function formatAmount(amount: number): string {
-  if (amount >= 10000000) return `${amount / 10000000}億円`;
-  if (amount >= 10000) return `${(amount / 10000).toLocaleString()}万円`;
-  return `${amount.toLocaleString()}円`;
-}
+import { useEffect, useState } from "react";
+import { fetchSubsidies, type Subsidy } from "@/lib/api";
+import { formatAmount } from "@/lib/subsidyFormatters";
+import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
+import subsidiesJson from "@/data/subsidies.json";
+
+// 最終フォールバック用の同梱データ（API不達時のみ使用）
+const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
 
 const VISIBLE_COUNT = 5;
 const TOTAL_CARDS = 20;
 
+function pickOpenCards(list: Subsidy[]): Subsidy[] {
+  return list.filter((s) => s.status === "open").slice(0, TOTAL_CARDS);
+}
+
 export default function SubsidyCarousel() {
-  const cards = useMemo(() => {
-    const open = subsidiesData.subsidies.filter((s) => s.status === "open");
-    return open.slice(0, TOTAL_CARDS);
+  const [cards, setCards] = useState<Subsidy[]>(() => pickOpenCards(BUNDLED_SUBSIDIES));
+  // 初期表示は同梱データのため stale=true。API成功で false に切り替える。
+  const [stale, setStale] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchSubsidies()
+      .then((res) => {
+        if (cancelled) return;
+        setCards(pickOpenCards(res.subsidies ?? []));
+        setStale(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setCards(pickOpenCards(BUNDLED_SUBSIDIES));
+        setStale(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (cards.length === 0) return null;
@@ -24,6 +54,7 @@ export default function SubsidyCarousel() {
 
   return (
     <div className="subsidy-carousel" aria-label="最新補助金情報">
+      {stale && <StaleDataNotice compact />}
       <div
         className="subsidy-carousel-track"
         style={

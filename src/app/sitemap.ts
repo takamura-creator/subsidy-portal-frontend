@@ -8,7 +8,7 @@ import { JICHIKAI_CASES } from "@/data/cases-jichikai";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date().toISOString();
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -48,7 +48,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Sprint 4 Task 0 で SSG 化された補助金詳細（getAllSubsidies() の実件数）を Search Console に発見させる
-  const subsidyPages: MetadataRoute.Sitemap = getAllSubsidies().map((s) => ({
+  const { subsidies: allSubsidies } = await getAllSubsidies();
+  const subsidyPages: MetadataRoute.Sitemap = allSubsidies.map((s) => ({
     url: `${SITE_URL}/subsidies/${s.id}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
