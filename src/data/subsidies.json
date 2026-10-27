@@ -1876,13 +1876,14 @@
           "https://www.mhlw.go.jp/content/12300000/001476528.pdf",
           "https://www.mhlw.go.jp/content/10200000/001646473.pdf"
         ],
-        "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）"
+        "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）",
+        "camera_eligibility_reason": "カメラ機器が補助対象と公式資料（001476528.pdf）で確認できない（対象はICT=介護ソフト・タブレット・インカム等とロボット。「見守り機器」の語はあるが見守りカメラの明記なし）"
       },
       "max_amount_unit": "total",
       "max_units": null,
       "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
       "indirect": true,
-      "camera_eligibility": "confirmed",
+      "camera_eligibility": "unconfirmed",
       "regional_last_day": null
     },
     {
@@ -2717,13 +2718,14 @@
         "evidence_urls": [
           "https://www.mhlw.go.jp/content/001643811.pdf"
         ],
-        "unverified": "国の一律の上限額・補助率は存在しないため max_amount/rate は 0（不明）とした"
+        "unverified": "国の一律の上限額・補助率は存在しないため max_amount/rate は 0（不明）とした",
+        "camera_eligibility_reason": "カメラ機器が補助対象と公式資料（001643811.pdf）で確認できない（基金の枠組みで、機器別の対象は都道府県の個別事業で決まる）"
       },
       "max_amount_unit": null,
       "max_units": null,
       "applicant": "都道府県（都道府県が計画に基づき事業を実施。介護事業所は都道府県の個別事業に申請）",
       "indirect": true,
-      "camera_eligibility": "confirmed",
+      "camera_eligibility": "unconfirmed",
       "regional_last_day": null
     },
     {

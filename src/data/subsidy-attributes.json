@@ -93,7 +93,7 @@
       "max_units": null,
       "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
       "indirect": true,
-      "camera_eligibility": "confirmed",
+      "camera_eligibility": "unconfirmed",
       "regional_last_day": null
     },
     "saitama-bouhan-2026": {
@@ -117,7 +117,7 @@
       "max_units": null,
       "applicant": "都道府県（都道府県が計画に基づき事業を実施。介護事業所は都道府県の個別事業に申請）",
       "indirect": true,
-      "camera_eligibility": "confirmed",
+      "camera_eligibility": "unconfirmed",
       "regional_last_day": null
     },
     "kaigo-minamori-2026": {

@@ -16,6 +16,19 @@ interface SubsidyInfoSectionsProps {
   subsidy: Subsidy;
 }
 
+/** 対象業種欄の説明文。自治会向け・個人宅向けは中小企業の定義を出さず、制度の対象に合った説明にする。 */
+function industriesText(industries: string[]): string {
+  if (industries.length > 0 && industries.every((i) => i === "自治会・町会")) {
+    return "自治会・町会などの地域団体（企業・事業者向けの制度ではありません）";
+  }
+  if (industries.length > 0 && industries.every((i) => i === "個人宅")) {
+    return "住宅にお住まいの方（個人宅。事業者向けの制度ではありません）";
+  }
+  return industries.length > 0
+    ? `${industries.join("、")} 等（中小企業基本法に定める中小企業に該当する全業種）`
+    : "製造業、小売業、飲食業、サービス業、医療・介護、建設業、宿泊業、運輸業 等（中小企業基本法に定める中小企業に該当する全業種）";
+}
+
 const SECTION_H2_STYLE: React.CSSProperties = {
   fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
   fontSize: "clamp(24px, 3vw, 32px)" as React.CSSProperties["fontSize"],
@@ -212,9 +225,7 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
       <section id="industries" style={{ marginBottom: 80 }}>
         <h2 style={SECTION_H2_STYLE}>対象業種</h2>
         <p style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
-          {s.target_industries.length > 0
-            ? `${s.target_industries.join("、")} 等（中小企業基本法に定める中小企業に該当する全業種）`
-            : "製造業、小売業、飲食業、サービス業、医療・介護、建設業、宿泊業、運輸業 等（中小企業基本法に定める中小企業に該当する全業種）"}
+          {industriesText(s.target_industries)}
         </p>
       </section>
 
