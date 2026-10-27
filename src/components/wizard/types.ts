@@ -18,8 +18,12 @@ export interface SubsidySelection {
   maxAmount: number;
   rateMax: number | null;
   prefecture?: string;
-  /** "jichitai_bouhan" の場合、maxAmount は 1 台あたり上限として扱う */
+  /** 書類様式の種別（"jichitai_bouhan" 等）。上限が1台あたりかどうかは maxAmountUnit で決める */
   draftSubsidyType?: string;
+  /** 制度の性質（2026-10-27・lib/subsidyAttributes.ts）。無い選択（古い下書き等）は同梱の表から id で引く */
+  maxAmountUnit?: "per_camera" | "total" | null;
+  maxUnits?: number | null;
+  cameraEligibility?: "confirmed" | "unconfirmed" | null;
 }
 
 export interface ProductSelection {

@@ -3,7 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createEstimate, generateEstimatePdf, ApiError } from "@/lib/api";
-import { formatFraction, formatSubsidyAmount, isPerUnitCap } from "@/lib/subsidyFormatters";
+import { formatFraction, formatSubsidyAmount } from "@/lib/subsidyFormatters";
+import { subsidyCap } from "@/lib/subsidyAttributes";
+import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 import type {
   CompanyInfo,
   EstimateSnapshot,
@@ -55,13 +57,16 @@ export default function Step4Estimate({
     ipCount + analogCount + nvrCount > 0 ? INSTALL_UNIT_COST.networkSetup : 0;
   const localTotalBeforeSubsidy = productSubtotal + localInstallCost + localNetworkSetup;
 
-  // 自治会向け補助金は max_amount を「1台あたり上限」として扱い、台数を掛ける
-  // （2026-10-27: 東京都・埼玉県の制度は上限が1申請あたりの総額のため掛けない。判定は subsidyFormatters に集約）
+  // 補助額の上限は正本の項目で決める（backend routers/estimates.subsidy_cap_for と同じ規則・審査 F-[3][7][11]）:
+  // 1台あたりの制度は上限×台数（台数上限で頭打ち）／総額の制度は掛けない／カメラ対象が未確認の制度は0
   const totalCameraCount = ipCount + analogCount;
-  const isJichikaiSubsidy = isPerUnitCap({ id: subsidy.id, draft_subsidy_type: subsidy.draftSubsidyType });
-  const effectiveMaxAmount = isJichikaiSubsidy
-    ? subsidy.maxAmount * Math.max(1, totalCameraCount)
-    : subsidy.maxAmount;
+  const subsidyAttrsInput = {
+    id: subsidy.id,
+    max_amount_unit: subsidy.maxAmountUnit,
+    max_units: subsidy.maxUnits,
+    camera_eligibility: subsidy.cameraEligibility,
+  };
+  const effectiveMaxAmount = subsidyCap(subsidyAttrsInput, subsidy.maxAmount, totalCameraCount);
 
   const estSubsidy = Math.round(localTotalBeforeSubsidy * (subsidy.rateMax ?? 0));
   const appliedSubsidy = Math.min(effectiveMaxAmount, estSubsidy);
@@ -157,7 +162,7 @@ export default function Step4Estimate({
       {/* サマリー */}
       <section className="bg-white border border-border rounded-[10px] p-5 space-y-3">
         <SummaryRow label="申込会社" value={`${company.companyName}（${company.prefecture} / ${company.industry}）`} />
-        <SummaryRow label="利用する補助金" value={`${subsidy.name}（補助率 最大${subsidy.rateMax != null && subsidy.rateMax > 0 ? formatFraction(subsidy.rateMax) : "—"} / 上限 ${formatSubsidyAmount({ id: subsidy.id, max_amount: subsidy.maxAmount, draft_subsidy_type: subsidy.draftSubsidyType })}）`} />
+        <SummaryRow label="利用する補助金" value={`${subsidy.name}（補助率 最大${subsidy.rateMax != null && subsidy.rateMax > 0 ? formatFraction(subsidy.rateMax) : "—"} / 上限 ${formatSubsidyAmount({ ...subsidyAttrsInput, max_amount: subsidy.maxAmount })}）`} />
         <div>
           <p className="text-[12px] text-text-muted mb-1">製品構成（{products.length}品目）</p>
           <ul className="text-[13px] text-text space-y-0.5">
@@ -172,6 +177,12 @@ export default function Step4Estimate({
           </ul>
         </div>
       </section>
+
+      {/* カメラ機器が補助対象と確認できない制度は、カメラ代の補助額を試算しない（審査 F-[7]） */}
+      <CameraEligibilityNote
+        subsidy={subsidyAttrsInput}
+        detail="このためカメラ代の補助額は試算に入れていません（補助額0円で計算しています）"
+      />
 
       {/* 試算 or 確定見積 */}
       {estimate ? (

@@ -9,27 +9,22 @@
  * - 補助率 0 は「0%」と出さない。7/12・23/24・9/10 などの分数を正しく出す。
  */
 
+import { isPerCameraCap, subsidyAttributes, type WithAttributes } from "@/lib/subsidyAttributes";
+
 /** 国一律の上限・補助率が無い制度の表記 */
 export const VARIES_BY_LOCAL_GOV = "都道府県・自治体ごとに異なる";
-
-/**
- * 上限額の数値が「1申請あたりの総額」で、カメラ1台あたりではない自治体防犯の制度。
- * 正本の draft_subsidy_type は書類様式の種別で、これだけでは1台あたりかどうかが分からないため、
- * 説明文で総額と確認できたものをここで除く（東京都=都補助限度額525万円・埼玉県=1市町村あたり400万円）。
- */
-const TOTAL_CAP_JICHITAI_IDS: ReadonlySet<string> = new Set([
-  "tokyo-bouhan-2026",
-  "saitama-bouhan-2026",
-]);
 
 /** 上限額が設定されているか（0・未設定は「国一律の上限なし」） */
 export function hasAmountCap(amount: number | null | undefined): amount is number {
   return typeof amount === "number" && Number.isFinite(amount) && amount > 0;
 }
 
-/** 上限額が「カメラ1台あたり」か */
-export function isPerUnitCap(s: { id: string; draft_subsidy_type?: string | null }): boolean {
-  return s.draft_subsidy_type === "jichitai_bouhan" && !TOTAL_CAP_JICHITAI_IDS.has(s.id);
+/**
+ * 上限額が「カメラ1台あたり」か。正本の max_amount_unit で決める（2026-10-27）。
+ * 以前は draft_subsidy_type（書類様式の種別）＋総額の制度の固定 id 一覧で判定していた。
+ */
+export function isPerUnitCap(s: WithAttributes): boolean {
+  return isPerCameraCap(s);
 }
 
 export function formatAmount(amount: number | null | undefined): string {
@@ -41,14 +36,14 @@ export function formatAmount(amount: number | null | undefined): string {
   return `${amount.toLocaleString("ja-JP")}円`;
 }
 
-/** 制度の上限額（1台あたりの制度は「/台」を付ける） */
-export function formatSubsidyAmount(s: {
-  id: string;
+/** 制度の上限額（1台あたりの制度は「/台」、台数上限があれば「・N台まで」を付ける） */
+export function formatSubsidyAmount(s: WithAttributes & {
   max_amount: number | null | undefined;
-  draft_subsidy_type?: string | null;
 }): string {
   if (!hasAmountCap(s.max_amount)) return VARIES_BY_LOCAL_GOV;
-  return isPerUnitCap(s) ? `${formatAmount(s.max_amount)}/台` : formatAmount(s.max_amount);
+  if (!isPerUnitCap(s)) return formatAmount(s.max_amount);
+  const units = subsidyAttributes(s).max_units;
+  return `${formatAmount(s.max_amount)}/台${units ? `・${units}台まで` : ""}`;
 }
 
 const FRACTION_TOLERANCE = 0.0005;

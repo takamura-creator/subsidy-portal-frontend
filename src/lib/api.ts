@@ -43,6 +43,13 @@ export interface Subsidy {
   required_documents?: SubsidyDocument[];
   /** ISO8601 形式（YYYY-MM-DD）。最終更新日。表示用。 */
   updated_at?: string;
+  // 制度の性質（2026-10-27・正本だけが持つ。読み方は lib/subsidyAttributes.ts）
+  max_amount_unit?: "per_camera" | "total" | null;
+  max_units?: number | null;
+  applicant?: string | null;
+  indirect?: boolean | null;
+  camera_eligibility?: "confirmed" | "unconfirmed" | null;
+  regional_last_day?: Record<string, string> | null;
 }
 
 export interface MatchRequest {
