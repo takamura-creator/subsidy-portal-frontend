@@ -28,7 +28,9 @@ export function parseEmployees(raw: string): number {
   if (!m) return 10;
   const n = parseInt(m[0], 10);
   // "6〜20名" → 上限側を使用。"21〜50名" → 50。範囲不明なら数値そのまま
-  const m2 = raw.match(/\d+[^〜]*〜[^〜]*(\d+)/);
+  // 2026-10-27: 旧正規表現 /\d+[^〜]*〜[^〜]*(\d+)/ は貪欲一致で上限の末尾1桁だけを拾い、
+  // "6〜20名"→0・"21〜50名"→0 を送っていた（検証用モックで受信値0を確認）。「〜」直後の数字全体を取る。
+  const m2 = raw.match(/〜\s*(\d+)/);
   if (m2) return parseInt(m2[1], 10);
   return n;
 }
