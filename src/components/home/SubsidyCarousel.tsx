@@ -34,8 +34,10 @@ function pickOpenCards(list: Subsidy[]): Subsidy[] {
 
 export default function SubsidyCarousel() {
   const [cards, setCards] = useState<Subsidy[]>(() => pickOpenCards(BUNDLED_SUBSIDIES));
-  // 初期表示は同梱データのため stale=true。API成功で false に切り替える。
-  const [stale, setStale] = useState(true);
+  // 「最新情報を取得できず」は API が実際に失敗したとき（catch）だけ出す（2026-10-27 審査[5]）。
+  // 初期値を true にすると読み込み中とサーバー描画の HTML（クローラーが読む本文）にも警告が入り、
+  // API が正常なときにも毎回誤った警告を出していた。読み込み中は同梱データを黙って先に見せ、API 応答で差し替える。
+  const [stale, setStale] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
