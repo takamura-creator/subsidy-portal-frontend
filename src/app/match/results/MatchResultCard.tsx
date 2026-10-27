@@ -13,6 +13,7 @@ import { isServicePrefecture } from "@/lib/constants";
 // 2026-10-27: 補助率は 0〜1 の小数で届く。旧 @/lib/formatRate は「0.5〜0.75%」と出していたため一覧・詳細と同じ整形に揃える
 import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { SCORE_STYLES } from "./states";
+import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 import type { MatchedSubsidy } from "@/lib/api";
 
 interface Props {
@@ -225,6 +226,9 @@ export default function MatchResultCard({ item, prefecture }: Props) {
               </div>
             </div>
           </div>
+
+          {/* カメラ機器が補助対象と確認できない制度の注記（審査 F-[7]） */}
+          <CameraEligibilityNote subsidy={item.subsidy} compact />
 
           {/* 省庁・アドバイス */}
           {item.application_advice && (

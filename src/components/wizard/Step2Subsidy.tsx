@@ -16,6 +16,7 @@ import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { CompanyInfo, SubsidySelection } from "./types";
 import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { compareByStatus, subsidyStatusLabel } from "@/lib/subsidyStatus";
+import { CAMERA_UNCONFIRMED_NOTE, INDIRECT_GUIDE, isCameraUnconfirmed, subsidyAttributes } from "@/lib/subsidyAttributes";
 import subsidiesJson from "@/data/subsidies.json";
 
 // 最終フォールバック用の同梱データ（2026-09-15 注文書: APIが優先ソース。
@@ -126,6 +127,9 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
       rateMax: s.rate_max,
       prefecture: s.prefecture,
       draftSubsidyType: s.draft_subsidy_type,
+      maxAmountUnit: subsidyAttributes(s).max_amount_unit,
+      maxUnits: subsidyAttributes(s).max_units,
+      cameraEligibility: subsidyAttributes(s).camera_eligibility,
     });
   }
 
@@ -230,9 +234,23 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
                         </p>
                         <p>締切: {s.deadline || "要確認"}</p>
                         {s.prefecture && <p>対象: {s.prefecture}</p>}
+                        {isCameraUnconfirmed(s) && (
+                          <p data-testid="wizard-camera-unconfirmed" className="text-[color:var(--hc-accent)]">
+                            ⚠ {CAMERA_UNCONFIRMED_NOTE}（カメラ代の補助額は試算しません）
+                          </p>
+                        )}
+                        {subsidyAttributes(s).indirect && (
+                          <p className="text-navy">
+                            直接は申請できません（申請者は{subsidyAttributes(s).applicant ?? "自治体"}）。申請は{INDIRECT_GUIDE}ご相談ください。
+                          </p>
+                        )}
+                        {(() => {
+                          const last = subsidyAttributes(s).regional_last_day?.[company.prefecture];
+                          return last ? <p>{company.prefecture}の受付終了日: {last.replaceAll("-", "/")}</p> : null;
+                        })()}
                         {s.status === "closed" && (
                           <p className="text-navy">
-                            今年度の受付は終了しています。今から申請はできません（次回の公募に向けた参考見積もりとして進められます）。
+                            今年度の受付は終了しています。今から申請はできません（参考見積もりとして進められます。最新の受付状況は公式サイトでご確認ください）。
                           </p>
                         )}
                         {s.status === "upcoming" && (

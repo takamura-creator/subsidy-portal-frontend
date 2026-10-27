@@ -9,6 +9,7 @@
 import Link from "next/link";
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil, isCtaActive } from "@/lib/deadlineUtils";
+import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 import { formatRate } from "@/lib/subsidyFormatters";
 import { subsidyStatusBadgeText } from "@/lib/subsidyStatus";
 
@@ -217,6 +218,9 @@ function SubsidyCard({ s, formatAmountDisplay }: { s: Subsidy; formatAmountDispl
           </div>
         </div>
       </div>
+
+      {/* カメラ機器が補助対象と確認できない制度の注記（審査 F-[7]） */}
+      <CameraEligibilityNote subsidy={s} compact />
 
       {/* 行C: カード右下・円形矢印ボタン（視覚的アフォーダンス） */}
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
