@@ -26,7 +26,9 @@ export function isCtaActive(status: string, deadline: string): boolean {
  * 「締切済み」とは言い切らない（ステータス行の「公募中」と食い違うため）。
  */
 export function getCtaDisabledReason(status: string, deadline: string): string {
-  if (status === "closed") return "受付終了（次回公募をお待ちください）";
+  // 2026-10-27（審査 F-[12]）: 「次回公募をお待ちください」は次回があると言い切ってしまう
+  // （例: 千葉県は令和8年度の実施自体を確認できていない）。受付状況の確認先を示すだけにする。
+  if (status === "closed") return "受付終了（最新の受付状況は公式サイトでご確認ください）";
   if (status === "upcoming") return "公募予定（公募開始後にご確認ください）";
   if (status !== "open") return "受付状況は公式サイトでご確認ください";
   const days = getDaysUntil(deadline);
