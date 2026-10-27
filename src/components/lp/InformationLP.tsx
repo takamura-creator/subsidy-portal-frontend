@@ -22,10 +22,9 @@ export function InformationLP({ prefecture, availableIds }: { prefecture: string
             {prefecture}の防犯カメラ補助金まとめ
           </h1>
           <p className="text-[14px] text-text-muted leading-relaxed">
-            {prefecture}で利用できる防犯カメラ設置に関する補助金・助成金の情報を、
-            公式資料で確認できた制度だけを、確認日と出典つきでまとめています。
-            HOJYO CAMEの直接施工は現在6都県（東京・神奈川・静岡・埼玉・千葉・山梨）のみですが、
-            補助金情報と制度解説は47都道府県の制度情報を掲載しています。
+            {prefecture}で利用できる防犯カメラ設置に関する補助金・助成金のうち、
+            公式資料で内容を確認できた制度だけを、確認日と出典つきで載せるページです。
+            HOJYO CAMEの直接施工と制度の確認は、現在6都県（東京・神奈川・静岡・埼玉・千葉・山梨）を中心に進めています。
           </p>
         </div>
       </section>

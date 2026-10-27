@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isRetiredSubsidyId } from "@/lib/retiredSubsidies";
 import { isJichikaiSubsidy } from "@/lib/jichikai";
+import { isValidPrefectureName, romanSlugToLpPath } from "@/lib/prefectureLp";
 
 /**
  * 1) 旧 Vercel デフォルトドメイン → 正規ドメイン (hojyocame.jp) への 308 リダイレクト。
@@ -24,6 +25,11 @@ import { isJichikaiSubsidy } from "@/lib/jichikai";
  *      自治会向けでない制度なら 404 にする（2026-10-27 審査[14]・ページ内 notFound() では 200 のソフト404になるため）
  *    - クライアント遷移（RSC）・プリフェッチ・GET/HEAD 以外は対象外（ページ側 notFound() の画面で十分）
  *
+ * 3) 都道府県LP `/lp/{県名}`（2026-10-27）。上と同じ理由でページ内の permanentRedirect()/notFound() は
+ *    200（meta refresh / not-found 本文）になっていたため、ドキュメント要求はここで決める。
+ *    - ローマ字スラッグ（例: /lp/kanagawa）→ 日本語の正式 URL（/lp/神奈川県）へ本物の 308
+ *    - 47都道府県に無い名前（例: /lp/foo）→ 本物の 404
+ *
  * Next.js 16 から Middleware は Proxy に名称変更されている。
  */
 const CANONICAL_HOST = "hojyocame.jp";
@@ -31,6 +37,8 @@ const CANONICAL_HOST = "hojyocame.jp";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 /** /subsidies/{id} と配下の /subsidies/{id}/templates（id が無ければどちらも存在しないページ）。2番目のグループ=templates */
 const SUBSIDY_DETAIL_PATH = /^\/subsidies\/([^/]+)(\/templates)?\/?$/;
+/** /lp/{県名}（1階層のみ。opengraph-image など配下のパスは対象外） */
+const PREFECTURE_LP_PATH = /^\/lp\/([^/]+)\/?$/;
 /** 未定義ルート。rewrite 先にすると Next.js が not-found 画面を 404 で返す。 */
 const NOT_FOUND_PATH = "/_hojyocame-not-found";
 const CHECK_TIMEOUT_MS = 2500;
@@ -102,6 +110,25 @@ export async function proxy(request: NextRequest) {
     url.protocol = "https:";
     url.port = "";
     return NextResponse.redirect(url, 308);
+  }
+
+  const lp = PREFECTURE_LP_PATH.exec(request.nextUrl.pathname);
+  if (lp && isDocumentRequest(request)) {
+    let name: string | null = null;
+    try {
+      name = decodeURIComponent(lp[1]);
+    } catch {
+      name = null; // 不正なエンコード → 存在しないページとして 404
+    }
+    const romanPath = name !== null ? romanSlugToLpPath(name) : null;
+    if (romanPath) {
+      const url = request.nextUrl.clone();
+      url.pathname = romanPath;
+      return NextResponse.redirect(url, 308);
+    }
+    if (name === null || !isValidPrefectureName(name)) {
+      return NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url));
+    }
   }
 
   const m = SUBSIDY_DETAIL_PATH.exec(request.nextUrl.pathname);

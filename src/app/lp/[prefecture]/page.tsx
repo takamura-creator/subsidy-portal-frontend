@@ -2,20 +2,20 @@ import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { fetchSubsidies } from "@/lib/api";
 import { PREFECTURES, isServicePrefecture } from "@/lib/constants";
+import { isValidPrefectureName, romanSlugToLpPath } from "@/lib/prefectureLp";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   generateFaqJsonLd,
   generateBreadcrumbJsonLd,
 } from "@/lib/structured-data";
 import { getPrefectureContent } from "@/data/prefecture-content";
+import { getVerifiedLpSubsidies } from "@/data/lp-verified-subsidies";
 import FullLP from "@/components/lp/FullLP";
 import InformationLP from "@/components/lp/InformationLP";
 
 // C2（2026-07-20・Phase6差戻し）: FullLP/InformationLP/SubsidyList を
 // src/components/lp/ 配下へ切り出し。本ファイルはルーティング＋metadata＋データ取得のみ（500行以内）。
 // 挙動は変更していない（純粋リファクタ）。
-
-const VALID_PREFECTURES = new Set<string>(PREFECTURES);
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
 
@@ -34,7 +34,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { prefecture } = await params;
   const name = decodeURIComponent(prefecture);
-  const inService = isServicePrefecture(name);
+  // 47都道府県以外（例: /lp/kanagawa）はページ本体が 404 にするので、ここでも索引させない
+  if (!isValidPrefectureName(name)) {
+    return { title: "ページが見つかりません", robots: { index: false, follow: false } };
+  }
+  // 確認台帳に制度が1件も無い都道府県は、施工対応エリアでも本文が薄いので索引させない（2026-10-27 審査[10]）
+  const inService = isServicePrefecture(name) && getVerifiedLpSubsidies(name).length > 0;
   // 県別コンテンツ（src/data/prefecture-content.ts）に SEO タイトル/説明文が定義済みの県は
   // それを優先利用（品質差解消・2026-07-20）。未定義県は従来のハードコード文言へフォールバック。
   const content = getPrefectureContent(name);
@@ -73,68 +78,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** ローマ字スラッグ → 日本語正式URL 301リダイレクトマップ（全47都道府県・標準ヘボン式） */
-const ROMAN_TO_JP: Record<string, string> = {
-  tokyo:     "東京都",
-  osaka:     "大阪府",
-  kanagawa:  "神奈川県",
-  aichi:     "愛知県",
-  saitama:   "埼玉県",
-  hyogo:     "兵庫県",
-  hokkaido:  "北海道",
-  fukuoka:   "福岡県",
-  chiba:     "千葉県",
-  kyoto:     "京都府",
-  aomori:    "青森県",
-  iwate:     "岩手県",
-  miyagi:    "宮城県",
-  akita:     "秋田県",
-  yamagata:  "山形県",
-  fukushima: "福島県",
-  ibaraki:   "茨城県",
-  tochigi:   "栃木県",
-  gunma:     "群馬県",
-  niigata:   "新潟県",
-  toyama:    "富山県",
-  ishikawa:  "石川県",
-  fukui:     "福井県",
-  yamanashi: "山梨県",
-  nagano:    "長野県",
-  gifu:      "岐阜県",
-  shizuoka:  "静岡県",
-  mie:       "三重県",
-  shiga:     "滋賀県",
-  nara:      "奈良県",
-  wakayama:  "和歌山県",
-  tottori:   "鳥取県",
-  shimane:   "島根県",
-  okayama:   "岡山県",
-  hiroshima: "広島県",
-  yamaguchi: "山口県",
-  tokushima: "徳島県",
-  kagawa:    "香川県",
-  ehime:     "愛媛県",
-  kochi:     "高知県",
-  saga:      "佐賀県",
-  nagasaki:  "長崎県",
-  kumamoto:  "熊本県",
-  oita:      "大分県",
-  miyazaki:  "宮崎県",
-  kagoshima: "鹿児島県",
-  okinawa:   "沖縄県",
-};
-
 export default async function PrefectureLPPage({ params }: Props) {
   const { prefecture } = await params;
   const name = decodeURIComponent(prefecture);
 
   // ローマ字スラッグ → 日本語正式URL へ 301 リダイレクト
-  if (ROMAN_TO_JP[name]) {
-    permanentRedirect(`/lp/${encodeURIComponent(ROMAN_TO_JP[name])}`);
-  }
+  // （ドキュメント要求は proxy が本物の 308 で返す。ここはクライアント遷移などの保険）
+  const romanPath = romanSlugToLpPath(name);
+  if (romanPath) permanentRedirect(romanPath);
 
   // 47都道府県以外は 404（攻撃的なパスや誤入力を拒否）
-  if (!VALID_PREFECTURES.has(name)) notFound();
+  if (!isValidPrefectureName(name)) notFound();
   // 6都県は FullLP（施工対応）、それ以外41道府県は InformationLP（情報のみ）
   const inService = isServicePrefecture(name);
 
