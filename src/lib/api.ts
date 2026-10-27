@@ -74,14 +74,25 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * AI 診断の打ち切り（2026-10-27）。
+ * 本番実測: /api/subsidies/match は 26.8〜30.6 秒（AI 応答待ち）で、旧30秒では打ち切られることがあった。
+ * - MATCH: 実測の約2倍の余裕
+ * - DIAGNOSE: HP取得（backend の取得タイムアウト20秒）＋HP読み取りAI＋上記マッチ
+ * どちらも backend の gunicorn worker timeout（120秒）より短い。呼び出しはブラウザ→Railway 直通で、
+ * Vercel の関数時間の上限は関係しない（Next の API ルート・サーバー関数を経由しない）。
+ */
+export const MATCH_TIMEOUT_MS = 60000;
+export const DIAGNOSE_TIMEOUT_MS = 90000;
+
 async function apiFetch<T>(
   url: string,
-  options: RequestInit & { next?: { revalidate?: number } } = {}
+  options: RequestInit & { next?: { revalidate?: number }; timeoutMs?: number } = {}
 ): Promise<T> {
   const DEFAULT_TIMEOUT = 10000;
-  const { signal: customSignal, ...restOptions } = options;
-  const timeoutMs = customSignal ? undefined : DEFAULT_TIMEOUT;
-  const effectiveSignal = customSignal ?? AbortSignal.timeout(DEFAULT_TIMEOUT);
+  const { signal: customSignal, timeoutMs: requestedTimeout, ...restOptions } = options;
+  const timeoutMs = customSignal ? undefined : (requestedTimeout ?? DEFAULT_TIMEOUT);
+  const effectiveSignal = customSignal ?? AbortSignal.timeout(timeoutMs ?? DEFAULT_TIMEOUT);
 
   try {
     const res = await fetch(url, {
@@ -178,7 +189,8 @@ export async function matchSubsidies(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
-    signal: AbortSignal.timeout(30000), // AI診断はAnthropicを呼ぶため30秒に延長
+    // AI診断はAnthropicを呼ぶため長め。timeoutMs で渡すとタイムアウト文言に秒数が正しく出る
+    timeoutMs: MATCH_TIMEOUT_MS,
   });
 }
 
@@ -208,9 +220,9 @@ export interface DiagnoseResponse {
 /**
  * POST /api/public/diagnose
  * URLを渡すとHP抽出 → AI補助金マッチ → 概算を返す（認証不要）。
- * タイムアウト: HP取得 + LLM推論で最大30秒。
+ * タイムアウト: HP取得 + LLM推論で最大 DIAGNOSE_TIMEOUT_MS（90秒・2026-10-27 に30秒から延長）。
  * signal を渡さず apiFetch のデフォルトタイムアウト変数を上書きすることで
- * TimeoutError メッセージに正しい「30秒」が表示される。
+ * TimeoutError メッセージに実際の打ち切り秒数が表示される。
  *
  * externalSignal: 呼び出し側の中止（台本『診断卓』終わり方④）を実 fetch へ伝搬させる。
  * 中止由来の abort は ApiError(499) として区別する（タイムアウト 408 と混同させない）。
@@ -219,7 +231,7 @@ export async function diagnosePublic(
   url: string,
   externalSignal?: AbortSignal,
 ): Promise<DiagnoseResponse> {
-  const DIAGNOSE_TIMEOUT = 30000;
+  const DIAGNOSE_TIMEOUT = DIAGNOSE_TIMEOUT_MS;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), DIAGNOSE_TIMEOUT);
   const onExternalAbort = () => controller.abort();

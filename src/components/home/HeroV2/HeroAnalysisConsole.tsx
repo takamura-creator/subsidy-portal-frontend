@@ -12,6 +12,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { RunKind, StepState, TimelineSnapshot } from "./useAnalysisTimeline";
+import { DIAGNOSE_TIMEOUT_MS } from "@/lib/api";
+
+/** 打ち切り秒数。文言中の秒数は実際の打ち切り（lib/api.ts）と必ず一致させる（2026-10-27: 30→90秒）。 */
+const DIAGNOSE_TIMEOUT_SEC = Math.round(DIAGNOSE_TIMEOUT_MS / 1000);
 
 /* ---- §5.1 文言マスター（一字一句確定） ---- */
 
@@ -54,7 +58,7 @@ const STEPS: { label: string; sub: string }[] = [
 const HOLD_TEXTS = [
   "登録されている補助金制度と条件を突き合わせています",
   "AIが精査しています。そのままお待ちください。",
-  "解析を続けています。最大30秒で結果をお返しします。",
+  `解析を続けています。最大${DIAGNOSE_TIMEOUT_SEC}秒で結果をお返しします。`,
 ];
 
 /** 工程の状態サフィックス（記号＋文字・色だけに意味を持たせない） */
@@ -78,7 +82,7 @@ const ERROR_COPY: Record<string, { text: string; primary: string; secondary: str
     secondary: MANUAL_LABEL,
   },
   "408": {
-    text: "30秒以内に解析が終わりませんでした。",
+    text: `${DIAGNOSE_TIMEOUT_SEC}秒以内に解析が終わりませんでした。`,
     primary: RETRY_LABEL,
     secondary: MANUAL_LABEL,
   },

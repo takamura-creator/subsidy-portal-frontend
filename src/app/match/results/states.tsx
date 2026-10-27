@@ -1,7 +1,9 @@
 "use client";
 
 import type React from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { MATCH_TIMEOUT_MS } from "@/lib/api";
 
 export const SCORE_STYLES: Record<string, React.CSSProperties> = {
   高: {
@@ -95,14 +97,66 @@ export function ErrorState({ message }: { message: string }) {
   );
 }
 
+/** AI 診断の通常の所要（本番実測 26.8〜30.6 秒・2026-10-27）。進み具合の目安表示にだけ使う。 */
+const TYPICAL_WAIT_SEC = 30;
+
+/** 経過秒に応じた工程の文言（目安。実際の処理段階と同期しているわけではない） */
+function waitingMessage(sec: number): string {
+  if (sec < 5) return "条件に合う補助金を絞り込んでいます";
+  if (sec < TYPICAL_WAIT_SEC - 5) return "AIが候補を比べて、おすすめ順を決めています";
+  if (sec < TYPICAL_WAIT_SEC + 15) return "まもなく結果が出ます";
+  return `混み合っています。もう少しお待ちください（最大${Math.round(MATCH_TIMEOUT_MS / 1000)}秒）`;
+}
+
+/**
+ * 診断待ちの表示（2026-10-27）。AI 応答に約30秒かかるため、固定文言だけだと止まって見える。
+ * 経過秒・工程の目安・目安バー（応答前は90%で止め、100%にはしない）で「進んでいる」ことを示す。
+ */
 export function LoadingState() {
+  const [sec, setSec] = useState(0);
+  useEffect(() => {
+    const started = Date.now();
+    const id = setInterval(() => setSec(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const pct = Math.min(90, Math.round((sec / TYPICAL_WAIT_SEC) * 90));
+
   return (
     <div
       style={{ padding: "40px 24px", textAlign: "center", color: "var(--hc-text-muted)" }}
-      aria-live="polite"
       aria-busy="true"
+      data-testid="match-loading"
     >
-      <div style={{ fontSize: 14 }}>診断結果を取得中です...</div>
+      <div style={{ fontSize: 15, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 6 }} aria-live="polite">
+        {waitingMessage(sec)}
+      </div>
+      <div style={{ fontSize: 12, marginBottom: 14 }}>
+        経過 {sec}秒 ／ 通常{TYPICAL_WAIT_SEC}秒ほどかかります。この画面のままお待ちください。
+      </div>
+      <div
+        role="progressbar"
+        aria-label="診断の進み具合（目安）"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={pct}
+        style={{
+          maxWidth: 320,
+          height: 6,
+          margin: "0 auto",
+          borderRadius: 9999,
+          background: "var(--hc-border)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: `${pct}%`,
+            height: "100%",
+            background: "var(--hc-primary)",
+            transition: "width 0.9s linear",
+          }}
+        />
+      </div>
     </div>
   );
 }
