@@ -19,6 +19,35 @@ export const INDUSTRIES = [
   "その他",
 ] as const;
 
+/**
+ * バックエンド補助金データの業種語彙（data/subsidies.json の target_industries・
+ * routers/public_diagnose.py の _CANONICAL_INDUSTRIES ＋ 自治会・町会）。
+ * /api/subsidies/match は target_industries と完全一致で絞り込むため、送る業種はこの語彙でなければならない。
+ */
+export const API_INDUSTRIES = [
+  "製造業", "建設業", "サービス業", "小売業", "飲食業", "医療・介護",
+  "不動産業", "宿泊業", "運輸業", "農業・林業・水産業", "廃棄物処理業", "その他",
+  "自治会・町会",
+] as const;
+
+/**
+ * 表示用業種（INDUSTRIES）→ バックエンド語彙の対応。ここに無い表示名は API_INDUSTRIES と同じ文字列。
+ * 2026-10-27 点検: 主ターゲット4業種を表示名のまま送ると候補0件で 404 になっていた（「工場・製造業」で実測）。
+ * 「自治体・街頭防犯」は自治会・町内会向けの街頭防犯補助が実体のため「自治会・町会」へ寄せる
+ * （backend は業種名に「自治会/町会」を含むと防犯カテゴリの制度だけに絞る）。
+ */
+const API_INDUSTRY_BY_LABEL: Readonly<Record<string, string>> = {
+  "工場・製造業": "製造業",
+  "産廃ヤード": "廃棄物処理業",
+  "老人福祉施設": "医療・介護",
+  "自治体・街頭防犯": "自治会・町会",
+};
+
+/** 表示用業種をバックエンド語彙へ変換する（語彙そのものはそのまま返す＝何度通しても同じ結果）。 */
+export function toApiIndustry(label: string): string {
+  return API_INDUSTRY_BY_LABEL[label] ?? label;
+}
+
 export const WEBSITE_EXEMPT_INDUSTRIES: readonly string[] = ["自治会・町会"];
 
 export const EMPLOYEE_RANGES = [

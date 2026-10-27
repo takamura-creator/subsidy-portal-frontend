@@ -1,6 +1,6 @@
 // F1: カメラ関連補助金フィルタ共通モジュール（介護除外 ID リスト方式）
 import type { Subsidy } from "./api";
-import { SERVICE_PREFECTURES } from "./constants";
+import { SERVICE_PREFECTURES, toApiIndustry } from "./constants";
 
 export const CAMERA_KEYWORDS = ["防犯", "セキュリティ", "カメラ", "監視", "IT導入", "DX"];
 
@@ -22,11 +22,13 @@ function isServiceArea(s: Subsidy): boolean {
 }
 
 export function filterCameraOnly(items: Subsidy[], industry?: string): Subsidy[] {
+  // 表示用業種（例: 工場・製造業）は target_industries の語彙（例: 製造業）へ変換して照合する
+  const apiIndustry = industry ? toApiIndustry(industry) : undefined;
   return items.filter((s) => {
     if (NG_SUBSIDY_IDS.has(s.id)) return false;
     if (!isServiceArea(s)) return false;
     // B5: 業種フィルタ — target_industries が設定されていてユーザー業種を含まない場合は除外
-    if (industry && s.target_industries?.length > 0 && !s.target_industries.includes(industry)) {
+    if (apiIndustry && s.target_industries?.length > 0 && !s.target_industries.includes(apiIndustry)) {
       return false;
     }
     return CAMERA_KEYWORDS.some(

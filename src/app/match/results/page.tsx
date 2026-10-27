@@ -5,13 +5,13 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
-import { isServicePrefecture } from "@/lib/constants";
+import { isServicePrefecture, toApiIndustry } from "@/lib/constants";
 import { FadeIn, StaggerChildren, StaggerItem, ScaleIn } from "@/components/motion";
 import BonusChecklist from "@/components/strategy/BonusChecklist";
 import AdoptionRateCard from "@/components/strategy/AdoptionRateCard";
 import IndustryStrategy from "@/components/strategy/IndustryStrategy";
 import type { BonusItem, IndustryContext, MatchedSubsidy } from "@/lib/api";
-import { fetchBonusItems, fetchIndustryContext, matchSubsidies } from "@/lib/api";
+import { ApiError, fetchBonusItems, fetchIndustryContext, matchSubsidies } from "@/lib/api";
 import { parseEmployees, EmptyState, ErrorState, LoadingState } from "./states";
 import ResultsFilters from "./ResultsFilters";
 import MatchResultCard from "./MatchResultCard";
@@ -59,7 +59,11 @@ function ResultsContent() {
     setLoading(true);
     setError(null);
 
-    matchSubsidies({ industry, employees: employeesNum, prefecture, purpose })
+    // 表示名（例: 工場・製造業）はバックエンドの業種語彙（例: 製造業）へ変換して送る。
+    // 表示・計測は表示名のまま（条件チップ・採択戦略見出し・analytics）。
+    const apiIndustry = toApiIndustry(industry);
+
+    matchSubsidies({ industry: apiIndustry, employees: employeesNum, prefecture, purpose })
       .then((res) => {
         if (cancelled) return;
         setMatches(res.matches);
@@ -71,6 +75,13 @@ function ResultsContent() {
       })
       .catch((e: Error) => {
         if (cancelled) return;
+        // backend は候補0件を 404「条件に合う補助金が見つかりません」で返す。
+        // これは故障ではなく「該当なし」なので、エラー表示ではなく空状態（条件を変える導線）を出す。
+        if (e instanceof ApiError && e.status === 404) {
+          setMatches([]);
+          track("diagnosis_result_view", { industry, prefecture, match_count: 0 });
+          return;
+        }
         setError(e.message || "診断サービスに接続できませんでした。");
       })
       .finally(() => {
@@ -80,7 +91,7 @@ function ResultsContent() {
     fetchBonusItems()
       .then((d) => { if (!cancelled) setBonusItems(d.items); })
       .catch(() => {});
-    fetchIndustryContext(industry)
+    fetchIndustryContext(apiIndustry)
       .then((ctx) => { if (!cancelled) setIndustryCtx(ctx); })
       .catch(() => {});
 
