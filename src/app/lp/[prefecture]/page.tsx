@@ -1,8 +1,7 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
-import { fetchSubsidies, type Subsidy } from "@/lib/api";
+import { fetchSubsidies } from "@/lib/api";
 import { PREFECTURES, isServicePrefecture } from "@/lib/constants";
-import { sortLocalFirst } from "@/lib/subsidyFilters";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   generateFaqJsonLd,
@@ -139,13 +138,15 @@ export default async function PrefectureLPPage({ params }: Props) {
   // 6都県は FullLP（施工対応）、それ以外41道府県は InformationLP（情報のみ）
   const inService = isServicePrefecture(name);
 
-  let subsidies: Subsidy[] = [];
+  // 2026-10-27: LP の制度リストは確認台帳（src/data/lp-verified-subsidies.ts）から出す。
+  // API はサイト内の制度ページ（/subsidies/{id}）が実在するかの確認にだけ使う（無い id へはリンクしない）。
+  let availableIds: ReadonlySet<string> = new Set();
   try {
     const subsidyData = await fetchSubsidies({ prefecture: name });
-    subsidies = subsidyData.subsidies ?? [];
+    availableIds = new Set((subsidyData.subsidies ?? []).map((s) => s.id));
   } catch {
-    // C2: バックエンド不在時のみ空配列フォールバック。他のエラーは握り潰さない（ビルド時限定）。
-    subsidies = [];
+    // バックエンド不在時はサイト内リンクを出さない（出典リンクと台帳の内容は表示する）
+    availableIds = new Set();
   }
 
   const content = getPrefectureContent(name);
@@ -164,11 +165,9 @@ export default async function PrefectureLPPage({ params }: Props) {
         <JsonLd data={faqLd} id={`jsonld-lp-faq-${encodeURIComponent(name)}`} />
       )}
       {inService ? (
-        // 6都県のみ「県・市区町村固有の制度→全国制度」に並べ替え（表示件数は不変）。
-        // 41道府県のInformationLPは意図的に元の順序のまま（挙動を変えない・2026-07-20）。
-        <FullLP prefecture={name} subsidies={sortLocalFirst(subsidies)} />
+        <FullLP prefecture={name} availableIds={availableIds} />
       ) : (
-        <InformationLP prefecture={name} subsidies={subsidies} />
+        <InformationLP prefecture={name} availableIds={availableIds} />
       )}
     </>
   );

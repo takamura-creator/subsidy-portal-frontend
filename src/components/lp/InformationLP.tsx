@@ -1,17 +1,16 @@
 import Link from "next/link";
-import type { Subsidy } from "@/lib/api";
 import { SERVICE_PREFECTURES } from "@/lib/constants";
 import TrustBlock from "@/components/home/TrustBlock";
 import RelatedNoteLink from "@/components/lp/RelatedNoteLink";
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
 import { NOTE_ARTICLE_LINKS } from "@/data/note-article-links";
-import { SubsidyList } from "@/components/lp/SubsidyList";
+import { VerifiedSubsidyList } from "@/components/lp/VerifiedSubsidyList";
 
 /* ---------------- 41道府県：情報LP ---------------- */
 // C2（2026-07-20・Phase6差戻し）: src/app/lp/[prefecture]/page.tsx から純粋切り出し。
-// 挙動・props型は変更なし。
+// 2026-10-27: 補助金リストを確認台帳（公式資料で確認できた制度のみ・確認日つき）へ差し替え。
 
-export function InformationLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subsidy[] }) {
+export function InformationLP({ prefecture, availableIds }: { prefecture: string; availableIds: ReadonlySet<string> }) {
   return (
     <main>
       <section className="bg-white border-b border-border">
@@ -24,17 +23,17 @@ export function InformationLP({ prefecture, subsidies }: { prefecture: string; s
           </h1>
           <p className="text-[14px] text-text-muted leading-relaxed">
             {prefecture}で利用できる防犯カメラ設置に関する補助金・助成金の情報を、
-            制度名・上限額・締切・公式制度リンクの事実ベースでまとめています。
+            公式資料で確認できた制度だけを、確認日と出典つきでまとめています。
             HOJYO CAMEの直接施工は現在6都県（東京・神奈川・静岡・埼玉・千葉・山梨）のみですが、
             補助金情報と制度解説は47都道府県の制度情報を掲載しています。
           </p>
         </div>
       </section>
 
-      <SubsidyList
-        heading={`${prefecture}で利用できる補助金・助成金`}
-        subsidies={subsidies}
-        emptyText={`${prefecture}で実在を確認できた制度は現在取得中です。近隣県の最新制度は`}
+      <VerifiedSubsidyList
+        prefecture={prefecture}
+        heading={`${prefecture}の防犯カメラ設置に使える補助制度`}
+        availableIds={availableIds}
         hideRecipeCTA
       />
 

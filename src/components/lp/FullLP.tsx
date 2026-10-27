@@ -1,14 +1,13 @@
 import Link from "next/link";
-import type { Subsidy } from "@/lib/api";
 import TrustBlock from "@/components/home/TrustBlock";
 import IndustryLinksSection from "@/components/lp/IndustryLinksSection";
-import { SubsidyList } from "@/components/lp/SubsidyList";
+import { VerifiedSubsidyList } from "@/components/lp/VerifiedSubsidyList";
 
 /* ---------------- 6都県：フルLP ---------------- */
 // C2（2026-07-20・Phase6差戻し）: src/app/lp/[prefecture]/page.tsx から純粋切り出し。
-// 挙動・props型は変更なし。
+// 2026-10-27: 補助金リストを確認台帳（公式資料で確認できた制度のみ・確認日つき）へ差し替え。
 
-export function FullLP({ prefecture, subsidies }: { prefecture: string; subsidies: Subsidy[] }) {
+export function FullLP({ prefecture, availableIds }: { prefecture: string; availableIds: ReadonlySet<string> }) {
   const anchor = `${prefecture}で防犯カメラの補助金申請と施工をまとめて相談する`;
   return (
     <main>
@@ -41,10 +40,10 @@ export function FullLP({ prefecture, subsidies }: { prefecture: string; subsidie
         </div>
       </section>
 
-      <SubsidyList
-        heading={`${prefecture}で利用できる補助金・助成金`}
-        subsidies={subsidies}
-        emptyText={`${prefecture}で利用できる補助金は現在取得中です。全国制度も含めて`}
+      <VerifiedSubsidyList
+        prefecture={prefecture}
+        heading={`${prefecture}の防犯カメラ設置に使える補助制度`}
+        availableIds={availableIds}
       />
 
       <section className="py-14 bg-white">
