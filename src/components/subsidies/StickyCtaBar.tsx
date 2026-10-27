@@ -9,6 +9,7 @@
 import Link from "next/link";
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil, isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
+import { INDIRECT_GUIDE, isIndirect } from "@/lib/subsidyAttributes";
 
 interface StickyCtaBarProps {
   subsidy: Subsidy;
@@ -17,8 +18,12 @@ interface StickyCtaBarProps {
 export default function StickyCtaBar({ subsidy: s }: StickyCtaBarProps) {
   const days = getDaysUntil(s.deadline);
   // H-3: status と deadline の両方でガード（二重チェック）
-  const ctaActive = isCtaActive(s.status, s.deadline);
-  const disabledReason = ctaActive ? "" : getCtaDisabledReason(s.status, s.deadline);
+  // 直接申請できない制度は申請ボタンを出さず、窓口を案内する（審査 F-[6]）
+  const indirect = isIndirect(s);
+  const ctaActive = !indirect && isCtaActive(s.status, s.deadline);
+  const disabledReason = indirect
+    ? `申請は${INDIRECT_GUIDE}`
+    : ctaActive ? "" : getCtaDisabledReason(s.status, s.deadline);
 
   const deadlineMeta = !ctaActive && disabledReason
     ? disabledReason
@@ -71,7 +76,20 @@ export default function StickyCtaBar({ subsidy: s }: StickyCtaBarProps) {
       </div>
 
       {/* 右: プライマリボタン or 締切済み/未確定/公募前 無効状態 */}
-      {!ctaActive ? (
+      {indirect ? (
+        <span
+          data-testid="indirect-cta"
+          style={{
+            flexShrink: 0,
+            fontSize: 12,
+            fontWeight: 600,
+            color: "var(--hc-text-muted)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          直接は申請できません
+        </span>
+      ) : !ctaActive ? (
         <span
           role="button"
           aria-disabled="true"

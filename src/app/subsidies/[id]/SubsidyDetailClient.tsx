@@ -20,6 +20,8 @@ import type { Subsidy } from "@/lib/api";
 import { isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
 import { formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyStatusBadgeText } from "@/lib/subsidyStatus";
+import { INDIRECT_GUIDE, isIndirect } from "@/lib/subsidyAttributes";
+import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 
 export default function SubsidyDetailClient({
   subsidy: s,
@@ -30,8 +32,10 @@ export default function SubsidyDetailClient({
   stale?: boolean;
 }) {
   // H-3: status と deadline の両方でガード
-  const ctaActive = isCtaActive(s.status, s.deadline);
-  const disabledReason = ctaActive ? "" : getCtaDisabledReason(s.status, s.deadline);
+  // 利用者が直接申請できない制度（市町村・都道府県を通じて使う）は申請ボタンを出さず窓口を案内する（審査 F-[6]）
+  const indirect = isIndirect(s);
+  const ctaActive = !indirect && isCtaActive(s.status, s.deadline);
+  const disabledReason = ctaActive || indirect ? "" : getCtaDisabledReason(s.status, s.deadline);
   const isJichikai = s.target_industries?.includes("自治会・町会") ?? false;
 
   return (
@@ -121,6 +125,9 @@ export default function SubsidyDetailClient({
           </span>
         </div>
 
+        {/* カメラ機器が補助対象と確認できない制度の注記（審査 F-[7]） */}
+        <CameraEligibilityNote subsidy={s} />
+
         {/* 景表法注記 */}
         <p className="mc-disclaimer" style={{ marginBottom: 32 }}>
           ※制度・条件により異なります。出典：公式資料。診断は目安です。
@@ -138,7 +145,23 @@ export default function SubsidyDetailClient({
 
         {/* 本文末インライン CTA — H-3: status/deadline 両方でガード */}
         <div style={{ marginTop: 56, textAlign: "center" }}>
-          {!ctaActive ? (
+          {indirect ? (
+            <div data-testid="indirect-cta" style={{ fontSize: 15, color: "var(--hc-text)", lineHeight: 1.7 }}>
+              <p style={{ margin: "0 0 8px", fontWeight: 600 }}>
+                この制度は直接は申請できません。申請は{INDIRECT_GUIDE}ご相談ください。
+              </p>
+              {s.source_url && (
+                <a
+                  href={s.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--hc-primary)", textDecoration: "underline", fontSize: 14 }}
+                >
+                  公式サイトで制度の内容を確認する →
+                </a>
+              )}
+            </div>
+          ) : !ctaActive ? (
             <span
               role="button"
               aria-disabled="true"

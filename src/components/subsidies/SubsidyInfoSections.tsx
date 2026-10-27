@@ -9,6 +9,8 @@ import type { Subsidy } from "@/lib/api";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyStatusLabel } from "@/lib/subsidyStatus";
+import { INDIRECT_GUIDE, isCameraUnconfirmed, regionalLastDays, subsidyAttributes } from "@/lib/subsidyAttributes";
+import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 
 interface SubsidyInfoSectionsProps {
   subsidy: Subsidy;
@@ -30,12 +32,21 @@ const SECTION_H2_STYLE: React.CSSProperties = {
  * 個人宅向け・自治会向けの制度で誤りになっていた。正本の target_industries から作る。
  */
 function targetText(s: Subsidy): string {
+  // 利用者が直接申請できない制度（市町村・都道府県を通じて使う）は、正本の申請者をそのまま出す（審査 F-[6]）
+  const { applicant, indirect } = subsidyAttributes(s);
+  if (indirect && applicant) return `申請者は${applicant}`;
   const t = s.target_industries ?? [];
   if (t.includes("個人宅")) return "住宅に住む世帯（個人宅向け。法人・事業者は対象外）";
   if (t.length > 0 && t.every((x) => x === "自治会・町会")) return "自治会・町会などの地域団体";
   const size = s.max_employees ? `（従業員${s.max_employees}人以下などの規模要件あり）` : "";
   if (t.length > 0) return `${t.join("、")}${size}`;
   return size ? `中小企業・小規模事業者${size}` : "公式の要件をご確認ください";
+}
+
+/** ISO 日付 → 「2026年9月30日」 */
+function formatIsoDate(iso: string): string {
+  const [y, m, d] = iso.split("-").map((x) => Number(x));
+  return y && m && d ? `${y}年${m}月${d}日` : iso;
 }
 
 /** 自己負担の割合（補助率が無い・0 の制度は「—」） */
@@ -50,6 +61,9 @@ function selfPayText(s: Subsidy): string {
 export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsProps) {
   const days = getDaysUntil(s.deadline);
   const docs = s.required_documents ?? [];
+  const { indirect } = subsidyAttributes(s);
+  const cameraUnconfirmed = isCameraUnconfirmed(s);
+  const regional = regionalLastDays(s);
 
   return (
     <>
@@ -64,6 +78,7 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
       {/* 対象要件 */}
       <section id="requirements" style={{ marginBottom: 80 }}>
         <h2 style={SECTION_H2_STYLE}>対象要件</h2>
+        <CameraEligibilityNote subsidy={s} />
         <table className="info-table">
           <tbody>
             <tr>
@@ -72,7 +87,11 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
             </tr>
             <tr>
               <th>対象設備</th>
-              <td>防犯カメラ・監視カメラ関連（対象となる機器・経費は公式の要件をご確認ください）</td>
+              <td>
+                {cameraUnconfirmed
+                  ? "カメラ機器が補助対象かは公式資料で確認できていません（対象となる機器・経費は公式の要件をご確認ください）"
+                  : "防犯カメラ・監視カメラ関連（対象となる機器・経費は公式の要件をご確認ください）"}
+              </td>
             </tr>
             <tr>
               <th>補助率</th>
@@ -125,6 +144,26 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
             ステータス: {subsidyStatusLabel(s.status)}
           </li>
         </ul>
+        {regional.length > 0 && (
+          <div data-testid="regional-last-day" style={{ marginTop: 16 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-navy)", margin: "0 0 6px" }}>
+              都道府県ごとの受付終了日
+            </h3>
+            <p style={{ fontSize: 13, color: "var(--hc-text-muted)", lineHeight: 1.7, margin: "0 0 10px" }}>
+              受付は事業所のある都道府県ごとに、表の日までです（公式資料による。最新の受付状況は公式サイトでご確認ください）。
+            </p>
+            <table className="info-table">
+              <tbody>
+                {regional.map(({ prefecture, date }) => (
+                  <tr key={prefecture}>
+                    <th>{prefecture}</th>
+                    <td>{formatIsoDate(date)}まで</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {s.application_tips && (
           <div style={{
             marginTop: 8,
@@ -143,11 +182,18 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
       {/* 申請方法 */}
       <section id="howto" style={{ marginBottom: 80 }}>
         <h2 style={SECTION_H2_STYLE}>申請方法</h2>
-        <ol style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
-          <li style={{ marginBottom: 6 }}>gBizIDプライムを取得</li>
-          <li style={{ marginBottom: 6 }}>必要書類を準備</li>
-          <li style={{ marginBottom: 6 }}>電子申請システムから申請</li>
-        </ol>
+        {indirect ? (
+          <p data-testid="indirect-guide" style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
+            この制度は直接は申請できません（{targetText(s)}）。利用できるかどうか・申請の方法は、
+            {INDIRECT_GUIDE}お問い合わせください。
+          </p>
+        ) : (
+          <ol style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
+            <li style={{ marginBottom: 6 }}>gBizIDプライムを取得</li>
+            <li style={{ marginBottom: 6 }}>必要書類を準備</li>
+            <li style={{ marginBottom: 6 }}>電子申請システムから申請</li>
+          </ol>
+        )}
         {s.source_url && (
           <p style={{ fontSize: 13, marginTop: 8 }}>
             <a
