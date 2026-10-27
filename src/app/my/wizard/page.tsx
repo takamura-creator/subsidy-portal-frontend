@@ -28,6 +28,7 @@ import {
 } from "@/components/wizard/types";
 import { getUser } from "@/lib/auth";
 import { fetchProfileDetail, fetchSubsidy } from "@/lib/api";
+import { isRetiredSubsidyId } from "@/lib/retiredSubsidies";
 
 const STORAGE_KEY = "hc_wizard_state_v2";
 
@@ -44,27 +45,64 @@ function WizardPageContent() {
   const [step, setStep] = useState<WizardStepId>(1);
   const [state, setState] = useState<WizardState>(EMPTY_WIZARD_STATE);
   const [hydrated, setHydrated] = useState(false);
+  /** 復元した下書きの補助金が削除済みの制度だったときの案内（補助金選択の段で表示・選び直したら消す） */
+  const [retiredNotice, setRetiredNotice] = useState<string | null>(null);
 
   const isJizokuka = detectDocumentTier(state.subsidy).draftType === "jizokuka";
   const maxStep = isJizokuka ? 7 : 6;
   const steps = isJizokuka ? JIZOKUKA_STEPS : WIZARD_STEPS;
 
   useEffect(() => {
+    // localStorage（外部の保存領域）の下書きとログイン情報（JWT・同期取得）はマウント後にしか読めないため、
+    // ここでまとめて1回だけ反映する（初期値で読むとサーバー描画との食い違いが起きる）。
+    let restoredState: WizardState | null = null;
+    let restoredStep: WizardStepId | undefined;
+    let notice: string | null = null;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as { step?: WizardStepId; state?: WizardState };
-        const restoredState = parsed.state ?? EMPTY_WIZARD_STATE;
+        restoredState = parsed.state ?? EMPTY_WIZARD_STATE;
+        restoredStep = parsed.step;
+        // 2026-10-27 審査[8]: 下書きで選んでいた補助金が削除済みの制度（一次資料で実在を確認できず正本から削除）なら、
+        // その選択と、その制度で作った見積もり・書類の参照を外して補助金選択の段に戻す（存在しない制度で見積・書類作成を続けさせない）。
+        const restoredSubsidy = restoredState.subsidy;
+        if (restoredSubsidy && isRetiredSubsidyId(restoredSubsidy.id)) {
+          restoredState = {
+            ...restoredState,
+            subsidy: undefined,
+            estimate: undefined,
+            documents: undefined,
+            documentId: undefined,
+            draftId: undefined,
+          };
+          restoredStep = isCompanyReady(restoredState.company) ? 2 : 1;
+          notice = `前回選んでいた「${restoredSubsidy.name}」は、公式の資料で内容を確認できなかったため掲載を終了しました。お手数ですが、補助金を選び直してください。`;
+        }
         const restoredIsJizokuka = detectDocumentTier(restoredState.subsidy).draftType === "jizokuka";
         const restoredMaxStep = restoredIsJizokuka ? 7 : 6;
-        setState(restoredState);
-        if (parsed.step && parsed.step >= 1 && parsed.step <= restoredMaxStep) {
-          setStep(parsed.step);
-        }
+        if (!(restoredStep && restoredStep >= 1 && restoredStep <= restoredMaxStep)) restoredStep = undefined;
       }
     } catch {
-      // noop
+      restoredState = null;
+      restoredStep = undefined;
+      notice = null;
     }
+
+    // B6: M1 自動入力 — JWT（getUser は同期）で会社名・代表者名の空欄だけを補完する
+    const user = getUser();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 上記のとおりマウント後の外部読み出しの反映
+    setState((prev) => {
+      const base = restoredState ?? prev;
+      if (!user) return base;
+      const c = base.company;
+      const updates: Partial<CompanyInfo> = {};
+      if (user.company_name && !c.companyName) updates.companyName = user.company_name;
+      if (user.representative_name && !c.representativeName) updates.representativeName = user.representative_name;
+      return Object.keys(updates).length > 0 ? { ...base, company: { ...c, ...updates } } : base;
+    });
+    if (restoredStep) setStep(restoredStep);
+    if (notice) setRetiredNotice(notice);
     setHydrated(true);
   }, []);
 
@@ -77,21 +115,10 @@ function WizardPageContent() {
     }
   }, [step, state, hydrated]);
 
-  // B6: M1 自動入力 — hydration 後に Profile で state.company を補完
-  // frontend.md 規約「getUser() は同期呼び出し」は applications/new/page.tsx 同様、
-  // hydration 後の補完用途として useEffect 内利用を許容
+  // B6: M1 自動入力 — hydration 後に DB プロフィールで state.company を補完
+  // （JWT からの同期補完はマウント時の復元 effect でまとめて行う）
   useEffect(() => {
     if (!hydrated) return;
-    const user = getUser();
-    if (user) {
-      setState((prev) => {
-        const c = prev.company;
-        const updates: Partial<CompanyInfo> = {};
-        if (user.company_name && !c.companyName) updates.companyName = user.company_name;
-        if (user.representative_name && !c.representativeName) updates.representativeName = user.representative_name;
-        return Object.keys(updates).length > 0 ? { ...prev, company: { ...c, ...updates } } : prev;
-      });
-    }
     // DB プロフィール（確定値）で補完 — JWT より優先度高
     fetchProfileDetail()
       .then((p) => {
@@ -159,6 +186,7 @@ function WizardPageContent() {
 
   const setSubsidy = useCallback((s: SubsidySelection) => {
     setState((prev) => ({ ...prev, subsidy: s }));
+    setRetiredNotice(null);
     setStep(3);
     scrollTop();
   }, []);
@@ -231,6 +259,23 @@ function WizardPageContent() {
       subtitle={subtitleByStep[step]}
       hydrated={hydrated}
     >
+      {hydrated && step === 2 && retiredNotice && (
+        <p
+          role="status"
+          style={{
+            margin: "0 0 16px",
+            padding: "10px 14px",
+            borderRadius: 8,
+            border: "1px solid var(--hc-warning)",
+            background: "var(--hc-warning-subtle)",
+            color: "var(--hc-warning-text)",
+            fontSize: 13,
+            lineHeight: 1.7,
+          }}
+        >
+          {retiredNotice}
+        </p>
+      )}
       {!hydrated ? (
         <p className="text-[13px] text-text-muted">読み込み中...</p>
       ) : step === 1 ? (
