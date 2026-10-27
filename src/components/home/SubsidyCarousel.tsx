@@ -11,7 +11,8 @@
 
 import { useEffect, useState } from "react";
 import { fetchSubsidies, type Subsidy } from "@/lib/api";
-import { formatAmount } from "@/lib/subsidyFormatters";
+import { formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
+import { subsidyStatusLabel } from "@/lib/subsidyStatus";
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import subsidiesJson from "@/data/subsidies.json";
 
@@ -21,8 +22,14 @@ const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] })
 const VISIBLE_COUNT = 5;
 const TOTAL_CARDS = 20;
 
+/**
+ * 受付中（open）を先に、足りなければ公募予定（upcoming）で埋める。受付終了（closed）は出さない。
+ * それぞれの中は API の返却順を保つ。公募予定のカードには状態を添える（受付中に見せない）。
+ */
 function pickOpenCards(list: Subsidy[]): Subsidy[] {
-  return list.filter((s) => s.status === "open").slice(0, TOTAL_CARDS);
+  const open = list.filter((s) => s.status === "open");
+  const upcoming = list.filter((s) => s.status === "upcoming");
+  return [...open, ...upcoming].slice(0, TOTAL_CARDS);
 }
 
 export default function SubsidyCarousel() {
@@ -66,10 +73,15 @@ export default function SubsidyCarousel() {
       >
         {track.map((s, i) => (
           <div className="subsidy-card" key={`${s.id}-${i}`}>
-            <span className="subsidy-card-pref">{s.prefecture}</span>
+            <span className="subsidy-card-pref">
+              {s.prefecture}
+              {s.status !== "open" && `・${subsidyStatusLabel(s.status)}`}
+            </span>
             <p className="subsidy-card-name">{s.name}</p>
             <span className="subsidy-card-amount">
-              最大 {formatAmount(s.max_amount)}
+              {hasAmountCap(s.max_amount)
+                ? `最大 ${formatSubsidyAmount(s)}`
+                : `上限は${formatSubsidyAmount(s)}`}
             </span>
           </div>
         ))}

@@ -14,21 +14,32 @@ import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジ�
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { CompanyInfo, SubsidySelection } from "./types";
+import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
+import { subsidyStatusLabel } from "@/lib/subsidyStatus";
 import subsidiesJson from "@/data/subsidies.json";
 
 // 最終フォールバック用の同梱データ（2026-09-15 注文書: APIが優先ソース。
 // バックエンドのデプロイ遅延・到達不能時のみ使用し、使用中は StaleDataNotice で明示する）
 const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] }).subsidies ?? [];
 
+/**
+ * 受付中 → 公募予定 → 受付終了 の順に並べる（2026-10-27）。受付終了の制度を受付中と同じ並びに混ぜると
+ * 「今から申請できる」ように見えるため、末尾に回して状態を明示する。各グループ内の順序は保つ。
+ */
+const STATUS_ORDER: Record<string, number> = { open: 0, upcoming: 1, closed: 2 };
+function sortByStatus(items: Subsidy[]): Subsidy[] {
+  return [...items].sort((a, b) => (STATUS_ORDER[a.status] ?? 3) - (STATUS_ORDER[b.status] ?? 3));
+}
+
 function filterBundledForCompany(prefecture: string, industry: string): Subsidy[] {
   // backend 相当のフィルタ + filterCameraOnly を適用
-  return filterCameraOnly(
+  return sortByStatus(filterCameraOnly(
     BUNDLED_SUBSIDIES.filter((s) => {
       const prefOk = !prefecture || s.prefecture === prefecture || s.prefecture === "全国" || s.pref_code === "00" || s.pref_code === "";
       return prefOk;
     }),
     industry,
-  );
+  ));
 }
 
 interface Props {
@@ -65,7 +76,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         if (subRes.status === "fulfilled") {
           // API成功時は常にAPI結果を正とする（件数比較で同梱データに差し替えていた旧ロジックは削除。
           // 古いが件数の多い同梱データで新しいAPI結果を隠すと「黙って古いデータを出す」ことになるため）
-          setSubsidies(filterCameraOnly(subRes.value.subsidies ?? [], company.industry));
+          setSubsidies(sortByStatus(filterCameraOnly(subRes.value.subsidies ?? [], company.industry)));
           setStale(false);
         } else {
           // API 失敗時は同梱データで救うが、古い可能性があることを表示する
@@ -171,7 +182,9 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
       ) : (
         <form onSubmit={handleSubmit} className="space-y-3">
           <ul className="space-y-2" role="radiogroup" aria-label="補助金選択">
-            {subsidies.map((s) => (
+            {subsidies.map((s) => {
+              const isOpen = s.status === "open";
+              return (
               <li key={s.id}>
                 <label
                   className={`block rounded-[10px] p-4 cursor-pointer transition hc-card-gradient ${
@@ -196,24 +209,43 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="font-semibold text-[14px] text-navy">{s.name}</span>
+                        <span className={`font-semibold text-[14px] ${isOpen ? "text-navy" : "text-text-muted"}`}>{s.name}</span>
                         <span className="text-[11px] bg-accent-light text-[color:var(--hc-accent)] px-2 py-0.5 rounded-full font-medium">
                           {s.category}
+                        </span>
+                        {/* 受付状態（API の status だけで決める・一覧/詳細と同じ語） */}
+                        <span
+                          data-testid="wizard-subsidy-status"
+                          className={`text-[11px] px-2 py-0.5 rounded-full font-semibold border ${
+                            isOpen
+                              ? "border-[var(--hc-primary-border)] text-primary bg-[var(--hc-primary-muted)]"
+                              : "border-border text-text-muted bg-white"
+                          }`}
+                        >
+                          {subsidyStatusLabel(s.status)}
                         </span>
                       </div>
                       <div className="text-[12px] text-text-muted space-y-0.5">
                         <p>
-                          補助率上限: {s.rate_max != null ? `${Math.round(s.rate_max * 100)}%` : "—"} ／ 上限額:{" "}
-                          {s.max_amount.toLocaleString("ja-JP")}円
+                          補助率: {formatRate(s.rate_min, s.rate_max)} ／ 上限額: {formatSubsidyAmount(s)}
                         </p>
                         <p>締切: {s.deadline || "要確認"}</p>
                         {s.prefecture && <p>対象: {s.prefecture}</p>}
+                        {s.status === "closed" && (
+                          <p className="text-navy">
+                            今年度の受付は終了しています。今から申請はできません（次回の公募に向けた参考見積もりとして進められます）。
+                          </p>
+                        )}
+                        {s.status === "upcoming" && (
+                          <p className="text-navy">公募開始前です。受付期間は公式サイトでご確認ください。</p>
+                        )}
                       </div>
                     </div>
                   </div>
                 </label>
               </li>
-            ))}
+              );
+            })}
           </ul>
 
           <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
