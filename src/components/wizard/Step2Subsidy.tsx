@@ -15,7 +15,7 @@ import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { CompanyInfo, SubsidySelection } from "./types";
 import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
-import { subsidyStatusLabel } from "@/lib/subsidyStatus";
+import { compareByStatus, subsidyStatusLabel } from "@/lib/subsidyStatus";
 import subsidiesJson from "@/data/subsidies.json";
 
 // 最終フォールバック用の同梱データ（2026-09-15 注文書: APIが優先ソース。
@@ -26,9 +26,8 @@ const BUNDLED_SUBSIDIES: Subsidy[] = (subsidiesJson as { subsidies: Subsidy[] })
  * 受付中 → 公募予定 → 受付終了 の順に並べる（2026-10-27）。受付終了の制度を受付中と同じ並びに混ぜると
  * 「今から申請できる」ように見えるため、末尾に回して状態を明示する。各グループ内の順序は保つ。
  */
-const STATUS_ORDER: Record<string, number> = { open: 0, upcoming: 1, closed: 2 };
 function sortByStatus(items: Subsidy[]): Subsidy[] {
-  return [...items].sort((a, b) => (STATUS_ORDER[a.status] ?? 3) - (STATUS_ORDER[b.status] ?? 3));
+  return [...items].sort(compareByStatus);
 }
 
 function filterBundledForCompany(prefecture: string, industry: string): Subsidy[] {

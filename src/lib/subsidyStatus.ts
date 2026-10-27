@@ -45,3 +45,18 @@ export function subsidyStatusBadgeText(
   if (showDaysWithin !== undefined && days > showDaysWithin) return label;
   return `${label}・締切まであと${days}日`;
 }
+
+/**
+ * 受付状態の並び順（受付中 → 公募予定 → 受付終了 → 想定外）。ウィザードの補助金選択と一覧の既定の並びで共用する
+ * （受付終了の制度を受付中と同じ並びに混ぜると「今から申請できる」ように見えるため末尾に回す）。
+ */
+const STATUS_ORDER: Record<SubsidyStatus, number> = { open: 0, upcoming: 1, closed: 2 };
+
+export function subsidyStatusRank(status: string): number {
+  return isKnownStatus(status) ? STATUS_ORDER[status] : 3;
+}
+
+/** Array.prototype.sort 用の比較関数（状態だけで比べる。同じ状態の中の順序は呼び出し側か安定ソートに任せる） */
+export function compareByStatus(a: { status: string }, b: { status: string }): number {
+  return subsidyStatusRank(a.status) - subsidyStatusRank(b.status);
+}

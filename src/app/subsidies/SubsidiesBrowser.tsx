@@ -29,6 +29,8 @@ import { useState, useEffect } from "react";
 import PublicSectionHeader from "@/components/layout/PublicSectionHeader";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { filterCameraOnly } from "@/lib/subsidyFilters";
+import { toApiIndustry } from "@/lib/constants";
+import { compareByStatus } from "@/lib/subsidyStatus";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
 // getDaysUntil は sorted の sort ロジックで使用
@@ -96,16 +98,28 @@ function SubsidiesContent({
   const [deadlineFilter, setDeadlineFilter] = useState("");
   const [govLevel, setGovLevel] = useState("");
   const [sort, setSort] = useState("deadline");
-  const [loading, setLoading] = useState(false);
+  // 読み込み中は「いまの条件」と「一覧が表している条件」の食い違いから導く（effect 内で同期 setState しない・2026-10-27 審査[13]）。
+  // 初期一覧はサーバーが ?industry= だけを適用して作っているので、その条件を読み込み済みとして始める
+  // （マウント直後の取り直しは裏で行い、サーバー描画済みの一覧を「読み込み中」に置き換えない）。
+  const filterKey = `${prefecture}|${category}|${industry}`;
+  const [loadedKey, setLoadedKey] = useState(`||${initialIndustry}`);
+  const loading = filterKey !== loadedKey;
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    fetchSubsidies({ prefecture: prefecture || undefined, category: category || undefined, industry: industry || undefined })
+    const key = `${prefecture}|${category}|${industry}`;
+    // 業種は表示名（例: 工場・製造業）をバックエンドの語彙（例: 製造業）へ変換して送る（2026-10-27 審査[1]）。
+    // 表示名のまま送ると target_industries と一致せず0件が返り、サーバー描画の一覧が0件に置き換わっていた。
+    fetchSubsidies({
+      prefecture: prefecture || undefined,
+      category: category || undefined,
+      industry: industry ? toApiIndustry(industry) : undefined,
+    })
       .then((res) => {
         if (cancelled) return;
-        setSubsidies(filterCameraOnly(res.subsidies ?? []));
+        setSubsidies(filterCameraOnly(res.subsidies ?? [], industry || undefined));
         setStale(false);
+        setLoadedKey(key);
       })
       .catch(() => {
         if (cancelled) return;
@@ -113,9 +127,7 @@ function SubsidiesContent({
         // 同梱データに現在のフィルタ条件を適用した結果を表示し、StaleDataNotice で明示する。
         setSubsidies(filterBundledLocally(prefecture, category, industry));
         setStale(true);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+        setLoadedKey(key);
       });
     // 差し戻し#4: フィルタを連続操作した際に古いレスポンスが後勝ちしないよう、
     // 前回の effect 実行の結果は cancelled フラグで無視する。
@@ -134,14 +146,21 @@ function SubsidiesContent({
     if (govLevel === "national" && s.pref_code !== "00") return false;
     if (govLevel === "prefectural" && s.pref_code === "00") return false;
     if (deadlineFilter) {
-      const days = getDaysUntil(s.deadline) ?? 999;
-      if (days > parseInt(deadlineFilter)) return false;
+      // 「締切N日以内」は締切を過ぎていない受付中の制度だけ（受付終了・公募予定・締切が読めない制度は含めない・審査[4]）
+      if (s.status !== "open") return false;
+      const days = getDaysUntil(s.deadline);
+      if (days === null || days < 0 || days > parseInt(deadlineFilter)) return false;
     }
     return true;
   });
 
   const sorted = [...filtered].sort((a, b) => {
-    if (sort === "deadline") return (getDaysUntil(a.deadline) ?? 999) - (getDaysUntil(b.deadline) ?? 999);
+    if (sort === "deadline") {
+      // 受付中 → 公募予定 → 受付終了 に分けてから締切順（受付終了の制度が先頭に来ないように・審査[4]）
+      const byStatus = compareByStatus(a, b);
+      if (byStatus !== 0) return byStatus;
+      return (getDaysUntil(a.deadline) ?? 999) - (getDaysUntil(b.deadline) ?? 999);
+    }
     if (sort === "amount") return b.max_amount - a.max_amount;
     if (sort === "new") {
       const ua = a.updated_at ?? "";
