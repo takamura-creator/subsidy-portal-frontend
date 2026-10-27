@@ -1,0 +1,340 @@
+{
+  "attributes": {
+    "it-hojo-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "unconfirmed",
+      "regional_last_day": null
+    },
+    "jizokuka-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "unconfirmed",
+      "regional_last_day": null
+    },
+    "kaigo-robot-2026": {
+      "max_amount_unit": null,
+      "max_units": null,
+      "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "gyomu-kaizen-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "unconfirmed",
+      "regional_last_day": {
+        "北海道": "2026-09-30",
+        "青森県": "2026-10-28",
+        "岩手県": "2026-11-30",
+        "宮城県": "2026-09-30",
+        "秋田県": "2026-10-13",
+        "山形県": "2026-10-29",
+        "福島県": "2026-10-15",
+        "茨城県": "2026-10-17",
+        "栃木県": "2026-09-30",
+        "群馬県": "2026-10-02",
+        "埼玉県": "2026-09-30",
+        "千葉県": "2026-09-30",
+        "東京都": "2026-09-30",
+        "神奈川県": "2026-09-30",
+        "新潟県": "2026-09-30",
+        "富山県": "2026-09-30",
+        "石川県": "2026-10-02",
+        "福井県": "2026-10-03",
+        "山梨県": "2026-10-31",
+        "長野県": "2026-10-01",
+        "岐阜県": "2026-09-30",
+        "静岡県": "2026-10-14",
+        "愛知県": "2026-09-30",
+        "三重県": "2026-09-30",
+        "滋賀県": "2026-10-02",
+        "京都府": "2026-11-15",
+        "大阪府": "2026-09-30",
+        "兵庫県": "2026-09-30",
+        "奈良県": "2026-10-03",
+        "和歌山県": "2026-10-02",
+        "鳥取県": "2026-10-02",
+        "島根県": "2026-10-09",
+        "岡山県": "2026-10-01",
+        "広島県": "2026-10-10",
+        "山口県": "2026-10-07",
+        "徳島県": "2026-10-31",
+        "香川県": "2026-09-30",
+        "愛媛県": "2026-10-31",
+        "高知県": "2026-10-28",
+        "福岡県": "2026-10-03",
+        "佐賀県": "2026-11-14",
+        "長崎県": "2026-11-01",
+        "熊本県": "2026-11-30",
+        "大分県": "2026-10-31",
+        "宮崎県": "2026-10-23",
+        "鹿児島県": "2026-10-24",
+        "沖縄県": "2026-11-30"
+      }
+    },
+    "tokyo-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "区市町村（商店街等は区市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "kaigo-ict-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "saitama-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "市町村（自治会・商店街等は市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "yamanashi-bouhan-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "kaigo-chiiki-kikin-2026": {
+      "max_amount_unit": null,
+      "max_units": null,
+      "applicant": "都道府県（都道府県が計画に基づき事業を実施。介護事業所は都道府県の個別事業に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "kaigo-minamori-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "shizuoka-jichikai-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "hamamatsu-jichikai-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": 2,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "chiba-bouhan-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": "市町村（自治会等は市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "yokohama-jichikai-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "sagamihara-bouhan-camera-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": 8,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "hachioji-mimamori-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": 1,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "saitama-city-bouhan-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "kawaguchi-bouhan-camera-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "minato-kyodo-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "fujisawa-bouhan-camera-2026": {
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "tokyo-kaigo-ict-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "kanagawa-kaigo-ict-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "chiba-kaigo-ict-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "saitama-kaigo-ict-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "shizuoka-kaigo-ict-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "yamanashi-kaigo-tech-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "tokyo-bouhan-kiki-kobetsu-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "区市町村（各家庭は区市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "setagaya-sumai-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "nakano-bouhan-kiki-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "bunkyo-bouhan-kiki-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "hachioji-sumai-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "machida-sumai-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "tachikawa-sumai-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "higashikurume-jutaku-bouhan-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "koganei-bouhan-kiki-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    },
+    "shibayama-katei-camera-2026": {
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
+    }
+  }
+}

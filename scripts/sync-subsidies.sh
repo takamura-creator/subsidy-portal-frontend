@@ -17,6 +17,8 @@ BACKEND_DATA="$FRONTEND_DIR/../backend/data/subsidies.json"
 FRONTEND_DATA="$FRONTEND_DIR/src/data/subsidies.json"
 # 正本から削除した制度の id 一覧（小さい別ファイル。API が古い一覧を返しても画面に出さないために使う）
 RETIRED_IDS="$FRONTEND_DIR/src/data/retired-subsidy-ids.json"
+# 正本の制度の性質の項目だけを id で引ける小さい表
+ATTRIBUTES="$FRONTEND_DIR/src/data/subsidy-attributes.json"
 
 if [ ! -f "$BACKEND_DATA" ]; then
   echo "ERROR: バックエンドデータが見つかりません: $BACKEND_DATA"
@@ -48,5 +50,13 @@ with open('$RETIRED_IDS', 'w') as f:
     json.dump({'retired_ids': retired_ids}, f, ensure_ascii=False, indent=2)
     f.write('\\n')
 
-print(f'sync complete: {len(subs)} subsidies → src/data/subsidies.json / retired {len(retired_ids)} → src/data/retired-subsidy-ids.json')
+# 制度の性質（1台あたりか・台数上限・申請者・カメラ対象の確認・都道府県別締切）だけの小さい表。
+# API が古く項目を返さないとき・ウィザードの選択（id だけ持つ）から引くために使う（2026-10-27）。
+attr_keys = ['max_amount_unit', 'max_units', 'applicant', 'indirect', 'camera_eligibility', 'regional_last_day']
+attrs = {s['id']: {k: s.get(k) for k in attr_keys} for s in subs if s.get('id')}
+with open('$ATTRIBUTES', 'w') as f:
+    json.dump({'attributes': attrs}, f, ensure_ascii=False, indent=2)
+    f.write('\\n')
+
+print(f'sync complete: {len(subs)} subsidies → src/data/subsidies.json / retired {len(retired_ids)} → src/data/retired-subsidy-ids.json / attributes {len(attrs)} → src/data/subsidy-attributes.json')
 "

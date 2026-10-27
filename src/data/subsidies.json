@@ -355,7 +355,13 @@
           "https://it-shien.smrj.go.jp/schedule/"
         ],
         "unverified": "7次締切分の日程（公式スケジュールに日付の記載なし）"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "unconfirmed",
+      "regional_last_day": null
     },
     {
       "id": "jizokuka-2026",
@@ -676,7 +682,13 @@
           "https://r6.jizokukahojokin.info/"
         ],
         "unverified": "防犯カメラが補助対象経費に当たるか（公募要領本文は未確認）"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "unconfirmed",
+      "regional_last_day": null
     },
     {
       "id": "kaigo-robot-2026",
@@ -933,7 +945,13 @@
           "https://www.mhlw.go.jp/content/10200000/001646473.pdf"
         ],
         "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）"
-      }
+      },
+      "max_amount_unit": null,
+      "max_units": null,
+      "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "gyomu-kaizen-2026",
@@ -1249,9 +1267,65 @@
         "checked_at": "2026-10-27",
         "evidence_urls": [
           "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/zigyonushi/shienjigyou/03.html",
-          "https://www.mhlw.go.jp/content/11200000/001693381.pdf"
+          "https://www.mhlw.go.jp/content/11200000/001693381.pdf",
+          "https://www.mhlw.go.jp/content/11200000/001753404.pdf"
         ],
-        "unverified": "防犯カメラが生産性向上の設備投資として認められるか（明記なし）"
+        "unverified": "防犯カメラが生産性向上の設備投資として認められるか（明記なし）",
+        "regional_last_day_rule": "申請期間は令和8年9月1日〜申請事業所の都道府県の地域別最低賃金の発効日の前日又は同年11月30日のいずれか早い日（令和8年度業務改善助成金のご案内）。発効日は厚労省「令和8年度 地域別最低賃金 全国一覧」(001753404.pdf) の47都道府県分"
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "unconfirmed",
+      "regional_last_day": {
+        "北海道": "2026-09-30",
+        "青森県": "2026-10-28",
+        "岩手県": "2026-11-30",
+        "宮城県": "2026-09-30",
+        "秋田県": "2026-10-13",
+        "山形県": "2026-10-29",
+        "福島県": "2026-10-15",
+        "茨城県": "2026-10-17",
+        "栃木県": "2026-09-30",
+        "群馬県": "2026-10-02",
+        "埼玉県": "2026-09-30",
+        "千葉県": "2026-09-30",
+        "東京都": "2026-09-30",
+        "神奈川県": "2026-09-30",
+        "新潟県": "2026-09-30",
+        "富山県": "2026-09-30",
+        "石川県": "2026-10-02",
+        "福井県": "2026-10-03",
+        "山梨県": "2026-10-31",
+        "長野県": "2026-10-01",
+        "岐阜県": "2026-09-30",
+        "静岡県": "2026-10-14",
+        "愛知県": "2026-09-30",
+        "三重県": "2026-09-30",
+        "滋賀県": "2026-10-02",
+        "京都府": "2026-11-15",
+        "大阪府": "2026-09-30",
+        "兵庫県": "2026-09-30",
+        "奈良県": "2026-10-03",
+        "和歌山県": "2026-10-02",
+        "鳥取県": "2026-10-02",
+        "島根県": "2026-10-09",
+        "岡山県": "2026-10-01",
+        "広島県": "2026-10-10",
+        "山口県": "2026-10-07",
+        "徳島県": "2026-10-31",
+        "香川県": "2026-09-30",
+        "愛媛県": "2026-10-31",
+        "高知県": "2026-10-28",
+        "福岡県": "2026-10-03",
+        "佐賀県": "2026-11-14",
+        "長崎県": "2026-11-01",
+        "熊本県": "2026-11-30",
+        "大分県": "2026-10-31",
+        "宮崎県": "2026-10-23",
+        "鹿児島県": "2026-10-24",
+        "沖縄県": "2026-11-30"
       }
     },
     {
@@ -1540,7 +1614,13 @@
           "https://www.tomin-anzen.metro.tokyo.lg.jp/documents/d/tomin-anzen/r8kushichousonhojokinkoufuyoukou"
         ],
         "unverified": "令和9年度分の受付時期"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "区市町村（商店街等は区市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "kaigo-ict-2026",
@@ -1797,7 +1877,13 @@
           "https://www.mhlw.go.jp/content/10200000/001646473.pdf"
         ],
         "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "saitama-bouhan-2026",
@@ -2081,7 +2167,13 @@
           "https://www.pref.saitama.lg.jp/documents/211763/youkoukousin.pdf"
         ],
         "unverified": "県の制度案内ページ（交付要綱PDFのみ確認）"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "市町村（自治会・商店街等は市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "yamanashi-bouhan-2026",
@@ -2364,7 +2456,13 @@
         "evidence_urls": [
           "https://www.pref.yamanashi.jp/police/p_anzen/anzenansin/boukame.html"
         ]
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "kaigo-chiiki-kikin-2026",
@@ -2620,7 +2718,13 @@
           "https://www.mhlw.go.jp/content/001643811.pdf"
         ],
         "unverified": "国の一律の上限額・補助率は存在しないため max_amount/rate は 0（不明）とした"
-      }
+      },
+      "max_amount_unit": null,
+      "max_units": null,
+      "applicant": "都道府県（都道府県が計画に基づき事業を実施。介護事業所は都道府県の個別事業に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "kaigo-minamori-2026",
@@ -2877,7 +2981,13 @@
           "https://www.mhlw.go.jp/content/10200000/001646473.pdf"
         ],
         "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）"
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": "都道府県（介護事業所は各都道府県の公募に申請）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "shizuoka-jichikai-2026",
@@ -3108,7 +3218,13 @@
           "https://www.city.shizuoka.lg.jp/s9623/s000015.html"
         ],
         "unverified": "令和9年度の受付時期"
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "hamamatsu-jichikai-2026",
@@ -3339,7 +3455,13 @@
           "https://www.city.hamamatsu.shizuoka.jp/simink/bouhan/bouhankamera.html",
           "https://www.city.hamamatsu.shizuoka.jp/documents/172744/youkou.pdf"
         ]
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": 2,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "chiba-bouhan-2026",
@@ -3570,7 +3692,13 @@
           "https://www.pref.chiba.lg.jp/seikouan/bouhan/anzen/kamerakaisei.html"
         ],
         "unverified": "令和8年度の実施（県ページの更新日は2024年11月6日のまま）"
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": "市町村（自治会等は市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "yokohama-jichikai-2026",
@@ -3800,7 +3928,13 @@
         "evidence_urls": [
           "https://www.city.yokohama.lg.jp/bousai-kyukyu-bohan/bohan/camera/kamera2.html"
         ]
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "sagamihara-bouhan-camera-2026",
@@ -4030,7 +4164,13 @@
         "evidence_urls": [
           "https://www.city.sagamihara.kanagawa.jp/kurashi/1026529/1026549/1026551/1026554/1008473.html"
         ]
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": 8,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "hachioji-mimamori-2026",
@@ -4261,7 +4401,13 @@
           "https://www.city.hachioji.tokyo.jp/emergency/bousai/m7914685/010/p032985.html"
         ],
         "unverified": "令和9年度分の希望調査の提出期限／補助率 0.958→0.9583（23/24 をより正確に表記。値の意味は不変）"
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": 1,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "saitama-city-bouhan-2026",
@@ -4491,7 +4637,13 @@
         "evidence_urls": [
           "https://www.city.saitama.lg.jp/001/011/005/p054240.html"
         ]
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "kawaguchi-bouhan-camera-2026",
@@ -4724,7 +4876,13 @@
           "https://www.city.kawaguchi.lg.jp/material/files/group/15/R8kouhyoukou.pdf"
         ],
         "unverified": "補助率: 要綱第5条(1)は設置に率を定めず25万円を限度とするため1.0（限度額内で全額）と解釈"
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "minato-kyodo-bouhan-2026",
@@ -4954,7 +5112,13 @@
         "evidence_urls": [
           "https://www.city.minato.tokyo.jp/seikatsuanzen/bosai-anzen/sekatsuanzen/jose/kyodojutaku.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "fujisawa-bouhan-camera-2026",
@@ -5185,7 +5349,13 @@
           "https://www.city.fujisawa.kanagawa.jp/bouhan/bosai/bohan/joho/camera.html"
         ],
         "unverified": "令和9年度の申請時期"
-      }
+      },
+      "max_amount_unit": "per_camera",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "tokyo-kaigo-ict-2026",
@@ -5441,7 +5611,13 @@
           "https://www.fukushizaidan.jp/wp-content/uploads/2026/07/206_20260701_R8次世代概要_0801.pdf"
         ],
         "unverified": "令和9年度の募集時期"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "kanagawa-kaigo-ict-2026",
@@ -5697,7 +5873,13 @@
           "https://www.pref.kanagawa.jp/docs/u6s/cnt/f420373/p1075201.html"
         ],
         "unverified": "令和9年度の募集時期"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "chiba-kaigo-ict-2026",
@@ -5953,7 +6135,13 @@
           "https://www.pref.chiba.lg.jp/koufuku/kaigorobot/kaigorobotjyouhou.html"
         ],
         "unverified": "令和9年度の募集時期"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "saitama-kaigo-ict-2026",
@@ -6210,7 +6398,13 @@
           "https://www.pref.saitama.lg.jp/a0603/korei-seibi/r7robot-bosyu.html"
         ],
         "unverified": "令和9年度の募集時期"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "shizuoka-kaigo-ict-2026",
@@ -6467,7 +6661,13 @@
           "https://www.pref.shizuoka.jp/_res/projects/default_project/_page_/001/083/217/r8kenkofuyoko.pdf"
         ],
         "unverified": "令和9年度の募集時期"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "yamanashi-kaigo-tech-2026",
@@ -6724,7 +6924,13 @@
           "https://www.pref.yamanashi.jp/documents/104817/r8_technology_kouhuyoukou.pdf"
         ],
         "unverified": "パッケージ型の基準額（合計経費1,000万円以下×補助率4/5）から補助額を最大800万円と読んだ"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "tokyo-bouhan-kiki-kobetsu-2026",
@@ -6823,7 +7029,13 @@
           "https://www.tomin-anzen.metro.tokyo.lg.jp/documents/d/tomin-anzen/2026-06-18-190737-359"
         ],
         "unverified": "対象機器は区市町村が定めるため、都のページ自体には防犯カメラの明記なし"
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": "区市町村（各家庭は区市町村の補助制度を通じて利用）",
+      "indirect": true,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "setagaya-sumai-bouhan-2026",
@@ -6920,7 +7132,13 @@
         "evidence_urls": [
           "https://www.city.setagaya.lg.jp/02045/23301.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "nakano-bouhan-kiki-2026",
@@ -7018,7 +7236,13 @@
           "https://www.city.tokyo-nakano.lg.jp/kurashi/bohan/hanzaihigai/20260403.html",
           "https://www.city.tokyo-nakano.lg.jp/kurashi/bohan/hanzaihigai/20260403.files/11.pdf"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "bunkyo-bouhan-kiki-2026",
@@ -7115,7 +7339,13 @@
         "evidence_urls": [
           "https://www.city.bunkyo.lg.jp/b009/p000221.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "hachioji-sumai-bouhan-2026",
@@ -7212,7 +7442,13 @@
         "evidence_urls": [
           "https://www.city.hachioji.tokyo.jp/emergency/bousai/m7914685/008/p033456.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "machida-sumai-bouhan-2026",
@@ -7309,7 +7545,13 @@
         "evidence_urls": [
           "https://www.city.machida.tokyo.jp/kurashi/bouhan/bouhan/sumai-bohan-hojo.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "tachikawa-sumai-bouhan-2026",
@@ -7406,7 +7648,13 @@
         "evidence_urls": [
           "https://www.city.tachikawa.lg.jp/bosai/bohan/1008439/1024725.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "higashikurume-jutaku-bouhan-2026",
@@ -7503,7 +7751,13 @@
         "evidence_urls": [
           "https://www.city.higashikurume.lg.jp/kurashi/anzen/bouhan/1026967.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "koganei-bouhan-kiki-2026",
@@ -7600,7 +7854,13 @@
         "evidence_urls": [
           "https://www.city.koganei.lg.jp/kurashi/472/bohan/anshinmachi/r7bouhannkiki.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     },
     {
       "id": "shibayama-katei-camera-2026",
@@ -7697,7 +7957,13 @@
         "evidence_urls": [
           "https://www.town.shibayama.lg.jp/0000006247.html"
         ]
-      }
+      },
+      "max_amount_unit": "total",
+      "max_units": null,
+      "applicant": null,
+      "indirect": false,
+      "camera_eligibility": "confirmed",
+      "regional_last_day": null
     }
   ],
   "retired": [
