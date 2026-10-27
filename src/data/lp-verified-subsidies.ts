@@ -118,11 +118,14 @@ export const VERIFIED_LP_SUBSIDIES: readonly VerifiedLpSubsidy[] = [
     name: "防犯設備の整備に対する区市町村補助事業",
     subsidyId: "tokyo-bouhan-2026",
     target: "商店街等（区市町村とともに補助。申請方法はお住まいの区市町村へ）",
-    rate: "都の補助は12分の7以内（令和8年度）",
-    maxAmount: "都のページに記載なし（区市町村に確認）",
-    period: "都のページに記載なし（区市町村ごと）",
-    statusOnCheck: "区市町村を通じて申請",
-    sourceUrl: "https://www.tomin-anzen.metro.tokyo.lg.jp/chian/bouhankankyo/bouhankankyo_02",
+    rate: "都の補助は12分の7以内（負担割合は都7/12・区市町村1/3・地域団体1/12）",
+    // 2026-10-27 正本との突き合わせ: 都の制度ページ本文には無いが、同ページからリンクされた
+    // 「令和8年度東京都防犯設備の整備に対する区市町村補助事業 概要」（PDF）に記載あり（本文を取得して確認）
+    maxAmount: "都補助限度額525万円（防犯カメラ1台あたり整備費用60万円を上限とする）",
+    period: "区市町村から都への申請受付時期は9月（商店街等の申請期限は区市町村ごとに異なる）",
+    statusOnCheck: "令和8年度の都への申請受付（9月）は終了",
+    sourceUrl:
+      "https://www.tomin-anzen.metro.tokyo.lg.jp/documents/d/tomin-anzen/r8kushichousonhojojigyounitsuite",
     checkedOn: C,
   },
   // ── 静岡県 ───────────────────────────────────────────────
