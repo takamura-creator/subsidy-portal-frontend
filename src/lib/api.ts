@@ -1,3 +1,5 @@
+import { isRetiredSubsidyId, withoutRetired } from "./retiredSubsidies";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 if (!process.env.NEXT_PUBLIC_API_URL) {
@@ -126,14 +128,19 @@ export async function fetchSubsidies(params?: {
   if (params?.prefecture) query.set("prefecture", params.prefecture);
   if (params?.category) query.set("category", params.category);
   if (params?.industry) query.set("industry", params.industry);
-  return apiFetch(`${API_URL}/api/subsidies?${query}`, {
+  const res = await apiFetch<{ total: number; subsidies: Subsidy[] }>(`${API_URL}/api/subsidies?${query}`, {
     next: { revalidate: 300 },
   });
+  // 2026-10-27: 正本から削除した制度は、backend が古い一覧を返しても出さない
+  const subsidies = withoutRetired(res.subsidies ?? []);
+  return { ...res, total: subsidies.length, subsidies };
 }
 
 export async function fetchSubsidy(id: string): Promise<Subsidy> {
   // 追加指摘#12 (2026-09-15): 呼び出し経路が5箇所に増えたため、idに含まれる可能性のある
   // "?" "#" "&" 等でパス/クエリ境界が崩れないよう防御的に encodeURIComponent する。
+  // 2026-10-27: 正本から削除した制度は backend に問い合わせず「存在しない」（404）として扱う
+  if (isRetiredSubsidyId(id)) throw new ApiError(404, "この補助金は掲載を終了しました");
   return apiFetch(`${API_URL}/api/subsidies/${encodeURIComponent(id)}`, {
     next: { revalidate: 300 },
   });
@@ -185,13 +192,15 @@ export async function register(req: RegisterRequest): Promise<RegisterResponse> 
 export async function matchSubsidies(
   req: MatchRequest
 ): Promise<MatchResponse> {
-  return apiFetch(`${API_URL}/api/subsidies/match`, {
+  const res = await apiFetch<MatchResponse>(`${API_URL}/api/subsidies/match`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
     // AI診断はAnthropicを呼ぶため長め。timeoutMs で渡すとタイムアウト文言に秒数が正しく出る
     timeoutMs: MATCH_TIMEOUT_MS,
   });
+  // 2026-10-27: 正本から削除した制度は診断結果にも出さない
+  return { ...res, matches: (res.matches ?? []).filter((m) => !isRetiredSubsidyId(m.subsidy?.id ?? "")) };
 }
 
 // --- 公開URL診断 ---
@@ -255,7 +264,9 @@ export async function diagnosePublic(
           : `APIエラーが発生しました（ステータス: ${res.status}）`;
       throw new ApiError(res.status, message);
     }
-    return res.json() as Promise<DiagnoseResponse>;
+    const body = (await res.json()) as DiagnoseResponse;
+    // 2026-10-27: 正本から削除した制度は診断結果にも出さない
+    return { ...body, matches: (body.matches ?? []).filter((m) => !isRetiredSubsidyId(m.subsidy?.id ?? "")) };
   } catch (err) {
     if (err instanceof ApiError) throw err;
     if (err instanceof DOMException && err.name === "AbortError") {

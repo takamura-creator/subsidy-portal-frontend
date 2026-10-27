@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { isRetiredSubsidyId } from "@/lib/retiredSubsidies";
 
 /**
  * 1) 旧 Vercel デフォルトドメイン → 正規ドメイン (hojyocame.jp) への 308 リダイレクト。
@@ -81,7 +82,8 @@ export async function proxy(request: NextRequest) {
     } catch {
       id = null; // 不正なエンコード → 判定せず素通し
     }
-    if (id && (await subsidyExists(id)) === false) {
+    // 正本から削除した制度（retired）は backend に聞かずに 404（本番 backend が古くても出さない）
+    if (id && (isRetiredSubsidyId(id) || (await subsidyExists(id)) === false)) {
       return NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url));
     }
   }
