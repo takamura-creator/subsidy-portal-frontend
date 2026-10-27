@@ -15,6 +15,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FRONTEND_DIR="$(dirname "$SCRIPT_DIR")"
 BACKEND_DATA="$FRONTEND_DIR/../backend/data/subsidies.json"
 FRONTEND_DATA="$FRONTEND_DIR/src/data/subsidies.json"
+# 正本から削除した制度の id 一覧（小さい別ファイル。API が古い一覧を返しても画面に出さないために使う）
+RETIRED_IDS="$FRONTEND_DIR/src/data/retired-subsidy-ids.json"
 
 if [ ! -f "$BACKEND_DATA" ]; then
   echo "ERROR: バックエンドデータが見つかりません: $BACKEND_DATA"
@@ -41,5 +43,10 @@ subs = output['subsidies']
 with open('$FRONTEND_DATA', 'w') as f:
     json.dump(output, f, ensure_ascii=False, indent=2)
 
-print(f'sync complete: {len(subs)} subsidies → src/data/subsidies.json')
+retired_ids = sorted({r['id'] for r in output.get('retired', []) if r.get('id')})
+with open('$RETIRED_IDS', 'w') as f:
+    json.dump({'retired_ids': retired_ids}, f, ensure_ascii=False, indent=2)
+    f.write('\\n')
+
+print(f'sync complete: {len(subs)} subsidies → src/data/subsidies.json / retired {len(retired_ids)} → src/data/retired-subsidy-ids.json')
 "

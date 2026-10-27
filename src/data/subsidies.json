@@ -4,12 +4,12 @@
       "id": "it-hojo-2026",
       "name": "デジタル化・AI導入補助金2026（旧IT導入補助金）",
       "category": "IT導入",
-      "ministry": "経済産業省・中小企業庁",
+      "ministry": "中小企業庁・中小企業基盤整備機構",
       "pref_code": "00",
       "prefecture": "全国",
       "max_amount": 4500000,
       "rate_min": 0.5,
-      "rate_max": 0.5,
+      "rate_max": 0.667,
       "target_industries": [
         "小売業",
         "製造業",
@@ -24,11 +24,11 @@
         "その他"
       ],
       "max_employees": 300,
-      "deadline": "公式サイト要確認（例年複数回公募・詳細は https://it-shien.smrj.go.jp/ 参照）",
+      "deadline": "通常枠 6次締切：2026年10月30日（金）17:00（7次締切分の日程は公式スケジュールで要確認）",
       "status": "open",
-      "description": "中小企業のIT導入を支援。防犯カメラ＋AI解析ソフトウェアの組み合わせで申請可能。締切・回次は公式サイトで要確認。",
-      "application_tips": "AI映像解析ソフトウェアをITツールとして登録し、防犯カメラとセットで申請。IT導入支援事業者経由での申請が必須。GビズIDの事前取得が必要。",
-      "source_url": "https://it-shien.smrj.go.jp/",
+      "description": "中小企業・小規模事業者が業務プロセスを持つソフトウェア（ITツール）を導入する経費の一部を補助。通常枠の補助額は5万円以上450万円以下、補助率1/2以内（最低賃金に関する要件を満たす場合は2/3以内）。申請するのはソフトウェアで、カメラ機器の購入費が対象とは記載されていない。",
+      "application_tips": "AI映像解析ソフトウェア等がITツールとして登録されているかをITツール検索で確認する。IT導入支援事業者経由での申請が必須。GビズIDの事前取得が必要。6次締切（2026年10月30日17:00）以降の回は公式スケジュールで確認。",
+      "source_url": "https://it-shien.smrj.go.jp/applicant/subsidy/normal/",
       "document_tier": 2,
       "draft_subsidy_type": "it_hojo",
       "required_info_fields": [
@@ -347,18 +347,26 @@
           "note": "AVTECH防犯カメラ・NVR導入時は設置台数・場所を明示"
         }
       ],
-      "updated_at": "2026-06-22"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://it-shien.smrj.go.jp/applicant/subsidy/normal/",
+          "https://it-shien.smrj.go.jp/schedule/"
+        ],
+        "unverified": "7次締切分の日程（公式スケジュールに日付の記載なし）"
+      }
     },
     {
       "id": "jizokuka-2026",
       "name": "小規模事業者持続化補助金",
       "category": "設備投資",
-      "ministry": "日本商工会議所",
+      "ministry": "商工会・商工会議所（小規模事業者持続化補助金事務局）",
       "pref_code": "00",
       "prefecture": "全国",
       "max_amount": 500000,
-      "rate_min": 0.67,
-      "rate_max": 0.67,
+      "rate_min": 0.667,
+      "rate_max": 0.75,
       "target_industries": [
         "小売業",
         "サービス業",
@@ -370,11 +378,11 @@
         "その他"
       ],
       "max_employees": 20,
-      "deadline": "第19回：2026年4月30日（締切済）/ 第20回：2026年夏〜秋頃予定",
+      "deadline": "第20回：2026年11月5日〜2026年12月15日 17:00（事業支援計画書〈様式4〉の発行受付締切は12月4日）",
       "status": "upcoming",
-      "description": "小規模事業者の販路開拓を支援。防犯対策による店舗環境改善として申請可能。インボイス特例で上限100万円。",
-      "application_tips": "経営計画書に防犯カメラ導入の費用対効果を明記。商工会・商工会議所での事業支援計画書（様式4）発行が必須。次回公募開始後に準備を進めること。",
-      "source_url": "https://r3.jizokukahojokin.info/",
+      "description": "小規模事業者の販路開拓等の取組を支援。補助上限50万円（インボイス特例で50万円、賃金引上げ特例で150万円、両特例で200万円の上乗せ）。補助率2/3（賃金引上げ特例に申請する赤字事業者は3/4）。防犯カメラが補助対象になるかは公募要領で要確認。",
+      "application_tips": "経営計画書に防犯カメラ導入の費用対効果を明記。商工会・商工会議所での事業支援計画書（様式4）の発行が必須で、第20回は発行受付の締切が2026年12月4日。商工会地域と商工会議所地域で申請窓口が異なる。",
+      "source_url": "https://official.jizokukanb.com/jizokuka/",
       "document_tier": 2,
       "draft_subsidy_type": "jizokuka",
       "required_info_fields": [
@@ -659,13 +667,22 @@
           "note": "AVTECH製品のカタログ添付で採択率向上"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://official.jizokukanb.com/jizokuka/",
+          "https://official.jizokukanb.com/",
+          "https://r6.jizokukahojokin.info/"
+        ],
+        "unverified": "防犯カメラが補助対象経費に当たるか（公募要領本文は未確認）"
+      }
     },
     {
       "id": "kaigo-robot-2026",
-      "name": "介護ロボット導入支援事業",
+      "name": "介護テクノロジー導入支援事業（移乗・入浴支援等の介護ロボット）",
       "category": "介護",
-      "ministry": "厚生労働省",
+      "ministry": "厚生労働省（実施: 都道府県・地域医療介護総合確保基金）",
       "pref_code": "00",
       "prefecture": "全国",
       "max_amount": 1000000,
@@ -675,11 +692,11 @@
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年度（都道府県ごとに異なる。多くは4〜6月公募）",
-      "status": "open",
-      "description": "介護施設における見守りセンサー・介護ロボット導入を支援。転倒検知カメラが対象となる可能性が高い。",
-      "application_tips": "転倒検知・見守り機能付きカメラが対象の中心。都道府県の「介護テクノロジー導入支援事業」として公募。補助上限30万円/台・補助率1/2〜3/4。各都道府県の福祉担当課へ要確認。",
-      "source_url": "https://www.mhlw.go.jp/",
+      "deadline": "都道府県ごとに公募（国の一律の受付はなし）。東京都・神奈川県・千葉県・埼玉県・静岡県・山梨県の令和8年度の介護テクノロジー関連補助は受付終了（各都県の項目を参照）",
+      "status": "closed",
+      "description": "介護事業所が介護テクノロジーを導入する経費を都道府県が補助する国の事業（地域医療介護総合確保基金）。令和7年度の国の概要では、移乗支援・入浴支援は1台100万円、それ以外の機器は1台30万円が上限で、補助率は要件を満たす場合3/4を下限（それ以外は1/2を下限）。令和8年度も事業は継続。",
+      "application_tips": "対象機器・上限・補助率・受付期間は都道府県ごとに異なる。各都道府県の募集要項を確認すること。",
+      "source_url": "https://www.mhlw.go.jp/content/12300000/001476528.pdf",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -908,7 +925,15 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.mhlw.go.jp/content/12300000/001476528.pdf",
+          "https://www.mhlw.go.jp/content/10200000/001646473.pdf"
+        ],
+        "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）"
+      }
     },
     {
       "id": "gyomu-kaizen-2026",
@@ -919,7 +944,7 @@
       "prefecture": "全国",
       "max_amount": 6000000,
       "rate_min": 0.75,
-      "rate_max": 0.9,
+      "rate_max": 0.8,
       "target_industries": [
         "小売業",
         "製造業",
@@ -934,9 +959,9 @@
         "その他"
       ],
       "max_employees": 100,
-      "deadline": "2026年12月31日まで（予算消化次第終了）",
+      "deadline": "2026年9月1日〜2026年11月30日（地域別最低賃金の発効日の前日と11月30日のいずれか早い日まで。都道府県により9月末で終了。予算の範囲内）",
       "status": "open",
-      "description": "事業場内最低賃金の引上げを図る中小企業を支援。生産性向上のための設備投資として防犯・監視システムが対象。",
+      "description": "事業場内最低賃金を一定額以上引き上げ、生産性向上に資する設備投資等を行った中小企業・小規模事業者に費用の一部を助成。助成率は事業場内最低賃金1,050円未満で4/5、1,050円以上で3/4。助成上限額は引上げ額と人数により30万〜600万円（10人以上の区分は特例事業者のみ）。防犯カメラが対象と明記されてはいない。",
       "application_tips": "最低賃金引上げ計画と合わせて申請。防犯カメラによる業務効率化（棚卸し時間短縮・不正防止）の定量的効果を記載すること。",
       "source_url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/zigyonushi/shienjigyou/03.html",
       "document_tier": 3,
@@ -1219,2108 +1244,37 @@
           "note": "AVTECH防犯カメラ・NVR導入時は添付推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/zigyonushi/shienjigyou/03.html",
+          "https://www.mhlw.go.jp/content/11200000/001693381.pdf"
+        ],
+        "unverified": "防犯カメラが生産性向上の設備投資として認められるか（明記なし）"
+      }
     },
     {
       "id": "tokyo-bouhan-2026",
-      "name": "東京都 防犯設備整備費補助金",
+      "name": "東京都 防犯設備の整備に対する区市町村補助事業（商店街等）",
       "category": "防犯",
-      "ministry": "東京都生活文化スポーツ局",
+      "ministry": "東京都 都民安全総合対策本部（申請窓口: 区市町村）",
       "pref_code": "13",
       "prefecture": "東京都",
-      "max_amount": 5000000,
-      "rate_min": 0.5,
-      "rate_max": 0.67,
+      "max_amount": 5250000,
+      "rate_min": 0.5833,
+      "rate_max": 0.5833,
       "target_industries": [
-        "小売業",
-        "サービス業",
-        "飲食業",
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年4月〜5月（2026年度分受付終了。次年度公募は公式サイト要確認）",
-      "status": "closed",
-      "description": "商店街・町会等の防犯カメラ設置を支援。区市町村の補助と合わせて最大2/3補助。",
-      "application_tips": "商店街振興組合との連携が基本。公道に面した設置が対象になりやすい。地元警察との協議記録があると加点。",
-      "source_url": "https://www.seikatubunka.metro.tokyo.lg.jp/",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名・商号",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "capital",
-          "label": "資本金（万円）",
-          "type": "number",
-          "required": false,
-          "source": "homepage",
-          "note": "法人申請の場合のみ"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "annual_revenue",
-          "label": "直近年度売上高（万円）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "note": "一部自治体のみ必須"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "camera_resolution",
-          "label": "カメラ解像度",
-          "type": "text",
-          "required": false,
-          "source": "derived",
-          "note": "例: 4K Ultra HD (8MP)"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived",
-          "note": "例: 30日間"
-        },
-        {
-          "key": "night_vision",
-          "label": "夜間撮影対応",
-          "type": "boolean",
-          "required": false,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "note": "管理運用規程と一致させること"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察（交番等）への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual",
-          "note": "全自治体で事前協議が推奨。証明書が必要な場合あり"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "各自治体の公式様式を使用。公募期間外は様式非公開の場合あり"
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "地図上に設置箇所をマーキング"
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "AVTECH防犯カメラ・NVR導入時は必須。全設置箇所分"
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false,
-          "note": "自治体によって必須。事前確認推奨"
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": false,
-          "note": "地域団体申請の場合"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true,
-          "note": "設置工事費を含む。相見積もり推奨"
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "プライバシーポリシー・映像保存ルールを含む"
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false,
-          "note": "カメラの画角と撮影範囲を示す図"
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "rireki",
-          "label": "履歴事項証明書（法人のみ）",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "nouzei",
-          "label": "納税証明書",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ],
-      "updated_at": "2026-06-22"
-    },
-    {
-      "id": "kanagawa-dx-2026",
-      "name": "神奈川県 中小企業DXステップアップ補助金",
-      "category": "IT導入",
-      "ministry": "神奈川県産業労働局",
-      "pref_code": "14",
-      "prefecture": "神奈川県",
-      "max_amount": 1000000,
-      "rate_min": 0.5,
-      "rate_max": 0.67,
-      "target_industries": [
-        "小売業",
-        "飲食業",
-        "医療・介護",
-        "製造業",
-        "建設業",
-        "宿泊業",
-        "サービス業",
-        "運輸業",
-        "廃棄物処理業",
-        "農業・林業・水産業",
-        "不動産業",
-        "その他"
-      ],
-      "max_employees": 300,
-      "deadline": "2026年5月〜6月",
-      "status": "upcoming",
-      "description": "DX推進に取り組む神奈川県内の小規模事業者を支援。AI監視カメラシステムの導入が対象。正式名称「令和8年度神奈川県小規模事業者デジタル化支援推進事業費補助金」。",
-      "application_tips": "DX推進計画の策定が必須。セキュリティ強化とデータ活用の両面から申請すると効果的。",
-      "source_url": "https://www.pref.kanagawa.jp/",
-      "document_tier": 1,
-      "draft_subsidy_type": "jichitai_dx",
-      "required_info_fields": [
-        {
-          "key": "application_date",
-          "label": "申請日",
-          "type": "date",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1 第1欄",
-          "note": "申請日（システム自動挿入可）"
-        },
-        {
-          "key": "project_title",
-          "label": "補助事業名称",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1 第2欄",
-          "note": "例: AI監視カメラシステム導入によるDX推進事業"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（税抜・円）",
-          "type": "number",
-          "required": true,
-          "source": "derived",
-          "form_ref": "様式1 第3欄",
-          "note": "様式1-3の経費合計から自動計算"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived",
-          "form_ref": "様式1 第4欄",
-          "note": "総事業費×補助率（50〜67%）から計算"
-        },
-        {
-          "key": "corporate_number",
-          "label": "法人番号（13桁）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1",
-          "note": "国税庁法人番号公表サイトで確認"
-        },
-        {
-          "key": "company_name",
-          "label": "商号・名称",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "company_name_kana",
-          "label": "商号・名称（フリガナ）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "zip_code",
-          "label": "郵便番号",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "address",
-          "label": "本店所在地（都道府県〜番地）",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "address_kana",
-          "label": "本店所在地（フリガナ）",
-          "type": "text",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "phone",
-          "label": "電話番号",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "fax",
-          "label": "FAX番号",
-          "type": "text",
-          "required": false,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "representative_name_kana",
-          "label": "代表者氏名（フリガナ）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "representative_title",
-          "label": "代表者役職",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1",
-          "note": "例: 代表取締役、代表社員"
-        },
-        {
-          "key": "representative_dob",
-          "label": "代表者生年月日",
-          "type": "date",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1",
-          "pii": true
-        },
-        {
-          "key": "contact_name",
-          "label": "担当者氏名",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "contact_name_kana",
-          "label": "担当者氏名（フリガナ）",
-          "type": "text",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "contact_title",
-          "label": "担当者役職",
-          "type": "text",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "contact_phone",
-          "label": "担当者電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "industry_code",
-          "label": "業種（日本標準産業分類コード）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1",
-          "note": "https://www.soumu.go.jp/toukei_toukatsu/index/seido/sangyo/"
-        },
-        {
-          "key": "business_description",
-          "label": "主要事業内容",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1",
-          "max_chars": 250
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "capital",
-          "label": "資本金（万円）",
-          "type": "number",
-          "required": true,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "employee_full_time",
-          "label": "常時使用する従業員数（正規）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "employee_part_time",
-          "label": "常時使用する従業員数（非正規）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "employee_count",
-          "label": "従業員数合計",
-          "type": "number",
-          "required": true,
-          "source": "derived",
-          "form_ref": "様式1",
-          "note": "employee_full_time + employee_part_time"
-        },
-        {
-          "key": "fiscal_year_end_month",
-          "label": "決算月",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1",
-          "min": 1,
-          "max": 12
-        },
-        {
-          "key": "annual_revenue",
-          "label": "直近年度売上高（万円）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "ordinary_profit",
-          "label": "直近年度経常利益（万円）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1",
-          "note": "赤字の場合は負数で入力"
-        },
-        {
-          "key": "total_assets",
-          "label": "直近年度総資産額（万円）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "website_url",
-          "label": "自社ホームページURL",
-          "type": "url",
-          "required": false,
-          "source": "homepage",
-          "form_ref": "様式1"
-        },
-        {
-          "key": "current_it_usage",
-          "label": "現在のIT・デジタル活用状況",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "note": "現在使用中のITツール・システムを記載",
-          "max_chars": 500
-        },
-        {
-          "key": "current_challenges",
-          "label": "現状の経営課題・業務課題",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "max_chars": 800
-        },
-        {
-          "key": "dx_tool_name",
-          "label": "導入するDXツール・システム名",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "note": "例: AI映像解析システム（AVTECH Eagle Eyes Pro）"
-        },
-        {
-          "key": "vendor_name",
-          "label": "提供ベンダー・販売会社名",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "dx_plan",
-          "label": "DX推進計画の概要",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "max_chars": 800
-        },
-        {
-          "key": "quantitative_effect",
-          "label": "期待される効果（定量）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "note": "例: 人件費20%削減、業務処理時間30%短縮"
-        },
-        {
-          "key": "qualitative_effect",
-          "label": "期待される効果（定性）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "implementation_start",
-          "label": "事業開始予定年月",
-          "type": "date",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "implementation_end",
-          "label": "事業完了予定年月",
-          "type": "date",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "system_software_cost",
-          "label": "システム・ソフトウェア費（税抜・円）",
-          "type": "number",
-          "required": true,
-          "source": "derived",
-          "form_ref": "様式1-4"
-        },
-        {
-          "key": "hardware_cost",
-          "label": "機器・ハードウェア費（税抜・円）",
-          "type": "number",
-          "required": true,
-          "source": "derived",
-          "form_ref": "様式1-4",
-          "note": "防犯カメラ・NVR等の機器代"
-        },
-        {
-          "key": "installation_cost",
-          "label": "設置工事費（税抜・円）",
-          "type": "number",
-          "required": false,
-          "source": "derived",
-          "form_ref": "様式1-4"
-        },
-        {
-          "key": "training_cost",
-          "label": "研修・教育費（税抜・円）",
-          "type": "number",
-          "required": false,
-          "source": "derived",
-          "form_ref": "様式1-4"
-        },
-        {
-          "key": "consulting_cost",
-          "label": "専門家・コンサルティング費（税抜・円）",
-          "type": "number",
-          "required": false,
-          "source": "derived",
-          "form_ref": "様式1-4"
-        },
-        {
-          "key": "product_model",
-          "label": "導入製品型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "form_ref": "様式1-3",
-          "note": "製品マスタから自動挿入（例: AVM3620V4, NVR1604-IP2P）"
-        },
-        {
-          "key": "installation_location",
-          "label": "設置場所住所",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "self_funding",
-          "label": "自己資金額（円）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-4 第1欄"
-        },
-        {
-          "key": "loan_amount",
-          "label": "借入金額（円）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1-4 第2欄"
-        },
-        {
-          "key": "revenue_year1",
-          "label": "売上高見込（1年目・万円）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "revenue_year2",
-          "label": "売上高見込（2年目・万円）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "revenue_year3",
-          "label": "売上高見込（3年目・万円）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "dx_level_before",
-          "label": "DXレベル（現状自己評価: 1〜5）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "note": "経済産業省「DX推進指標」の自己診断レベル",
-          "min": 1,
-          "max": 5
-        },
-        {
-          "key": "dx_level_target",
-          "label": "DXレベル（目標: 1〜5）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "min": 1,
-          "max": 5
-        },
-        {
-          "key": "kpi_productivity",
-          "label": "KPI（生産性向上率・%）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "kpi_cost_reduction",
-          "label": "KPI（コスト削減額・万円/年）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1-3"
-        },
-        {
-          "key": "security_measures",
-          "label": "セキュリティ対策方針",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "max_chars": 400
-        },
-        {
-          "key": "data_utilization",
-          "label": "データ活用計画",
-          "type": "text",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1-3",
-          "max_chars": 400
-        },
-        {
-          "key": "support_org_name",
-          "label": "支援機関名",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-7 第1欄",
-          "note": "神奈川県産業振興センター等の認定支援機関"
-        },
-        {
-          "key": "support_org_contact",
-          "label": "支援機関担当者名",
-          "type": "text",
-          "required": false,
-          "source": "manual",
-          "form_ref": "様式1-7 第2欄"
-        },
-        {
-          "key": "support_contents",
-          "label": "支援内容の概要",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "form_ref": "様式1-7 第3欄",
-          "max_chars": 300
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "form1_shinsei",
-          "label": "様式1: 補助金交付申請書",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "form_ref": "様式1",
-          "note": "県公式様式（yousiki1.docx）に記入→PDF変換して提出",
-          "template_id": "yousiki1"
-        },
-        {
-          "key": "form1_1_applicant",
-          "label": "様式1-2: 役員等氏名一覧表",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "form_ref": "様式1-2",
-          "note": "役員情報を記入（yousiki1-2.xlsx）。旧称「様式1-1 申請者情報」は公式独立様式なし",
-          "template_id": "yousiki1-2"
-        },
-        {
-          "key": "form1_2_business_plan",
-          "label": "様式1-3: 補助事業計画書",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "form_ref": "様式1-3",
-          "note": "補助事業計画書（yousiki1-3.docx）。申請者情報・事業計画を記入",
-          "template_id": "yousiki1-3"
-        },
-        {
-          "key": "form1_3_cost_breakdown",
-          "label": "様式1-4: 経費予算書",
-          "accept": ".pdf,.xlsx",
-          "required": true,
-          "form_ref": "様式1-4",
-          "note": "経費予算書（yousiki1-04.xlsx）。費目別に経費を記入",
-          "template_id": "yousiki1-4"
-        },
-        {
-          "key": "form1_4_budget_plan",
-          "label": "（様式1-4内）収支予算計画",
-          "accept": ".pdf,.xlsx",
-          "required": true,
-          "form_ref": "様式1-4",
-          "note": "公式に独立様式なし。様式1-4（経費予算書）と合わせて作成"
-        },
-        {
-          "key": "form1_5_dx_plan",
-          "label": "（様式1-5は不掲載）DX推進計画",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "form_ref": "様式1-3",
-          "note": "神奈川県HPに様式1-5は掲載なし。内容は様式1-3（補助事業計画書）に含めて記載"
-        },
-        {
-          "key": "form1_6_seiyakusho",
-          "label": "様式1-6: 県外調達理由書",
-          "accept": ".pdf",
-          "required": true,
-          "form_ref": "様式1-6",
-          "note": "AVTECH製品（県外調達）の場合に提出（yousiki1-6.docx）。旧称「誓約書」は誤記",
-          "template_id": "yousiki1-6"
-        },
-        {
-          "key": "form1_7_support_org",
-          "label": "様式1-7: 派遣申込書",
-          "accept": ".pdf",
-          "required": true,
-          "form_ref": "様式1-7",
-          "note": "支援機関への専門家派遣を申し込む場合に提出（yousiki1-7.docx）",
-          "template_id": "yousiki1-7"
-        },
-        {
-          "key": "rireki",
-          "label": "履歴事項全部証明書",
-          "accept": ".pdf",
-          "required": true,
-          "note": "申請日から3ヶ月以内発行"
-        },
-        {
-          "key": "nouzei",
-          "label": "納税証明書（直近1期・その1/その2）",
-          "accept": ".pdf",
-          "required": true,
-          "note": "法人税・事業税。税務署または電子証明書"
-        },
-        {
-          "key": "kessan",
-          "label": "決算書（直近2期分）",
-          "accept": ".pdf,.xlsx",
-          "required": true,
-          "note": "貸借対照表・損益計算書・製造原価報告書"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書（相見積もり含む）",
-          "accept": ".pdf",
-          "required": true,
-          "note": "100万円超の場合は2社以上の相見積もり必須"
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": true,
-          "note": "導入製品（AVTECH等）の公式カタログ"
-        },
-        {
-          "key": "installation_photo",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "設置予定場所の現状を示す写真（複数箇所は全箇所分）"
-        },
-        {
-          "key": "inkan",
-          "label": "印鑑証明書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "代表者印のもの。申請日から3ヶ月以内"
-        },
-        {
-          "key": "company_profile",
-          "label": "会社案内・定款",
-          "accept": ".pdf",
-          "required": false
-        }
-      ],
-      "official_name": "令和8年度神奈川県小規模事業者デジタル化支援推進事業費補助金",
-      "updated_at": "2026-05-10"
-    },
-    {
-      "id": "kaigo-ict-2026",
-      "name": "ICT導入支援事業（介護分野）",
-      "category": "介護",
-      "ministry": "厚生労働省",
-      "pref_code": "00",
-      "prefecture": "全国",
-      "max_amount": 2600000,
-      "rate_min": 0.5,
-      "rate_max": 0.75,
-      "target_industries": [
-        "医療・介護"
-      ],
-      "max_employees": null,
-      "deadline": "2026年度（都道府県ごと・多くは4〜7月公募）",
-      "status": "open",
-      "description": "介護事業所のICT化を支援。見守りカメラ・転倒検知システムが対象。",
-      "application_tips": "介護記録の自動化と合わせて申請すると採択率向上。ケアプランへの反映計画を含め、夜間巡視回数削減の数値目標を設定すること。",
-      "source_url": "https://www.mhlw.go.jp/",
-      "document_tier": 3,
-      "draft_subsidy_type": "kaigo",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "施設・法人名称",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "facility_type",
-          "label": "施設種別",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "特別養護老人ホーム",
-            "介護老人保健施設",
-            "グループホーム",
-            "デイサービス",
-            "訪問介護事業所",
-            "その他介護施設"
-          ]
-        },
-        {
-          "key": "address",
-          "label": "施設所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・施設長氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_name",
-          "label": "担当者氏名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_phone",
-          "label": "担当者電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "care_license_number",
-          "label": "介護保険事業所番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "法人設立年月日",
-          "type": "date",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "capital",
-          "label": "資本金（万円）",
-          "type": "number",
-          "required": false,
-          "source": "homepage",
-          "note": "社会福祉法人・NPOは不要"
-        },
-        {
-          "key": "employee_count",
-          "label": "従業員数（介護職員数）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "annual_revenue",
-          "label": "直近年度売上高（万円）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "website_url",
-          "label": "自社ホームページURL",
-          "type": "url",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "monitoring_purpose",
-          "label": "見守り・安全管理の目的",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "転倒検知・夜間見守り・徘徊防止等"
-        },
-        {
-          "key": "product_model",
-          "label": "導入製品型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH見守りカメラの型番"
-        },
-        {
-          "key": "installation_location",
-          "label": "設置場所（室名・フロア）",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "expected_staff_reduction",
-          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "note": "定量効果として記載"
-        },
-        {
-          "key": "bcp_plan",
-          "label": "BCP計画との関連（BCP事業のみ）",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（都道府県様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "business_plan_doc",
-          "label": "事業実施計画書",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "care_license_copy",
-          "label": "介護保険事業所指定証のコピー",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "rireki",
-          "label": "法人登記事項証明書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "kessan",
-          "label": "決算書（直近1〜2期）",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": true,
-          "note": "AVTECH見守りカメラの公式カタログ"
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "設置前の現状を示す写真"
-        },
-        {
-          "key": "nouzei",
-          "label": "納税証明書",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "privacy_policy",
-          "label": "個人情報保護方針・管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "入居者のプライバシー保護規程が必要"
-        }
-      ],
-      "updated_at": "2026-05-10"
-    },
-    {
-      "id": "saitama-bouhan-2026",
-      "name": "埼玉県 防犯のまちづくり推進事業費補助金",
-      "category": "防犯",
-      "ministry": "埼玉県県民生活部",
-      "pref_code": "11",
-      "prefecture": "埼玉県",
-      "max_amount": 1800000,
-      "rate_min": 0.33,
-      "rate_max": 0.5,
-      "target_industries": [
-        "小売業",
-        "サービス業",
-        "飲食業",
-        "自治会・町会"
-      ],
-      "max_employees": null,
-      "deadline": "2026年4月〜",
-      "status": "open",
-      "description": "自治会・商店街が設置する防犯カメラの費用を補助。",
-      "application_tips": "犯罪情勢分析データの添付が効果的。警察との連携体制を構築しておく。",
-      "source_url": "https://www.pref.saitama.lg.jp/",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_bouhan",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名・商号",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "capital",
-          "label": "資本金（万円）",
-          "type": "number",
-          "required": false,
-          "source": "homepage",
-          "note": "法人申請の場合のみ"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "annual_revenue",
-          "label": "直近年度売上高（万円）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "note": "一部自治体のみ必須"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "camera_resolution",
-          "label": "カメラ解像度",
-          "type": "text",
-          "required": false,
-          "source": "derived",
-          "note": "例: 4K Ultra HD (8MP)"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived",
-          "note": "例: 30日間"
-        },
-        {
-          "key": "night_vision",
-          "label": "夜間撮影対応",
-          "type": "boolean",
-          "required": false,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "note": "管理運用規程と一致させること"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察（交番等）への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual",
-          "note": "全自治体で事前協議が推奨。証明書が必要な場合あり"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "各自治体の公式様式を使用。公募期間外は様式非公開の場合あり"
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "地図上に設置箇所をマーキング"
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "AVTECH防犯カメラ・NVR導入時は必須。全設置箇所分"
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false,
-          "note": "自治体によって必須。事前確認推奨"
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": false,
-          "note": "地域団体申請の場合"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true,
-          "note": "設置工事費を含む。相見積もり推奨"
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "プライバシーポリシー・映像保存ルールを含む"
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false,
-          "note": "カメラの画角と撮影範囲を示す図"
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "rireki",
-          "label": "履歴事項証明書（法人のみ）",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "nouzei",
-          "label": "納税証明書",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ],
-      "updated_at": "2026-05-10"
-    },
-    {
-      "id": "chiba-chusho-2026",
-      "name": "千葉県 ちば中小企業元気づくり基金事業",
-      "category": "設備投資",
-      "ministry": "千葉県商工労働部",
-      "pref_code": "12",
-      "prefecture": "千葉県",
-      "max_amount": 2000000,
-      "rate_min": 0.5,
-      "rate_max": 0.5,
-      "target_industries": [
-        "製造業",
-        "小売業",
-        "サービス業"
-      ],
-      "max_employees": 300,
-      "deadline": "2026年5月頃",
-      "status": "upcoming",
-      "description": "中小企業の経営革新を支援。防犯・セキュリティ強化のための設備投資も対象。",
-      "application_tips": "経営革新計画の承認を事前に取得しておくと有利。",
-      "source_url": "https://www.pref.chiba.lg.jp/",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_setsubi",
-      "required_info_fields": [
-        {
-          "key": "corporate_number",
-          "label": "法人番号（13桁）",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "company_name",
-          "label": "商号・名称",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "company_name_kana",
-          "label": "商号・名称（フリガナ）",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "address",
-          "label": "本店所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_title",
-          "label": "代表者役職",
-          "type": "text",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_name",
-          "label": "担当者氏名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_phone",
-          "label": "担当者電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "business_description",
-          "label": "主要事業内容",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "max_chars": 250
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "capital",
-          "label": "資本金（万円）",
-          "type": "number",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "employee_count",
-          "label": "従業員数",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "annual_revenue",
-          "label": "直近年度売上高（万円）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "website_url",
-          "label": "自社ホームページURL",
-          "type": "url",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "equipment_name",
-          "label": "設備名称",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "product_model",
-          "label": "設備型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4, NVR1604-IP2P）"
-        },
-        {
-          "key": "quantity",
-          "label": "数量",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "unit_price",
-          "label": "単価（税抜・円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "installation_location",
-          "label": "設置場所住所",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真あり",
-          "type": "boolean",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "introduction_purpose",
-          "label": "設備導入目的",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "max_chars": 500
-        },
-        {
-          "key": "productivity_target",
-          "label": "生産性向上目標（%）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "self_funding",
-          "label": "自己資金額（円）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "loan_amount",
-          "label": "借入金額（円）",
-          "type": "number",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "certified_support_org",
-          "label": "認定支援機関名",
-          "type": "text",
-          "required": false,
-          "source": "manual",
-          "note": "一部自治体で必須"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（税抜・円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx,.xlsx",
-          "required": true
-        },
-        {
-          "key": "business_plan_doc",
-          "label": "事業実施計画書",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "cost_plan",
-          "label": "収支計画書（5年間見通し含む場合あり）",
-          "accept": ".pdf,.xlsx",
-          "required": true
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書（2社以上推奨）",
-          "accept": ".pdf",
-          "required": true,
-          "note": "相見積必須の自治体あり"
-        },
-        {
-          "key": "kessan",
-          "label": "決算書（直近2〜3期）",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "rireki",
-          "label": "登記事項証明書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "seiyakusho",
-          "label": "誓約書",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "company_profile",
-          "label": "会社概要・定款",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "nouzei",
-          "label": "納税証明書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "catalog",
-          "label": "設備カタログ・仕様書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "certified_support_cert",
-          "label": "認定支援機関確認書",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "installation_photo",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVR導入時は添付推奨"
-        }
-      ],
-      "updated_at": "2026-05-10"
-    },
-    {
-      "id": "shizuoka-dx-2026",
-      "name": "静岡県 中小企業デジタル化応援事業費補助金",
-      "category": "IT導入",
-      "ministry": "静岡県経済産業部",
-      "pref_code": "22",
-      "prefecture": "静岡県",
-      "max_amount": 1000000,
-      "rate_min": 0.5,
-      "rate_max": 0.67,
-      "target_industries": [
-        "製造業",
         "小売業",
         "サービス業",
         "飲食業"
       ],
-      "max_employees": 300,
-      "deadline": "2026年度（公募時期未定）",
-      "status": "upcoming",
-      "description": "デジタル技術活用による生産性向上を支援。AI映像解析を含む。",
-      "application_tips": "デジタル化の具体的な効果測定計画を提示。導入前後の比較指標を設定すること。",
-      "source_url": "https://www.pref.shizuoka.jp/",
-      "document_tier": 3,
-      "draft_subsidy_type": "jichitai_dx",
-      "required_info_fields": [
-        {
-          "key": "corporate_number",
-          "label": "法人番号（13桁）",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "company_name",
-          "label": "商号・名称",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "company_name_kana",
-          "label": "商号・名称（フリガナ）",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "address",
-          "label": "本店所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_title",
-          "label": "代表者役職",
-          "type": "text",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_name",
-          "label": "担当者氏名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_phone",
-          "label": "担当者電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "business_description",
-          "label": "主要事業内容",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "max_chars": 250
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "capital",
-          "label": "資本金（万円）",
-          "type": "number",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "employee_count",
-          "label": "従業員数",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "annual_revenue",
-          "label": "直近年度売上高（万円）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "website_url",
-          "label": "自社ホームページURL",
-          "type": "url",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "dx_tool_name",
-          "label": "導入するデジタルツール・システム名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "vendor_name",
-          "label": "提供ベンダー名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "current_challenges",
-          "label": "現状の業務課題",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "max_chars": 500
-        },
-        {
-          "key": "expected_effect_quantitative",
-          "label": "期待効果（定量）",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "expected_effect_qualitative",
-          "label": "期待効果（定性）",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "implementation_start",
-          "label": "導入開始予定年月",
-          "type": "date",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "implementation_end",
-          "label": "導入完了予定年月",
-          "type": "date",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "support_org_name",
-          "label": "支援機関名（事前相談先）",
-          "type": "text",
-          "required": false,
-          "source": "manual",
-          "note": "神奈川・静岡・福岡等、事前相談必須の県あり"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（税抜・円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "交付申請書（各自治体様式第1号相当）",
-          "accept": ".pdf,.docx,.xlsx",
-          "required": true
-        },
-        {
-          "key": "business_plan_doc",
-          "label": "事業計画書（導入目的・効果）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "cost_breakdown",
-          "label": "経費内訳・予算書",
-          "accept": ".pdf,.xlsx",
-          "required": true
-        },
-        {
-          "key": "seiyakusho",
-          "label": "誓約書（暴排・一般）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "rireki",
-          "label": "登記簿謄本（法人）",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "kessan",
-          "label": "決算書（直近2期）",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "catalog",
-          "label": "導入ツールカタログ・概要資料",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "nouzei",
-          "label": "納税証明書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "support_org_cert",
-          "label": "支援機関相談シート（該当県のみ）",
-          "accept": ".pdf",
-          "required": false
-        }
-      ],
-      "updated_at": "2026-05-10"
-    },
-    {
-      "id": "yamanashi-bouhan-2026",
-      "name": "山梨県 防犯カメラ設置補助事業",
-      "category": "防犯",
-      "ministry": "山梨県県民生活局",
-      "pref_code": "19",
-      "prefecture": "山梨県",
-      "max_amount": 1000000,
-      "rate_min": 0.33,
-      "rate_max": 0.5,
-      "target_industries": [
-        "小売業",
-        "サービス業",
-        "飲食業",
-        "自治会・町会"
-      ],
       "max_employees": null,
-      "deadline": "2026年度（4月〜）",
-      "status": "open",
-      "description": "観光地・商店街の安全対策のための防犯カメラ設置を補助。",
-      "application_tips": "富士山周辺の観光地は観光振興との組み合わせで申請できる可能性あり。",
-      "source_url": "https://www.pref.yamanashi.lg.jp/",
+      "deadline": "令和8年度：区市町村から都への申請受付は9月（商店街等の申請期限は区市町村ごとに異なる）",
+      "status": "closed",
+      "description": "商店街等が行う防犯カメラ等の防犯設備の整備（新設・更新）に、区市町村とともに都が補助。都補助率は12分の7以内（負担割合は都7/12・区市町村1/3・地域団体1/12）、都補助限度額525万円（防犯カメラ1台あたり整備費用60万円が上限）。区市町村が同様の補助制度を設けていることが前提で、申請は区市町村経由。",
+      "application_tips": "対象は商店街振興組合等の商店街・商店街連合会（町会・自治会はこの事業の対象外）。申請方法はお住まいの区市町村に確認。",
+      "source_url": "https://www.tomin-anzen.metro.tokyo.lg.jp/chian/bouhankankyo/bouhankankyo_02",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
       "required_info_fields": [
@@ -3577,27 +1531,36 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.tomin-anzen.metro.tokyo.lg.jp/chian/bouhankankyo/bouhankankyo_02",
+          "https://www.tomin-anzen.metro.tokyo.lg.jp/documents/d/tomin-anzen/r8kushichousonhojojigyounitsuite",
+          "https://www.tomin-anzen.metro.tokyo.lg.jp/documents/d/tomin-anzen/r8kushichousonhojokinkoufuyoukou"
+        ],
+        "unverified": "令和9年度分の受付時期"
+      }
     },
     {
-      "id": "kaigo-chiiki-kikin-2026",
-      "name": "地域医療介護総合確保基金",
+      "id": "kaigo-ict-2026",
+      "name": "介護テクノロジー導入支援事業（介護ソフト・ICT機器）",
       "category": "介護",
-      "ministry": "厚生労働省",
+      "ministry": "厚生労働省（実施: 都道府県・地域医療介護総合確保基金）",
       "pref_code": "00",
       "prefecture": "全国",
-      "max_amount": 5000000,
+      "max_amount": 2500000,
       "rate_min": 0.5,
       "rate_max": 0.75,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年度（都道府県ごとに異なる）",
-      "status": "open",
-      "description": "地域の医療・介護サービス体制の整備を支援。介護施設の防犯・見守りシステム導入が対象。",
-      "application_tips": "都道府県ごとに計画・申請窓口が異なるため、各県の基金計画書を事前に確認すること。見守りカメラは「介護環境整備」として計上可能。",
-      "source_url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000060713.html",
+      "deadline": "都道府県ごとに公募（国の一律の受付はなし）。東京都・神奈川県・千葉県・埼玉県・静岡県・山梨県の令和8年度の介護テクノロジー関連補助は受付終了（各都県の項目を参照）",
+      "status": "closed",
+      "description": "介護事業所が介護ソフト・タブレット端末等を導入する経費を都道府県が補助する国の事業（地域医療介護総合確保基金）。令和7年度の国の概要では、介護ソフト等は職員数に応じて100万〜250万円が上限で、補助率は要件を満たす場合3/4を下限（それ以外は1/2を下限）。見守り機器は別区分。",
+      "application_tips": "対象機器・上限・補助率・受付期間は都道府県ごとに異なる。在宅系はケアプランデータ連携システムの利用開始などの要件があるため、各都道府県の募集要項を確認すること。",
+      "source_url": "https://www.mhlw.go.jp/content/12300000/001476528.pdf",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -3826,76 +1789,350 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.mhlw.go.jp/content/12300000/001476528.pdf",
+          "https://www.mhlw.go.jp/content/10200000/001646473.pdf"
+        ],
+        "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）"
+      }
     },
     {
-      "id": "kaigo-shoguu-kaizen-2026",
-      "name": "介護職員処遇改善加算関連設備補助",
-      "category": "介護",
-      "ministry": "厚生労働省",
-      "pref_code": "00",
-      "prefecture": "全国",
-      "max_amount": 2000000,
+      "id": "saitama-bouhan-2026",
+      "name": "埼玉県 わがまち防犯対策推進事業費補助金（市町村向け）",
+      "category": "防犯",
+      "ministry": "埼玉県 防犯・交通安全課",
+      "pref_code": "11",
+      "prefecture": "埼玉県",
+      "max_amount": 4000000,
+      "rate_min": 0.333,
+      "rate_max": 0.5,
+      "target_industries": [
+        "小売業",
+        "サービス業",
+        "飲食業",
+        "自治会・町会"
+      ],
+      "max_employees": null,
+      "deadline": "2027年1月31日（令和8年度分の市町村の申請期限。原則として毎会計年度1月末日）",
+      "status": "open",
+      "description": "公共空間に防犯カメラを整備する市町村（指定都市を除く）に県が補助。補助額は1市町村あたり400万円が上限、防犯カメラ整備は補助対象経費の3分の1以内（犯罪抑止重点地域への設置や財政力の低い市町村は2分の1以内）。自治会・商店街は県へ直接申請できず、各市町村の補助制度を通じて利用する。",
+      "application_tips": "申請主体は市町村。自治会・商店街はお住まいの市町村の防犯カメラ補助制度を確認すること。",
+      "source_url": "https://www.pref.saitama.lg.jp/documents/211763/youkoukousin.pdf",
+      "document_tier": 3,
+      "draft_subsidy_type": "jichitai_bouhan",
+      "required_info_fields": [
+        {
+          "key": "company_name",
+          "label": "申請団体名・商号",
+          "type": "text",
+          "required": true,
+          "source": "homepage",
+          "note": "自治会・町内会・商店街の場合は団体名"
+        },
+        {
+          "key": "address",
+          "label": "所在地",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "representative_name",
+          "label": "代表者・申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_email",
+          "label": "担当者メールアドレス",
+          "type": "text",
+          "required": false,
+          "source": "manual"
+        },
+        {
+          "key": "capital",
+          "label": "資本金（万円）",
+          "type": "number",
+          "required": false,
+          "source": "homepage",
+          "note": "法人申請の場合のみ"
+        },
+        {
+          "key": "established_date",
+          "label": "設立年月日",
+          "type": "date",
+          "required": true,
+          "source": "homepage"
+        },
+        {
+          "key": "annual_revenue",
+          "label": "直近年度売上高（万円）",
+          "type": "number",
+          "required": false,
+          "source": "manual",
+          "note": "一部自治体のみ必須"
+        },
+        {
+          "key": "installation_purpose",
+          "label": "設置目的",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "犯罪抑止",
+            "子供見守り",
+            "不法投棄防止",
+            "交通安全",
+            "その他"
+          ]
+        },
+        {
+          "key": "installation_locations",
+          "label": "設置場所（住所一覧）",
+          "type": "text",
+          "required": true,
+          "source": "manual",
+          "note": "複数箇所の場合は全住所を記載"
+        },
+        {
+          "key": "camera_count",
+          "label": "設置台数",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH製品型番（例: AVM3620V4）"
+        },
+        {
+          "key": "camera_resolution",
+          "label": "カメラ解像度",
+          "type": "text",
+          "required": false,
+          "source": "derived",
+          "note": "例: 4K Ultra HD (8MP)"
+        },
+        {
+          "key": "recording_days",
+          "label": "録画保存日数",
+          "type": "number",
+          "required": true,
+          "source": "derived",
+          "note": "例: 30日間"
+        },
+        {
+          "key": "night_vision",
+          "label": "夜間撮影対応",
+          "type": "boolean",
+          "required": false,
+          "source": "derived"
+        },
+        {
+          "key": "coverage_area_type",
+          "label": "撮影範囲区分",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "公道",
+            "私有地",
+            "建物内",
+            "複合"
+          ]
+        },
+        {
+          "key": "retention_days",
+          "label": "映像保存期間（日）",
+          "type": "number",
+          "required": true,
+          "source": "manual",
+          "note": "管理運用規程と一致させること"
+        },
+        {
+          "key": "manager_name",
+          "label": "映像管理責任者名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "police_consultation_date",
+          "label": "警察（交番等）への事前協議日",
+          "type": "date",
+          "required": false,
+          "source": "manual",
+          "note": "全自治体で事前協議が推奨。証明書が必要な場合あり"
+        },
+        {
+          "key": "total_cost",
+          "label": "総事業費（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "subsidy_amount_plan",
+          "label": "補助金申請額（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "補助金交付申請書（各自治体様式）",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "各自治体の公式様式を使用。公募期間外は様式非公開の場合あり"
+        },
+        {
+          "key": "installation_location_map",
+          "label": "設置場所位置図",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "地図上に設置箇所をマーキング"
+        },
+        {
+          "key": "installation_photo_current",
+          "label": "設置場所の現況写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "AVTECH防犯カメラ・NVR導入時は必須。全設置箇所分"
+        },
+        {
+          "key": "police_consultation_cert",
+          "label": "警察との事前協議証明書",
+          "accept": ".pdf,.docx",
+          "required": false,
+          "note": "自治体によって必須。事前確認推奨"
+        },
+        {
+          "key": "consent_doc",
+          "label": "自治会総会議事録・同意書類",
+          "accept": ".pdf,.docx",
+          "required": false,
+          "note": "地域団体申請の場合"
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "設置工事費を含む。相見積もり推奨"
+        },
+        {
+          "key": "management_policy",
+          "label": "管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "プライバシーポリシー・映像保存ルールを含む"
+        },
+        {
+          "key": "coverage_diagram",
+          "label": "撮影範囲図面",
+          "accept": ".pdf,.jpg",
+          "required": false,
+          "note": "カメラの画角と撮影範囲を示す図"
+        },
+        {
+          "key": "land_consent",
+          "label": "土地使用承諾書（私有地設置時）",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "rireki",
+          "label": "履歴事項証明書（法人のみ）",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "nouzei",
+          "label": "納税証明書",
+          "accept": ".pdf",
+          "required": false
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false,
+          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.saitama.lg.jp/documents/211763/youkoukousin.pdf"
+        ],
+        "unverified": "県の制度案内ページ（交付要綱PDFのみ確認）"
+      }
+    },
+    {
+      "id": "yamanashi-bouhan-2026",
+      "name": "山梨県警察 防犯カメラ設置促進事業補助金",
+      "category": "防犯",
+      "ministry": "山梨県警察本部 生活安全企画課",
+      "pref_code": "19",
+      "prefecture": "山梨県",
+      "max_amount": 300000,
       "rate_min": 0.5,
       "rate_max": 0.5,
       "target_industries": [
-        "医療・介護"
+        "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "2026年度（通年受付）",
+      "deadline": "2026年4月1日〜2026年12月18日（先着順）",
       "status": "open",
-      "description": "介護職員の処遇改善と業務環境整備を支援。夜間見守り負担軽減のためのカメラシステムが対象。",
-      "application_tips": "処遇改善加算の取得と合わせて申請すること。夜間巡回回数削減の数値目標を設定すると採択率向上。",
-      "source_url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/kaigo_koureisha/shogu/",
+      "description": "山梨県内で地域の防犯活動に取り組む自治会・町内会等の自治組織が設置する防犯カメラの設置費用を補助。補助率は補助対象経費の2分の1以内、上限はカメラ1台につき30万円。市町村は対象外。",
+      "application_tips": "申請前に山梨県警察本部生活安全企画課への相談（電話・来庁など）が必要。本年度は先着順で受理。",
+      "source_url": "https://www.pref.yamanashi.jp/police/p_anzen/anzenansin/boukame.html",
       "document_tier": 3,
-      "draft_subsidy_type": "kaigo",
+      "draft_subsidy_type": "jichitai_bouhan",
       "required_info_fields": [
         {
           "key": "company_name",
-          "label": "施設・法人名称",
+          "label": "申請団体名・商号",
           "type": "text",
           "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "facility_type",
-          "label": "施設種別",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "特別養護老人ホーム",
-            "介護老人保健施設",
-            "グループホーム",
-            "デイサービス",
-            "訪問介護事業所",
-            "その他介護施設"
-          ]
+          "source": "homepage",
+          "note": "自治会・町内会・商店街の場合は団体名"
         },
         {
           "key": "address",
-          "label": "施設所在地",
+          "label": "所在地",
           "type": "text",
           "required": true,
           "source": "homepage"
         },
         {
           "key": "representative_name",
-          "label": "代表者・施設長氏名",
+          "label": "代表者・申請者氏名",
           "type": "text",
           "required": true,
           "source": "homepage"
         },
         {
-          "key": "contact_name",
-          "label": "担当者氏名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
           "key": "contact_phone",
-          "label": "担当者電話番号",
+          "label": "連絡先電話番号",
           "type": "text",
           "required": true,
           "source": "manual"
@@ -3904,22 +2141,8 @@
           "key": "contact_email",
           "label": "担当者メールアドレス",
           "type": "text",
-          "required": true,
+          "required": false,
           "source": "manual"
-        },
-        {
-          "key": "care_license_number",
-          "label": "介護保険事業所番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "法人設立年月日",
-          "type": "date",
-          "required": true,
-          "source": "homepage"
         },
         {
           "key": "capital",
@@ -3927,51 +2150,44 @@
           "type": "number",
           "required": false,
           "source": "homepage",
-          "note": "社会福祉法人・NPOは不要"
+          "note": "法人申請の場合のみ"
         },
         {
-          "key": "employee_count",
-          "label": "従業員数（介護職員数）",
-          "type": "number",
+          "key": "established_date",
+          "label": "設立年月日",
+          "type": "date",
           "required": true,
-          "source": "manual"
+          "source": "homepage"
         },
         {
           "key": "annual_revenue",
           "label": "直近年度売上高（万円）",
           "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "website_url",
-          "label": "自社ホームページURL",
-          "type": "url",
           "required": false,
-          "source": "homepage"
+          "source": "manual",
+          "note": "一部自治体のみ必須"
         },
         {
-          "key": "monitoring_purpose",
-          "label": "見守り・安全管理の目的",
+          "key": "installation_purpose",
+          "label": "設置目的",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "犯罪抑止",
+            "子供見守り",
+            "不法投棄防止",
+            "交通安全",
+            "その他"
+          ]
+        },
+        {
+          "key": "installation_locations",
+          "label": "設置場所（住所一覧）",
           "type": "text",
           "required": true,
           "source": "manual",
-          "note": "転倒検知・夜間見守り・徘徊防止等"
-        },
-        {
-          "key": "product_model",
-          "label": "導入製品型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH見守りカメラの型番"
-        },
-        {
-          "key": "installation_location",
-          "label": "設置場所（室名・フロア）",
-          "type": "text",
-          "required": true,
-          "source": "manual"
+          "note": "複数箇所の場合は全住所を記載"
         },
         {
           "key": "camera_count",
@@ -3981,19 +2197,71 @@
           "source": "derived"
         },
         {
-          "key": "expected_staff_reduction",
-          "label": "期待される夜勤・見回り負担軽減時間（h/月）",
-          "type": "number",
-          "required": false,
-          "source": "manual",
-          "note": "定量効果として記載"
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived",
+          "note": "AVTECH製品型番（例: AVM3620V4）"
         },
         {
-          "key": "bcp_plan",
-          "label": "BCP計画との関連（BCP事業のみ）",
+          "key": "camera_resolution",
+          "label": "カメラ解像度",
           "type": "text",
           "required": false,
+          "source": "derived",
+          "note": "例: 4K Ultra HD (8MP)"
+        },
+        {
+          "key": "recording_days",
+          "label": "録画保存日数",
+          "type": "number",
+          "required": true,
+          "source": "derived",
+          "note": "例: 30日間"
+        },
+        {
+          "key": "night_vision",
+          "label": "夜間撮影対応",
+          "type": "boolean",
+          "required": false,
+          "source": "derived"
+        },
+        {
+          "key": "coverage_area_type",
+          "label": "撮影範囲区分",
+          "type": "select",
+          "required": true,
+          "source": "manual",
+          "options": [
+            "公道",
+            "私有地",
+            "建物内",
+            "複合"
+          ]
+        },
+        {
+          "key": "retention_days",
+          "label": "映像保存期間（日）",
+          "type": "number",
+          "required": true,
+          "source": "manual",
+          "note": "管理運用規程と一致させること"
+        },
+        {
+          "key": "manager_name",
+          "label": "映像管理責任者名",
+          "type": "text",
+          "required": true,
           "source": "manual"
+        },
+        {
+          "key": "police_consultation_date",
+          "label": "警察（交番等）への事前協議日",
+          "type": "date",
+          "required": false,
+          "source": "manual",
+          "note": "全自治体で事前協議が推奨。証明書が必要な場合あり"
         },
         {
           "key": "total_cost",
@@ -4013,53 +2281,71 @@
       "required_documents": [
         {
           "key": "shinsei_form",
-          "label": "補助金交付申請書（都道府県様式）",
+          "label": "補助金交付申請書（各自治体様式）",
           "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "business_plan_doc",
-          "label": "事業実施計画書",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "care_license_copy",
-          "label": "介護保険事業所指定証のコピー",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "rireki",
-          "label": "法人登記事項証明書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "kessan",
-          "label": "決算書（直近1〜2期）",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
           "required": true,
-          "note": "AVTECH見守りカメラの公式カタログ"
+          "note": "各自治体の公式様式を使用。公募期間外は様式非公開の場合あり"
+        },
+        {
+          "key": "installation_location_map",
+          "label": "設置場所位置図",
+          "accept": ".pdf,.jpg,.png",
+          "required": true,
+          "note": "地図上に設置箇所をマーキング"
         },
         {
           "key": "installation_photo_current",
           "label": "設置場所の現況写真",
           "accept": ".pdf,.jpg,.png",
           "required": true,
-          "note": "設置前の現状を示す写真"
+          "note": "AVTECH防犯カメラ・NVR導入時は必須。全設置箇所分"
+        },
+        {
+          "key": "police_consultation_cert",
+          "label": "警察との事前協議証明書",
+          "accept": ".pdf,.docx",
+          "required": false,
+          "note": "自治体によって必須。事前確認推奨"
+        },
+        {
+          "key": "consent_doc",
+          "label": "自治会総会議事録・同意書類",
+          "accept": ".pdf,.docx",
+          "required": false,
+          "note": "地域団体申請の場合"
+        },
+        {
+          "key": "estimate_doc",
+          "label": "見積書",
+          "accept": ".pdf",
+          "required": true,
+          "note": "設置工事費を含む。相見積もり推奨"
+        },
+        {
+          "key": "management_policy",
+          "label": "管理運用規程",
+          "accept": ".pdf,.docx",
+          "required": true,
+          "note": "プライバシーポリシー・映像保存ルールを含む"
+        },
+        {
+          "key": "coverage_diagram",
+          "label": "撮影範囲図面",
+          "accept": ".pdf,.jpg",
+          "required": false,
+          "note": "カメラの画角と撮影範囲を示す図"
+        },
+        {
+          "key": "land_consent",
+          "label": "土地使用承諾書（私有地設置時）",
+          "accept": ".pdf,.docx",
+          "required": false
+        },
+        {
+          "key": "rireki",
+          "label": "履歴事項証明書（法人のみ）",
+          "accept": ".pdf",
+          "required": false
         },
         {
           "key": "nouzei",
@@ -4068,34 +2354,40 @@
           "required": false
         },
         {
-          "key": "privacy_policy",
-          "label": "個人情報保護方針・管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "入居者のプライバシー保護規程が必要"
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false,
+          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.yamanashi.jp/police/p_anzen/anzenansin/boukame.html"
+        ]
+      }
     },
     {
-      "id": "kaigo-bcp-2026",
-      "name": "介護施設BCP策定支援事業",
+      "id": "kaigo-chiiki-kikin-2026",
+      "name": "地域医療介護総合確保基金（都道府県の介護分野補助の財源）",
       "category": "介護",
-      "ministry": "厚生労働省",
+      "ministry": "厚生労働省（実施: 都道府県）",
       "pref_code": "00",
       "prefecture": "全国",
-      "max_amount": 1000000,
-      "rate_min": 0.75,
-      "rate_max": 0.75,
+      "max_amount": 0,
+      "rate_min": 0.0,
+      "rate_max": 0.0,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年度（年2回公募）",
-      "status": "open",
-      "description": "介護施設のBCP（事業継続計画）策定と関連設備整備を支援。防犯・監視カメラはBCP設備として対象。",
-      "application_tips": "2024年度より介護施設のBCP策定が義務化。防犯カメラをBCP設備（施設内安全確保）として計上できる。コンサルタント費用も補助対象。",
-      "source_url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/kaigo_koureisha/dokou/index.html",
+      "deadline": "都道府県計画に基づき都道府県が事業を実施（国の一律の受付はなし）",
+      "status": "closed",
+      "description": "消費税増収分等を財源に各都道府県に設置された基金。都道府県が計画を作り、介護施設等の整備や介護従事者の確保に関する事業を実施する。令和8年度予算案は公費1,390億円（うち介護分430億円）。事業者が直接申請する補助金ではなく、上限額・補助率は都道府県の個別事業ごとに定められる。",
+      "application_tips": "見守り機器等の導入は、各都道府県の介護テクノロジー導入支援事業などの募集要項を確認すること。",
+      "source_url": "https://www.mhlw.go.jp/content/001643811.pdf",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -4324,27 +2616,34 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.mhlw.go.jp/content/001643811.pdf"
+        ],
+        "unverified": "国の一律の上限額・補助率は存在しないため max_amount/rate は 0（不明）とした"
+      }
     },
     {
       "id": "kaigo-minamori-2026",
-      "name": "見守りセンサー等導入支援事業",
+      "name": "介護テクノロジー導入支援事業（見守り機器等）",
       "category": "介護",
-      "ministry": "厚生労働省",
+      "ministry": "厚生労働省（実施: 都道府県・地域医療介護総合確保基金）",
       "pref_code": "00",
       "prefecture": "全国",
-      "max_amount": 3000000,
+      "max_amount": 300000,
       "rate_min": 0.5,
       "rate_max": 0.75,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年度（都道府県ごとに異なる）",
-      "status": "open",
-      "description": "介護施設における見守りセンサー・転倒検知カメラ等の導入を支援。夜間の安全管理強化が目的。",
-      "application_tips": "転倒検知・離床アラート機能付きカメラが対象の中心。導入後の夜間巡視回数削減計画を明記し、職員負担軽減の定量的効果を示すこと。",
-      "source_url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/kaigo_koureisha/service/index.html",
+      "deadline": "都道府県ごとに公募（国の一律の受付はなし）。東京都・神奈川県・千葉県・埼玉県・静岡県・山梨県の令和8年度の介護テクノロジー関連補助は受付終了（各都県の項目を参照）",
+      "status": "closed",
+      "description": "介護事業所が見守り機器等の介護テクノロジーを導入する経費を都道府県が補助する国の事業（地域医療介護総合確保基金）。令和7年度の国の概要では、移乗・入浴支援以外の機器は1台30万円が上限、複数の機器を連動させるパッケージ型は400万〜1,000万円の範囲で都道府県が設定。補助率は要件を満たす場合3/4を下限（それ以外は1/2を下限）。",
+      "application_tips": "転倒検知・離床通知機能付きカメラが見守り機器として対象になるかは、福祉用具情報システム（TAIS）の選定状況と各都道府県の募集要項で確認すること。",
+      "source_url": "https://www.mhlw.go.jp/content/12300000/001476528.pdf",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -4573,13 +2872,21 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.mhlw.go.jp/content/12300000/001476528.pdf",
+          "https://www.mhlw.go.jp/content/10200000/001646473.pdf"
+        ],
+        "unverified": "令和8年度の国の補助上限・補助率（令和8年度資料は予算額のみ）"
+      }
     },
     {
       "id": "shizuoka-jichikai-2026",
       "name": "静岡市 街頭防犯カメラ設置事業補助金",
       "category": "防犯",
-      "ministry": "静岡市市民局生活安全課",
+      "ministry": "静岡市観光文化・市民局生活安全安心課",
       "pref_code": "22",
       "prefecture": "静岡県",
       "max_amount": 300000,
@@ -4589,10 +2896,10 @@
         "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "2026年6月2日〜6月30日（事前相談受付）",
-      "status": "open",
-      "description": "静岡市内の自治会・町内会・地区安全会議が設置する街頭防犯カメラを支援。補助率9/10以内・上限30万円/台。",
-      "application_tips": "事前相談が必要。公道に面した設置が原則。警察との事前協議記録を準備すること。",
+      "deadline": "2026年6月1日〜2026年6月30日（令和8年度の事前相談受付期間。受付は終了）",
+      "status": "closed",
+      "description": "静岡市内の自治会・町内会・地区安全会議が設置する街頭防犯カメラを支援。1台あたり補助率10分の9以内・上限30万円（新規・更新とも）。",
+      "application_tips": "補助の流れは事前相談→内示→交付申請→交付決定後に工事→実績報告→補助金交付。令和8年度の事前相談（6月1日〜6月30日）は終了。次年度の受付時期は市の案内を確認。",
       "source_url": "https://www.city.shizuoka.lg.jp/s9623/s000015.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
@@ -4797,26 +3104,33 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.shizuoka.lg.jp/s9623/s000015.html"
+        ],
+        "unverified": "令和9年度の受付時期"
+      }
     },
     {
       "id": "hamamatsu-jichikai-2026",
       "name": "浜松市 防犯カメラ設置事業費補助金",
       "category": "防犯",
-      "ministry": "浜松市市民部生活安全課",
+      "ministry": "浜松市市民部市民生活課",
       "pref_code": "22",
       "prefecture": "静岡県",
-      "max_amount": 200000,
+      "max_amount": 100000,
       "rate_min": 0.5,
       "rate_max": 0.5,
       "target_industries": [
         "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "2026年4月1日〜2027年1月31日（予算上限達成次第終了）",
+      "deadline": "2026年4月1日〜2027年1月31日（予算上限に達した場合は終了）",
       "status": "open",
-      "description": "浜松市内の自治会が設置する防犯カメラを支援。補助率1/2・上限10万円/台（1自治会につき2台まで）。",
-      "application_tips": "1自治会最大2台まで。台数が多い場合は複数年度に分けて申請を検討。",
+      "description": "浜松市内の自治会が新たに購入・設置する防犯カメラを支援。補助率は補助対象経費の2分の1、上限は防犯カメラ1台につき10万円（原則1自治会2台まで）。",
+      "application_tips": "原則1自治会2台まで（過去に補助を受けた台数を含む。3台以上は要相談）。実績報告は令和9年2月末日までに提出。",
       "source_url": "https://www.city.hamamatsu.shizuoka.jp/simink/bouhan/bouhankamera.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
@@ -5021,13 +3335,20 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.hamamatsu.shizuoka.jp/simink/bouhan/bouhankamera.html",
+          "https://www.city.hamamatsu.shizuoka.jp/documents/172744/youkou.pdf"
+        ]
+      }
     },
     {
       "id": "chiba-bouhan-2026",
       "name": "千葉県 市町村防犯カメラ等設置補助事業",
       "category": "防犯",
-      "ministry": "千葉県警察本部生活安全部",
+      "ministry": "千葉県環境生活部くらし安全推進課 防犯対策推進室",
       "pref_code": "12",
       "prefecture": "千葉県",
       "max_amount": 200000,
@@ -5245,13 +3566,20 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.chiba.lg.jp/seikouan/bouhan/anzen/kamerakaisei.html"
+        ],
+        "unverified": "令和8年度の実施（県ページの更新日は2024年11月6日のまま）"
+      }
     },
     {
       "id": "yokohama-jichikai-2026",
       "name": "横浜市 地域防犯カメラ設置補助金",
       "category": "防犯",
-      "ministry": "横浜市市民局地域支援部安全・安心まちづくり課",
+      "ministry": "横浜市市民局地域支援部地域防犯支援課",
       "pref_code": "14",
       "prefecture": "神奈川県",
       "max_amount": 280000,
@@ -5261,10 +3589,10 @@
         "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "毎年7月31日まで（先着順・予算台数上限あり）",
-      "status": "open",
+      "deadline": "2026年7月31日（令和8年度の申請期限。受付終了・交付決定は10月上旬頃）",
+      "status": "closed",
       "description": "横浜市内の自治会・町内会・地区連合町内会が設置する防犯カメラを支援。補助率9/10・上限28万円/台。",
-      "application_tips": "7月31日が申請期限。予算台数に上限があるため早めの申請が有利。公道に面した設置が対象。",
+      "application_tips": "申請期限は7月31日（令和8年度は終了）。予算台数の範囲内で補助するため、申請しても補助されない場合がある。次年度の案内を確認すること。",
       "source_url": "https://www.city.yokohama.lg.jp/bousai-kyukyu-bohan/bohan/camera/kamera2.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
@@ -5469,7 +3797,13 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.yokohama.lg.jp/bousai-kyukyu-bohan/bohan/camera/kamera2.html"
+        ]
+      }
     },
     {
       "id": "sagamihara-bouhan-camera-2026",
@@ -5478,18 +3812,18 @@
       "ministry": "相模原市交通・地域安全課",
       "pref_code": "14",
       "prefecture": "神奈川県",
-      "max_amount": 960000,
+      "max_amount": 120000,
       "rate_min": 0.9,
       "rate_max": 0.9,
       "target_industries": [
         "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "2026年6月末（事前協議は5〜7月）",
+      "deadline": "2026年11月2日〜2026年11月24日（令和8年度追加募集の事前協議書提出期間・必着。通常募集は終了）",
       "status": "open",
-      "description": "相模原市内の自治会等が設置する街頭防犯カメラを支援。補助率9/10・上限12万円/台（最大8台まで）。",
-      "application_tips": "6月末が申請期限。事前協議（5〜7月）を経てから申請。公道を撮影するカメラが対象。民間業者による施工可。",
-      "source_url": "https://www.city.sagamihara.kanagawa.jp/kurashi/bosai/1008004.html",
+      "description": "相模原市内の自治会等の地域団体が不特定多数の人が通る場所に設置する防犯カメラを支援。補助額はカメラ1台ごとに補助対象経費の10分の9と12万円のいずれか低い額（1団体8台まで）。",
+      "application_tips": "令和8年度の追加募集は事前協議書（見積書・設置希望箇所の図面を添付）を11月2日〜11月24日必着で提出。事前協議を経てから交付申請。8台全てが補助されるとは限らない。",
+      "source_url": "https://www.city.sagamihara.kanagawa.jp/kurashi/1026529/1026549/1026551/1026554/1008473.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
       "required_info_fields": [
@@ -5693,27 +4027,33 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.sagamihara.kanagawa.jp/kurashi/1026529/1026549/1026551/1026554/1008473.html"
+        ]
+      }
     },
     {
       "id": "hachioji-mimamori-2026",
-      "name": "八王子市 地域見守り活動事業補助金（防犯カメラ設置）",
+      "name": "八王子市 地域における見守り活動事業補助金（防犯カメラ設置）",
       "category": "防犯",
-      "ministry": "八王子市生活安全部防犯課",
+      "ministry": "八王子市生活安全部暮らしの安全課",
       "pref_code": "13",
       "prefecture": "東京都",
       "max_amount": 421000,
-      "rate_min": 0.958,
-      "rate_max": 0.958,
+      "rate_min": 0.9583,
+      "rate_max": 0.9583,
       "target_industries": [
         "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "2026年度分（詳細は要問い合わせ）",
-      "status": "open",
-      "description": "八王子市登録の町会・自治会・管理組合が対象。補助率23/24（約95.8%）・上限42.1万円/台（専用ポール時57.5万円）。維持管理費は別途補助制度あり。",
-      "application_tips": "事前調査票の提出が必要。2026年度分は詳細未公表のため防犯課に事前問い合わせ推奨。TEL: 042-620-7395。",
-      "source_url": "https://www.city.hachioji.tokyo.jp/kurashi/life/003/002/p024836.html",
+      "deadline": "令和8年度分は令和7年7月までに希望調査票を提出した団体のみ申請可（令和9年度分の希望調査は令和8年6月中旬頃に案内）",
+      "status": "closed",
+      "description": "八王子市の町会・自治会等が設置する防犯カメラを支援。1台あたり補助率23/24・補助限度額42.1万円（防犯カメラ専用ポールを設置する場合は57.5万円）。令和8年度は1団体1台まで。維持管理費は別途補助制度あり。",
+      "application_tips": "申請できるのは前年度に希望調査票を提出した団体のみ。令和9年度分の希望調査は防犯課から6月中旬頃に発送する案内で行う。問い合わせ: 暮らしの安全課 042-620-7395。",
+      "source_url": "https://www.city.hachioji.tokyo.jp/emergency/bousai/m7914685/010/p032985.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
       "required_info_fields": [
@@ -5917,13 +4257,20 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.hachioji.tokyo.jp/emergency/bousai/m7914685/010/p032985.html"
+        ],
+        "unverified": "令和9年度分の希望調査の提出期限／補助率 0.958→0.9583（23/24 をより正確に表記。値の意味は不変）"
+      }
     },
     {
       "id": "saitama-city-bouhan-2026",
       "name": "さいたま市 地域防犯カメラ設置助成金",
       "category": "防犯",
-      "ministry": "さいたま市くらし安全部地域防犯対策課",
+      "ministry": "さいたま市市民局市民生活部市民生活安全課",
       "pref_code": "11",
       "prefecture": "埼玉県",
       "max_amount": 250000,
@@ -5933,11 +4280,11 @@
         "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "2025年度分受付終了（2026年度分は要確認）",
-      "status": "upcoming",
-      "description": "さいたま市内の自治会が設置する防犯カメラを支援。補助率3/4・上限25万円/台。看板ステッカー付設置が対象。",
-      "application_tips": "2025年度は受付終了。2026年度の受付開始時期を地域防犯対策課に確認のこと。",
-      "source_url": "https://www.city.saitama.jp/001/010/012/p095524.html",
+      "deadline": "令和8年度：相談受付中（想定申請額が予算の上限に達する見込み。予算の範囲内で助成）",
+      "status": "open",
+      "description": "さいたま市内の自治会が設置する地域防犯カメラの購入・設置工事費等を助成。助成率は対象経費の4分の3、1台につき25万円が限度。設置を示すステッカーは市が作成して渡す。",
+      "application_tips": "自治会内の合意と設置希望場所が整った段階で市民生活安全課へ相談。予算の範囲内のため、要件を満たしても交付できない場合がある。",
+      "source_url": "https://www.city.saitama.lg.jp/001/011/005/p054240.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
       "required_info_fields": [
@@ -6141,27 +4488,33 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.saitama.lg.jp/001/011/005/p054240.html"
+        ]
+      }
     },
     {
       "id": "kawaguchi-bouhan-camera-2026",
       "name": "川口市 防犯カメラ設置費補助金",
       "category": "防犯",
-      "ministry": "川口市くらし安全部防犯対策室",
+      "ministry": "川口市くらし安全課（防犯対策係）",
       "pref_code": "11",
       "prefecture": "埼玉県",
       "max_amount": 250000,
-      "rate_min": 0.667,
-      "rate_max": 0.667,
+      "rate_min": 1.0,
+      "rate_max": 1.0,
       "target_industries": [
         "自治会・町会"
       ],
       "max_employees": null,
-      "deadline": "2026年度：事前申込4〜5月、申請6〜8月",
-      "status": "open",
-      "description": "川口市内の町会・自治会が設置する防犯カメラを支援。上限25万円/台（年間16台枠）。公園・公道など公共空間を撮影するカメラが対象。",
-      "application_tips": "事前申込（4〜5月）→交付決定→工事→実績報告の順。TEL: 048-242-6361。公道撮影が条件のため設置場所を事前確認すること。",
-      "source_url": "https://www.city.kawaguchi.lg.jp/soshiki/04050/bouhan/bouhancamera.html",
+      "deadline": "2026年8月31日（令和8年度の交付申請締切。事前申込は4〜5月末で終了）",
+      "status": "closed",
+      "description": "川口市内の町会・自治会が公園・公道等の公共空間を撮影するために設置する防犯カメラを支援。設置は1箇所（1台）につき補助対象経費に対し25万円が限度（設置に補助率の定めはなく限度額まで。修繕は4分の3以内で15万円が限度）。令和8年度の補助予定台数は16台。",
+      "application_tips": "事前申込（4〜5月末）→補助団体の決定（6月中旬）→交付申請（8月末締切）→設置（令和9年3月まで）の順。令和8年度分は終了。",
+      "source_url": "https://www.city.kawaguchi.lg.jp/soshiki/01040/020/20/2494.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
       "required_info_fields": [
@@ -6365,251 +4718,36 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
-    },
-    {
-      "id": "kokudo-jutaku-kaihu-2026",
-      "name": "国土交通省 居住サポート住宅改修事業（防犯カメラ対応）",
-      "category": "設備投資",
-      "ministry": "国土交通省住宅局",
-      "pref_code": "00",
-      "prefecture": "",
-      "max_amount": 500000,
-      "rate_min": 0.333,
-      "rate_max": 0.333,
-      "target_industries": [
-        "不動産業"
-      ],
-      "max_employees": null,
-      "deadline": "2026年度（随時受付、予算消化次第終了）",
-      "status": "open",
-      "description": "賃貸住宅オーナーが共用部に防犯カメラを設置する改修費用を補助。補助率1/3・上限50万円/戸（子育て世帯向け改修として防犯カメラ・屋外灯設置が対象経費に明記）。住宅確保要配慮者専用賃貸住宅の登録が必要。",
-      "application_tips": "建築士による工事内容確認が必要。面積按分計算あり。住宅確保要配慮者（高齢者・低額所得者・子育て世帯等）の入居優先宣誓が条件。TEL: 居住サポート住宅改修事業交付事務局。",
-      "source_url": "https://www.how.or.jp/koufu/snj.html",
-      "document_tier": 3,
-      "draft_subsidy_type": "setsubi_toushi",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・商店街の場合は団体名"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（各自治体様式）",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "consent_doc",
-          "label": "自治会総会議事録・同意書類",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "自治会員の合意証明"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.kawaguchi.lg.jp/soshiki/01040/020/20/2494.html",
+          "https://www.city.kawaguchi.lg.jp/material/files/group/15/R8chirashi.pdf",
+          "https://www.city.kawaguchi.lg.jp/material/files/group/15/R8kouhyoukou.pdf"
+        ],
+        "unverified": "補助率: 要綱第5条(1)は設置に率を定めず25万円を限度とするため1.0（限度額内で全額）と解釈"
+      }
     },
     {
       "id": "minato-kyodo-bouhan-2026",
       "name": "港区 共同住宅防犯対策助成事業",
       "category": "防犯",
-      "ministry": "港区生活安全課",
+      "ministry": "港区 各総合支所協働推進課協働推進係",
       "pref_code": "13",
       "prefecture": "東京都",
-      "max_amount": 300000,
+      "max_amount": 500000,
       "rate_min": 0.5,
       "rate_max": 0.5,
       "target_industries": [
         "不動産業"
       ],
       "max_employees": null,
-      "deadline": "2026年度（随時受付）",
+      "deadline": "随時（設置工事を開始する前に各総合支所協働推進課へ相談・申請）",
       "status": "open",
-      "description": "港区内の賃貸住宅所有者（個人・法人問わず）が共用部に設置する防犯カメラを支援。設置から7年経過後の更新も再申請可能。",
-      "application_tips": "共用部への新規設置が対象。更新の場合は設置から7年以上経過が条件。港区生活安全課に事前相談推奨。",
-      "source_url": "https://www.city.minato.tokyo.jp/",
+      "description": "港区内の共同住宅（分譲マンションの管理組合・賃貸住宅の所有者等）が共用部分等に新たに設置する防犯カメラシステム等の費用の2分の1を助成（上限50万円）。設置から7年経過した機器の更新は翌年度以降に再申請できる。",
+      "application_tips": "助成決定前に工事を始めたものは対象外。設置工事の前に各総合支所協働推進課に相談すること。防犯カメラは管理運用規約の書面化が交付条件。",
+      "source_url": "https://www.city.minato.tokyo.jp/seikatsuanzen/bosai-anzen/sekatsuanzen/jose/kyodojutaku.html",
       "document_tier": 3,
       "draft_subsidy_type": "setsubi_toushi",
       "required_info_fields": [
@@ -6813,16 +4951,22 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.minato.tokyo.jp/seikatsuanzen/bosai-anzen/sekatsuanzen/jose/kyodojutaku.html"
+        ]
+      }
     },
     {
       "id": "fujisawa-bouhan-camera-2026",
       "name": "藤沢市 防犯カメラ設置補助金",
       "category": "防犯",
-      "ministry": "藤沢市市民自治推進課",
+      "ministry": "藤沢市防災安全部防犯交通安全課",
       "pref_code": "14",
       "prefecture": "神奈川県",
-      "max_amount": 250000,
+      "max_amount": 270000,
       "rate_min": 0.75,
       "rate_max": 0.75,
       "target_industries": [
@@ -6831,9 +4975,9 @@
       "max_employees": null,
       "deadline": "2026年6月12日（受付終了。次年度は要問い合わせ）",
       "status": "closed",
-      "description": "藤沢市内の自治会・町内会が設置する街頭防犯カメラを支援。補助率3/4・上限25万円/台。鵠沼地区など湘南エリアでの設置実績多数。地権者同意書の提出が必須。",
+      "description": "藤沢市内の自治会・町内会が道路等の公共空間を撮影するために設置する防犯カメラを支援。補助額は設置費の4分の3以内と、台数×27万円（ソーラー型は30万円）のいずれか低い額。",
       "application_tips": "6月12日が申請期限。電柱等私有地への設置は地権者同意書が必須。マルチックは藤沢市鵠沼地区での施工実績9件・湘南エリアでの対応経験豊富。",
-      "source_url": "https://www.city.fujisawa.kanagawa.jp/",
+      "source_url": "https://www.city.fujisawa.kanagawa.jp/bouhan/bosai/bohan/joho/camera.html",
       "document_tier": 3,
       "draft_subsidy_type": "jichitai_bouhan",
       "required_info_fields": [
@@ -7037,312 +5181,34 @@
           "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
         }
       ],
-      "updated_at": "2026-06-22"
-    },
-    {
-      "id": "kanagawa-bouhan-2026",
-      "name": "神奈川県 防犯設備整備費補助金",
-      "category": "防犯",
-      "ministry": "神奈川県くらし安全交通課",
-      "pref_code": "14",
-      "prefecture": "神奈川県",
-      "max_amount": 1500000,
-      "rate_min": 0.5,
-      "rate_max": 0.5,
-      "target_industries": [
-        "小売業",
-        "飲食業",
-        "医療・介護",
-        "製造業",
-        "建設業",
-        "宿泊業",
-        "サービス業",
-        "運輸業",
-        "廃棄物処理業",
-        "農業・林業・水産業",
-        "不動産業",
-        "その他"
-      ],
-      "max_employees": 300,
-      "deadline": "2026年度（公募時期未定・例年6月頃）",
-      "status": "open",
-      "description": "神奈川県内の中小企業・事業所を対象とした防犯設備（防犯カメラ・センサーライト・防犯ゲート等）の整備費補助。補助率1/2・上限150万円。",
-      "application_tips": "県内事業所が対象。設置場所の所有/賃借証明、見積書（複数社推奨）、警察署との事前相談記録の添付が望ましい。マルチックは神奈川県本拠地につき施工パートナーとして直接対応可能。",
-      "source_url": "https://www.pref.kanagawa.jp/",
-      "document_tier": 2,
-      "draft_subsidy_type": "kanagawa_setsubi",
-      "updated_at": "2026-05-10",
-      "required_info_fields": [
-        {
-          "key": "company_name",
-          "label": "申請団体名・商号",
-          "type": "text",
-          "required": true,
-          "source": "homepage",
-          "note": "自治会・町内会・事業者の場合は正式名称"
-        },
-        {
-          "key": "address",
-          "label": "所在地",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "representative_name",
-          "label": "代表者・申請者氏名",
-          "type": "text",
-          "required": true,
-          "source": "homepage"
-        },
-        {
-          "key": "contact_phone",
-          "label": "連絡先電話番号",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "contact_email",
-          "label": "担当者メールアドレス",
-          "type": "text",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "capital",
-          "label": "資本金（万円）",
-          "type": "number",
-          "required": false,
-          "source": "homepage",
-          "note": "法人申請の場合のみ"
-        },
-        {
-          "key": "established_date",
-          "label": "設立年月日",
-          "type": "date",
-          "required": false,
-          "source": "homepage"
-        },
-        {
-          "key": "employee_count",
-          "label": "従業員数",
-          "type": "number",
-          "required": true,
-          "source": "manual",
-          "note": "常時使用する従業員数（300名以下が対象）"
-        },
-        {
-          "key": "annual_revenue",
-          "label": "直近年度売上高（万円）",
-          "type": "number",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "installation_purpose",
-          "label": "設置目的",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "犯罪抑止",
-            "子供見守り",
-            "不法投棄防止",
-            "交通安全",
-            "その他"
-          ]
-        },
-        {
-          "key": "installation_locations",
-          "label": "設置場所（住所一覧）",
-          "type": "text",
-          "required": true,
-          "source": "manual",
-          "note": "複数箇所の場合は全住所を記載"
-        },
-        {
-          "key": "camera_count",
-          "label": "設置台数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "product_model",
-          "label": "カメラ機種名・型番",
-          "type": "text",
-          "required": true,
-          "source": "derived",
-          "note": "AVTECH製品型番（例: AVM3620V4）"
-        },
-        {
-          "key": "camera_resolution",
-          "label": "カメラ解像度",
-          "type": "text",
-          "required": false,
-          "source": "derived",
-          "note": "例: 4K Ultra HD (8MP)"
-        },
-        {
-          "key": "recording_days",
-          "label": "録画保存日数",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "night_vision",
-          "label": "夜間撮影対応",
-          "type": "boolean",
-          "required": false,
-          "source": "derived"
-        },
-        {
-          "key": "coverage_area_type",
-          "label": "撮影範囲区分",
-          "type": "select",
-          "required": true,
-          "source": "manual",
-          "options": [
-            "公道",
-            "私有地",
-            "建物内",
-            "複合"
-          ]
-        },
-        {
-          "key": "retention_days",
-          "label": "映像保存期間（日）",
-          "type": "number",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "manager_name",
-          "label": "映像管理責任者名",
-          "type": "text",
-          "required": true,
-          "source": "manual"
-        },
-        {
-          "key": "police_consultation_date",
-          "label": "警察への事前協議日",
-          "type": "date",
-          "required": false,
-          "source": "manual"
-        },
-        {
-          "key": "total_cost",
-          "label": "総事業費（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        },
-        {
-          "key": "subsidy_amount_plan",
-          "label": "補助金申請額（円）",
-          "type": "number",
-          "required": true,
-          "source": "derived"
-        }
-      ],
-      "required_documents": [
-        {
-          "key": "shinsei_form",
-          "label": "補助金交付申請書（神奈川県様式）",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "神奈川県くらし安全交通課の公式様式を使用"
-        },
-        {
-          "key": "installation_location_map",
-          "label": "設置場所位置図",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "地図上に設置箇所をマーキング"
-        },
-        {
-          "key": "installation_photo_current",
-          "label": "設置場所の現況写真",
-          "accept": ".pdf,.jpg,.png",
-          "required": true,
-          "note": "AVTECH防犯カメラ・NVR導入時は必須"
-        },
-        {
-          "key": "police_consultation_cert",
-          "label": "警察との事前協議証明書",
-          "accept": ".pdf,.docx",
-          "required": false,
-          "note": "神奈川県は添付推奨"
-        },
-        {
-          "key": "estimate_doc",
-          "label": "見積書",
-          "accept": ".pdf",
-          "required": true,
-          "note": "設置工事費を含む。複数社相見積もり推奨"
-        },
-        {
-          "key": "management_policy",
-          "label": "管理運用規程",
-          "accept": ".pdf,.docx",
-          "required": true,
-          "note": "プライバシーポリシー・映像保存ルールを含む"
-        },
-        {
-          "key": "coverage_diagram",
-          "label": "撮影範囲図面",
-          "accept": ".pdf,.jpg",
-          "required": false,
-          "note": "カメラの画角と撮影範囲を示す図"
-        },
-        {
-          "key": "land_consent",
-          "label": "土地使用承諾書（私有地設置時）",
-          "accept": ".pdf,.docx",
-          "required": false
-        },
-        {
-          "key": "rireki",
-          "label": "履歴事項証明書（法人のみ）",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "nouzei",
-          "label": "納税証明書",
-          "accept": ".pdf",
-          "required": false
-        },
-        {
-          "key": "catalog",
-          "label": "製品カタログ・仕様書",
-          "accept": ".pdf",
-          "required": false,
-          "note": "AVTECH防犯カメラ・NVRの公式カタログ推奨"
-        }
-      ]
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.fujisawa.kanagawa.jp/bouhan/bosai/bohan/joho/camera.html"
+        ],
+        "unverified": "令和9年度の申請時期"
+      }
     },
     {
       "id": "tokyo-kaigo-ict-2026",
-      "name": "東京都 介護ロボット・ICT導入支援事業",
+      "name": "東京都 次世代介護機器導入促進支援事業",
       "category": "介護",
-      "ministry": "東京都福祉局",
+      "ministry": "東京都福祉局（事務: 公益財団法人東京都福祉保健財団）",
       "pref_code": "13",
       "prefecture": "東京都",
-      "max_amount": 2600000,
-      "rate_min": 0.5,
-      "rate_max": 0.75,
+      "max_amount": 12500000,
+      "rate_min": 0.8,
+      "rate_max": 0.875,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年5月〜7月（年度ごと公募）",
-      "status": "open",
-      "description": "東京都内の介護事業所が見守りカメラ・センサー等を導入する経費を支援。地域医療介護総合確保基金を原資。",
-      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
-      "source_url": "https://www.fukushi.metro.tokyo.lg.jp/",
+      "deadline": "2026年7月1日〜2026年8月7日（令和8年度の事業計画書受付。受付終了）",
+      "status": "closed",
+      "description": "都内の介護施設・事業所が次世代介護機器や見守り支援機器を導入する経費を補助。見守り・コミュニケーション機器は1台37万5千円が基準額で補助率4/5。見守り支援機器と通信環境の一体的整備（パッケージ型）は法人合計1,250万円・補助率4/5。移乗介護等の推進事業は補助率7/8。",
+      "application_tips": "令和8年度の事業計画書受付（7月1日〜8月7日）は終了。機器の購入・契約は内示日の翌日以降に行う必要がある。",
+      "source_url": "https://www.fukushizaidan.jp/wp-content/uploads/2026/07/206_20260701_R8次世代概要_0801.pdf",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -7571,26 +5437,33 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.fukushizaidan.jp/wp-content/uploads/2026/07/206_20260701_R8次世代概要_0801.pdf"
+        ],
+        "unverified": "令和9年度の募集時期"
+      }
     },
     {
       "id": "kanagawa-kaigo-ict-2026",
       "name": "神奈川県 介護ロボット・ICT導入支援事業費補助金",
       "category": "介護",
-      "ministry": "神奈川県福祉子どもみらい局",
+      "ministry": "神奈川県 高齢福祉課",
       "pref_code": "14",
       "prefecture": "神奈川県",
-      "max_amount": 2600000,
-      "rate_min": 0.5,
-      "rate_max": 0.75,
+      "max_amount": 10000000,
+      "rate_min": 0.8,
+      "rate_max": 0.8,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年5月〜6月（年度ごと公募）",
-      "status": "open",
-      "description": "県内介護事業所の見守りカメラ・センサー・記録ICT等の導入を補助。1機器あたり上限30万円〜法人上限260万円。",
-      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "deadline": "2026年8月17日〜2026年8月31日 17:00（令和8年度の申請受付・jGrants。受付終了）",
+      "status": "closed",
+      "description": "県内の介護事業所が介護ロボット・ICT等の介護テクノロジーを導入する経費を補助。補助率5分の4。見守り機器等は1台30万円（1事業所上限500万円）、移乗・入浴支援は1台100万円、介護ソフトは職員数に応じて100万〜250万円。パッケージ型導入支援は1事業所1,000万円が上限。",
+      "application_tips": "令和8年度の受付（8月17日〜8月31日、jGrants）は終了。予算超過時は優先順位と抽選で決定。次年度の募集を確認すること。",
       "source_url": "https://www.pref.kanagawa.jp/docs/u6s/cnt/f420373/p1075201.html",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
@@ -7820,27 +5693,34 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.kanagawa.jp/docs/u6s/cnt/f420373/p1075201.html"
+        ],
+        "unverified": "令和9年度の募集時期"
+      }
     },
     {
       "id": "chiba-kaigo-ict-2026",
-      "name": "千葉県 介護ロボット・ICT導入支援事業",
+      "name": "千葉県 介護テクノロジー定着支援事業費補助金",
       "category": "介護",
       "ministry": "千葉県健康福祉部高齢者福祉課",
       "pref_code": "12",
       "prefecture": "千葉県",
-      "max_amount": 2600000,
-      "rate_min": 0.5,
-      "rate_max": 0.75,
+      "max_amount": 10000000,
+      "rate_min": 0.8,
+      "rate_max": 0.8,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年5月〜7月（年度ごと公募）",
-      "status": "open",
-      "description": "千葉県内の介護施設等がICT・見守りカメラ等を導入する際の費用を補助。地域医療介護総合確保基金を活用。",
-      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
-      "source_url": "https://www.pref.chiba.lg.jp/koufuku/shisetsumuke/index.html",
+      "deadline": "2026年6月10日〜2026年7月13日 17時（令和8年度の事前協議期間。募集は終了）",
+      "status": "closed",
+      "description": "県内で令和8年度中に介護テクノロジー機器を導入する事業者に補助。税抜補助対象経費の5分の4を補助し、1事業所あたり最大1,000万円（介護ソフト等を除く機器は750万円、介護ソフトは職員数に応じ最大250万円）。見守り機器は1台30万円が基準額。",
+      "application_tips": "令和8年度の募集は終了。申請額が予算を上回る見込みのため交付申請の前に事前協議が行われた。次年度の募集を確認すること。",
+      "source_url": "https://www.pref.chiba.lg.jp/koufuku/kaigorobot/kaigorobotjyouhou.html",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -8069,27 +5949,34 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.chiba.lg.jp/koufuku/kaigorobot/kaigorobotjyouhou.html"
+        ],
+        "unverified": "令和9年度の募集時期"
+      }
     },
     {
       "id": "saitama-kaigo-ict-2026",
-      "name": "埼玉県 介護ロボット・ICT導入支援事業",
+      "name": "埼玉県 介護テクノロジー定着支援事業費補助金",
       "category": "介護",
       "ministry": "埼玉県福祉部高齢者福祉課",
       "pref_code": "11",
       "prefecture": "埼玉県",
-      "max_amount": 2600000,
-      "rate_min": 0.5,
-      "rate_max": 0.75,
+      "max_amount": 7500000,
+      "rate_min": 0.8,
+      "rate_max": 0.8,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年5月〜7月（年度ごと公募）",
-      "status": "open",
-      "description": "県内介護事業所の見守りカメラ・センサー・記録ソフト導入経費を補助。",
-      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
-      "source_url": "https://www.pref.saitama.lg.jp/a0603/kaigo-net/index.html",
+      "deadline": "2026年7月22日（令和8年度の事前協議締切。受付終了）",
+      "status": "closed",
+      "description": "県内の介護サービス事業者等が介護テクノロジーを導入する経費を補助。1機器につき所要経費の5分の4と基準額のいずれか低い額。見守り機器等は1台30万円（移乗・入浴支援等と合わせて1事業所500万円が上限）、パッケージ型導入支援は1事業所750万円が上限。",
+      "application_tips": "令和8年度の事前協議（7月22日締切）は終了。協議結果の回答に従って交付申請を行う流れ。次年度の募集を確認すること。",
+      "source_url": "https://www.pref.saitama.lg.jp/a0603/kaigo-net/seisansei/r7kaigotec.html",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -8318,27 +6205,35 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.saitama.lg.jp/a0603/kaigo-net/seisansei/r7kaigotec.html",
+          "https://www.pref.saitama.lg.jp/a0603/korei-seibi/r7robot-bosyu.html"
+        ],
+        "unverified": "令和9年度の募集時期"
+      }
     },
     {
       "id": "shizuoka-kaigo-ict-2026",
-      "name": "静岡県 介護ロボット・ICT導入支援事業",
+      "name": "静岡県 介護テクノロジー定着支援事業費補助金",
       "category": "介護",
-      "ministry": "静岡県健康福祉部介護保険課",
+      "ministry": "静岡県健康福祉部福祉長寿局介護保険課",
       "pref_code": "22",
       "prefecture": "静岡県",
-      "max_amount": 2600000,
-      "rate_min": 0.5,
-      "rate_max": 0.75,
+      "max_amount": 10000000,
+      "rate_min": 0.8,
+      "rate_max": 0.8,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年6月〜7月（年度ごと公募）",
-      "status": "open",
-      "description": "静岡県内の介護施設・事業所が見守りセンサー・カメラ等を導入する経費を補助。",
-      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
-      "source_url": "https://www.pref.shizuoka.jp/kenkofukushi/koreifukushi/kaigohoken/1002941/index.html",
+      "deadline": "2026年8月3日〜2026年8月31日（令和8年度の交付申請受付。今年度の受付は終了）",
+      "status": "closed",
+      "description": "県内の介護保険施設等が介護ロボット・ICT機器等を導入する経費を補助。補助率4/5。見守り機器等は1台30万円、移乗・入浴支援等は1台100万円が基準額。1事業所あたりの補助上限額は1,000万円（介護ソフトの定着促進支援を併用する場合は1,015万円）。",
+      "application_tips": "令和8年度の受付は終了。令和9年度分は県が要望額調査を実施しているため、県のページで案内を確認すること。",
+      "source_url": "https://www.pref.shizuoka.jp/kenkofukushi/koreifukushi/kaigohoken/1083217.html",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
       "required_info_fields": [
@@ -8567,7 +6462,15 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.shizuoka.jp/kenkofukushi/koreifukushi/kaigohoken/1083217.html",
+          "https://www.pref.shizuoka.jp/_res/projects/default_project/_page_/001/083/217/r8kenkofuyoko.pdf"
+        ],
+        "unverified": "令和9年度の募集時期"
+      }
     },
     {
       "id": "yamanashi-kaigo-tech-2026",
@@ -8576,17 +6479,17 @@
       "ministry": "山梨県福祉保健部健康長寿推進課",
       "pref_code": "19",
       "prefecture": "山梨県",
-      "max_amount": 2600000,
-      "rate_min": 0.5,
-      "rate_max": 0.75,
+      "max_amount": 10000000,
+      "rate_min": 0.8,
+      "rate_max": 0.8,
       "target_industries": [
         "医療・介護"
       ],
       "max_employees": null,
-      "deadline": "2026年5月〜7月（年度ごと公募）",
-      "status": "open",
-      "description": "県内介護事業所が見守りカメラ・センサー・ICT機器を導入する経費を補助。職員負担軽減を主目的とする。",
-      "application_tips": "夜勤巡視回数削減・転倒検知などの定量目標を提示。BCP・処遇改善計画と紐付けると採択率が上がる。1機器あたり上限あり（センサー30万円、ICT機器260万円目安）。",
+      "deadline": "2026年7月31日〜2026年9月4日（令和8年度の協議書提出期間・必着。受付終了。内示を受けた事業所の交付申請は2026年11月20日まで）",
+      "status": "closed",
+      "description": "県内の介護事業所・介護施設等が介護テクノロジーを導入する経費を補助。補助率5分の4以下。見守り機器等は1台30万円、移乗・入浴支援等は1台100万円が基準額。パッケージ型導入支援の基準額は機器等の合計経費1,000万円以下。",
+      "application_tips": "令和8年度の協議書受付（7月31日〜9月4日）は終了し、内示を受けた事業所のみ11月20日までに交付申請。相談・受付は山梨県社会福祉協議会の介護支援センター。",
       "source_url": "https://www.pref.yamanashi.jp/chouju/technology_model.html",
       "document_tier": 3,
       "draft_subsidy_type": "kaigo",
@@ -8816,7 +6719,1039 @@
           "note": "入居者のプライバシー保護規程が必要"
         }
       ],
-      "updated_at": "2026-05-10"
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.pref.yamanashi.jp/chouju/technology_model.html",
+          "https://www.pref.yamanashi.jp/documents/104817/r8_technology_kouhuyoukou.pdf"
+        ],
+        "unverified": "パッケージ型の基準額の読み方（合計経費1,000万円以下）を上限1,000万円と扱った"
+      }
+    },
+    {
+      "id": "tokyo-bouhan-kiki-kobetsu-2026",
+      "name": "東京都 防犯機器等購入緊急補助事業（区市町村経由・個人宅）",
+      "category": "個人宅防犯",
+      "ministry": "東京都 都民安全総合対策本部（申請窓口: 区市町村）",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 10000,
+      "rate_min": 0.5,
+      "rate_max": 0.5,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "令和8年度（受付期間は区市町村ごとに異なる。令和7・8年度の2か年の緊急対策）",
+      "status": "open",
+      "description": "自宅に設置する防犯機器等の購入・設置費用を、区市町村を通じて都が補助する間接補助。都の補助は都民負担額の2分の1以内・1世帯あたり1万円（1世帯1回限り）で、区市町村が上乗せする場合がある。対象機器・金額・受付期間は区市町村ごとに異なり、防犯カメラを対象に含む区市町村がある（世田谷区・中野区・文京区・八王子市・町田市・立川市・東久留米市・小金井市など）。",
+      "application_tips": "申請先はお住まいの区市町村。令和7年度に都の補助を受けた世帯は令和8年度に再度受けられない。同じ機器で都の他の補助（既存住宅の省エネ改修促進事業・「子供を守る」住宅確保促進事業）を受けた場合は対象外。",
+      "source_url": "https://www.tomin-anzen.metro.tokyo.lg.jp/chian/suishin-seibi/kobetsu-bouhan-hojyo",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.tomin-anzen.metro.tokyo.lg.jp/chian/suishin-seibi/kobetsu-bouhan-hojyo",
+          "https://www.tomin-anzen.metro.tokyo.lg.jp/documents/d/tomin-anzen/2026-06-18-190737-359"
+        ],
+        "unverified": "対象機器は区市町村が定めるため、都のページ自体には防犯カメラの明記なし"
+      }
+    },
+    {
+      "id": "setagaya-sumai-bouhan-2026",
+      "name": "世田谷区 住まいの防犯対策サポート事業",
+      "category": "個人宅防犯",
+      "ministry": "世田谷区危機管理部地域生活安全課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 40000,
+      "rate_min": 1.0,
+      "rate_max": 1.0,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年4月1日〜2026年12月28日（申請額が予算の上限に達した場合は受付終了）",
+      "status": "open",
+      "description": "世田谷区に住民登録があり居住している世帯の、住宅の侵入盗対策のための防犯物品の購入費と設置費を補助。補助率10分の10・上限4万円（令和7・8年度を通じて1世帯1回）。防犯カメラは対象、見守りカメラ等の室内を映すカメラは対象外。",
+      "application_tips": "購入日・工事日が令和8年4月1日以降のものが対象。共同住宅は世帯ごとの申請で、共用部分への設置は対象外。設置費用の補助には物品購入の領収書が必要（設置のみの申請は不可）。",
+      "source_url": "https://www.city.setagaya.lg.jp/02045/23301.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.setagaya.lg.jp/02045/23301.html"
+        ]
+      }
+    },
+    {
+      "id": "nakano-bouhan-kiki-2026",
+      "name": "中野区 防犯機器等購入緊急補助事業",
+      "category": "個人宅防犯",
+      "ministry": "中野区防災危機管理課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 30000,
+      "rate_min": 0.75,
+      "rate_max": 0.75,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月11日〜2027年1月29日（予算額に達した場合は期間途中でも終了）",
+      "status": "open",
+      "description": "中野区に住民登録があり区内の住宅に住む世帯の、防犯機器等の購入・設置費用を補助。総額の4分の3・上限3万円（令和8年度中1世帯1申請）。録画機能付きで屋外に設置した防犯カメラが対象品目。",
+      "application_tips": "令和8年4月1日〜令和9年1月29日に新品を購入し設置を完了したものが対象。令和7年度に交付を受けた世帯は対象外。FAX・郵送での申込は受け付けない。",
+      "source_url": "https://www.city.tokyo-nakano.lg.jp/kurashi/bohan/hanzaihigai/20260403.files/11.pdf",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.tokyo-nakano.lg.jp/kurashi/bohan/hanzaihigai/20260403.files/11.pdf"
+        ],
+        "unverified": "区の制度案内HTMLページ（チラシPDFのみ確認）"
+      }
+    },
+    {
+      "id": "bunkyo-bouhan-kiki-2026",
+      "name": "文京区 防犯機器等購入補助事業",
+      "category": "個人宅防犯",
+      "ministry": "文京区総務部防災危機管理課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 30000,
+      "rate_min": 0.75,
+      "rate_max": 0.75,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月11日〜2027年3月5日",
+      "status": "open",
+      "description": "個人宅向けの防犯機器等の購入費を補助（東京都の防犯機器等緊急補助事業を活用）。補助率4分の3・上限3万円。防犯カメラは住宅への侵入盗を防ぐため屋外に設置したものに限る（屋内を撮影する見守りカメラ等は対象外）。",
+      "application_tips": "令和8年4月1日以降に購入したものが対象。令和7年度に受給した世帯は対象外。領収書と取付前後の写真（防犯カメラは画角を含む）が必要。",
+      "source_url": "https://www.city.bunkyo.lg.jp/b009/p000221.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.bunkyo.lg.jp/b009/p000221.html"
+        ]
+      }
+    },
+    {
+      "id": "hachioji-sumai-bouhan-2026",
+      "name": "八王子市 住まいの防犯対策緊急補助金",
+      "category": "個人宅防犯",
+      "ministry": "八王子市生活安全部暮らしの安全課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 20000,
+      "rate_min": 0.5,
+      "rate_max": 0.5,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年4月20日〜2027年2月1日（予算の上限に達し次第終了）",
+      "status": "open",
+      "description": "市内の販売店等で防犯対策品を購入・設置した世帯に、購入・設置工事費の2分の1を補助（上限2万円）。屋外用の防犯カメラが対象（室内用カメラ・レンタル品は対象外）。",
+      "application_tips": "対象は令和8年4月1日〜令和9年2月1日に市内の販売店等で購入・設置したもの。町会向けの防犯カメラ補助とは別の制度。",
+      "source_url": "https://www.city.hachioji.tokyo.jp/emergency/bousai/m7914685/008/p033456.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.hachioji.tokyo.jp/emergency/bousai/m7914685/008/p033456.html"
+        ]
+      }
+    },
+    {
+      "id": "machida-sumai-bouhan-2026",
+      "name": "町田市 住まいの防犯対策補助金",
+      "category": "個人宅防犯",
+      "ministry": "町田市市民生活安全課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 10000,
+      "rate_min": 0.5,
+      "rate_max": 0.5,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月1日〜2026年12月25日（先着5000件。予算の上限に達した場合は終了）",
+      "status": "open",
+      "description": "市内に住民登録があり居住している世帯が購入・設置した防犯機器の購入金額の2分の1を補助（上限1万円）。防犯カメラは屋外から視認できる場所に設置するものに限る。",
+      "application_tips": "2026年4月1日〜12月25日に購入したものが対象。設置費用は専門業者が設置した場合に限り対象。都内の他自治体の同種補助を受けた世帯は対象外。迷う場合は購入前に市民生活安全課（042-724-4003）へ相談。",
+      "source_url": "https://www.city.machida.tokyo.jp/kurashi/bouhan/bouhan/sumai-bohan-hojo.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.machida.tokyo.jp/kurashi/bouhan/bouhan/sumai-bohan-hojo.html"
+        ]
+      }
+    },
+    {
+      "id": "tachikawa-sumai-bouhan-2026",
+      "name": "立川市 住まいの防犯対策緊急支援事業",
+      "category": "個人宅防犯",
+      "ministry": "立川市危機管理対策室危機管理課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 15000,
+      "rate_min": 0.75,
+      "rate_max": 0.75,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年6月1日〜2026年12月28日（先着約1,000世帯。予算上限に達し次第終了）",
+      "status": "open",
+      "description": "侵入盗対策に有用な防犯機器の購入費用と業者による設置費用の4分の3を補助（上限1万5千円）。防犯カメラは対象（室内設置用の見守りカメラ等は除く）。",
+      "application_tips": "令和8年4月1日以降に購入・設置したものが対象。賃貸住宅は所有者・管理者の同意が必要。令和7・8年度に同様の補助（都内他区市町村を含む）を受けた世帯は対象外。",
+      "source_url": "https://www.city.tachikawa.lg.jp/bosai/bohan/1008439/1024725.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.tachikawa.lg.jp/bosai/bohan/1008439/1024725.html"
+        ]
+      }
+    },
+    {
+      "id": "higashikurume-jutaku-bouhan-2026",
+      "name": "東久留米市 住宅防犯設備設置費補助金",
+      "category": "個人宅防犯",
+      "ministry": "東久留米市防災防犯課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 10000,
+      "rate_min": 0.5,
+      "rate_max": 0.5,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月18日〜2027年1月29日（必着。予算が上限に達した時点で終了）",
+      "status": "open",
+      "description": "侵入盗被害防止に有用な防犯機器（防犯カメラなど）の購入・設置費用（税込）の2分の1を補助（上限1万円）。",
+      "application_tips": "令和8年4月1日以降に購入したものが対象。防犯カメラは撮影範囲が確認できる映像写真を添付。敷地外が撮影範囲に入る場合は撮影範囲に関する同意書が必要。",
+      "source_url": "https://www.city.higashikurume.lg.jp/kurashi/anzen/bouhan/1026967.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.higashikurume.lg.jp/kurashi/anzen/bouhan/1026967.html"
+        ]
+      }
+    },
+    {
+      "id": "koganei-bouhan-kiki-2026",
+      "name": "小金井市 防犯機器等購入補助事業",
+      "category": "個人宅防犯",
+      "ministry": "小金井市地域安全課",
+      "pref_code": "13",
+      "prefecture": "東京都",
+      "max_amount": 30000,
+      "rate_min": 0.5,
+      "rate_max": 0.5,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2026年5月1日〜2026年12月28日（予算額に達した場合は期間内でも終了）",
+      "status": "open",
+      "description": "市内の住宅等に防犯機器等を購入・設置した世帯に、費用の2分の1を補助（上限3万円・1世帯1回）。家庭用防犯カメラが対象（屋内用は対象外）。",
+      "application_tips": "令和7年度の同補助（都内他自治体の同様の補助を含む）を受けた世帯は申請できない。対象か不明な場合は事前に地域安全課へ相談。",
+      "source_url": "https://www.city.koganei.lg.jp/kurashi/472/bohan/anshinmachi/r7bouhannkiki.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.city.koganei.lg.jp/kurashi/472/bohan/anshinmachi/r7bouhannkiki.html"
+        ]
+      }
+    },
+    {
+      "id": "shibayama-katei-camera-2026",
+      "name": "芝山町 家庭用防犯カメラ設置事業補助金",
+      "category": "個人宅防犯",
+      "ministry": "芝山町 自治振興係",
+      "pref_code": "12",
+      "prefecture": "千葉県",
+      "max_amount": 20000,
+      "rate_min": 0.5,
+      "rate_max": 0.5,
+      "target_industries": [
+        "個人宅"
+      ],
+      "max_employees": null,
+      "deadline": "2025年11月4日〜2031年3月31日（予算の範囲内）",
+      "status": "open",
+      "description": "町内の住宅（事務所・店舗等を含み、アパート・借家・別荘を除く）に家庭用防犯カメラを設置した住宅の所有者等に、補助対象経費（税込）の2分の1を補助（上限2万円・1世帯1回）。カメラ本体・録画装置等と設置工事費が対象。",
+      "application_tips": "録画機能付きドアホン・置き型の防犯カメラ・賃借した機器は対象外。領収書、設置場所の位置図と設置前後の写真、カタログ、町指定の誓約書が必要。設置している旨の表示が必要。",
+      "source_url": "https://www.town.shibayama.lg.jp/0000006247.html",
+      "required_info_fields": [
+        {
+          "key": "applicant_name",
+          "label": "申請者氏名",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "address",
+          "label": "設置する住宅の住所",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "contact_phone",
+          "label": "連絡先電話番号",
+          "type": "text",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "product_model",
+          "label": "カメラ機種名・型番",
+          "type": "text",
+          "required": true,
+          "source": "derived"
+        },
+        {
+          "key": "purchase_date",
+          "label": "購入日",
+          "type": "date",
+          "required": true,
+          "source": "manual"
+        },
+        {
+          "key": "total_cost",
+          "label": "購入・設置費用（円）",
+          "type": "number",
+          "required": true,
+          "source": "derived"
+        }
+      ],
+      "required_documents": [
+        {
+          "key": "shinsei_form",
+          "label": "交付申請書（各区市町村様式）",
+          "accept": ".pdf,.docx",
+          "required": true
+        },
+        {
+          "key": "receipt",
+          "label": "購入・設置費用の領収書の写し",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "installation_photo",
+          "label": "設置状況の写真",
+          "accept": ".pdf,.jpg,.png",
+          "required": true
+        },
+        {
+          "key": "catalog",
+          "label": "製品カタログ・仕様書",
+          "accept": ".pdf",
+          "required": false
+        }
+      ],
+      "updated_at": "2026-10-27",
+      "verification": {
+        "checked_at": "2026-10-27",
+        "evidence_urls": [
+          "https://www.town.shibayama.lg.jp/0000006247.html"
+        ]
+      }
+    }
+  ],
+  "retired": [
+    {
+      "id": "kanagawa-dx-2026",
+      "name": "神奈川県 中小企業DXステップアップ補助金",
+      "retired_at": "2026-10-27",
+      "reason": "同名制度（中小企業DXステップアップ補助金）は県の公式に見当たらない。近似の令和8年度中小企業生産性向上促進事業費補助金は公募終了（8月公募の受付終了）で、防犯カメラの記載なし",
+      "evidence_url": "https://r8seisansei.pref.kanagawa.jp/"
+    },
+    {
+      "id": "shizuoka-dx-2026",
+      "name": "静岡県 中小企業デジタル化応援事業費補助金",
+      "retired_at": "2026-10-27",
+      "reason": "同名制度（中小企業デジタル化応援事業費補助金）は公式に見当たらない。近似の収益力向上（賃上げ環境整備）事業は2次6/30で終了、防犯カメラの記載なし",
+      "evidence_url": "https://www.ric-shizuoka.or.jp/keiei/shuekiryoku-chinage.html"
+    },
+    {
+      "id": "kanagawa-bouhan-2026",
+      "name": "神奈川県 防犯設備整備費補助金",
+      "retired_at": "2026-10-27",
+      "reason": "県の直接公募は無い。実在するのは地域防犯力強化支援事業補助金（県と市町村が連携し、申請先は市町村）で、掲載の上限150万円・補助率1/2の根拠なし",
+      "evidence_url": "https://www.pref.kanagawa.jp/docs/f5g/anan/ad/handbook/2shien/index.html"
+    },
+    {
+      "id": "kaigo-shoguu-kaizen-2026",
+      "name": "介護職員処遇改善加算関連設備補助",
+      "retired_at": "2026-10-27",
+      "reason": "処遇改善は加算・賃上げの制度で、設備補助としての実在を確認できない。防犯カメラ対象外",
+      "evidence_url": "https://www.mhlw.go.jp/shogu-kaizen/"
+    },
+    {
+      "id": "kaigo-bcp-2026",
+      "name": "介護施設BCP策定支援事業",
+      "retired_at": "2026-10-27",
+      "reason": "国のBCP支援は研修・ひな形の提供で、上限100万円・補助率3/4の公募を確認できない。防犯カメラ対象外",
+      "evidence_url": "https://www.mhlw.go.jp/shogu-kaizen/"
+    },
+    {
+      "id": "chiba-chusho-2026",
+      "name": "千葉県 ちば中小企業元気づくり基金事業",
+      "retired_at": "2026-10-27",
+      "reason": "実体は新商品・新技術開発向けの助成（令和8年度は4/1〜4/30で受付終了）で、防犯カメラと無関係",
+      "evidence_url": "https://www.pref.chiba.lg.jp/sanshin/renkei/chiikishigen/josei.html"
+    },
+    {
+      "id": "kokudo-jutaku-kaihu-2026",
+      "name": "国土交通省 居住サポート住宅改修事業（防犯カメラ対応）",
+      "retired_at": "2026-10-27",
+      "reason": "実体はセーフティネット専用住宅改修事業（貸主向け）。防犯カメラは子育て対応改修の1項目のみで、掲載の上限50万円/戸と不一致",
+      "evidence_url": "https://www.how.or.jp/koufu/docs/r8/SNJ【1-1】R8SN改修交付申請要領_260727.pdf"
     }
   ]
 }
