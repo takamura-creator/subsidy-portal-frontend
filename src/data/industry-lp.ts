@@ -55,7 +55,7 @@ export const INDUSTRY_LPS: IndustryLP[] = [
     hero: {
       headline: "賃貸マンション・アパートの共用部安全管理を補助金活用で",
       lead:
-        "賃貸住宅オーナーは「居住サポート住宅改修事業」（国交省）等を活用し、共用部の防犯カメラ設置に1/3〜1/2の補助を受けられます。入居者満足度・退去抑止にも直結します。",
+        "賃貸住宅のオーナーが直接申請できる防犯カメラの補助は限られますが、港区の「共同住宅防犯対策助成事業」のように、共同住宅の共用部への設置費の1/2（上限50万円）を助成する区市町村の制度があります。入居者満足度・退去抑止にも直結します。",
     },
     benefits: [
       "入居者の安心感向上による退去抑止",
@@ -64,7 +64,7 @@ export const INDUSTRY_LPS: IndustryLP[] = [
       "防犯設備による物件価値の向上",
     ],
     risks: ["共用部での盗難・破損", "不審者の徘徊", "ゴミ・粗大ごみの不法投棄"],
-    recommendedSubsidies: ["kokudo-jutaku-kaihu-2026", "minato-kyodo-bouhan-2026"],
+    recommendedSubsidies: ["minato-kyodo-bouhan-2026"],
   },
   {
     slug: "jichikai",
