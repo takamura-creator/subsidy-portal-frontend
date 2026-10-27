@@ -10,7 +10,7 @@ import {
   getAllSubsidyIds,
   getSubsidyById,
 } from "@/lib/subsidies-server";
-import { formatAmount, formatRate } from "@/lib/subsidyFormatters";
+import { formatRate, formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
 import SubsidyDetailClient from "./SubsidyDetailClient";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
@@ -118,7 +118,9 @@ export default async function SubsidyDetailPage({ params }: Props) {
     },
     {
       question: `${subsidy.name}の補助上限額はいくらですか？`,
-      answer: `補助上限額は${formatAmount(subsidy.max_amount)}です。`,
+      answer: hasAmountCap(subsidy.max_amount)
+        ? `補助上限額は${formatSubsidyAmount(subsidy)}です。`
+        : "国一律の補助上限額はなく、都道府県・自治体ごとに異なります。各都道府県・自治体の公式情報をご確認ください。",
     },
   ];
 

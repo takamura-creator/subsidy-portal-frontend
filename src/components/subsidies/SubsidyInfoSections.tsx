@@ -7,7 +7,7 @@
 
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil } from "@/lib/deadlineUtils";
-import { formatAmount, formatRate } from "@/lib/subsidyFormatters";
+import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyStatusLabel } from "@/lib/subsidyStatus";
 
 interface SubsidyInfoSectionsProps {
@@ -24,6 +24,28 @@ const SECTION_H2_STYLE: React.CSSProperties = {
   marginTop: 0,
   lineHeight: 1.3,
 };
+
+/**
+ * 対象者の表記（2026-10-27）。旧実装は全制度に「中小企業・小規模事業者（従業員300人以下）」と出しており、
+ * 個人宅向け・自治会向けの制度で誤りになっていた。正本の target_industries から作る。
+ */
+function targetText(s: Subsidy): string {
+  const t = s.target_industries ?? [];
+  if (t.includes("個人宅")) return "住宅に住む世帯（個人宅向け。法人・事業者は対象外）";
+  if (t.length > 0 && t.every((x) => x === "自治会・町会")) return "自治会・町会などの地域団体";
+  const size = s.max_employees ? `（従業員${s.max_employees}人以下などの規模要件あり）` : "";
+  if (t.length > 0) return `${t.join("、")}${size}`;
+  return size ? `中小企業・小規模事業者${size}` : "公式の要件をご確認ください";
+}
+
+/** 自己負担の割合（補助率が無い・0 の制度は「—」） */
+function selfPayText(s: Subsidy): string {
+  const mx = s.rate_max != null && s.rate_max > 0 ? s.rate_max : null;
+  const mn = s.rate_min != null && s.rate_min > 0 ? s.rate_min : null;
+  if (mx == null) return "—";
+  const hi = `${Math.round((1 - mx) * 100)}%`;
+  return mn != null && Math.abs(mn - mx) > 0.0005 ? `${hi}〜${Math.round((1 - mn) * 100)}%` : hi;
+}
 
 export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsProps) {
   const days = getDaysUntil(s.deadline);
@@ -46,11 +68,11 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
           <tbody>
             <tr>
               <th>対象者</th>
-              <td>中小企業・小規模事業者（資本金3億円以下 or 従業員{s.max_employees || 300}人以下）</td>
+              <td>{targetText(s)}（詳細は公式の要件をご確認ください）</td>
             </tr>
             <tr>
               <th>対象設備</th>
-              <td>防犯カメラ・監視カメラ関連設備</td>
+              <td>防犯カメラ・監視カメラ関連（対象となる機器・経費は公式の要件をご確認ください）</td>
             </tr>
             <tr>
               <th>補助率</th>
@@ -58,7 +80,7 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
             </tr>
             <tr>
               <th>補助上限</th>
-              <td>{formatAmount(s.max_amount)}</td>
+              <td>{formatSubsidyAmount(s)}</td>
             </tr>
           </tbody>
         </table>
@@ -75,15 +97,12 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
             </tr>
             <tr>
               <th>補助上限</th>
-              <td>{formatAmount(s.max_amount)}</td>
+              <td>{formatSubsidyAmount(s)}</td>
             </tr>
             <tr>
               <th>自己負担</th>
               <td>
-                {s.rate_max != null ? `${Math.round((1 - s.rate_max) * 100)}%` : "—"}
-                {s.rate_min != null && s.rate_max != null && s.rate_min !== s.rate_max
-                  ? `〜${Math.round((1 - s.rate_min) * 100)}%`
-                  : ""}
+                {selfPayText(s)}
               </td>
             </tr>
           </tbody>

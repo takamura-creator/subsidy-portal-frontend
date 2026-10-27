@@ -9,6 +9,7 @@ export const CATEGORIES = [
   { label: "IT導入・DX", value: "IT導入" },
   { label: "設備投資", value: "設備投資" },
   { label: "介護・福祉", value: "介護" },
+  { label: "個人宅の防犯", value: "個人宅防犯" },
 ] as const;
 
 export const GOV_LEVELS = [

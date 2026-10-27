@@ -18,7 +18,7 @@ import StickyCtaBar from "@/components/subsidies/StickyCtaBar";
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { Subsidy } from "@/lib/api";
 import { isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
-import { formatAmount } from "@/lib/subsidyFormatters";
+import { formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyStatusBadgeText } from "@/lib/subsidyStatus";
 
 export default function SubsidyDetailClient({
@@ -103,7 +103,7 @@ export default function SubsidyDetailClient({
               color: "var(--hc-text-muted)",
             }}
           >
-            上限額（目安）{formatAmount(s.max_amount)}
+            上限額（目安）{formatSubsidyAmount(s)}
           </span>
 
           {/* 出典バッジ */}

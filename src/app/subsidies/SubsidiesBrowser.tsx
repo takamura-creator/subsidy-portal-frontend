@@ -30,7 +30,7 @@ import PublicSectionHeader from "@/components/layout/PublicSectionHeader";
 import { fetchSubsidies, Subsidy } from "@/lib/api";
 import { filterCameraOnly } from "@/lib/subsidyFilters";
 import { getDaysUntil } from "@/lib/deadlineUtils";
-import { formatAmount } from "@/lib/subsidyFormatters";
+import { formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
 // getDaysUntil は sorted の sort ロジックで使用
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import SubsidiesFilterRail from "./SubsidiesFilterRail";
@@ -66,10 +66,8 @@ function filterBundledLocally(prefecture: string, category: string, industry: st
 }
 
 function formatAmountDisplay(s: Subsidy): string {
-  if (s.draft_subsidy_type === "jichitai_bouhan") {
-    return `${Math.round(s.max_amount / 10000)}万円/台`;
-  }
-  return formatAmount(s.max_amount);
+  // 1台あたりの制度は「/台」・上限0は「都道府県・自治体ごとに異なる」（subsidyFormatters に集約）
+  return formatSubsidyAmount(s);
 }
 
 const OUTER: React.CSSProperties = {
@@ -127,6 +125,8 @@ function SubsidiesContent({
   }, [prefecture, category, industry]);
 
   const filtered = subsidies.filter((s) => {
+    // 上限額が無い制度（国一律の上限なし）は金額の絞り込みに含めない（0円扱いで「〜50万円」に入らない）
+    if (amountFilter && !hasAmountCap(s.max_amount)) return false;
     if (amountFilter === "50" && s.max_amount > 500000) return false;
     if (amountFilter === "100" && s.max_amount > 1000000) return false;
     if (amountFilter === "500" && s.max_amount > 5000000) return false;

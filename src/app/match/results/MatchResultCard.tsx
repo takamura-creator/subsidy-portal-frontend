@@ -10,7 +10,8 @@
 import Link from "next/link";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { isServicePrefecture } from "@/lib/constants";
-import { formatRate } from "@/lib/formatRate";
+// 2026-10-27: 補助率は 0〜1 の小数で届く。旧 @/lib/formatRate は「0.5〜0.75%」と出していたため一覧・詳細と同じ整形に揃える
+import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { SCORE_STYLES } from "./states";
 import type { MatchedSubsidy } from "@/lib/api";
 
@@ -139,7 +140,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
               <div style={{ fontSize: 10, color: "var(--hc-text-muted)", marginBottom: 2 }}>
                 上限額（目安）
               </div>
-              {/* max_amount: 13px上限。特大カウント禁止。null/0 は "—" */}
+              {/* max_amount: 13px上限。特大カウント禁止。0 は「都道府県・自治体ごとに異なる」 */}
               <div
                 style={{
                   fontSize: 13,
@@ -148,9 +149,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
                   fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
                 }}
               >
-                {item.subsidy.max_amount != null && item.subsidy.max_amount > 0
-                  ? `${(item.subsidy.max_amount / 10000).toLocaleString()}万円`
-                  : "—"}
+                {formatSubsidyAmount(item.subsidy)}
               </div>
             </div>
 
@@ -174,7 +173,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
                   fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
                 }}
               >
-                {rateText || "—"}
+                {rateText}
               </div>
             </div>
 

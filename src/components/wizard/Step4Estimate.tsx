@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createEstimate, generateEstimatePdf, ApiError } from "@/lib/api";
+import { formatFraction, formatSubsidyAmount, isPerUnitCap } from "@/lib/subsidyFormatters";
 import type {
   CompanyInfo,
   EstimateSnapshot,
@@ -55,8 +56,9 @@ export default function Step4Estimate({
   const localTotalBeforeSubsidy = productSubtotal + localInstallCost + localNetworkSetup;
 
   // 自治会向け補助金は max_amount を「1台あたり上限」として扱い、台数を掛ける
+  // （2026-10-27: 東京都・埼玉県の制度は上限が1申請あたりの総額のため掛けない。判定は subsidyFormatters に集約）
   const totalCameraCount = ipCount + analogCount;
-  const isJichikaiSubsidy = subsidy.draftSubsidyType === "jichitai_bouhan";
+  const isJichikaiSubsidy = isPerUnitCap({ id: subsidy.id, draft_subsidy_type: subsidy.draftSubsidyType });
   const effectiveMaxAmount = isJichikaiSubsidy
     ? subsidy.maxAmount * Math.max(1, totalCameraCount)
     : subsidy.maxAmount;
@@ -155,7 +157,7 @@ export default function Step4Estimate({
       {/* サマリー */}
       <section className="bg-white border border-border rounded-[10px] p-5 space-y-3">
         <SummaryRow label="申込会社" value={`${company.companyName}（${company.prefecture} / ${company.industry}）`} />
-        <SummaryRow label="利用する補助金" value={`${subsidy.name}（上限 ${subsidy.rateMax != null ? `${Math.round(subsidy.rateMax * 100)}%` : "—"} / 最大 ${subsidy.maxAmount.toLocaleString("ja-JP")}円）`} />
+        <SummaryRow label="利用する補助金" value={`${subsidy.name}（補助率 最大${subsidy.rateMax != null && subsidy.rateMax > 0 ? formatFraction(subsidy.rateMax) : "—"} / 上限 ${formatSubsidyAmount({ id: subsidy.id, max_amount: subsidy.maxAmount, draft_subsidy_type: subsidy.draftSubsidyType })}）`} />
         <div>
           <p className="text-[12px] text-text-muted mb-1">製品構成（{products.length}品目）</p>
           <ul className="text-[13px] text-text space-y-0.5">

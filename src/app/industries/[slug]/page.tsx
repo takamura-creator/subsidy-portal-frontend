@@ -4,6 +4,7 @@ import Link from "next/link";
 import { INDUSTRY_LPS } from "@/data/industry-lp";
 import { getSubsidyById } from "@/lib/subsidies-server";
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
+import { formatRate, formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -111,7 +112,7 @@ export default async function IndustryLPPage({ params }: Props) {
               >
                 <strong style={{ fontSize: 14, color: "var(--hc-navy)" }}>{s.name}</strong>
                 <span style={{ fontSize: 12, color: "var(--hc-text-muted)", marginLeft: 8 }}>
-                  最大 {s.max_amount.toLocaleString()}円{s.rate_max != null ? ` / 補助率 ${Math.round(s.rate_max * 100)}%` : ""}
+                  {hasAmountCap(s.max_amount) ? `最大 ${formatSubsidyAmount(s)}` : `上限は${formatSubsidyAmount(s)}`}{s.rate_max != null ? ` / 補助率 ${formatRate(s.rate_min, s.rate_max)}` : ""}
                 </span>
               </Link>
             ))
