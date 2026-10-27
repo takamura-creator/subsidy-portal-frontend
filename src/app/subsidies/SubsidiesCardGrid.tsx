@@ -10,6 +10,7 @@ import Link from "next/link";
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil, isCtaActive } from "@/lib/deadlineUtils";
 import { formatRate } from "@/lib/subsidyFormatters";
+import { subsidyStatusBadgeText } from "@/lib/subsidyStatus";
 
 interface SubsidiesCardGridProps {
   sorted: Subsidy[];
@@ -128,47 +129,23 @@ function SubsidyCard({ s, formatAmountDisplay }: { s: Subsidy; formatAmountDispl
           </span>
         </span>
 
-        {/* H-3: status/deadline に応じてバッジを切り替え */}
-        {s.status === "closed" ? (
-          <span style={{
-            fontSize: 11, fontWeight: 700,
-            color: "var(--hc-text-muted)", background: "var(--hc-bg)",
-            padding: "2px 8px", borderRadius: 9999,
-            border: "1px solid var(--hc-border)",
-          }}>
-            締切済み
-          </span>
-        ) : s.status === "upcoming" ? (
-          <span style={{
-            fontSize: 11, fontWeight: 700,
-            color: "var(--hc-text-muted)", background: "var(--hc-bg)",
-            padding: "2px 8px", borderRadius: 9999,
-            border: "1px solid var(--hc-border)",
-          }}>
-            公募前
-          </span>
-        ) : isUrgent ? (
-          <span style={{
+        {/* 受付状態バッジ: 文言は API の status だけで決める（詳細ページの見出し・ステータス行と同じ語）。
+            締切30日以内の公募中だけ強調色＋「あとN日」 */}
+        <span
+          data-testid="subsidy-card-status"
+          style={isUrgent ? {
             fontSize: 11, fontWeight: 700,
             color: "var(--hc-accent)", background: "var(--hc-accent-subtle)",
             padding: "2px 8px", borderRadius: 9999,
-          }}>
-            あと{days}日
-          </span>
-        ) : days === null ? (
-          <span style={{
-            fontSize: 11, fontWeight: 600,
+          } : {
+            fontSize: 11, fontWeight: 700,
             color: "var(--hc-text-muted)", background: "var(--hc-bg)",
             padding: "2px 8px", borderRadius: 9999,
             border: "1px solid var(--hc-border)",
-          }}>
-            締切要確認
-          </span>
-        ) : (
-          <span style={{ fontSize: 11, color: "var(--hc-text-muted)" }}>
-            {s.deadline}
-          </span>
-        )}
+          }}
+        >
+          {subsidyStatusBadgeText(s.status, s.deadline, 30)}
+        </span>
       </div>
 
       {/* 見出し: 補助金名 Title20px・weight700（主役） */}

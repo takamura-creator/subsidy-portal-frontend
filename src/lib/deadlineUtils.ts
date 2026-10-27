@@ -21,13 +21,16 @@ export function isCtaActive(status: string, deadline: string): boolean {
 /**
  * H-3: CTA が非活性の理由を人が読める文字列で返す。
  * CTA ボタン代替テキストとして使用する。
+ * 2026-10-27: 受付状態の言葉は API の status だけで決める（subsidyStatus.ts と同じ語:
+ * closed=受付終了 / upcoming=公募予定）。open なのに締切日が読めない・過去日に見える場合も
+ * 「締切済み」とは言い切らない（ステータス行の「公募中」と食い違うため）。
  */
 export function getCtaDisabledReason(status: string, deadline: string): string {
-  if (status === "closed") return "締切済み（次回公募をお待ちください）";
-  if (status === "upcoming") return "現在は公募前（公募開始後にご確認ください）";
+  if (status === "closed") return "受付終了（次回公募をお待ちください）";
+  if (status === "upcoming") return "公募予定（公募開始後にご確認ください）";
+  if (status !== "open") return "受付状況は公式サイトでご確認ください";
   const days = getDaysUntil(deadline);
-  if (days === null) return "締切未確定（お問い合わせください）";
-  if (days <= 0) return "締切済み（次回公募をお待ちください）";
+  if (days === null || days <= 0) return "締切日は公式サイトでご確認ください";
   return ""; // active なら空文字
 }
 

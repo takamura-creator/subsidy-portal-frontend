@@ -8,6 +8,7 @@
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { formatAmount, formatRate } from "@/lib/subsidyFormatters";
+import { subsidyStatusLabel } from "@/lib/subsidyStatus";
 
 interface SubsidyInfoSectionsProps {
   subsidy: Subsidy;
@@ -97,13 +98,12 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
             申請締切:{" "}
             <strong style={{ color: "var(--hc-accent)" }}>
               {s.deadline}
-              {days !== null && days > 0 && `（あと${days}日）`}
-              {days !== null && days <= 0 && "（締切済み）"}
+              {/* 日付は「あとN日」の補足だけ。受付状態はステータス行（API の status）が唯一の正 */}
+              {s.status === "open" && days !== null && days > 0 && `（あと${days}日）`}
             </strong>
           </li>
-          <li style={{ marginBottom: 6 }}>
-            ステータス:{" "}
-            {s.status === "open" ? "公募中" : s.status === "upcoming" ? "公募予定" : "締切済み"}
+          <li style={{ marginBottom: 6 }} data-testid="subsidy-status-line">
+            ステータス: {subsidyStatusLabel(s.status)}
           </li>
         </ul>
         {s.application_tips && (

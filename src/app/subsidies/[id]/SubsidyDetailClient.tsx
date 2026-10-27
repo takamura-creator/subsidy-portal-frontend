@@ -17,8 +17,9 @@ import SubsidyInfoSections from "@/components/subsidies/SubsidyInfoSections";
 import StickyCtaBar from "@/components/subsidies/StickyCtaBar";
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { Subsidy } from "@/lib/api";
-import { getDaysUntil, isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
+import { isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
 import { formatAmount } from "@/lib/subsidyFormatters";
+import { subsidyStatusBadgeText } from "@/lib/subsidyStatus";
 
 export default function SubsidyDetailClient({
   subsidy: s,
@@ -28,7 +29,6 @@ export default function SubsidyDetailClient({
   /** true: API取得に失敗し同梱データ（古い可能性）で表示中（2026-09-15 注文書） */
   stale?: boolean;
 }) {
-  const days = getDaysUntil(s.deadline);
   // H-3: status と deadline の両方でガード
   const ctaActive = isCtaActive(s.status, s.deadline);
   const disabledReason = ctaActive ? "" : getCtaDisabledReason(s.status, s.deadline);
@@ -77,8 +77,9 @@ export default function SubsidyDetailClient({
 
         {/* メタタグ行 */}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-          {/* 締切バッジ */}
+          {/* 受付状態バッジ: API の status だけで決める（ステータス行・一覧バッジと同じ語） */}
           <span
+            data-testid="subsidy-status-badge"
             style={{
               fontSize: 12,
               padding: "4px 10px",
@@ -88,12 +89,7 @@ export default function SubsidyDetailClient({
               color: "var(--hc-accent)",
             }}
           >
-            {/* H-3: status/deadline 両方チェックしたバッジ表示 */}
-              {!ctaActive
-                ? (disabledReason || `締切: ${s.deadline}`)
-                : days !== null && days > 0
-                  ? `締切まであと${days}日`
-                  : `締切: ${s.deadline}`}
+            {subsidyStatusBadgeText(s.status, s.deadline)}
           </span>
 
           {/* 上限額バッジ（景表法: Caption級・無彩色） */}
