@@ -11,9 +11,11 @@ import EligibilityChecker from "@/components/subsidies/EligibilityChecker";
 interface SubsidyJichikaiBlocksProps {
   subsidyId: string;
   subsidyName: string;
+  /** false: 参考書類テンプレの誘導を出さない（直接申請できない制度・2026-10-28 審査[6]） */
+  showTemplates?: boolean;
 }
 
-export default function SubsidyJichikaiBlocks({ subsidyId, subsidyName }: SubsidyJichikaiBlocksProps) {
+export default function SubsidyJichikaiBlocks({ subsidyId, subsidyName, showTemplates = true }: SubsidyJichikaiBlocksProps) {
   return (
     <>
       {/* 鵠沼地区実績バナー */}
@@ -59,6 +61,7 @@ export default function SubsidyJichikaiBlocks({ subsidyId, subsidyName }: Subsid
       <EligibilityChecker key={subsidyId} subsidyId={subsidyId} subsidyName={subsidyName} />
 
       {/* 参考書類テンプレ誘導 */}
+      {showTemplates && (
       <section
         style={{
           marginBottom: 24,
@@ -106,6 +109,7 @@ export default function SubsidyJichikaiBlocks({ subsidyId, subsidyName }: Subsid
           </Link>
         </div>
       </section>
+      )}
     </>
   );
 }

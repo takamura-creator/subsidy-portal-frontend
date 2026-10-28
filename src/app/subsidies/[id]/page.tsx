@@ -11,6 +11,8 @@ import {
   getSubsidyById,
 } from "@/lib/subsidies-server";
 import { formatRate, formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
+import { INDIRECT_GUIDE, HOME_GUIDE, isHomeSubsidy, subsidyAttributes } from "@/lib/subsidyAttributes";
+import type { Subsidy } from "@/lib/api";
 import SubsidyDetailClient from "./SubsidyDetailClient";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hojyocame.jp";
@@ -58,6 +60,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/**
+ * 「誰が申請できますか」の FAQ（2026-10-28 審査[5]）。本文の対象者（SubsidyInfoSections の targetText）と
+ * 同じ正本の項目（applicant・indirect・category）から作り、構造化データと本文を食い違わせない。
+ * 直接申請できない制度・個人宅向けの制度だけ返す（それ以外は null＝既存の FAQ のまま）。
+ */
+function applicantFaq(subsidy: Subsidy): { question: string; answer: string } | null {
+  const { applicant, indirect } = subsidyAttributes(subsidy);
+  const question = `${subsidy.name}は誰が申請できますか？`;
+  if (indirect) {
+    return {
+      question,
+      answer: `申請者は${applicant ?? "自治体"}です。事業者・団体・個人が直接申請する制度ではありません。利用できるかどうか・申請の方法は、${INDIRECT_GUIDE}お問い合わせください。`,
+    };
+  }
+  if (isHomeSubsidy(subsidy)) {
+    return {
+      question,
+      answer: `住宅にお住まいの方（個人宅）が対象です。法人・事業者は対象外です。${HOME_GUIDE}します。要件は公式ページでご確認ください。`,
+    };
+  }
+  return null;
+}
+
 export default async function SubsidyDetailPage({ params }: Props) {
   const { id } = await params;
   const { subsidy, stale } = await getSubsidyById(id);
@@ -67,9 +92,10 @@ export default async function SubsidyDetailPage({ params }: Props) {
 
   // 補助金共通FAQ（リッチリザルト対応）
   const isJichikai = subsidy.target_industries?.includes("自治会・町会");
+  const applicantItem = applicantFaq(subsidy);
   const faqItems = isJichikai
     ? [
-        {
+        applicantItem ?? {
           question: `${subsidy.name}は誰が申請できますか？`,
           answer:
             "自治会・町内会・商店街等の地域団体が申請主体となります。個人・営利企業からの直接申請は対象外のケースが大半です。",
@@ -91,7 +117,7 @@ export default async function SubsidyDetailPage({ params }: Props) {
         },
       ]
     : [
-        {
+        applicantItem ?? {
           question: `${subsidy.name}の対象業種を教えてください`,
           answer:
             (subsidy.target_industries ?? []).length > 0

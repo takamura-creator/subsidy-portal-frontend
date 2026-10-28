@@ -20,7 +20,14 @@ import type { Subsidy } from "@/lib/api";
 import { isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
 import { formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyStatusBadgeText } from "@/lib/subsidyStatus";
-import { INDIRECT_GUIDE, isIndirect } from "@/lib/subsidyAttributes";
+import {
+  HOME_GUIDE,
+  INDIRECT_GUIDE,
+  hasRegionalDeadlines,
+  isHomeSubsidy,
+  isIndirect,
+} from "@/lib/subsidyAttributes";
+import { hasTemplatesPage } from "@/lib/jichikai";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 
 export default function SubsidyDetailClient({
@@ -34,9 +41,18 @@ export default function SubsidyDetailClient({
   // H-3: status と deadline の両方でガード
   // 利用者が直接申請できない制度（市町村・都道府県を通じて使う）は申請ボタンを出さず窓口を案内する（審査 F-[6]）
   const indirect = isIndirect(s);
-  const ctaActive = !indirect && isCtaActive(s.status, s.deadline);
-  const disabledReason = ctaActive || indirect ? "" : getCtaDisabledReason(s.status, s.deadline);
+  // 個人宅向けの制度は住民が区市町村へ申請する。ウィザード（事業者・自治会向け）へ送ると行き止まりになるため
+  // 申請書作成の導線を出さず、区市町村の窓口・公式ページを案内する（2026-10-28 審査[8]）
+  const home = !indirect && isHomeSubsidy(s);
+  const ctaActive = !indirect && !home && isCtaActive(s.status, s.deadline);
+  const disabledReason = ctaActive || indirect || home ? "" : getCtaDisabledReason(s.status, s.deadline);
   const isJichikai = s.target_industries?.includes("自治会・町会") ?? false;
+  // 都道府県ごとに受付終了日がある制度（業務改善助成金）は「公募中」と言い切らない（2026-10-28 審査[2]）
+  const regional = hasRegionalDeadlines(s);
+  const statusBadge =
+    regional && s.status === "open"
+      ? "公募中（都道府県ごとに受付終了あり）"
+      : subsidyStatusBadgeText(s.status, s.deadline);
 
   return (
     <>
@@ -93,7 +109,7 @@ export default function SubsidyDetailClient({
               color: "var(--hc-accent)",
             }}
           >
-            {subsidyStatusBadgeText(s.status, s.deadline)}
+            {statusBadge}
           </span>
 
           {/* 上限額バッジ（景表法: Caption級・無彩色） */}
@@ -136,7 +152,7 @@ export default function SubsidyDetailClient({
         {/* 自治会ブロック（条件付き） */}
         {isJichikai && (
           <div style={{ marginBottom: 96 }}>
-            <SubsidyJichikaiBlocks subsidyId={s.id} subsidyName={s.name} />
+            <SubsidyJichikaiBlocks subsidyId={s.id} subsidyName={s.name} showTemplates={hasTemplatesPage(s)} />
           </div>
         )}
 
@@ -158,6 +174,22 @@ export default function SubsidyDetailClient({
                   style={{ color: "var(--hc-primary)", textDecoration: "underline", fontSize: 14 }}
                 >
                   公式サイトで制度の内容を確認する →
+                </a>
+              )}
+            </div>
+          ) : home ? (
+            <div data-testid="home-cta" style={{ fontSize: 15, color: "var(--hc-text)", lineHeight: 1.7 }}>
+              <p style={{ margin: "0 0 8px", fontWeight: 600 }}>
+                個人宅向けの制度です。{HOME_GUIDE}してください。
+              </p>
+              {s.source_url && (
+                <a
+                  href={s.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--hc-primary)", textDecoration: "underline", fontSize: 14 }}
+                >
+                  区市町村の公式ページで申請方法を確認する →
                 </a>
               )}
             </div>
@@ -199,6 +231,11 @@ export default function SubsidyDetailClient({
             >
               この補助金で申請書を作成する
             </Link>
+          )}
+          {regional && !indirect && (
+            <p data-testid="regional-cta-note" style={{ fontSize: 13, color: "var(--hc-accent)", marginTop: 10, lineHeight: 1.6 }}>
+              都道府県ごとに受付終了日が違います。事業所のある都道府県の受付終了日を、上の「都道府県ごとの受付終了日」でご確認ください。
+            </p>
           )}
           <p style={{ fontSize: 12, color: "var(--hc-text-muted)", marginTop: 10 }}>
             <Link href="/partners/multik" style={{ color: "var(--hc-primary)", textDecoration: "none" }}>

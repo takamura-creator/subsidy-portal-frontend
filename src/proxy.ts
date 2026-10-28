@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isRetiredSubsidyId } from "@/lib/retiredSubsidies";
-import { isJichikaiSubsidy } from "@/lib/jichikai";
+import { hasTemplatesPage } from "@/lib/jichikai";
 import { isValidPrefectureName, romanSlugToLpPath } from "@/lib/prefectureLp";
 
 /**
@@ -48,7 +48,7 @@ const EXISTS_CACHE_MAX = 1000;
 
 /**
  * 存在確認の結果。exists=false は backend が 404 と明言したもの。
- * jichikai は存在する制度が自治会・町会向けか（本文を読めなかったときは null＝判定しない）。
+ * jichikai は存在する制度に templates ページがあるか（自治会・町会向けで直接申請できる制度。本文を読めなかったときは null＝判定しない）。
  */
 type SubsidyCheck = { exists: true; jichikai: boolean | null } | { exists: false };
 const checkCache = new Map<string, { until: number; check: SubsidyCheck }>();
@@ -77,9 +77,15 @@ async function checkSubsidy(id: string): Promise<SubsidyCheck | null> {
     if (!res.ok) return null;
     let jichikai: boolean | null = null;
     try {
-      const body = (await res.json()) as { target_industries?: unknown };
+      const body = (await res.json()) as { target_industries?: unknown; indirect?: unknown };
       if (Array.isArray(body.target_industries)) {
-        jichikai = isJichikaiSubsidy(body.target_industries.filter((x): x is string => typeof x === "string"));
+        // 直接申請できない制度（indirect）にも templates は無い（2026-10-28 審査[6]）。
+        // API が indirect を返さない（古い backend）ときは同梱の表で補う（subsidyAttributes の規則）
+        jichikai = hasTemplatesPage({
+          id,
+          target_industries: body.target_industries.filter((x): x is string => typeof x === "string"),
+          ...(typeof body.indirect === "boolean" ? { indirect: body.indirect } : {}),
+        });
       }
     } catch {
       jichikai = null; // 本文を読めない → 自治会向けかは判定しない（templates を誤って404にしない）

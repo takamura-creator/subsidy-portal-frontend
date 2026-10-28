@@ -9,7 +9,7 @@ import type { Subsidy } from "@/lib/api";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { formatRate, formatSelfPay, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyStatusLabel } from "@/lib/subsidyStatus";
-import { INDIRECT_GUIDE, isCameraUnconfirmed, regionalLastDays, subsidyAttributes } from "@/lib/subsidyAttributes";
+import { HOME_GUIDE, INDIRECT_GUIDE, isCameraUnconfirmed, isHomeSubsidy, regionalLastDays, subsidyAttributes } from "@/lib/subsidyAttributes";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 
 interface SubsidyInfoSectionsProps {
@@ -142,11 +142,13 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
             <strong style={{ color: "var(--hc-accent)" }}>
               {s.deadline}
               {/* 日付は「あとN日」の補足だけ。受付状態はステータス行（API の status）が唯一の正 */}
-              {s.status === "open" && days !== null && days > 0 && `（あと${days}日）`}
+              {/* 都道府県ごとに受付終了日が違う制度は全国一律の「あとN日」を出さない（審査[2]） */}
+              {s.status === "open" && regional.length === 0 && days !== null && days > 0 && `（あと${days}日）`}
             </strong>
           </li>
           <li style={{ marginBottom: 6 }} data-testid="subsidy-status-line">
             ステータス: {subsidyStatusLabel(s.status)}
+            {s.status === "open" && regional.length > 0 && "（都道府県ごとに受付終了あり。下の表をご確認ください）"}
           </li>
         </ul>
         {regional.length > 0 && (
@@ -191,6 +193,10 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
           <p data-testid="indirect-guide" style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
             この制度は直接は申請できません（{targetText(s)}）。利用できるかどうか・申請の方法は、
             {INDIRECT_GUIDE}お問い合わせください。
+          </p>
+        ) : isHomeSubsidy(s) ? (
+          <p data-testid="home-guide" style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
+            個人宅向けの制度です。{HOME_GUIDE}してください（申請の手順・必要書類は公式ページでご確認ください）。
           </p>
         ) : (
           <ol style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>

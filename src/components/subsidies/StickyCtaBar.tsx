@@ -9,7 +9,7 @@
 import Link from "next/link";
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil, isCtaActive, getCtaDisabledReason } from "@/lib/deadlineUtils";
-import { INDIRECT_GUIDE, isIndirect } from "@/lib/subsidyAttributes";
+import { HOME_GUIDE, INDIRECT_GUIDE, hasRegionalDeadlines, isHomeSubsidy, isIndirect } from "@/lib/subsidyAttributes";
 
 interface StickyCtaBarProps {
   subsidy: Subsidy;
@@ -20,16 +20,23 @@ export default function StickyCtaBar({ subsidy: s }: StickyCtaBarProps) {
   // H-3: status と deadline の両方でガード（二重チェック）
   // 直接申請できない制度は申請ボタンを出さず、窓口を案内する（審査 F-[6]）
   const indirect = isIndirect(s);
-  const ctaActive = !indirect && isCtaActive(s.status, s.deadline);
+  // 個人宅向けの制度は区市町村の窓口・公式ページへ（ウィザードへ送ると行き止まり・2026-10-28 審査[8]）
+  const home = !indirect && isHomeSubsidy(s);
+  const ctaActive = !indirect && !home && isCtaActive(s.status, s.deadline);
   const disabledReason = indirect
     ? `申請は${INDIRECT_GUIDE}`
-    : ctaActive ? "" : getCtaDisabledReason(s.status, s.deadline);
+    : home
+      ? HOME_GUIDE
+      : ctaActive ? "" : getCtaDisabledReason(s.status, s.deadline);
 
   const deadlineMeta = !ctaActive && disabledReason
     ? disabledReason
-    : days !== null && days > 0
-      ? `締切まであと${days}日`
-      : `締切: ${s.deadline}`;
+    : hasRegionalDeadlines(s)
+      // 都道府県ごとに受付終了日が違う制度は、全国一律の締切から「あとN日」を出さない（審査[2]）
+      ? "都道府県ごとに受付終了日が異なります"
+      : days !== null && days > 0
+        ? `締切まであと${days}日`
+        : `締切: ${s.deadline}`;
 
   return (
     <div
@@ -89,6 +96,35 @@ export default function StickyCtaBar({ subsidy: s }: StickyCtaBarProps) {
         >
           直接は申請できません
         </span>
+      ) : home ? (
+        s.source_url ? (
+          <a
+            data-testid="home-cta"
+            href={s.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              flexShrink: 0,
+              display: "inline-flex",
+              alignItems: "center",
+              padding: "10px 20px",
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 700,
+              color: "var(--hc-primary)",
+              background: "var(--hc-white)",
+              border: "1px solid var(--hc-primary)",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            公式ページで申請方法を見る
+          </a>
+        ) : (
+          <span data-testid="home-cta" style={{ flexShrink: 0, fontSize: 12, fontWeight: 600, color: "var(--hc-text-muted)", whiteSpace: "nowrap" }}>
+            区市町村の窓口へ
+          </span>
+        )
       ) : !ctaActive ? (
         <span
           role="button"

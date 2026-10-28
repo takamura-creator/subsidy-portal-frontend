@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getAllSubsidies, getSubsidyById } from "@/lib/subsidies-server";
 import TemplateGenerator from "@/components/subsidies/TemplateGenerator";
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
-import { isJichikaiSubsidy } from "@/lib/jichikai";
+import { hasTemplatesPage } from "@/lib/jichikai";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -14,6 +14,7 @@ type Props = {
  * 自治会向け補助金専用：参考書類テンプレ生成ページ
  *
  * - 自治会・町会向け補助金（target_industries に「自治会・町会」を含む）のみアクセス可能
+ *   （直接申請できない制度＝申請者が市町村の制度は除く・2026-10-28 審査[6]）
  * - 認証不要（リード獲得目的）
  * - SSG: 全自治会向け補助金IDで静的生成
  */
@@ -22,7 +23,7 @@ export async function generateStaticParams() {
   // 自治会向け補助金のみページを生成
   const { subsidies } = await getAllSubsidies();
   return subsidies
-    .filter((s) => isJichikaiSubsidy(s.target_industries))
+    .filter((s) => hasTemplatesPage(s))
     .map((s) => ({ id: s.id }));
 }
 
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { subsidy } = await getSubsidyById(id);
   // 自治会向けでない制度にはこのページが無い（本文は notFound()）。proxy で 404 にできなかった場合
   // （API 不達など）でも検索エンジンに載せない（2026-10-27 審査[14]）
-  if (!subsidy || !isJichikaiSubsidy(subsidy.target_industries)) {
+  if (!subsidy || !hasTemplatesPage(subsidy)) {
     return {
       title: "ページが見つかりません",
       robots: { index: false, follow: false },
@@ -51,7 +52,7 @@ export default async function TemplatesPage({ params }: Props) {
   // （API不達時、テンプレ生成の元になる補助金名・都道府県が古い可能性がある）
   const { subsidy, stale } = await getSubsidyById(id);
   if (!subsidy) notFound();
-  if (!isJichikaiSubsidy(subsidy.target_industries)) notFound();
+  if (!hasTemplatesPage(subsidy)) notFound();
 
   return (
     <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px 40px" }}>
