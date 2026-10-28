@@ -1,6 +1,7 @@
 // F1: カメラ関連補助金フィルタ共通モジュール（介護除外 ID リスト方式）
 import type { Subsidy } from "./api";
 import { SERVICE_PREFECTURES, toApiIndustry } from "./constants";
+import { subsidyAttributes } from "./subsidyAttributes";
 
 export const CAMERA_KEYWORDS = ["防犯", "セキュリティ", "カメラ", "監視", "IT導入", "DX"];
 
@@ -31,13 +32,22 @@ export function filterCameraOnly(items: Subsidy[], industry?: string): Subsidy[]
     if (apiIndustry && s.target_industries?.length > 0 && !s.target_industries.includes(apiIndustry)) {
       return false;
     }
-    return CAMERA_KEYWORDS.some(
-      (kw) =>
-        s.name.includes(kw) ||
-        s.category.includes(kw) ||
-        (s.description?.includes(kw) ?? false)
-    );
+    // 2026-10-28（審査 [7]）: 正本の制度（camera_eligibility を持つ行）は説明文の語ではなく
+    // camera_eligibility で決める。confirmed / unconfirmed のどちらも出す（unconfirmed は
+    // CameraEligibilityNote の注記が付く）。介護の制度のように説明文に「カメラ」等の語が無くても
+    // カメラ対象が確認済みなら出す。camera_eligibility を持たない行（自動更新で入る行）だけ語で判定する。
+    if (subsidyAttributes(s).camera_eligibility !== null) return true;
+    return matchesCameraKeywords(s);
   });
+}
+
+function matchesCameraKeywords(s: Subsidy): boolean {
+  return CAMERA_KEYWORDS.some(
+    (kw) =>
+      s.name.includes(kw) ||
+      s.category.includes(kw) ||
+      (s.description?.includes(kw) ?? false)
+  );
 }
 
 // LP6ブラッシュアップ（2026-07-20）: 県固有制度（例: 静岡市の街頭防犯カメラ補助）が
