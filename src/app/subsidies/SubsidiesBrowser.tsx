@@ -33,6 +33,7 @@ import { toApiIndustry } from "@/lib/constants";
 import { compareByStatus } from "@/lib/subsidyStatus";
 import { getDaysUntil } from "@/lib/deadlineUtils";
 import { formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
+import { isRegionallyClosed, subsidyAttributes } from "@/lib/subsidyAttributes";
 // getDaysUntil は sorted の sort ロジックで使用
 import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import SubsidiesFilterRail from "./SubsidiesFilterRail";
@@ -65,6 +66,21 @@ function filterBundledLocally(prefecture: string, category: string, industry: st
     return true;
   });
   return filterCameraOnly(scoped, industry || undefined);
+}
+
+/**
+ * 金額の絞り込み・並べ替えに使う額（2026-10-28 審査[12]）。1台あたりの上限で台数上限がある制度
+ * （相模原 12万円/台・8台まで）は総額（96万円）で比べる。台数上限が無い1台あたりの制度は1台分で比べる。
+ */
+function comparableAmount(s: Subsidy): number {
+  const { max_amount_unit, max_units } = subsidyAttributes(s);
+  if (max_amount_unit === "per_camera" && max_units) return s.max_amount * max_units;
+  return s.max_amount;
+}
+
+/** 受付状態（都道府県で絞っていて、その都道府県の最終受付日を過ぎた制度は受付終了として扱う・審査[2]） */
+function effectiveStatus(s: Subsidy, prefecture: string): string {
+  return isRegionallyClosed(s, prefecture) ? "closed" : s.status;
 }
 
 function formatAmountDisplay(s: Subsidy): string {
@@ -139,15 +155,16 @@ function SubsidiesContent({
   const filtered = subsidies.filter((s) => {
     // 上限額が無い制度（国一律の上限なし）は金額の絞り込みに含めない（0円扱いで「〜50万円」に入らない）
     if (amountFilter && !hasAmountCap(s.max_amount)) return false;
-    if (amountFilter === "50" && s.max_amount > 500000) return false;
-    if (amountFilter === "100" && s.max_amount > 1000000) return false;
-    if (amountFilter === "500" && s.max_amount > 5000000) return false;
-    if (amountFilter === "500plus" && s.max_amount < 5000000) return false;
+    const amount = comparableAmount(s);
+    if (amountFilter === "50" && amount > 500000) return false;
+    if (amountFilter === "100" && amount > 1000000) return false;
+    if (amountFilter === "500" && amount > 5000000) return false;
+    if (amountFilter === "500plus" && amount < 5000000) return false;
     if (govLevel === "national" && s.pref_code !== "00") return false;
     if (govLevel === "prefectural" && s.pref_code === "00") return false;
     if (deadlineFilter) {
       // 「締切N日以内」は締切を過ぎていない受付中の制度だけ（受付終了・公募予定・締切が読めない制度は含めない・審査[4]）
-      if (s.status !== "open") return false;
+      if (effectiveStatus(s, prefecture) !== "open") return false;
       const days = getDaysUntil(s.deadline);
       if (days === null || days < 0 || days > parseInt(deadlineFilter)) return false;
     }
@@ -157,11 +174,14 @@ function SubsidiesContent({
   const sorted = [...filtered].sort((a, b) => {
     if (sort === "deadline") {
       // 受付中 → 公募予定 → 受付終了 に分けてから締切順（受付終了の制度が先頭に来ないように・審査[4]）
-      const byStatus = compareByStatus(a, b);
+      const byStatus = compareByStatus(
+        { status: effectiveStatus(a, prefecture) },
+        { status: effectiveStatus(b, prefecture) },
+      );
       if (byStatus !== 0) return byStatus;
       return (getDaysUntil(a.deadline) ?? 999) - (getDaysUntil(b.deadline) ?? 999);
     }
-    if (sort === "amount") return b.max_amount - a.max_amount;
+    if (sort === "amount") return comparableAmount(b) - comparableAmount(a);
     if (sort === "new") {
       const ua = a.updated_at ?? "";
       const ub = b.updated_at ?? "";
@@ -233,6 +253,7 @@ function SubsidiesContent({
             sort={sort}
             formatAmountDisplay={formatAmountDisplay}
             onSort={setSort}
+            prefecture={prefecture}
           />
 
           {/* フットノート（景表法注記維持） */}

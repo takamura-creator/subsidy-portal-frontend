@@ -10,8 +10,27 @@ import Link from "next/link";
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil, isCtaActive } from "@/lib/deadlineUtils";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
+import IndirectApplicantNote from "@/components/subsidies/IndirectApplicantNote";
 import { formatRate } from "@/lib/subsidyFormatters";
-import { subsidyStatusBadgeText } from "@/lib/subsidyStatus";
+import { subsidyStatusBadgeText, subsidyStatusLabel } from "@/lib/subsidyStatus";
+import { hasRegionalDeadlines, isRegionallyClosed, regionalLastDay } from "@/lib/subsidyAttributes";
+
+/**
+ * カードの受付状態の文言（2026-10-28 審査[2]）。都道府県ごとに受付終了日がある制度（業務改善助成金）は、
+ * 都道府県で絞っていればその都道府県の最終受付日で決め、絞っていなければ「公募中」と言い切らない。
+ */
+function cardStatusText(s: Subsidy, prefecture: string): string {
+  if (s.status === "open" && hasRegionalDeadlines(s)) {
+    if (isRegionallyClosed(s, prefecture)) return `${subsidyStatusLabel("closed")}（${prefecture}）`;
+    const last = regionalLastDay(s, prefecture);
+    if (last) {
+      const [, m, d] = last.split("-").map(Number);
+      return `公募中・${prefecture}は${m}/${d}まで`;
+    }
+    return "公募中（都道府県ごとに受付終了あり）";
+  }
+  return subsidyStatusBadgeText(s.status, s.deadline, 30);
+}
 
 interface SubsidiesCardGridProps {
   sorted: Subsidy[];
@@ -19,10 +38,12 @@ interface SubsidiesCardGridProps {
   sort: string;
   formatAmountDisplay: (s: Subsidy) => string;
   onSort: (v: string) => void;
+  /** 都道府県の絞り込み（空=未指定）。都道府県ごとの受付終了日の判定に使う */
+  prefecture?: string;
 }
 
 export default function SubsidiesCardGrid({
-  sorted, loading, sort, formatAmountDisplay, onSort,
+  sorted, loading, sort, formatAmountDisplay, onSort, prefecture = "",
 }: SubsidiesCardGridProps) {
   return (
     <div style={{ minWidth: 0 }}>
@@ -58,7 +79,7 @@ export default function SubsidiesCardGrid({
           gap: 24,
         }}
       >
-        {sorted.map((s) => <SubsidyCard key={s.id} s={s} formatAmountDisplay={formatAmountDisplay} />)}
+        {sorted.map((s) => <SubsidyCard key={s.id} s={s} formatAmountDisplay={formatAmountDisplay} prefecture={prefecture} />)}
       </div>
 
       {/* 空状態 */}
@@ -76,10 +97,15 @@ export default function SubsidiesCardGrid({
   );
 }
 
-function SubsidyCard({ s, formatAmountDisplay }: { s: Subsidy; formatAmountDisplay: (s: Subsidy) => string }) {
+function SubsidyCard({ s, formatAmountDisplay, prefecture }: {
+  s: Subsidy;
+  formatAmountDisplay: (s: Subsidy) => string;
+  prefecture: string;
+}) {
   const days = getDaysUntil(s.deadline);
   // H-3: open かつ deadline パース可能かつ未来のものだけ「あとN日」バッジを出す
-  const ctaActive = isCtaActive(s.status, s.deadline);
+  // （都道府県ごとに受付終了日がある制度は全国一律の締切で強調しない）
+  const ctaActive = isCtaActive(s.status, s.deadline) && !hasRegionalDeadlines(s);
   const isUrgent = ctaActive && days != null && days <= 30;
 
   return (
@@ -145,7 +171,7 @@ function SubsidyCard({ s, formatAmountDisplay }: { s: Subsidy; formatAmountDispl
             border: "1px solid var(--hc-border)",
           }}
         >
-          {subsidyStatusBadgeText(s.status, s.deadline, 30)}
+          {cardStatusText(s, prefecture)}
         </span>
       </div>
 
@@ -221,6 +247,9 @@ function SubsidyCard({ s, formatAmountDisplay }: { s: Subsidy; formatAmountDispl
 
       {/* カメラ機器が補助対象と確認できない制度の注記（審査 F-[7]） */}
       <CameraEligibilityNote subsidy={s} compact />
+
+      {/* 直接申請できない制度の注記（上限額が自治体単位であることを読めるように・審査[3]） */}
+      <IndirectApplicantNote subsidy={s} />
 
       {/* 行C: カード右下・円形矢印ボタン（視覚的アフォーダンス） */}
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
