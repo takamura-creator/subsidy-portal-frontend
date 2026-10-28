@@ -7,6 +7,11 @@
  * （lib/api.ts・バックエンド `/api/subsidies`）を優先ソースにする。API不達時のみ
  * 同梱データ（ビルド時スナップショット）にフォールバックし、その間は
  * StaleDataNotice（compact）で「古い可能性」を明示する（黙って古いデータを出さない）。
+ *
+ * ⚠ 2026-10-28（審査[4]）: このカルーセルは現在どのページにも出ていない（読み込むのは
+ *   _deprecatedHeroStage.tsx だけで、それをどこも読み込んでいない）。filterCameraOnly も
+ *   CameraEligibilityNote・IndirectApplicantNote・都道府県ごとの受付終了も通していないため、
+ *   再びページに置くときは、一覧のカード（SubsidiesCardGrid）と同じ絞り込みと注記を先に入れること。
  */
 
 import { useEffect, useState } from "react";
