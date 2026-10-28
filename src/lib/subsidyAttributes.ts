@@ -94,3 +94,57 @@ export function regionalLastDays(s: WithAttributes): { prefecture: string; date:
     .map(([prefecture, iso]) => ({ prefecture, date: iso }))
     .sort((a, b) => (a.date === b.date ? 0 : a.date < b.date ? -1 : 1));
 }
+
+/* ── 2026-10-28（審査 [2][3][6][8]）: 申請の導線と都道府県ごとの受付終了 ── */
+
+/** 個人宅向けの制度のカテゴリ（正本の category） */
+export const HOME_CATEGORY = "個人宅防犯";
+
+/** 個人宅向けの制度か（申請は住民が区市町村へ行う。ウィザードの業種に個人宅は無い） */
+export function isHomeSubsidy(s: { category?: string | null }): boolean {
+  return s.category === HOME_CATEGORY;
+}
+
+export const HOME_GUIDE = "お住まいの区市町村の窓口・公式ページから申請";
+
+/** カード・診断結果に出す「直接は申請できない」注記（申請者が分かれば添える） */
+export function indirectNoteText(s: WithAttributes): string {
+  const { applicant } = subsidyAttributes(s);
+  return `直接は申請できません。申請は市町村（または都道府県）を通じて行います${applicant ? `（申請者は${applicant}）` : ""}`;
+}
+
+/**
+ * 見積もり作成・申請書類テンプレート・ウィザードの導線を出してよいか。
+ * 直接申請できない制度（indirect）と個人宅向けの制度は出さない（申請先は自治体の窓口）。
+ */
+export function canUseApplicationTools(s: WithAttributes & { category?: string | null }): boolean {
+  return !isIndirect(s) && !isHomeSubsidy(s);
+}
+
+/** 今日の日付（日本時間）を YYYY-MM-DD で返す */
+export function todayJstIso(now: Date = new Date()): string {
+  // sv-SE ロケールは YYYY-MM-DD 形式で出る
+  return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(now);
+}
+
+/** 都道府県ごとに受付終了日がある制度か */
+export function hasRegionalDeadlines(s: WithAttributes): boolean {
+  const table = subsidyAttributes(s).regional_last_day;
+  return !!table && Object.keys(table).length > 0;
+}
+
+/** その都道府県の最終受付日（ISO）。表に無ければ null */
+export function regionalLastDay(s: WithAttributes, prefecture: string | null | undefined): string | null {
+  if (!prefecture) return null;
+  return subsidyAttributes(s).regional_last_day?.[prefecture] ?? null;
+}
+
+/** その都道府県では最終受付日を過ぎているか（最終受付日の当日は受付中として扱う） */
+export function isRegionallyClosed(
+  s: WithAttributes,
+  prefecture: string | null | undefined,
+  today: string = todayJstIso(),
+): boolean {
+  const last = regionalLastDay(s, prefecture);
+  return last !== null && last < today;
+}

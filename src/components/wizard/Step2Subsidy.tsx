@@ -16,7 +16,16 @@ import StaleDataNotice from "@/components/subsidies/StaleDataNotice";
 import type { CompanyInfo, SubsidySelection } from "./types";
 import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { compareByStatus, subsidyStatusLabel } from "@/lib/subsidyStatus";
-import { CAMERA_UNCONFIRMED_NOTE, INDIRECT_GUIDE, isCameraUnconfirmed, subsidyAttributes } from "@/lib/subsidyAttributes";
+import {
+  CAMERA_UNCONFIRMED_NOTE,
+  HOME_GUIDE,
+  INDIRECT_GUIDE,
+  isCameraUnconfirmed,
+  isHomeSubsidy,
+  isRegionallyClosed,
+  regionalLastDay,
+  subsidyAttributes,
+} from "@/lib/subsidyAttributes";
 import subsidiesJson from "@/data/subsidies.json";
 
 // 最終フォールバック用の同梱データ（2026-09-15 注文書: APIが優先ソース。
@@ -40,6 +49,28 @@ function filterBundledForCompany(prefecture: string, industry: string): Subsidy[
     }),
     industry,
   ));
+}
+
+/**
+ * この画面で選べない理由（2026-10-28 審査[2][6][8]）。null なら選べる。
+ * - 直接申請できない制度: 見積もり・申請書類を作る相手がいない（申請者は自治体）
+ * - 個人宅向けの制度: 申請は住民が区市町村の窓口へ行う
+ * - 利用者の都道府県で最終受付日を過ぎた制度（業務改善助成金など）
+ * 受付終了（status=closed）の制度は従来どおり参考見積もりとして選べる。
+ */
+function blockReason(s: Subsidy, prefecture: string): string | null {
+  const attrs = subsidyAttributes(s);
+  if (attrs.indirect) {
+    return `直接は申請できないため、この画面では選べません（申請者は${attrs.applicant ?? "自治体"}）。申請は${INDIRECT_GUIDE}ご相談ください。`;
+  }
+  if (isHomeSubsidy(s)) {
+    return `個人宅向けの制度のため、この画面では選べません。${HOME_GUIDE}してください。`;
+  }
+  if (isRegionallyClosed(s, prefecture)) {
+    const last = regionalLastDay(s, prefecture) ?? "";
+    return `${prefecture}の受付は${last.replaceAll("-", "/")}で終了したため選べません。`;
+  }
+  return null;
 }
 
 interface Props {
@@ -115,10 +146,21 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
 
   const inServiceArea = area?.in_service_area ?? isServicePrefecture(company.prefecture);
 
+  const chosen = subsidies.find((x) => x.id === choice);
+  const chosenSelectable = !!chosen && blockReason(chosen, company.prefecture) === null;
+  // 前の画面（補助金詳細の ?subsidy_id= や下書き）で選ばれていたが、この一覧に無い・選べない制度の案内（行き止まりにしない）
+  const choiceNotice = !choice
+    ? null
+    : !chosen
+      ? `${selected?.name ?? "指定された補助金"}は、${company.prefecture}・選んだ業種の候補にありません。下の一覧から選び直すか、Step1 で業種・都道府県を見直してください。`
+      : chosenSelectable
+        ? null
+        : blockReason(chosen, company.prefecture);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const s = subsidies.find((x) => x.id === choice);
-    if (!s) return;
+    if (!s || blockReason(s, company.prefecture) !== null) return;
     onNext({
       id: s.id,
       name: s.name,
@@ -186,11 +228,15 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
         <form onSubmit={handleSubmit} className="space-y-3">
           <ul className="space-y-2" role="radiogroup" aria-label="補助金選択">
             {subsidies.map((s) => {
-              const isOpen = s.status === "open";
+              const blocked = blockReason(s, company.prefecture);
+              const regionallyClosed = isRegionallyClosed(s, company.prefecture);
+              const isOpen = s.status === "open" && !regionallyClosed;
               return (
               <li key={s.id}>
                 <label
-                  className={`block rounded-[10px] p-4 cursor-pointer transition hc-card-gradient ${
+                  data-testid="wizard-subsidy-option"
+                  data-blocked={blocked ? "true" : undefined}
+                  className={`block rounded-[10px] p-4 transition hc-card-gradient ${blocked ? "cursor-not-allowed opacity-70" : "cursor-pointer"} ${
                     choice === s.id
                       ? "border-primary"
                       : "hover:border-primary/50"
@@ -207,6 +253,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
                       name="subsidy"
                       value={s.id}
                       checked={choice === s.id}
+                      disabled={blocked !== null}
                       onChange={() => setChoice(s.id)}
                       className="mt-1 accent-primary"
                     />
@@ -225,7 +272,8 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
                               : "border-border text-text-muted bg-white"
                           }`}
                         >
-                          {subsidyStatusLabel(s.status)}
+                          {/* 利用者の都道府県で最終受付日を過ぎていれば「受付終了」（審査[2]） */}
+                          {regionallyClosed ? subsidyStatusLabel("closed") : subsidyStatusLabel(s.status)}
                         </span>
                       </div>
                       <div className="text-[12px] text-text-muted space-y-0.5">
@@ -239,21 +287,21 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
                             ⚠ {CAMERA_UNCONFIRMED_NOTE}（カメラ代の補助額は試算しません）
                           </p>
                         )}
-                        {subsidyAttributes(s).indirect && (
-                          <p className="text-navy">
-                            直接は申請できません（申請者は{subsidyAttributes(s).applicant ?? "自治体"}）。申請は{INDIRECT_GUIDE}ご相談ください。
+                        {(() => {
+                          const last = regionalLastDay(s, company.prefecture);
+                          return last && !regionallyClosed ? <p>{company.prefecture}の最終受付日: {last.replaceAll("-", "/")}</p> : null;
+                        })()}
+                        {blocked && (
+                          <p data-testid="wizard-subsidy-blocked" className="text-navy font-medium">
+                            {blocked}
                           </p>
                         )}
-                        {(() => {
-                          const last = subsidyAttributes(s).regional_last_day?.[company.prefecture];
-                          return last ? <p>{company.prefecture}の受付終了日: {last.replaceAll("-", "/")}</p> : null;
-                        })()}
-                        {s.status === "closed" && (
+                        {!blocked && s.status === "closed" && (
                           <p className="text-navy">
                             今年度の受付は終了しています。今から申請はできません（参考見積もりとして進められます。最新の受付状況は公式サイトでご確認ください）。
                           </p>
                         )}
-                        {s.status === "upcoming" && (
+                        {!blocked && s.status === "upcoming" && (
                           <p className="text-navy">公募開始前です。受付期間は公式サイトでご確認ください。</p>
                         )}
                       </div>
@@ -265,6 +313,12 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
             })}
           </ul>
 
+          {choiceNotice && (
+            <p role="status" data-testid="wizard-choice-notice" className="text-[13px] text-navy bg-accent-light rounded-[8px] p-3 leading-relaxed">
+              {choiceNotice}
+            </p>
+          )}
+
           <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
             <button
               type="button"
@@ -275,7 +329,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
             </button>
             <button
               type="submit"
-              disabled={!choice}
+              disabled={!chosenSelectable}
               className="inline-flex items-center justify-center px-6 py-3 rounded-[8px] bg-primary text-white font-semibold hover:bg-[var(--hc-primary-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               次へ（製品選択）
