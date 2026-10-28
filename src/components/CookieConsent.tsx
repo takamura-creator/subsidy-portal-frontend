@@ -47,6 +47,7 @@ export default function CookieConsent() {
     <div
       role="dialog"
       aria-label="Cookie 同意"
+      className="hc-cookie-consent"
       style={{
         position: "fixed",
         bottom: 36,

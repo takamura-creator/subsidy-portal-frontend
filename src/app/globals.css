@@ -1491,3 +1491,13 @@ button:focus-visible, a:focus-visible {
   .match-card-grid { grid-template-columns: 52px minmax(0, 1fr) !important; }
   .match-card-actions { grid-column: 1 / -1; flex-direction: row !important; flex-wrap: wrap; }
 }
+
+/* Cookie 同意（2026-10-28 試験 [1-f][4-a]）: スマホはヘッダー直下の通常の流れに置き、デモカード・申請バーに重ねない */
+@media (max-width: 640px) {
+  .hc-cookie-consent {
+    position: static !important;
+    margin: 12px 16px !important;
+    max-width: none !important;
+    box-shadow: none !important;
+  }
+}

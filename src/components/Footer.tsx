@@ -13,7 +13,7 @@ export default function Footer() {
               <span style={{ color: "var(--hc-brand-came)" }}>CAME</span>
             </h3>
             <p className="text-sm leading-relaxed mb-4">
-              防犯カメラ導入に使える補助金を条件でマッチング。全47都道府県対応。
+              防犯カメラ導入に使える補助金を条件でマッチング。補助金情報は全国、施工対応は6都県（東京・神奈川・静岡・埼玉・千葉・山梨）。
             </p>
             <div className="flex gap-3">
               {["X", "YouTube", "LINE"].map((sns) => (

@@ -36,7 +36,8 @@ export const metadata: Metadata = {
     description: "設備導入に使える補助金を業種から無料で検索。マルチック対応6都県に特化。",
     // Twitter OG画像は opengraph-image.tsx の自動生成を使用
   },
-  robots: { index: true, follow: true },
+  // robots は明示しない（既定＝index, follow）。明示すると 404 で Next.js が入れる noindex と
+  // 「index, follow」が2つ並ぶ（2026-10-28 試験 [5]）。索引させないページは各 layout/page で noindex を指定する
 };
 
 // ① viewport を明示設定（Next.js 15必須）— 未設定だと初回レンダリングで幅が誤判定される
@@ -107,9 +108,11 @@ export default function RootLayout({
       <body>
         <JsonLd data={siteSchemas} id="jsonld-site" />
         <HCHeader />
+        {/* Cookie 同意: PC は画面下に固定。スマホ（640px 以下）はヘッダー直下の通常の流れに置き、
+            トップのデモカード・詳細ページ下の申請バーに重ねない（2026-10-28 試験 [1-f][4-a]）。DOM の位置はスマホ表示のため */}
+        <CookieConsent />
         {children}
         <Footer />
-        <CookieConsent />
         <AnalyticsWrapper />
       </body>
     </html>
