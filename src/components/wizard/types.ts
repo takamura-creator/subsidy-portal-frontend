@@ -115,7 +115,13 @@ export function detectDocumentTier(subsidy?: SubsidySelection): {
     return { tier: "jichikai" };
   }
   const hay = `${subsidy.name} ${subsidy.category ?? ""}`;
-  if (hay.includes("神奈川") || hay.includes("デジタル化支援")) {
+  // tier1 は削除済みの kanagawa-dx-2026 専用の差し込み様式（kanagawa_digital）。
+  // 2026-10-28（審査[11]）: 名前に「神奈川」を含むだけで tier1 にしない。正本の制度は draft_subsidy_type を持つため
+  // （例: 神奈川県 介護ロボット・ICT導入支援事業費補助金=kaigo）、種別を持たない古い下書きにだけ旧判定を残す。
+  if (
+    subsidy.id === "kanagawa-dx-2026" ||
+    (!subsidy.draftSubsidyType && (hay.includes("神奈川") || hay.includes("デジタル化支援")))
+  ) {
     return { tier: "tier1" };
   }
   if (hay.includes("持続化")) return { tier: "tier2", draftType: "jizokuka" };
