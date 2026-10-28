@@ -7,7 +7,7 @@
 
 import type { Subsidy } from "@/lib/api";
 import { getDaysUntil } from "@/lib/deadlineUtils";
-import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
+import { formatRate, formatSelfPay, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyStatusLabel } from "@/lib/subsidyStatus";
 import { INDIRECT_GUIDE, isCameraUnconfirmed, regionalLastDays, subsidyAttributes } from "@/lib/subsidyAttributes";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
@@ -62,14 +62,6 @@ function formatIsoDate(iso: string): string {
   return y && m && d ? `${y}年${m}月${d}日` : iso;
 }
 
-/** 自己負担の割合（補助率が無い・0 の制度は「—」） */
-function selfPayText(s: Subsidy): string {
-  const mx = s.rate_max != null && s.rate_max > 0 ? s.rate_max : null;
-  const mn = s.rate_min != null && s.rate_min > 0 ? s.rate_min : null;
-  if (mx == null) return "—";
-  const hi = `${Math.round((1 - mx) * 100)}%`;
-  return mn != null && Math.abs(mn - mx) > 0.0005 ? `${hi}〜${Math.round((1 - mn) * 100)}%` : hi;
-}
 
 export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsProps) {
   const days = getDaysUntil(s.deadline);
@@ -134,7 +126,7 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
             <tr>
               <th>自己負担</th>
               <td>
-                {selfPayText(s)}
+                {formatSelfPay(s.rate_min, s.rate_max)}
               </td>
             </tr>
           </tbody>

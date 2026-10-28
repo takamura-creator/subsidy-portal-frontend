@@ -70,9 +70,33 @@ export function formatRate(rateMin: number | null, rateMax: number | null): stri
   const minPct = Math.round(mn * 100);
   const maxPct = Math.round(mx * 100);
   if (Math.abs(mn - mx) < FRACTION_TOLERANCE) {
+    // 2026-10-28（審査[9]）: 補助率 1.0（例: 川口市）は「100%（全額）」と言い切らない。上限額を超える分は自己負担になる
+    if (Math.abs(mn - 1) < FRACTION_TOLERANCE) return FULL_UP_TO_CAP;
     const frac = formatFraction(mn);
     return frac.endsWith("%") ? `${minPct}%` : `${minPct}%（${frac}）`;
   }
   if (minPct === maxPct) return `${minPct}%`;
-  return `${formatFraction(mn)}〜${formatFraction(mx)}`;
+  const hiText = Math.abs(mx - 1) < FRACTION_TOLERANCE ? "全額（上限額まで）" : formatFraction(mx);
+  return `${formatFraction(mn)}〜${hiText}`;
+}
+
+/** 補助率 1.0 の表記（上限額までは全額・上限を超える分は自己負担） */
+export const FULL_UP_TO_CAP = "上限額までは全額（上限を超える分は自己負担）";
+
+/**
+ * 自己負担の割合（補助率が無い・0 の制度は「—」）。
+ * 補助率 1.0 でも上限額を超える分は自己負担になるため「0%」とは出さない（審査[9]）。
+ */
+export function formatSelfPay(rateMin: number | null | undefined, rateMax: number | null | undefined): string {
+  const mx = rateMax != null && rateMax > 0 ? rateMax : null;
+  const mn = rateMin != null && rateMin > 0 ? rateMin : null;
+  if (mx == null) return "—";
+  const lo = mn ?? mx;
+  if (Math.abs(mx - 1) < FRACTION_TOLERANCE) {
+    return Math.abs(lo - 1) < FRACTION_TOLERANCE
+      ? "上限額を超える分（上限額までは補助）"
+      : `最大${Math.round((1 - lo) * 100)}%（上限額を超える分は自己負担）`;
+  }
+  const hi = `${Math.round((1 - mx) * 100)}%`;
+  return Math.abs(lo - mx) > FRACTION_TOLERANCE ? `${hi}〜${Math.round((1 - lo) * 100)}%` : hi;
 }
