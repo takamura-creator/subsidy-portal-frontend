@@ -223,12 +223,17 @@ export default function Step4Estimate({
       ) : (
         <section className="bg-bg border border-border rounded-[10px] p-5 space-y-2 text-[14px]">
           <h3 className="text-[14px] font-bold text-navy mb-2">簡易試算（未確定）</h3>
+          {/* 補助額・自己負担は工事費・ネットワーク費込みの合計から計算しているため、内訳と合計を見せて
+              画面の数字の足し引きを合わせる（計算の規則は変えない・2026-10-28 試験 [6-a]） */}
           <PriceRow label="製品小計" value={productSubtotal} />
+          <PriceRow label="工事費（概算）" value={localInstallCost} />
+          <PriceRow label="ネットワーク構築費（概算）" value={localNetworkSetup} />
+          <PriceRow label="製品＋工事＋ネットワーク合計（税抜・概算）" value={localTotalBeforeSubsidy} />
           <PriceRow label={`${subsidy.name} 適用（概算）`} value={-appliedSubsidy} accent />
           <div className="border-t border-border my-2" />
           <PriceRow label="自己負担額（概算）" value={localSelf} bold />
           <p className="text-[11px] text-text-muted leading-relaxed mt-2">
-            ※ 工事費・ネットワーク費は「見積もりを生成」ボタンで確定値を算出します。
+            ※ 工事費・ネットワーク費は概算です。「見積もりを生成」ボタンで確定値を算出します。
           </p>
         </section>
       )}
