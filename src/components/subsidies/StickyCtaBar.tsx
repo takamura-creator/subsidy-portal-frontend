@@ -150,6 +150,28 @@ export default function StickyCtaBar({ subsidy: s }: StickyCtaBarProps) {
         >
           {disabledReason || "現在は受付停止中"}
         </span>
+      ) : hasRegionalDeadlines(s) ? (
+        // 都道府県ごとに受付終了日がある制度は、申請書作成の前に受付終了日を確かめてもらう（2026-10-28 試験 [4-a]）
+        <a
+          data-testid="regional-cta"
+          href="#regional-last-day"
+          style={{
+            flexShrink: 0,
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "10px 20px",
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 700,
+            color: "var(--hc-primary)",
+            background: "var(--hc-white)",
+            border: "1px solid var(--hc-primary)",
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          受付終了日を確認する
+        </a>
       ) : (
         <Link
           href={`/my/wizard?subsidy_id=${s.id}`}

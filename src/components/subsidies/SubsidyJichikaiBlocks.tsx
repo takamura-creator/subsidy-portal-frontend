@@ -13,12 +13,15 @@ interface SubsidyJichikaiBlocksProps {
   subsidyName: string;
   /** false: 参考書類テンプレの誘導を出さない（直接申請できない制度・2026-10-28 審査[6]） */
   showTemplates?: boolean;
+  /** true: 湘南エリアの制度（「湘南エリア 9件の施工実績」を出す・2026-10-28 試験 [4-a]） */
+  shonan?: boolean;
 }
 
-export default function SubsidyJichikaiBlocks({ subsidyId, subsidyName, showTemplates = true }: SubsidyJichikaiBlocksProps) {
+export default function SubsidyJichikaiBlocks({ subsidyId, subsidyName, showTemplates = true, shonan = false }: SubsidyJichikaiBlocksProps) {
   return (
     <>
-      {/* 鵠沼地区実績バナー */}
+      {/* 鵠沼地区実績バナー（湘南エリアの制度だけ） */}
+      {shonan && (
       <section
         style={{
           marginBottom: 24,
@@ -56,9 +59,10 @@ export default function SubsidyJichikaiBlocks({ subsidyId, subsidyName, showTemp
           </Link>
         </div>
       </section>
+      )}
 
       {/* 採択適合チェッカー */}
-      <EligibilityChecker key={subsidyId} subsidyId={subsidyId} subsidyName={subsidyName} />
+      <EligibilityChecker key={subsidyId} subsidyId={subsidyId} subsidyName={subsidyName} shonan={shonan} />
 
       {/* 参考書類テンプレ誘導 */}
       {showTemplates && (

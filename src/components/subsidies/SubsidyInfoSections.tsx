@@ -69,6 +69,9 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
   const { indirect } = subsidyAttributes(s);
   const cameraUnconfirmed = isCameraUnconfirmed(s);
   const regional = regionalLastDays(s);
+  // 自治体（都道府県・市区町村）の自治会向け制度（直接申請できるもの）
+  const localGroup =
+    !indirect && s.prefecture !== "全国" && (s.target_industries ?? []).includes("自治会・町会");
 
   return (
     <>
@@ -152,7 +155,7 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
           </li>
         </ul>
         {regional.length > 0 && (
-          <div data-testid="regional-last-day" style={{ marginTop: 16 }}>
+          <div id="regional-last-day" data-testid="regional-last-day" style={{ marginTop: 16, scrollMarginTop: 96 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--hc-navy)", margin: "0 0 6px" }}>
               都道府県ごとの受付終了日
             </h3>
@@ -198,6 +201,14 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
           <p data-testid="home-guide" style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
             個人宅向けの制度です。{HOME_GUIDE}してください（申請の手順・必要書類は公式ページでご確認ください）。
           </p>
+        ) : localGroup ? (
+          // 自治体の自治会向け制度は国の電子申請（gBizID）ではなく、自治体ごとの手順で担当窓口へ出す。
+          // 手順はデータに無いので作文せず、公式ページの手順と担当窓口（正本の ministry）を案内する（2026-10-28 試験 [4-a]）
+          <p data-testid="local-guide" style={{ fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 6 }}>
+            申請の手順（事前の相談・協議、申請書の提出など）は自治体ごとに異なります。公式ページの手順に従って、
+            {s.ministry ? `担当窓口（${s.ministry}）` : "自治体の担当窓口"}へ申請してください。
+            {s.application_tips ? "上の「申請のポイント」もあわせてご確認ください。" : ""}
+          </p>
         ) : (
           <ol style={{ paddingLeft: 20, fontSize: 14, color: "var(--hc-text-muted)", lineHeight: 1.7 }}>
             <li style={{ marginBottom: 6 }}>gBizIDプライムを取得</li>
@@ -213,7 +224,7 @@ export default function SubsidyInfoSections({ subsidy: s }: SubsidyInfoSectionsP
               rel="noopener noreferrer"
               style={{ color: "var(--hc-primary)", textDecoration: "underline" }}
             >
-              公式サイトで詳細を確認 →
+              {localGroup ? "公式ページで申請の手順を確認する →" : "公式サイトで詳細を確認 →"}
             </a>
           </p>
         )}

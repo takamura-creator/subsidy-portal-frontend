@@ -26,6 +26,7 @@ import {
   hasRegionalDeadlines,
   isHomeSubsidy,
   isIndirect,
+  isShonanSubsidy,
 } from "@/lib/subsidyAttributes";
 import { hasTemplatesPage } from "@/lib/jichikai";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
@@ -149,10 +150,16 @@ export default function SubsidyDetailClient({
           ※制度・条件により異なります。出典：公式資料。診断は目安です。
         </p>
 
-        {/* 自治会ブロック（条件付き） */}
-        {isJichikai && (
+        {/* 自治会ブロック（条件付き）。直接申請できない制度には、自治会が自ら申請する前提の
+            採択適合チェッカー（警察との事前協議・総会の承認）を出さない（2026-10-28 試験 [4-a]） */}
+        {isJichikai && !indirect && (
           <div style={{ marginBottom: 96 }}>
-            <SubsidyJichikaiBlocks subsidyId={s.id} subsidyName={s.name} showTemplates={hasTemplatesPage(s)} />
+            <SubsidyJichikaiBlocks
+              subsidyId={s.id}
+              subsidyName={s.name}
+              showTemplates={hasTemplatesPage(s)}
+              shonan={isShonanSubsidy(s)}
+            />
           </div>
         )}
 
@@ -213,6 +220,33 @@ export default function SubsidyDetailClient({
             >
               {disabledReason || "現在は申請を受け付けていません"}
             </span>
+          ) : regional ? (
+            // 都道府県ごとに受付終了日がある制度（業務改善助成金）は、申請書作成の前に受付終了日を確かめてもらう
+            // （対応6都県のうち山梨以外は受付終了済み・2026-10-28 試験 [4-a]）
+            <div data-testid="regional-cta">
+              <a
+                href="#regional-last-day"
+                style={{
+                  display: "inline-block",
+                  padding: "16px 32px",
+                  borderRadius: 8,
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: "var(--hc-white)",
+                  background: "var(--hc-primary)",
+                  textDecoration: "none",
+                  fontFamily: "'Sora', 'Noto Sans JP', sans-serif",
+                  letterSpacing: "-0.2px",
+                }}
+              >
+                まず都道府県ごとの受付終了日を確認する
+              </a>
+              <p style={{ fontSize: 13, margin: "12px 0 0" }}>
+                <Link href={`/my/wizard?subsidy_id=${s.id}`} style={{ color: "var(--hc-primary)", textDecoration: "underline" }}>
+                  事業所のある都道府県で受付中なら、この補助金で申請書を作成する →
+                </Link>
+              </p>
+            </div>
           ) : (
             <Link
               href={`/my/wizard?subsidy_id=${s.id}`}

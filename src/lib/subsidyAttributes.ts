@@ -156,3 +156,19 @@ export function isRegionallyClosed(
 export function displayMatchScore(score: string, s: WithAttributes): string {
   return score === "高" && isCameraUnconfirmed(s) ? "中" : score;
 }
+
+/**
+ * 湘南エリアの制度か（2026-10-28 試験 [4-a]）。「湘南エリア 9件の施工実績」は藤沢市鵠沼地区の実績なので、
+ * 湘南エリアの市町の制度にだけ出す（浜松・埼玉・川口などには出さない）。正本に市町村の項目が無いため名前で見る。
+ */
+const SHONAN_MUNICIPALITIES = ["藤沢", "茅ヶ崎", "茅ケ崎", "鎌倉", "平塚", "逗子", "葉山", "寒川", "大磯", "二宮"] as const;
+
+export function isShonanSubsidy(s: { name?: string | null; prefecture?: string | null }): boolean {
+  if (s.prefecture !== "神奈川県" || !s.name) return false;
+  const name = s.name;
+  return SHONAN_MUNICIPALITIES.some((m) => name.includes(m));
+}
+
+/** 施工の相談先の案内（湘南以外の制度で使う。FAQ・詳細で同じ言葉） */
+export const SERVICE_AREA_GUIDE =
+  "東京都・神奈川県・静岡県・埼玉県・千葉県・山梨県の6都県でマルチックが直接施工対応します。それ以外の地域はご相談ください。";

@@ -18,6 +18,7 @@ import {
   type TemplateOutput,
 } from "@/lib/jichikai-templates";
 import { downloadOutput } from "@/lib/jichikai-template-download";
+import { isShonanSubsidy } from "@/lib/subsidyAttributes";
 import {
   ContactCTA,
   MultiSelect,
@@ -479,7 +480,7 @@ export default function TemplateGenerator({ subsidyId, subsidyName, prefecture }
         </section>
       )}
 
-      <ContactCTA subsidyName={subsidyName} />
+      <ContactCTA subsidyName={subsidyName} shonan={isShonanSubsidy({ name: subsidyName, prefecture })} />
     </div>
   );
 }

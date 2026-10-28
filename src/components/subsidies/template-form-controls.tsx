@@ -97,7 +97,8 @@ export function SingleSelect<T extends string | number>({
   );
 }
 
-export function ContactCTA({ subsidyName }: { subsidyName: string }) {
+/** shonan: 湘南エリアの制度だけ「湘南エリア 9件の施工実績」を添える（2026-10-28 試験 [4-a]） */
+export function ContactCTA({ subsidyName, shonan = false }: { subsidyName: string; shonan?: boolean }) {
   return (
     <section
       style={{
@@ -112,7 +113,9 @@ export function ContactCTA({ subsidyName }: { subsidyName: string }) {
         実際の申請書類作成・現地調査・施工はマルチックがサポートします
       </p>
       <p style={{ fontSize: 12, color: "var(--hc-text-muted)", margin: "0 0 14px", lineHeight: 1.6 }}>
-        藤沢市鵠沼地区 9件の施工実績／湘南エリアでの対応経験豊富
+        {shonan
+          ? "藤沢市鵠沼地区 9件の施工実績／湘南エリアでの対応経験豊富"
+          : "施工は東京都・神奈川県・静岡県・埼玉県・千葉県・山梨県の6都県で対応します"}
       </p>
       <Link
         href={`/contact?subject=${encodeURIComponent(`【${subsidyName}】参考書類作成済み・申請相談`)}`}

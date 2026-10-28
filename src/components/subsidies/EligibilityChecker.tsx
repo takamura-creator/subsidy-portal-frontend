@@ -75,7 +75,7 @@ interface Result {
   borderColor: string;
 }
 
-function calcResult(answers: Answer[]): Result {
+function calcResult(answers: Answer[], shonan: boolean): Result {
   const score = answers.reduce((sum, ans, i) => {
     if (!ans) return sum;
     const opt = QUESTIONS[i].options.find((o) => o.value === ans);
@@ -98,7 +98,9 @@ function calcResult(answers: Answer[]): Result {
       score,
       level: "medium",
       title: "採択可能性：中",
-      message: "未対応の項目がありますが、相談いただければ多くは解消可能です。藤沢市鵠沼地区など湘南エリアでの対応経験を活かしてご提案いたします。",
+      message: shonan
+        ? "未対応の項目がありますが、相談いただければ多くは解消可能です。藤沢市鵠沼地区など湘南エリアでの対応経験を活かしてご提案いたします。"
+        : "未対応の項目がありますが、相談いただければ多くは解消可能です。",
       badgeBg: "var(--hc-warning-subtle)",
       badgeColor: "var(--hc-warning-text)",
       borderColor: "color-mix(in srgb, var(--hc-warning-text) 20%, transparent)",
@@ -118,9 +120,11 @@ function calcResult(answers: Answer[]): Result {
 interface Props {
   subsidyId: string;
   subsidyName: string;
+  /** true: 湘南エリアの制度（湘南の施工実績に触れる・2026-10-28 試験 [4-a]） */
+  shonan?: boolean;
 }
 
-export default function EligibilityChecker({ subsidyId, subsidyName }: Props) {
+export default function EligibilityChecker({ subsidyId, subsidyName, shonan = false }: Props) {
   const storageKey = `hc_eligibility_${subsidyId}`;
   const [answers, setAnswers] = useState<Answer[]>(() =>
     QUESTIONS.map(() => null),
@@ -163,7 +167,7 @@ export default function EligibilityChecker({ subsidyId, subsidyName }: Props) {
   }
 
   const allAnswered = answers.every((a) => a !== null);
-  const result = allAnswered ? calcResult(answers) : null;
+  const result = allAnswered ? calcResult(answers, shonan) : null;
   const answeredCount = answers.filter((a) => a !== null).length;
   const progress = Math.round((answeredCount / QUESTIONS.length) * 100);
 
@@ -337,9 +341,11 @@ export default function EligibilityChecker({ subsidyId, subsidyName }: Props) {
               やり直す
             </button>
           </div>
-          <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: "10px 0 0", lineHeight: 1.5 }}>
-            ※ 藤沢市鵠沼地区 9件の施工実績／湘南エリアでの対応経験豊富
-          </p>
+          {shonan && (
+            <p style={{ fontSize: 11, color: "var(--hc-text-muted)", margin: "10px 0 0", lineHeight: 1.5 }}>
+              ※ 藤沢市鵠沼地区 9件の施工実績／湘南エリアでの対応経験豊富
+            </p>
+          )}
         </div>
       )}
     </section>

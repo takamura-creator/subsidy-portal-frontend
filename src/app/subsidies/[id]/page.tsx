@@ -10,8 +10,15 @@ import {
   getAllSubsidyIds,
   getSubsidyById,
 } from "@/lib/subsidies-server";
-import { formatRate, formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
-import { INDIRECT_GUIDE, HOME_GUIDE, isHomeSubsidy, subsidyAttributes } from "@/lib/subsidyAttributes";
+import { VARIES_BY_LOCAL_GOV, formatRate, formatSubsidyAmount, hasAmountCap } from "@/lib/subsidyFormatters";
+import {
+  INDIRECT_GUIDE,
+  HOME_GUIDE,
+  SERVICE_AREA_GUIDE,
+  isHomeSubsidy,
+  isShonanSubsidy,
+  subsidyAttributes,
+} from "@/lib/subsidyAttributes";
 import type { Subsidy } from "@/lib/api";
 import SubsidyDetailClient from "./SubsidyDetailClient";
 
@@ -83,6 +90,13 @@ function applicantFaq(subsidy: Subsidy): { question: string; answer: string } | 
   return null;
 }
 
+/** 補助率の FAQ の答え。「都道府県・自治体ごとに異なる」に「です」を付けると崩れる */
+function rateFaqAnswer(rateText: string): string {
+  return rateText === VARIES_BY_LOCAL_GOV
+    ? "補助率は都道府県・自治体ごとに異なります。"
+    : `補助率は${rateText}です。`;
+}
+
 export default async function SubsidyDetailPage({ params }: Props) {
   const { id } = await params;
   const { subsidy, stale } = await getSubsidyById(id);
@@ -93,7 +107,16 @@ export default async function SubsidyDetailPage({ params }: Props) {
   // 補助金共通FAQ（リッチリザルト対応）
   const isJichikai = subsidy.target_industries?.includes("自治会・町会");
   const applicantItem = applicantFaq(subsidy);
-  const faqItems = isJichikai
+  // 施工の相談: 「湘南エリア 9件」は湘南エリアの制度だけ。それ以外は施工対応の6都県を案内する（2026-10-28 試験 [4-a]）
+  const serviceFaq = {
+    question: "施工はマルチックに依頼できますか？",
+    answer: isShonanSubsidy(subsidy)
+      ? "はい。湘南エリアでの自治会向け施工実績が9件あります。事前協議〜申請〜施工までトータルでサポートいたします。"
+      : SERVICE_AREA_GUIDE,
+  };
+  // 直接申請できない制度（市町村・都道府県を通じて使う）には、自治会が自ら申請する前提の FAQ
+  // （警察との事前協議・総会の承認など）を出さない（2026-10-28 試験 [4-a]）
+  const faqItems = isJichikai && !subsidyAttributes(subsidy).indirect
     ? [
         applicantItem ?? {
           question: `${subsidy.name}は誰が申請できますか？`,
@@ -110,13 +133,17 @@ export default async function SubsidyDetailPage({ params }: Props) {
           answer:
             "①警察署との事前協議 ②自治会総会での承認決議 ③周辺住民・地権者の同意取得 ④複数業者からの見積もり が共通の必須要件です。",
         },
-        {
-          question: "施工はマルチックに依頼できますか？",
-          answer:
-            "はい。湘南エリアでの自治会向け施工実績が9件あります。事前協議〜申請〜施工までトータルでサポートいたします。",
-        },
+        serviceFaq,
       ]
-    : [
+    : isJichikai
+      ? [
+          applicantItem ?? {
+            question: `${subsidy.name}は誰が申請できますか？`,
+            answer: `申請者は自治体です。利用できるかどうか・申請の方法は、${INDIRECT_GUIDE}お問い合わせください。`,
+          },
+          serviceFaq,
+        ]
+      : [
         applicantItem ?? {
           question: `${subsidy.name}の対象業種を教えてください`,
           answer:
@@ -129,18 +156,15 @@ export default async function SubsidyDetailPage({ params }: Props) {
           answer:
             "おおむね申請から交付決定まで1〜2ヶ月、工事完了後の実績報告から支払いまでさらに1〜2ヶ月が目安です。",
         },
-        {
-          question: "施工はマルチックに依頼できますか？",
-          answer:
-            "東京都・神奈川県・静岡県・埼玉県・千葉県・山梨県の6都県でマルチックが直接施工対応します。それ以外の地域はご相談ください。",
-        },
+        serviceFaq,
       ];
 
   // AEO Phase 5: データ由来の機械抽出FAQ（誇大化不能・数値はformatAmount/formatRate経由のみ）
   const machineFaqItems = [
     {
       question: `${subsidy.name}の補助率はどれくらいですか？`,
-      answer: `補助率は${formatRate(subsidy.rate_min, subsidy.rate_max)}です。`,
+      // 「都道府県・自治体ごとに異なる」等の文で終わる整形結果に「です」を付けると崩れる（2026-10-28 試験 [4-a]「異なるです。」）
+      answer: rateFaqAnswer(formatRate(subsidy.rate_min, subsidy.rate_max)),
     },
     {
       question: `${subsidy.name}の補助上限額はいくらですか？`,
