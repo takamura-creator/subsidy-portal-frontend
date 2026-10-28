@@ -45,8 +45,13 @@ function ResultsContent() {
   const [matches, setMatches] = useState<MatchedSubsidy[]>([]);
   const [bonusItems, setBonusItems] = useState<BonusItem[]>([]);
   const [industryCtx, setIndustryCtx] = useState<IndustryContext | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // 読み込み中・エラーは「どの条件の結果か」で決める（2026-10-28 lint react-hooks/set-state-in-effect:
+  // effect の中で同期的に setLoading(true)/setError(null) を呼ばない）。条件が変わると doneKey と食い違い、読み込み中になる。
+  const queryKey = [industry, employees, prefecture, purpose].join("|");
+  const [doneKey, setDoneKey] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<{ key: string; message: string } | null>(null);
+  const loading = doneKey !== queryKey;
+  const error = errorState && errorState.key === queryKey ? errorState.message : null;
 
   useEffect(() => {
     if (!hasParams) {
@@ -55,9 +60,6 @@ function ResultsContent() {
     }
     let cancelled = false;
     const employeesNum = parseEmployees(employees);
-
-    setLoading(true);
-    setError(null);
 
     // 表示名（例: 工場・製造業）はバックエンドの業種語彙（例: 製造業）へ変換して送る。
     // 表示・計測は表示名のまま（条件チップ・採択戦略見出し・analytics）。
@@ -82,10 +84,10 @@ function ResultsContent() {
           track("diagnosis_result_view", { industry, prefecture, match_count: 0 });
           return;
         }
-        setError(e.message || "診断サービスに接続できませんでした。");
+        setErrorState({ key: queryKey, message: e.message || "診断サービスに接続できませんでした。" });
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setDoneKey(queryKey);
       });
 
     fetchBonusItems()
@@ -96,7 +98,7 @@ function ResultsContent() {
       .catch(() => {});
 
     return () => { cancelled = true; };
-  }, [hasParams, router, industry, employees, prefecture, purpose]);
+  }, [hasParams, router, industry, employees, prefecture, purpose, queryKey]);
 
   if (!hasParams) {
     return <LoadingState />;
