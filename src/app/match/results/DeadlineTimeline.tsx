@@ -170,6 +170,7 @@ export default function DeadlineTimeline({ matches }: Props) {
               key={item.name}
               style={{
                 display: "flex",
+                flexWrap: "wrap",
                 justifyContent: "space-between",
                 gap: 8,
                 fontSize: 11,
@@ -179,7 +180,8 @@ export default function DeadlineTimeline({ matches }: Props) {
               }}
             >
               <span style={{ fontWeight: 500, color: "var(--hc-navy)", flex: 1 }}>{item.name}</span>
-              <span style={{ flexShrink: 0 }}>締切: {item.deadline || "未定"}</span>
+              {/* 締切が長文の制度（例: さいたま市）でスマホ幅をはみ出さないよう折り返す（2026-10-28 試験 [2-c]） */}
+              <span style={{ minWidth: 0, overflowWrap: "anywhere" }}>締切: {item.deadline || "未定"}</span>
             </div>
           ))}
         </div>

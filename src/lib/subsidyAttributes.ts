@@ -148,3 +148,11 @@ export function isRegionallyClosed(
   const last = regionalLastDay(s, prefecture);
   return last !== null && last < today;
 }
+
+/**
+ * 診断結果に出す一致度（2026-10-28 試験 [1-f][2]）。カメラ機器が補助対象と確認できていない制度は
+ * backend が「高」を返しても「中」までにする（防犯カメラ目的の利用者が「使える」と受け取らないように）。
+ */
+export function displayMatchScore(score: string, s: WithAttributes): string {
+  return score === "高" && isCameraUnconfirmed(s) ? "中" : score;
+}

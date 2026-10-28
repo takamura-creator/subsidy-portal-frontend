@@ -17,19 +17,19 @@ import ResultsFilters from "./ResultsFilters";
 import MatchResultCard from "./MatchResultCard";
 import DeadlineTimeline from "./DeadlineTimeline";
 import { trackMicroCvDeadline } from "@/lib/analytics";
+import { usableIndustryContext } from "@/lib/industryStrategy";
 
-/** 2カラムグリッド: 左(フィルタ+カード) / 右(CTA) */
+/**
+ * 2カラムグリッド: 左(フィルタ+カード) / 右(CTA)。列の指定は globals.css の .match-results-grid
+ * （900px 以下は1段組・2026-10-28 試験 [2-c]: 375px で 609px に広がっていた）。
+ */
 const GRID_STYLE: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "1fr 260px",
-  gap: 40,
-  alignItems: "flex-start",
+  width: "100%",
+  boxSizing: "border-box",
   maxWidth: 1120,
   margin: "0 auto",
   padding: "80px 24px 120px",
 };
-
-/** モバイル対応はCSS classで行う（globals.cssに .results-grid 追加が理想だが inline fallback） */
 
 function ResultsContent() {
   const router = useRouter();
@@ -93,8 +93,9 @@ function ResultsContent() {
     fetchBonusItems()
       .then((d) => { if (!cancelled) setBonusItems(d.items); })
       .catch(() => {});
+    // 業種データが無い業種は {}、一部の業種は小売業のデータが返る。その業種のデータがそろっている時だけ出す（試験 [2-a][2-b]）
     fetchIndustryContext(apiIndustry)
-      .then((ctx) => { if (!cancelled) setIndustryCtx(ctx); })
+      .then((ctx) => { if (!cancelled) setIndustryCtx(usableIndustryContext(ctx, apiIndustry)); })
       .catch(() => {});
 
     return () => { cancelled = true; };
@@ -349,9 +350,9 @@ function ResultsContent() {
   );
 
   return (
-    <div style={GRID_STYLE}>
-      <div>{leftCol}</div>
-      <div>{rightCol}</div>
+    <div className="match-results-grid" style={GRID_STYLE}>
+      <div style={{ minWidth: 0 }}>{leftCol}</div>
+      <div className="match-results-side">{rightCol}</div>
     </div>
   );
 }

@@ -1479,3 +1479,15 @@ button:focus-visible, a:focus-visible {
   .hc-console, .hc-console.is-closing, .hc-console.is-summary { transition-duration: 0s !important; }
   .hc-top-progress, .hc-preview-card, .hc-step, .hc-step-sub, .hc-scan-field { transition: none !important; }
 }
+
+/* 診断結果 /match/results（2026-10-28 試験 [2-c]）: 900px 以下は1段組（右列の締切通知・加点項目は結果の下へ） */
+.match-results-grid { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 40px; align-items: start; }
+@media (max-width: 900px) {
+  .match-results-grid { grid-template-columns: minmax(0, 1fr); padding-top: 48px !important; }
+  .match-results-side > div { position: static !important; }
+}
+/* 結果カード: スマホでは操作ボタンを本文の下へ回す */
+@media (max-width: 640px) {
+  .match-card-grid { grid-template-columns: 52px minmax(0, 1fr) !important; }
+  .match-card-actions { grid-column: 1 / -1; flex-direction: row !important; flex-wrap: wrap; }
+}

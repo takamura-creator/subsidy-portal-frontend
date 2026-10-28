@@ -25,6 +25,8 @@ import HeroDemoTimeline from "./HeroDemoTimeline";
 import { EASING, DURATION, STAGGER } from "@/lib/motion-tokens";
 import { formatRate } from "@/lib/formatRate";
 import type { DiagnoseResponse } from "@/lib/api";
+import { displayMatchScore } from "@/lib/subsidyAttributes";
+import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 import type { CardPhase } from "./useAnalysisTimeline";
 
 interface HeroLivePreviewProps {
@@ -240,9 +242,12 @@ function LiveDoneView({ result }: { result: DiagnoseResponse }) {
           </div>
           {matchCount > 0 && (
             <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 3 }}>
-              {matches.slice(0, 2).map((m) => (
+              {matches.slice(0, 2).map((m) => {
+                // カメラ対象が未確認の制度は「高」と出さず、注記を添える（試験 [1-f]）
+                const score = displayMatchScore(m.match_score, m.subsidy);
+                return (
+                <div key={m.subsidy.id} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Link
-                  key={m.subsidy.id}
                   href={`/subsidies/${encodeURIComponent(m.subsidy.id)}`}
                   aria-label={`${m.subsidy.name} の詳細を見る`}
                   style={{
@@ -256,15 +261,18 @@ function LiveDoneView({ result }: { result: DiagnoseResponse }) {
                 >
                   <span style={{
                     padding: "1px 5px", borderRadius: 4, fontSize: 10, fontWeight: 700,
-                    background: m.match_score === "高"
+                    background: score === "高"
                       ? "color-mix(in srgb, var(--hc-primary) 15%, var(--hc-white))"
                       : "var(--hc-border)",
-                    color: m.match_score === "高" ? "var(--hc-primary)" : "var(--hc-text-muted)",
-                  }}>{m.match_score}</span>
+                    color: score === "高" ? "var(--hc-primary)" : "var(--hc-text-muted)",
+                  }}>{score}</span>
                   <span style={{ flex: 1 }}>{m.subsidy.name}</span>
                   <span aria-hidden="true" style={{ color: "var(--hc-primary)", fontWeight: 700, flexShrink: 0 }}>›</span>
                 </Link>
-              ))}
+                <CameraEligibilityNote subsidy={m.subsidy} compact />
+                </div>
+                );
+              })}
               {matchCount > 2 && (
                 <Link
                   href={moreHref}

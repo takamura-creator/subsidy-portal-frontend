@@ -16,6 +16,7 @@ import { SCORE_STYLES } from "./states";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 import IndirectApplicantNote from "@/components/subsidies/IndirectApplicantNote";
 import type { MatchedSubsidy } from "@/lib/api";
+import { canUseApplicationTools, displayMatchScore } from "@/lib/subsidyAttributes";
 
 interface Props {
   item: MatchedSubsidy;
@@ -34,7 +35,11 @@ function formatDeadline(deadline: string): { text: string; urgent: boolean; past
 export default function MatchResultCard({ item, prefecture }: Props) {
   const inServiceArea = isServicePrefecture(prefecture);
   const { text: deadlineText, urgent, pastDue } = formatDeadline(item.subsidy.deadline ?? "");
-  const isHighScore = item.match_score === "高";
+  // カメラ対象が未確認の制度は「高」と出さない（試験 [1-f][2]）
+  const score = displayMatchScore(item.match_score, item.subsidy);
+  const isHighScore = score === "高";
+  // 直接申請できない制度・個人宅向けの制度は申請書作成を出さない（試験 [2-b]）
+  const showApplicationButton = canUseApplicationTools(item.subsidy);
 
   const deadlineColor = pastDue
     ? "var(--hc-text-muted)"
@@ -79,6 +84,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
       )}
 
       <div
+        className="match-card-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "60px 1fr auto",
@@ -99,14 +105,14 @@ export default function MatchResultCard({ item, prefecture }: Props) {
             fontSize: 14,
             fontWeight: 700,
             flexShrink: 0,
-            ...(SCORE_STYLES[item.match_score] ?? SCORE_STYLES["低"]),
+            ...(SCORE_STYLES[score] ?? SCORE_STYLES["低"]),
           }}
         >
-          {item.match_score}
+          {score}
         </div>
 
         {/* 制度情報 */}
-        <div>
+        <div style={{ minWidth: 0 }}>
           <div
             style={{
               fontSize: 14,
@@ -255,7 +261,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
         </div>
 
         {/* アクションボタン */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <div className="match-card-actions" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           <Link
             href={`/subsidies/${encodeURIComponent(item.subsidy.id)}`}
             className="btn-primary"
@@ -270,23 +276,25 @@ export default function MatchResultCard({ item, prefecture }: Props) {
           >
             詳しく見る
           </Link>
-          <button
-            type="button"
-            disabled
-            className="btn-secondary"
-            style={{
-              padding: "6px 12px",
-              borderRadius: 8,
-              fontSize: 11,
-              fontWeight: 600,
-              display: "block",
-              opacity: 0.6,
-              cursor: "not-allowed",
-            }}
-            aria-label="申請書作成はウィザードから開始します"
-          >
-            申請書作成
-          </button>
+          {showApplicationButton && (
+            <button
+              type="button"
+              disabled
+              className="btn-secondary"
+              style={{
+                padding: "6px 12px",
+                borderRadius: 8,
+                fontSize: 11,
+                fontWeight: 600,
+                display: "block",
+                opacity: 0.6,
+                cursor: "not-allowed",
+              }}
+              aria-label="申請書作成はウィザードから開始します"
+            >
+              申請書作成
+            </button>
+          )}
         </div>
       </div>
     </div>
