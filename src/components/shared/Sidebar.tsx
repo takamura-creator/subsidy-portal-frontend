@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { getUser, logout } from "@/lib/auth";
+import { getUser, isAuthenticated, logout } from "@/lib/auth";
 import { fetchProfileDetailIfLoggedIn } from "@/lib/api";
 
 export interface SidebarItem {
@@ -35,7 +35,9 @@ const ROLE_LABEL: Record<string, string> = {
 
 export default function Sidebar({ items }: SidebarProps) {
   const pathname = usePathname();
-  const user = getUser();
+  // /results など公開ページでも使う。有効期限内のトークンが無い訪問者には、ユーザー欄とログアウトを出さない
+  const loggedIn = isAuthenticated();
+  const user = loggedIn ? getUser() : null;
   const [dbCompanyName, setDbCompanyName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,14 +57,16 @@ export default function Sidebar({ items }: SidebarProps) {
   return (
     <div className="flex flex-col h-full bg-bg-card border-r border-border">
       {/* ユーザー情報 */}
-      <div className="p-4 border-b border-border">
-        <div className="font-medium text-sm text-text truncate">
-          {displayName}
+      {loggedIn && (
+        <div className="p-4 border-b border-border">
+          <div className="font-medium text-sm text-text truncate">
+            {displayName}
+          </div>
+          <div className="text-xs text-text2 mt-0.5">
+            {user?.role ? ROLE_LABEL[user.role] ?? user.role : ""}
+          </div>
         </div>
-        <div className="text-xs text-text2 mt-0.5">
-          {user?.role ? ROLE_LABEL[user.role] ?? user.role : ""}
-        </div>
-      </div>
+      )}
 
       {/* ナビゲーション */}
       <nav className="flex-1 p-2 space-y-0.5">
@@ -112,15 +116,17 @@ export default function Sidebar({ items }: SidebarProps) {
       </nav>
 
       {/* ログアウト */}
-      <div className="p-2 border-t border-border">
-        <button
-          onClick={logout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-[10px] text-sm font-medium text-text2 hover:bg-bg-surface hover:text-text transition-colors"
-        >
-          <LogOut className="w-4.5 h-4.5 shrink-0" />
-          ログアウト
-        </button>
-      </div>
+      {loggedIn && (
+        <div className="p-2 border-t border-border">
+          <button
+            onClick={logout}
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-[10px] text-sm font-medium text-text2 hover:bg-bg-surface hover:text-text transition-colors"
+          >
+            <LogOut className="w-4.5 h-4.5 shrink-0" />
+            ログアウト
+          </button>
+        </div>
+      )}
     </div>
   );
 }
