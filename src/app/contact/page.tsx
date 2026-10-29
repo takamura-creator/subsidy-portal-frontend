@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { submitContact, ApiError, fetchProfileDetail } from "@/lib/api";
+import { submitContact, ApiError, fetchProfileDetailIfLoggedIn } from "@/lib/api";
 import { getUser } from "@/lib/auth";
 import { PREFECTURES } from "@/lib/constants";
 
@@ -82,8 +82,9 @@ export default function ContactPage() {
     if (d.estimateId)         setEstimateId(d.estimateId);
 
     // 3) DB プロフィールで最終確定（非同期）
-    fetchProfileDetail()
+    fetchProfileDetailIfLoggedIn()
       .then((p) => {
+        if (!p) return;
         if (p.company_name && !d.companyName) setCompanyName(p.company_name);
         const repName = p.representative_name || p.representative || "";
         if (repName && !d.representativeName) setContactName(repName);

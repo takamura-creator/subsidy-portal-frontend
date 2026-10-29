@@ -432,6 +432,23 @@ export async function fetchProfileDetail(): Promise<UserProfileDetail> {
   return authFetch(`${API_URL}/api/auth/me`);
 }
 
+/**
+ * 公開ページ（/contact・/results のサイドバー）の自動補完用。
+ * 未ログイン・セッション切れでもログインページへ転送せず null を返す。
+ */
+export async function fetchProfileDetailIfLoggedIn(): Promise<UserProfileDetail | null> {
+  if (typeof window === "undefined" || !localStorage.getItem("access_token")) return null;
+  try {
+    return await authFetch<UserProfileDetail>(
+      `${API_URL}/api/auth/me`,
+      {},
+      { redirectOnAuthFail: false }
+    );
+  } catch {
+    return null;
+  }
+}
+
 export async function updateProfile(
   data: Partial<UserProfileDetail>
 ): Promise<UserProfileDetail> {
@@ -636,10 +653,15 @@ export async function refreshToken(): Promise<LoginResponse> {
 
 type FetchOptions = RequestInit & { next?: { revalidate?: number } };
 
-/** 認証付きAPI呼び出し。401時にリフレッシュトークンで自動リトライする */
+/**
+ * 認証付きAPI呼び出し。401時にリフレッシュトークンで自動リトライする。
+ * リフレッシュも失敗したときは、既定ではログインページへ転送する。
+ * 公開ページの補助取得（会社名の自動補完など）は redirectOnAuthFail: false で転送を止める。
+ */
 export async function authFetch<T>(
   url: string,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
+  { redirectOnAuthFail = true }: { redirectOnAuthFail?: boolean } = {}
 ): Promise<T> {
   const token = localStorage.getItem("access_token");
   const headers: Record<string, string> = {
@@ -665,7 +687,7 @@ export async function authFetch<T>(
         // リフレッシュも失敗 → ログアウトしてログインページへリダイレクト
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        if (typeof window !== "undefined") {
+        if (redirectOnAuthFail && typeof window !== "undefined") {
           const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
           window.location.href = `/auth/login?returnUrl=${returnUrl}`;
         }

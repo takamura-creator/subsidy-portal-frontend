@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getUser, logout } from "@/lib/auth";
-import { fetchProfileDetail } from "@/lib/api";
+import { fetchProfileDetailIfLoggedIn } from "@/lib/api";
 
 export interface SidebarItem {
   href: string;
@@ -39,8 +39,9 @@ export default function Sidebar({ items }: SidebarProps) {
   const [dbCompanyName, setDbCompanyName] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProfileDetail()
-      .then((p) => { if (p.company_name) setDbCompanyName(p.company_name); })
+    // /results など公開ページでも使うため、未ログインでもログインへ転送しない取得にする
+    fetchProfileDetailIfLoggedIn()
+      .then((p) => { if (p?.company_name) setDbCompanyName(p.company_name); })
       .catch(() => {});
   }, []);
 
