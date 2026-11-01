@@ -77,7 +77,9 @@ export default function ApplicationNewPage() {
   );
 
   const [submitting, setSubmitting] = useState(false);
-  const [showRestoreBanner, setShowRestoreBanner] = useState(false);
+  // 保存済みの下書きがあれば復元を勧める（復元・破棄のどちらかを押したら閉じる）
+  const [restoreBannerClosed, setRestoreBannerClosed] = useState(false);
+  const showRestoreBanner = hasDraft && !restoreBannerClosed;
   const [aiAvailable, setAiAvailable] = useState(false);
   const [aiLoading, setAiLoading] = useState<string | null>(null);
   const [aiTips, setAiTips] = useState<Record<string, string[]>>({});
@@ -142,20 +144,16 @@ export default function ApplicationNewPage() {
     }
   }
 
-  useEffect(() => {
-    if (hasDraft) setShowRestoreBanner(true);
-  }, [hasDraft]);
-
   function handleRestore() {
     const restored = restore();
     if (restored) setData(restored);
-    setShowRestoreBanner(false);
+    setRestoreBannerClosed(true);
   }
 
   function handleDiscard() {
     discard();
     setData(INITIAL_DRAFT);
-    setShowRestoreBanner(false);
+    setRestoreBannerClosed(true);
   }
 
   function updateField<K extends keyof DraftData>(key: K, value: DraftData[K]) {

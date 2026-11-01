@@ -41,9 +41,15 @@ export default function Step7Generate({
   );
   useLeaveWarning(loading);
   const [retryCount, setRetryCount] = useState(0);
-  const [forwarded, setForwarded] = useState(false);
-  const [areaError, setAreaError] = useState(false);
+  // 生成した下書きを親へ渡したか（二重に渡さない。再試行で戻す）
+  const forwardedRef = useRef(false);
   const generatingRef = useRef(false);
+
+  // G3: 対応エリア制限チェック（6都県外はブロック）。props だけで決まるので描画時に判定する。
+  // 表示するのは自動生成の判定に進む状況（既存の下書きが無く、中断の案内を出していない）だけ＝旧実装と同じ
+  const pref = company.prefecture ?? (hpExtracted?.prefecture as string | undefined) ?? "";
+  const outOfArea = !!pref && !isServicePrefecture(pref);
+  const areaError = outOfArea && !existingDraftId && !interrupted;
 
   useEffect(() => {
     if (existingDraftId) {
@@ -52,13 +58,8 @@ export default function Step7Generate({
     }
     if (interrupted) return;
     if (!draft && !loading && !generatingRef.current) {
-      // G3: 対応エリア制限チェック（6都県外はブロック）
-      const pref = company.prefecture ?? (hpExtracted?.prefecture as string | undefined) ?? "";
-      if (pref && !isServicePrefecture(pref)) {
-        setAreaError(true);
-        generatingRef.current = false;
-        return;
-      }
+      // 対応エリア外は生成しない（案内は areaError で出す）
+      if (outOfArea) return;
 
       generatingRef.current = true;
       onGenerationStart?.();
@@ -84,14 +85,14 @@ export default function Step7Generate({
   }, [retryCount, existingDraftId, interrupted]);
 
   useEffect(() => {
-    if (draft && !loading && !forwarded) {
-      setForwarded(true);
+    if (draft && !loading && !forwardedRef.current) {
+      forwardedRef.current = true;
       onGenerated(draft.draft_id);
     }
-  }, [draft, loading, forwarded, onGenerated]);
+  }, [draft, loading, onGenerated]);
 
   function handleRetry() {
-    setForwarded(false);
+    forwardedRef.current = false;
     setRetryCount(prev => prev + 1);
   }
 

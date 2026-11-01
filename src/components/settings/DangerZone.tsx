@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "@/components/shared/Button";
 import { deleteAccount } from "@/lib/api";
 import { errorMessage } from "@/lib/errorCopy";
+import { hardNavigate } from "@/lib/navigation";
 
 export default function DangerZone() {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -33,7 +34,7 @@ export default function DangerZone() {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
       localStorage.removeItem("hc_wizard_state_v2");
-      window.location.href = "/auth/login";
+      hardNavigate("/auth/login");
     } catch (err) {
       setError(
         errorMessage(err, "アカウント削除に失敗しました")

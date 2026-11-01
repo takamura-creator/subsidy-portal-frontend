@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import PageHeader from "@/components/shared/PageHeader";
 import TabFilter from "@/components/shared/TabFilter";
 import DataTable from "@/components/shared/DataTable";
@@ -15,6 +15,7 @@ import {
   ApiError,
 } from "@/lib/api";
 import { requireAuth } from "@/lib/auth";
+import { useAsyncData } from "@/lib/useAsyncData";
 
 const TABS = [
   { key: "all", label: "すべて" },
@@ -34,37 +35,25 @@ const PER_PAGE = 20;
 
 export default function AdminUsersPage() {
   const [activeTab, setActiveTab] = useState("all");
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [roleChangeTarget, setRoleChangeTarget] = useState<AdminUser | null>(null);
   const [suspendConfirm, setSuspendConfirm] = useState<AdminUser | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const isSuspended = activeTab === "suspended";
-      const isRole = ["owner", "contractor", "admin"].includes(activeTab);
-      const res = await fetchAdminUsers({
-        role: isRole ? activeTab : undefined,
-        status: isSuspended ? "suspended" : undefined,
-        page,
-      });
-      setUsers(res.users);
-      setTotal(res.total);
-    } catch {
-      // エラー時は空表示
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab, page]);
-
-  useEffect(() => {
-    if (!requireAuth(["admin"], "/admin/users")) return;
-    load();
-  }, [load]);
+  // 条件（タブ・ページ）が変わるたびに取り直す。失敗時は前回の一覧のまま（初回なら空表示）
+  const { data, loading, reload } = useAsyncData(JSON.stringify([activeTab, page]), async () => {
+    // 未ログイン・権限なしなら requireAuth がログイン画面などへ移す（読み込み中の表示のまま待つ）
+    if (!requireAuth(["admin"], "/admin/users")) return new Promise<never>(() => {});
+    const isSuspended = activeTab === "suspended";
+    const isRole = ["owner", "contractor", "admin"].includes(activeTab);
+    return fetchAdminUsers({
+      role: isRole ? activeTab : undefined,
+      status: isSuspended ? "suspended" : undefined,
+      page,
+    });
+  });
+  const users = data?.users ?? [];
+  const total = data?.total ?? 0;
 
   function handleTabChange(tab: string) {
     setActiveTab(tab);
@@ -80,7 +69,7 @@ export default function AdminUsersPage() {
         await suspendUser(user.id);
       }
       setSuspendConfirm(null);
-      load();
+      reload();
     } catch (err) {
       alert(err instanceof ApiError ? err.message : "操作に失敗しました");
     } finally {
@@ -209,7 +198,7 @@ export default function AdminUsersPage() {
           onClose={() => setRoleChangeTarget(null)}
           onChanged={() => {
             setRoleChangeTarget(null);
-            load();
+            reload();
           }}
         />
       )}

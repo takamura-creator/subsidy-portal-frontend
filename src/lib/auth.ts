@@ -1,5 +1,7 @@
 "use client";
 
+import { hardNavigate } from "./navigation";
+
 export interface JwtPayload {
   sub: string;
   email: string;
@@ -66,7 +68,7 @@ export function logout(): void {
   localStorage.removeItem("refresh_token");
   // ウィザードの状態もクリア（別アカウントのデータ残留を防止）
   localStorage.removeItem("hc_wizard_state_v2");
-  window.location.href = "/auth/login";
+  hardNavigate("/auth/login");
 }
 
 /**
@@ -79,23 +81,23 @@ export function requireAuth(
   currentPath: string
 ): boolean {
   if (!isAuthenticated()) {
-    window.location.href = `/auth/login?returnUrl=${encodeURIComponent(currentPath)}`;
+    hardNavigate(`/auth/login?returnUrl=${encodeURIComponent(currentPath)}`);
     return false;
   }
 
   const user = getUser();
   if (!user) {
-    window.location.href = `/auth/login?returnUrl=${encodeURIComponent(currentPath)}`;
+    hardNavigate(`/auth/login?returnUrl=${encodeURIComponent(currentPath)}`);
     return false;
   }
 
   if (!allowedRoles.includes(user.role)) {
     if (user.role === "owner") {
-      window.location.href = "/my";
+      hardNavigate("/my");
     } else if (user.role === "contractor") {
-      window.location.href = "/";
+      hardNavigate("/");
     } else {
-      window.location.href = "/";
+      hardNavigate("/");
     }
     return false;
   }

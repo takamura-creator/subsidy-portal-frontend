@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
 import { isServicePrefecture } from "@/lib/constants";
@@ -9,6 +9,7 @@ import {
   RecipientListResponse,
 } from "@/lib/api";
 import { errorMessage } from "@/lib/errorCopy";
+import { useAsyncData } from "@/lib/useAsyncData";
 
 const CATEGORIES = ["IT導入", "ものづくり", "事業再構築", "防犯", "省エネ"];
 const FISCAL_YEARS = [2025, 2024, 2023, 2022, 2021];
@@ -27,21 +28,23 @@ export default function PrefecturePage() {
   const prefecture = decodeURIComponent(params.prefecture as string);
   if (!isServicePrefecture(prefecture)) notFound();
 
-  const [data, setData] = useState<RecipientListResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const [category, setCategory] = useState("");
   const [fiscalYear, setFiscalYear] = useState<number | undefined>();
   const [keyword, setKeyword] = useState("");
   const [sort, setSort] = useState<SortKey>("amount_desc");
   const [page, setPage] = useState(1);
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await fetchRecipients({
+  // 条件が変わるたびに取り直す。失敗時はエラー表示（前回の結果は CSV 用に残る＝旧実装と同じ）
+  const {
+    data: loaded,
+    loading,
+    failed,
+    error: loadError,
+    reload: loadData,
+  } = useAsyncData(
+    JSON.stringify([prefecture, category, fiscalYear ?? null, keyword, sort, page]),
+    () =>
+      fetchRecipients({
         prefecture,
         category: category || undefined,
         fiscal_year: fiscalYear,
@@ -49,18 +52,10 @@ export default function PrefecturePage() {
         sort,
         page,
         per_page: PER_PAGE,
-      });
-      setData(result);
-    } catch (e: unknown) {
-      setError(errorMessage(e, "データの取得に失敗しました"));
-    } finally {
-      setLoading(false);
-    }
-  }, [prefecture, category, fiscalYear, keyword, sort, page]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+      }),
+  );
+  const data: RecipientListResponse | null = loaded ?? null;
+  const error = failed ? errorMessage(loadError, "データの取得に失敗しました") : null;
 
   const totalPages = data ? Math.ceil(data.total / PER_PAGE) : 0;
   const totalAmount = data?.recipients.reduce((sum, r) => sum + r.grant_amount, 0) ?? 0;
