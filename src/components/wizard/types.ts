@@ -92,6 +92,11 @@ export interface WizardState {
   qaAnswers?: Record<string, string>;
   documentId?: string;
   draftId?: string;
+  /**
+   * 事業計画書の AI 生成を始めた時刻（ms）。終わったら消す。
+   * 生成中に再読み込みされたとき、黙って作り直さないために使う（2026-11-01 PR-E・components/wizard/draftGeneration.tsx）
+   */
+  draftGenerationStartedAt?: number;
 }
 
 export const EMPTY_WIZARD_STATE: WizardState = {

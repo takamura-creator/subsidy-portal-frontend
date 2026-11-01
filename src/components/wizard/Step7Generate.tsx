@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDraft } from "@/lib/useDraft";
 import { isServicePrefecture } from "@/lib/constants";
 import type { CompanyInfo, SubsidySelection } from "./types";
+import { DraftInterruptedNotice, isInterruptedGeneration, useLeaveWarning } from "./draftGeneration";
 
 interface Props {
   company: CompanyInfo;
@@ -12,6 +13,10 @@ interface Props {
   hpExtracted: Record<string, string>;
   qaAnswers: Record<string, string>;
   existingDraftId?: string;
+  /** 前回この生成を始めた時刻（ウィザードの状態に保存されたもの・PR-E） */
+  generationStartedAt?: number;
+  onGenerationStart?: () => void;
+  onGenerationEnd?: () => void;
   onGenerated: (draftId: string) => void;
   onBack: () => void;
 }
@@ -23,10 +28,18 @@ export default function Step7Generate({
   hpExtracted,
   qaAnswers,
   existingDraftId,
+  generationStartedAt,
+  onGenerationStart,
+  onGenerationEnd,
   onGenerated,
   onBack,
 }: Props) {
   const { draft, loading, error, generate } = useDraft();
+  // 生成中の再読み込みで開き直されたときは自動で生成せず、ボタンで選んでもらう（設計書 D4・PR-E）
+  const [interrupted, setInterrupted] = useState(
+    () => !existingDraftId && isInterruptedGeneration(generationStartedAt, Date.now()),
+  );
+  useLeaveWarning(loading);
   const [retryCount, setRetryCount] = useState(0);
   const [forwarded, setForwarded] = useState(false);
   const [areaError, setAreaError] = useState(false);
@@ -37,6 +50,7 @@ export default function Step7Generate({
       onGenerated(existingDraftId);
       return;
     }
+    if (interrupted) return;
     if (!draft && !loading && !generatingRef.current) {
       // G3: 対応エリア制限チェック（6都県外はブロック）
       const pref = company.prefecture ?? (hpExtracted?.prefecture as string | undefined) ?? "";
@@ -47,6 +61,7 @@ export default function Step7Generate({
       }
 
       generatingRef.current = true;
+      onGenerationStart?.();
       generate(applicationId, {
         subsidy_id: subsidy.id,
         subsidy_name: subsidy.name,
@@ -62,10 +77,11 @@ export default function Step7Generate({
         collected_answers: qaAnswers,
       }).finally(() => {
         generatingRef.current = false;
+        onGenerationEnd?.();
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [retryCount, existingDraftId]);
+  }, [retryCount, existingDraftId, interrupted]);
 
   useEffect(() => {
     if (draft && !loading && !forwarded) {
@@ -87,6 +103,8 @@ export default function Step7Generate({
         </div>
       )}
       <div className="text-center py-12">
+        {interrupted && !loading && <DraftInterruptedNotice onGenerate={() => setInterrupted(false)} />}
+
         {loading && (
           <>
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
