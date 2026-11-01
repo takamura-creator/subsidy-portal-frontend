@@ -15,6 +15,7 @@ import { formatRate, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { SCORE_STYLES } from "./states";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
 import IndirectApplicantNote from "@/components/subsidies/IndirectApplicantNote";
+import MatchEvidence from "./MatchEvidence";
 import type { MatchedSubsidy } from "@/lib/api";
 import { canUseApplicationTools, displayMatchScore } from "@/lib/subsidyAttributes";
 
@@ -239,6 +240,9 @@ export default function MatchResultCard({ item, prefecture }: Props) {
 
           {/* 直接申請できない制度の注記（上限額が自治体単位であることを読めるように・審査[3]） */}
           <IndirectApplicantNote subsidy={item.subsidy} />
+
+          {/* 要件チェック（○／要確認）・合い具合の理由・根拠の引用・出典と最終確認日（2026-11-01 PR-3） */}
+          <MatchEvidence item={item} />
 
           {/* 省庁・アドバイス */}
           {item.application_advice && (

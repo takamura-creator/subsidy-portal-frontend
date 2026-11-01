@@ -59,12 +59,28 @@ export interface MatchRequest {
   purpose: string;
 }
 
+/** 要件チェック1件（backend がコードで判定。AI は使わない・2026-11-01 AI 判定の作り直し） */
+export interface MatchCheck {
+  key: string; // area / applicant / employees / status / camera / direct
+  label: string;
+  status: "met" | "unknown";
+  detail: string;
+}
+
 export interface MatchedSubsidy {
   subsidy: Subsidy;
   match_score: string;
   estimated_cost: number;
   estimated_after_subsidy: number;
   application_advice: string;
+  /** 以下は backend PR-1（takamura-creator/subsidy-portal#2）以降だけ。返さない backend では undefined */
+  checks?: MatchCheck[];
+  /** AI: 目的との合い具合の理由（backend の検査を通ったものだけ） */
+  fit_reason?: string | null;
+  /** AI: 公式の説明文からのそのままの引用（backend が説明文と照合済み） */
+  evidence_quote?: string | null;
+  /** 正本を人が一次ソースで最後に確かめた日（ISO 日付） */
+  checked_at?: string | null;
 }
 
 export interface MatchResponse {
