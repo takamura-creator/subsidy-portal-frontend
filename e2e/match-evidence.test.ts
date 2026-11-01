@@ -159,3 +159,32 @@ test.describe("診断結果カードの要件チェックと根拠", () => {
     await expect(evidence.getByTestId("match-source")).toHaveText("最終確認日 2026年10月27日");
   });
 });
+
+test.describe("受付前（来年度分）の制度（2026-11-01 決定 1-A）", () => {
+  test("事前相談の締切と受付前の注記を出す", async ({ page }) => {
+    await mockMatch(page, {
+      subsidy: {
+        ...SUBSIDY,
+        status: "upcoming",
+        deadline: "令和9年度分：事前相談は2099年8月31日まで",
+        prior_consultation_until: "2099-08-31",
+      },
+      checks: CHECKS.map((c) =>
+        c.key === "status" ? { ...c, status: "unknown", detail: "受付前。事前相談・申込は2099年8月31日まで" } : c,
+      ),
+    });
+    await page.goto(`/match/results?${MATCH_QUERY}`);
+    const note = page.getByTestId("upcoming-note");
+    await expect(note).toBeVisible({ timeout: 20000 });
+    await expect(note).toHaveText("受付前の制度です。2099年8月31日までに、制度の窓口へ事前相談・申込をしてください。");
+    await expect(page.getByText("事前相談の締切")).toBeVisible();
+  });
+
+  test("受付中の制度には出さない", async ({ page }) => {
+    await mockMatch(page, { subsidy: { ...SUBSIDY, prior_consultation_until: "2099-08-31" }, checks: CHECKS });
+    await page.goto(`/match/results?${MATCH_QUERY}`);
+    await expect(page.getByTestId("match-evidence")).toBeVisible({ timeout: 20000 });
+    await expect(page.getByTestId("upcoming-note")).toHaveCount(0);
+    await expect(page.getByText("事前相談の締切")).toHaveCount(0);
+  });
+});
