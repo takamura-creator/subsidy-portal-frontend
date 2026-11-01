@@ -12,7 +12,9 @@ import AdoptionRateCard from "@/components/strategy/AdoptionRateCard";
 import IndustryStrategy from "@/components/strategy/IndustryStrategy";
 import type { BonusItem, IndustryContext, MatchedSubsidy } from "@/lib/api";
 import { ApiError, fetchBonusItems, fetchIndustryContext, matchSubsidies } from "@/lib/api";
-import { parseEmployees, EmptyState, ErrorState, LoadingState } from "./states";
+import { aiErrorCopy, logApiError, reportAiUnavailable } from "@/lib/errorCopy";
+import AiUnavailableNotice from "@/components/shared/AiUnavailableNotice";
+import { parseEmployees, EmptyState, FallbackNote, LoadingState } from "./states";
 import ResultsFilters from "./ResultsFilters";
 import MatchResultCard from "./MatchResultCard";
 import DeadlineTimeline from "./DeadlineTimeline";
@@ -43,15 +45,21 @@ function ResultsContent() {
   const purpose = searchParams.get("purpose") || "防犯・万引き対策";
 
   const [matches, setMatches] = useState<MatchedSubsidy[]>([]);
+  // backend が AI の代わりに簡易判定で返したとき（fallback: true）。返さない backend では常に false
+  const [isFallback, setIsFallback] = useState(false);
   const [bonusItems, setBonusItems] = useState<BonusItem[]>([]);
   const [industryCtx, setIndustryCtx] = useState<IndustryContext | null>(null);
   // 読み込み中・エラーは「どの条件の結果か」で決める（2026-10-28 lint react-hooks/set-state-in-effect:
   // effect の中で同期的に setLoading(true)/setError(null) を呼ばない）。条件が変わると doneKey と食い違い、読み込み中になる。
   const queryKey = [industry, employees, prefecture, purpose].join("|");
+  // 「同じ条件でもう一度試す」で増やす。条件＋試行回数を1回の取得の単位にする（2026-11-01 PR-A）
+  const [attempt, setAttempt] = useState(0);
+  const runKey = `${queryKey}#${attempt}`;
   const [doneKey, setDoneKey] = useState<string | null>(null);
-  const [errorState, setErrorState] = useState<{ key: string; message: string } | null>(null);
-  const loading = doneKey !== queryKey;
-  const error = errorState && errorState.key === queryKey ? errorState.message : null;
+  const [errorState, setErrorState] = useState<{ key: string; error: unknown } | null>(null);
+  const loading = doneKey !== runKey;
+  const failure = errorState && errorState.key === runKey ? errorState.error : null;
+  const error = failure !== null;
 
   useEffect(() => {
     if (!hasParams) {
@@ -69,6 +77,7 @@ function ResultsContent() {
       .then((res) => {
         if (cancelled) return;
         setMatches(res.matches);
+        setIsFallback(res.fallback === true);
         track("diagnosis_result_view", {
           industry,
           prefecture,
@@ -81,13 +90,17 @@ function ResultsContent() {
         // これは故障ではなく「該当なし」なので、エラー表示ではなく空状態（条件を変える導線）を出す。
         if (e instanceof ApiError && e.status === 404) {
           setMatches([]);
+          setIsFallback(false);
           track("diagnosis_result_view", { industry, prefecture, match_count: 0 });
           return;
         }
-        setErrorState({ key: queryKey, message: e.message || "診断サービスに接続できませんでした。" });
+        // ステータス番号は画面に出さず console に残す。AI が使えなかった回数は計測する（設計書 D5）
+        logApiError("match", e);
+        reportAiUnavailable("match", e);
+        setErrorState({ key: runKey, error: e });
       })
       .finally(() => {
-        if (!cancelled) setDoneKey(queryKey);
+        if (!cancelled) setDoneKey(runKey);
       });
 
     fetchBonusItems()
@@ -99,7 +112,7 @@ function ResultsContent() {
       .catch(() => {});
 
     return () => { cancelled = true; };
-  }, [hasParams, router, industry, employees, prefecture, purpose, queryKey]);
+  }, [hasParams, router, industry, employees, prefecture, purpose, runKey]);
 
   if (!hasParams) {
     return <LoadingState />;
@@ -165,7 +178,15 @@ function ResultsContent() {
 
       {/* カード一覧 */}
       {loading && <LoadingState />}
-      {!loading && error && <ErrorState message={error} />}
+      {!loading && error && (
+        <AiUnavailableNotice
+          title={aiErrorCopy(failure).title}
+          body={aiErrorCopy(failure).body}
+          industry={industry}
+          onRetry={() => setAttempt((n) => n + 1)}
+        />
+      )}
+      {!loading && !error && matches.length > 0 && isFallback && <FallbackNote />}
       {!loading && !error && matches.length === 0 && <EmptyState />}
       {!loading && !error && matches.length > 0 && (
         <StaggerChildren stagger={0.1}>

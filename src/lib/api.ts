@@ -71,6 +71,11 @@ export interface MatchResponse {
   input_params: MatchRequest;
   matches: MatchedSubsidy[];
   overall_recommendation: string;
+  /**
+   * AI の代わりに簡易判定で返したとき true（2026-11-01 設計書 §2-4）。
+   * backend が返さない間は undefined のまま＝表示は変わらない。
+   */
+  fallback?: boolean;
 }
 
 export class ApiError extends Error {
@@ -1801,7 +1806,7 @@ export async function exportDraftBlob(
     `${API_URL}/api/v1/applications/${appId}/draft/${draftId}/export?format=${format}`,
     { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {} },
   );
-  if (!res.ok) throw new ApiError(res.status, `Export failed: ${res.statusText}`);
+  if (!res.ok) throw new ApiError(res.status, "事業計画書の出力に失敗しました。もう一度お試しください。");
   return res.blob();
 }
 

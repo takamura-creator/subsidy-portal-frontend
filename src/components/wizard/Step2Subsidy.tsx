@@ -7,8 +7,8 @@ import {
   checkArea,
   type Subsidy,
   type AreaCheckResponse,
-  ApiError,
 } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import { isServicePrefecture } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
@@ -129,9 +129,7 @@ export default function Step2Subsidy({ company, selected, onBack, onNext }: Prop
       } catch (err) {
         if (!cancelled) {
           setLoadError(
-            err instanceof ApiError
-              ? err.message
-              : "データの取得に失敗しました。",
+            errorMessage(err, "データの取得に失敗しました。"),
           );
         }
       } finally {

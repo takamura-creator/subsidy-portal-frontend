@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createEstimate, generateEstimatePdf, ApiError } from "@/lib/api";
+import { createEstimate, generateEstimatePdf } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import { formatFraction, formatSubsidyAmount } from "@/lib/subsidyFormatters";
 import { subsidyCap } from "@/lib/subsidyAttributes";
 import CameraEligibilityNote from "@/components/subsidies/CameraEligibilityNote";
@@ -112,9 +113,7 @@ export default function Step4Estimate({
       onSaved(snap);
     } catch (err) {
       setError(
-        err instanceof ApiError
-          ? err.message
-          : "見積もりの生成に失敗しました。時間をおいて再度お試しください。",
+        errorMessage(err, "見積もりの生成に失敗しました。時間をおいて再度お試しください。"),
       );
     } finally {
       setGenerating(false);
@@ -139,7 +138,7 @@ export default function Step4Estimate({
         setError("PDFエンジン未準備のため一時的にHTML版を出力しました。ブラウザで開いて印刷→PDF保存をご利用ください。");
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "PDFの取得に失敗しました。");
+      setError(errorMessage(err, "PDFの取得に失敗しました。"));
     } finally {
       setPdfLoading(false);
     }

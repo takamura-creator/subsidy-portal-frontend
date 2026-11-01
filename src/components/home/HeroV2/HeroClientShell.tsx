@@ -16,6 +16,7 @@ import {
   type StepState,
 } from "./useAnalysisTimeline";
 import { diagnosePublic, DiagnoseResponse, ApiError } from "@/lib/api";
+import { logApiError, reportAiUnavailable } from "@/lib/errorCopy";
 import { saveDiagnosedUrl } from "@/components/wizard/handoff";
 
 interface HeroClientShellProps {
@@ -139,6 +140,9 @@ export default function HeroClientShell({ headingSlot }: HeroClientShellProps) {
         })
         .catch((err: unknown) => {
           if (tokenRef.current !== token) return;
+          // ステータスは console に残し、AI が使えなかった回数は計測する（中止 499・入力不備 422 は数えない）
+          logApiError("diagnose", err);
+          reportAiUnavailable("diagnose", err);
           const status = err instanceof ApiError ? err.status : 0;
           setRunState((prev) =>
             prev && prev.runKey === token

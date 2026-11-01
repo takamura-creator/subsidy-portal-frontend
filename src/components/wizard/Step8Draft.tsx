@@ -4,6 +4,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { useDraft } from "@/lib/useDraft";
 import { useScore } from "@/lib/useScore";
 import { exportDraftBlob } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import { isServicePrefecture } from "@/lib/constants";
 import type { CompanyInfo, SubsidySelection } from "./types";
 import type { DraftChapter } from "@/lib/api";
@@ -115,7 +116,7 @@ export default function Step8Draft({
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
-      setExportError(e instanceof Error ? e.message : "出力に失敗しました。再度お試しください。");
+      setExportError(errorMessage(e, "出力に失敗しました。再度お試しください。"));
     } finally {
       setExporting(false);
     }

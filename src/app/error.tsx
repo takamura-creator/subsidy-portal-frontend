@@ -21,8 +21,9 @@ export default function Error({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
         <h2 className="text-xl font-bold mb-2">エラーが発生しました</h2>
+        {/* error.message は開発者向けの内容を含み得るため画面に出さない（console には上で出している・2026-11-01 PR-A） */}
         <p className="text-text-light text-sm mb-6">
-          {error.message || "予期しないエラーが発生しました。"}
+          予期しないエラーが発生しました。時間をおいて、もう一度お試しください。
         </p>
         {error.digest && (
           <p className="text-xs text-text-light mb-4">エラーID: {error.digest}</p>

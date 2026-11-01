@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { submitLead, ApiError } from "@/lib/api";
+import { submitLead } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import { PREFECTURES } from "@/lib/constants";
 
 const schema = z.object({
@@ -76,11 +77,7 @@ export default function EmailCaptureForm({
       setSubmitted(true);
       onSuccess?.();
     } catch (err) {
-      if (err instanceof ApiError) {
-        setApiError(err.message);
-      } else {
-        setApiError("送信に失敗しました。時間をおいて再度お試しください。");
-      }
+      setApiError(errorMessage(err, "送信に失敗しました。時間をおいて再度お試しください。"));
     }
   }
 

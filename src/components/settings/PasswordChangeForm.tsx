@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Button from "@/components/shared/Button";
-import { changePassword, ApiError } from "@/lib/api";
+import { changePassword } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 
 export default function PasswordChangeForm() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -38,9 +39,7 @@ export default function PasswordChangeForm() {
       setConfirmPassword("");
     } catch (err) {
       setError(
-        err instanceof ApiError
-          ? err.message
-          : "パスワード変更に失敗しました"
+        errorMessage(err, "パスワード変更に失敗しました")
       );
     } finally {
       setLoading(false);

@@ -8,6 +8,7 @@ import {
   RecipientStatsResponse,
   PrefectureSummary,
 } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 
 function formatAmount(amount: number): string {
   if (amount >= 100_000_000) return `${(amount / 100_000_000).toFixed(1)}億円`;
@@ -23,7 +24,7 @@ export default function ResultsClient() {
   useEffect(() => {
     fetchRecipientStats()
       .then(setStats)
-      .catch((e) => setError(e.message))
+      .catch((e) => setError(errorMessage(e, "データの取得に失敗しました")))
       .finally(() => setLoading(false));
   }, []);
 

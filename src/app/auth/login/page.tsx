@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { login, ApiError } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 
 function decodeJwtRole(token: string): string | null {
   try {
@@ -45,17 +46,11 @@ function LoginForm() {
         router.push(role === "admin" ? "/admin" : "/my");
       }
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(
-          err.status === 401
-            ? "メールアドレスまたはパスワードが正しくありません。"
-            : err.status === 429
-              ? "しばらく時間をおいてから再度お試しください。"
-              : err.message
-        );
-      } else {
-        setError("ログインに失敗しました。しばらくしてから再度お試しください。");
-      }
+      setError(
+        err instanceof ApiError && err.status === 401
+          ? "メールアドレスまたはパスワードが正しくありません。"
+          : errorMessage(err, "ログインに失敗しました。しばらくしてから再度お試しください。"),
+      );
     } finally {
       setLoading(false);
     }

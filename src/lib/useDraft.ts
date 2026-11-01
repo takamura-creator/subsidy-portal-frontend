@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import type { AIDraftRequest, AIDraftResponse, DraftChapter } from "./api";
 import { generateAIDraft, fetchDraft, patchDraftChapter } from "./api";
+import { errorMessage, logApiError, reportAiUnavailable } from "./errorCopy";
 
 export function useDraft() {
   const [draft, setDraft] = useState<AIDraftResponse | null>(null);
@@ -17,7 +18,9 @@ export function useDraft() {
       setDraft(result);
       return result;
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "ドラフト生成に失敗しました";
+      logApiError("draft", e);
+      reportAiUnavailable("draft", e);
+      const msg = errorMessage(e, "事業計画書の作成に失敗しました。もう一度お試しください。");
       setError(msg);
       return null;
     } finally {
@@ -33,7 +36,8 @@ export function useDraft() {
       setDraft(result);
       return result;
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "ドラフト読み込みに失敗しました";
+      logApiError("draft-load", e);
+      const msg = errorMessage(e, "事業計画書の読み込みに失敗しました。もう一度お試しください。");
       setError(msg);
       return null;
     } finally {
