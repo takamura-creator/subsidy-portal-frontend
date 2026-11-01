@@ -152,14 +152,21 @@ test.describe("/match/results（AI 診断）が失敗したとき", () => {
 
 test.describe("トップの URL 診断が失敗したとき", () => {
   test("5xx で「接続をご確認ください」と出さない", async ({ page }) => {
+    // 開発サーバーの起動直後はトップページの初回コンパイルに時間がかかるため長めに待つ（2026-11-01）
+    test.setTimeout(60_000);
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await mockApi(page, "/api/public/diagnose", [{ status: 503 }]);
+    const calls = await mockApi(page, "/api/public/diagnose", [{ status: 503 }]);
     await page.goto("/");
     const input = page.getByLabel("会社ホームページURL");
-    await input.fill("example.co.jp");
-    await input.press("Enter");
+    // 画面の準備（hydration）前に入力すると入力が消えて送信されないことがあるため、
+    // 診断の要求が実際に出るまで入力と送信をやり直す（並列実行で負荷が高いときに起きていた）
+    await expect(async () => {
+      await input.fill("example.co.jp");
+      await input.press("Enter");
+      await expect.poll(calls, { timeout: 3000 }).toBeGreaterThan(0);
+    }).toPass({ timeout: 40000 });
     await expect(page.getByText("ただいま診断を利用できません。時間をおいて、もう一度お試しください。")).toBeVisible({
-      timeout: 20000,
+      timeout: 40000,
     });
     await expect(page.getByText("接続をご確認ください")).toHaveCount(0);
   });
