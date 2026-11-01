@@ -11,7 +11,8 @@ import BonusChecklist from "@/components/strategy/BonusChecklist";
 import AdoptionRateCard from "@/components/strategy/AdoptionRateCard";
 import IndustryStrategy from "@/components/strategy/IndustryStrategy";
 import type { BonusItem, IndustryContext, MatchedSubsidy } from "@/lib/api";
-import { ApiError, fetchBonusItems, fetchIndustryContext, matchSubsidies } from "@/lib/api";
+import { fetchBonusItems, fetchIndustryContext } from "@/lib/api";
+import { loadMatchResults } from "./matchCache";
 import { aiErrorCopy, logApiError, reportAiUnavailable } from "@/lib/errorCopy";
 import AiUnavailableNotice from "@/components/shared/AiUnavailableNotice";
 import { parseEmployees, EmptyState, FallbackNote, LoadingState } from "./states";
@@ -73,27 +74,23 @@ function ResultsContent() {
     // 表示・計測は表示名のまま（条件チップ・採択戦略見出し・analytics）。
     const apiIndustry = toApiIndustry(industry);
 
-    matchSubsidies({ industry: apiIndustry, employees: employeesNum, prefecture, purpose })
+    // 同じ条件の結果が30分以内に保存されていれば AI を呼ばずに使う（2026-11-01 PR-B・./matchCache.ts）。
+    // backend の 404（候補0件）は「該当なし」として空の結果で返る（エラー表示ではなく空状態＝条件を変える導線）。
+    // 画面を離れても通信は中断しない（応答は保存され、戻ってきたときに使われる）
+    loadMatchResults(queryKey, { industry: apiIndustry, employees: employeesNum, prefecture, purpose })
       .then((res) => {
         if (cancelled) return;
         setMatches(res.matches);
-        setIsFallback(res.fallback === true);
+        setIsFallback(res.fallback);
         track("diagnosis_result_view", {
           industry,
           prefecture,
           match_count: res.matches.length,
+          cached: res.cached,
         });
       })
-      .catch((e: Error) => {
+      .catch((e: unknown) => {
         if (cancelled) return;
-        // backend は候補0件を 404「条件に合う補助金が見つかりません」で返す。
-        // これは故障ではなく「該当なし」なので、エラー表示ではなく空状態（条件を変える導線）を出す。
-        if (e instanceof ApiError && e.status === 404) {
-          setMatches([]);
-          setIsFallback(false);
-          track("diagnosis_result_view", { industry, prefecture, match_count: 0 });
-          return;
-        }
         // ステータス番号は画面に出さず console に残す。AI が使えなかった回数は計測する（設計書 D5）
         logApiError("match", e);
         reportAiUnavailable("match", e);
@@ -112,7 +109,7 @@ function ResultsContent() {
       .catch(() => {});
 
     return () => { cancelled = true; };
-  }, [hasParams, router, industry, employees, prefecture, purpose, runKey]);
+  }, [hasParams, router, industry, employees, prefecture, purpose, queryKey, runKey]);
 
   if (!hasParams) {
     return <LoadingState />;
