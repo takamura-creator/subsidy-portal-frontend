@@ -1,4 +1,5 @@
 import { isRetiredSubsidyId, withoutRetired } from "./retiredSubsidies";
+import { hardNavigate } from "./navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -744,7 +745,7 @@ export async function authFetch<T>(
   localStorage.removeItem("refresh_token");
   if (redirectOnAuthFail && typeof window !== "undefined") {
     const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `/auth/login?returnUrl=${returnUrl}`;
+    hardNavigate(`/auth/login?returnUrl=${returnUrl}`);
   }
   throw new ApiError(401, "セッションが期限切れです。再度ログインしてください。");
 }

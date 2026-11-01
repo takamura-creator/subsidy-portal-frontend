@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { submitContact, fetchProfileDetailIfLoggedIn } from "@/lib/api";
+import { submitContact, fetchProfileDetailIfLoggedIn, type UserProfileDetail } from "@/lib/api";
 import { errorMessage } from "@/lib/errorCopy";
 import { getUser } from "@/lib/auth";
 import { PREFECTURES } from "@/lib/constants";
+import { useBrowserValue } from "@/lib/useBrowserValue";
 
 const WIZARD_KEY = "hc_wizard_state_v2";
 
@@ -46,12 +47,13 @@ const INQUIRY_TYPES = [
 ];
 
 export default function ContactPage() {
-  const [companyName, setCompanyName]     = useState("");
-  const [contactName, setContactName]     = useState("");
-  const [email, setEmail]                 = useState("");
-  const [phone, setPhone]                 = useState("");
+  // 利用者が入力した値（null＝まだ触っていない → 下の自動補完の値を出す）
+  const [companyNameInput, setCompanyName] = useState<string | null>(null);
+  const [contactNameInput, setContactName] = useState<string | null>(null);
+  const [emailInput, setEmail]             = useState<string | null>(null);
+  const [phoneInput, setPhone]             = useState<string | null>(null);
   const [inquiryType, setInquiryType]     = useState(INQUIRY_TYPES[0]);
-  const [estimateId, setEstimateId]       = useState("");
+  const [estimateIdInput, setEstimateId]   = useState<string | null>(null);
   const [message, setMessage]             = useState("");
   const [consent, setConsent]             = useState(false);
   const [submitting, setSubmitting]       = useState(false);
@@ -68,33 +70,53 @@ export default function ContactPage() {
     }
   }, []);
 
-  // JWT + プロフィール + ウィザードデータから自動補完
-  useEffect(() => {
-    // 1) JWT から即座に補完（同期）
+  // JWT + ウィザードデータ + DB プロフィールから自動補完。
+  // 1) JWT・2) ウィザードデータはブラウザでだけ読める（サーバー描画では空）
+  const browserJson = useBrowserValue(() => {
     const user = getUser();
-    if (user?.email)        setEmail(user.email);
-    if (user?.company_name) setCompanyName(user.company_name);
+    return JSON.stringify({
+      jwtEmail: user?.email ?? "",
+      jwtCompanyName: user?.company_name ?? "",
+      wizard: getWizardDefaults(),
+    });
+  }, null);
+  const browser = useMemo(
+    () =>
+      browserJson === null
+        ? null
+        : (JSON.parse(browserJson) as {
+            jwtEmail: string;
+            jwtCompanyName: string;
+            wizard: ReturnType<typeof getWizardDefaults>;
+          }),
+    [browserJson],
+  );
 
-    // 2) ウィザードデータで上書き（より詳細）
-    const d = getWizardDefaults();
-    if (d.companyName)        setCompanyName(d.companyName);
-    if (d.representativeName) setContactName(d.representativeName);
-    if (d.email)              setEmail(d.email);
-    if (d.estimateId)         setEstimateId(d.estimateId);
-
-    // 3) DB プロフィールで最終確定（非同期）
+  // 3) DB プロフィール（非同期・ログイン中だけ）
+  const [profile, setProfile] = useState<UserProfileDetail | null>(null);
+  useEffect(() => {
+    let active = true;
     fetchProfileDetailIfLoggedIn()
       .then((p) => {
-        if (!p) return;
-        if (p.company_name && !d.companyName) setCompanyName(p.company_name);
-        const repName = p.representative_name || p.representative || "";
-        if (repName && !d.representativeName) setContactName(repName);
-        // メールも DB が最も信頼できる（JWT 失効後・ウィザード未保存時の救済）
-        if (p.email && !d.email) setEmail(p.email);
-        if (p.phone) setPhone(p.phone);
+        if (active) setProfile(p);
       })
       .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, []);
+
+  // 優先順位は旧実装と同じ: ウィザードデータ > DB プロフィール > JWT。電話番号は DB だけ。
+  // 利用者が入力した欄は上書きしない（旧実装はプロフィールの応答が遅いと入力中の値を上書きしていた）
+  const d = browser?.wizard;
+  const repName = profile ? profile.representative_name || profile.representative || "" : "";
+  const companyName =
+    companyNameInput ?? (d?.companyName || profile?.company_name || browser?.jwtCompanyName || "");
+  const contactName = contactNameInput ?? (d?.representativeName || repName);
+  // メールも DB が JWT より信頼できる（JWT 失効後・ウィザード未保存時の救済）
+  const email = emailInput ?? (d?.email || profile?.email || browser?.jwtEmail || "");
+  const phone = phoneInput ?? (profile?.phone || "");
+  const estimateId = estimateIdInput ?? (d?.estimateId || "");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

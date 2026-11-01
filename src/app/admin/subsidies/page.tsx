@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Plus, Upload, MoreHorizontal, Edit, Trash2 } from "lucide-react";
@@ -16,6 +16,7 @@ import {
   type AdminSubsidy,
   ApiError,
 } from "@/lib/api";
+import { useAsyncData } from "@/lib/useAsyncData";
 
 // 追加指摘#13 (2026-09-15): backend の status 語彙が open/upcoming/closed に統一されたため、
 // 旧語彙（active/expired/draft）のままだと絞り込み送信・表示ラベルが本番で崩れる（500の実害あり）。
@@ -51,33 +52,31 @@ export default function AdminSubsidiesPage() {
   const [activeTab, setActiveTab] = useState(initialStatus);
   const [page, setPage] = useState(initialPage);
   const [keyword, setKeyword] = useState("");
-  const [subsidies, setSubsidies] = useState<AdminSubsidy[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ imported: number; errors: string[] } | null>(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetchAdminSubsidies({
-        status: activeTab === "all" ? undefined : activeTab,
-        page,
-        keyword: keyword || undefined,
-      });
-      setSubsidies(res.subsidies);
-      setTotal(res.total);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "データの取得に失敗しました");
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab, page, keyword]);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
+  // 条件（タブ・ページ・キーワード）が変わるたびに取り直す。失敗時は前回の一覧のまま、エラー表示を出す
+  const {
+    data,
+    loading,
+    failed,
+    error: loadError,
+    reload: fetchData,
+  } = useAsyncData(JSON.stringify([activeTab, page, keyword]), () =>
+    fetchAdminSubsidies({
+      status: activeTab === "all" ? undefined : activeTab,
+      page,
+      keyword: keyword || undefined,
+    }),
+  );
+  const subsidies: AdminSubsidy[] = data?.subsidies ?? [];
+  const total = data?.total ?? 0;
+  const error = !failed
+    ? ""
+    : loadError instanceof ApiError
+      ? loadError.message
+      : "データの取得に失敗しました";
 
   async function handleDelete(id: string) {
     if (!confirm("この補助金を削除しますか？")) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { CompanyInfo, SubsidySelection } from "./types";
 
 /* ─── Props ─── */
@@ -125,19 +125,9 @@ export default function Step6QA({
   onBack,
   onNext,
 }: Props) {
-  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers ?? {});
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [customInput, setCustomInput] = useState("");
-  const [mode, setMode] = useState<"interview" | "review">("interview");
-
-  const ctx: QAContext = useMemo(
-    () => ({ company, subsidy, hp: hpExtracted, answers }),
-    [company, subsidy, hpExtracted, answers],
-  );
-
-  // 初回マウント: HP自動入力を「下書き提案」として保持するが、currentIdx は 0 から始める
+  // 初回だけ: HP自動入力を「下書き提案」として回答に入れるが、currentIdx は 0 から始める
   // → 質問1がスキップされる問題を解消
-  useEffect(() => {
+  const [answers, setAnswers] = useState<Record<string, string>>(() => {
     const base = initialAnswers ?? {};
     const autoFilled: Record<string, string> = {};
     const mountCtx: QAContext = { company, subsidy, hp: hpExtracted, answers: base };
@@ -147,21 +137,21 @@ export default function Step6QA({
         if (val) autoFilled[q.key] = val;
       }
     }
-    if (Object.keys(autoFilled).length > 0) {
-      setAnswers({ ...base, ...autoFilled });
-    }
-    // 復元時は必須が全回答済みならレビューへ
-    if (initialAnswers) {
-      const requiredKeys = QUESTIONS.filter((q) => q.required).map((q) => q.key);
-      const allFilled = requiredKeys.every((k) => (initialAnswers[k] ?? "").trim());
-      if (allFilled) {
-        setMode("review");
-        return;
-      }
-    }
-    setCurrentIdx(0); // 常に質問1から開始
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return Object.keys(autoFilled).length > 0 ? { ...base, ...autoFilled } : base;
+  });
+  const [currentIdx, setCurrentIdx] = useState(0); // 常に質問1から開始
+  const [customInput, setCustomInput] = useState("");
+  // 復元時は必須が全回答済みならレビューへ
+  const [mode, setMode] = useState<"interview" | "review">(() => {
+    if (!initialAnswers) return "interview";
+    const requiredKeys = QUESTIONS.filter((q) => q.required).map((q) => q.key);
+    return requiredKeys.every((k) => (initialAnswers[k] ?? "").trim()) ? "review" : "interview";
+  });
+
+  const ctx: QAContext = useMemo(
+    () => ({ company, subsidy, hp: hpExtracted, answers }),
+    [company, subsidy, hpExtracted, answers],
+  );
 
   const currentQ = QUESTIONS[currentIdx];
   const choices = currentQ?.choices ? currentQ.choices(ctx) : [];

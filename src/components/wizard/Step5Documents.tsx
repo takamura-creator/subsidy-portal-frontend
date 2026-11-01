@@ -11,6 +11,7 @@ import {
   type DraftSection,
 } from "@/lib/api";
 import { errorMessage, logApiError, reportAiUnavailable } from "@/lib/errorCopy";
+import { useAsyncData } from "@/lib/useAsyncData";
 import {
   detectDocumentTier,
   type CompanyInfo,
@@ -132,9 +133,6 @@ function Tier1Panel({
   documents?: DocumentsSnapshot;
   onUpdateDocuments: (d: DocumentsSnapshot) => void;
 }) {
-  const [templates, setTemplates] = useState<DocumentTemplate[]>([]);
-  const [loadingList, setLoadingList] = useState(true);
-  const [listError, setListError] = useState<string>("");
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [genError, setGenError] = useState<string>("");
 
@@ -144,26 +142,19 @@ function Tier1Panel({
     return map;
   }, [documents?.tier1Generated]);
 
-  useEffect(() => {
-    let active = true;
-    setLoadingList(true);
-    fetchDocumentTemplates({ subsidy_type: "kanagawa_digital" })
-      .then((list) => {
-        if (active) setTemplates(list);
-      })
-      .catch((err) => {
-        if (!active) return;
-        setListError(
-          errorMessage(err, "テンプレート一覧の取得に失敗しました。"),
-        );
-      })
-      .finally(() => {
-        if (active) setLoadingList(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+  // テンプレート一覧（表示したときに1回だけ取る）
+  const {
+    data: loadedTemplates,
+    loading: loadingList,
+    failed: listFailed,
+    error: listLoadError,
+  } = useAsyncData("kanagawa_digital", () =>
+    fetchDocumentTemplates({ subsidy_type: "kanagawa_digital" }),
+  );
+  const templates: DocumentTemplate[] = loadedTemplates ?? [];
+  const listError = listFailed
+    ? errorMessage(listLoadError, "テンプレート一覧の取得に失敗しました。")
+    : "";
 
   async function handleGenerate(template: DocumentTemplate | "all") {
     const id = template === "all" ? "all" : template.id;
@@ -374,9 +365,9 @@ function Tier2DraftPanel({
     installLocation: "",   // 主な設置場所
   });
 
-  // 経過秒数カウンター（生成中のみ動作）
+  // 経過秒数カウンター（生成中のみ動作。0 に戻すのは生成を始めるとき＝handleGenerate）
   useEffect(() => {
-    if (!loading) { setElapsed(0); return; }
+    if (!loading) return;
     const id = window.setInterval(() => setElapsed((s) => s + 1), 1000);
     return () => window.clearInterval(id);
   }, [loading]);
@@ -395,6 +386,7 @@ function Tier2DraftPanel({
 
   async function handleGenerate() {
     setError("");
+    setElapsed(0);
     setLoading(true);
     try {
       const desc = draftType === "gyomu_kaizen"

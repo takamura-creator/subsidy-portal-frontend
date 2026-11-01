@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   fetchDocumentGuide,
   fetchChecklist,
@@ -8,6 +8,7 @@ import {
   type DocGuideItem,
   type ChecklistItem,
 } from "@/lib/api";
+import { useAsyncData } from "@/lib/useAsyncData";
 
 interface Props {
   appId: string;
@@ -15,44 +16,50 @@ interface Props {
 }
 
 export default function DocsGuidePanel({ appId, entityType = "株式会社" }: Props) {
-  const [docs, setDocs] = useState<DocGuideItem[]>([]);
-  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
+  // appId・entityType が変わるたびに取り直す
+  const { data, loading, failed, reload: loadData } = useAsyncData(
+    JSON.stringify([appId, entityType]),
+    async () => {
       const [docsData, checklistData] = await Promise.all([
         fetchDocumentGuide(entityType),
         fetchChecklist(appId).catch(() => [] as ChecklistItem[]),
       ]);
-      setDocs(docsData);
       const checkMap: Record<string, boolean> = {};
       for (const item of checklistData) {
         checkMap[item.doc_id] = item.acquired;
       }
-      setChecklist(checkMap);
-    } catch {
-      setError("書類データの取得に失敗しました");
-    } finally {
-      setLoading(false);
-    }
-  }, [appId, entityType]);
+      return { docs: docsData, checkMap };
+    },
+  );
+  const docs: DocGuideItem[] = data?.docs ?? [];
+  const error = failed ? "書類データの取得に失敗しました" : null;
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  // 画面で付け外ししたチェック（先に反映し、保存に失敗したら戻す）。
+  // どの読み込み結果に対する変更かを持ち、取り直したらサーバーの値に戻す（旧実装と同じ）
+  const [localChecks, setLocalChecks] = useState<{
+    source: typeof data;
+    map: Record<string, boolean>;
+  }>({ source: undefined, map: {} });
+  const checklist: Record<string, boolean> = {
+    ...(data?.checkMap ?? {}),
+    ...(localChecks.source === data ? localChecks.map : {}),
+  };
+  const setCheck = (source: typeof data, docId: string, acquired: boolean) =>
+    setLocalChecks((prev) => ({
+      source,
+      map: { ...(prev.source === source ? prev.map : {}), [docId]: acquired },
+    }));
 
   const handleCheck = async (docId: string, acquired: boolean) => {
-    setChecklist((prev) => ({ ...prev, [docId]: acquired }));
+    const source = data;
+    setCheck(source, docId, acquired);
     try {
       await updateChecklist(appId, docId, acquired);
     } catch {
       // ロールバック
-      setChecklist((prev) => ({ ...prev, [docId]: !acquired }));
+      setCheck(source, docId, !acquired);
     }
   };
 

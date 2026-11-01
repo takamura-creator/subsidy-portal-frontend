@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import PageHeader from "@/components/shared/PageHeader";
 import TabFilter from "@/components/shared/TabFilter";
 import DataTable from "@/components/shared/DataTable";
@@ -15,6 +15,7 @@ import {
   ApiError,
 } from "@/lib/api";
 import { requireAuth } from "@/lib/auth";
+import { useAsyncData } from "@/lib/useAsyncData";
 import { Search } from "lucide-react";
 
 const TABS = [
@@ -32,33 +33,24 @@ export default function AdminApplicationsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [applications, setApplications] = useState<AdminApplication[]>([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState<AdminApplication | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetchAdminApplications({
+  // 条件（タブ・検索語・ページ）が変わるたびに取り直す。失敗時は前回の一覧のまま（初回なら空表示）
+  const { data, loading, reload } = useAsyncData(
+    JSON.stringify([activeTab, search, page]),
+    async () => {
+      // 未ログイン・権限なしなら requireAuth がログイン画面などへ移す（読み込み中の表示のまま待つ）
+      if (!requireAuth(["admin"], "/admin/applications")) return new Promise<never>(() => {});
+      return fetchAdminApplications({
         status: activeTab === "all" ? undefined : activeTab,
         search: search || undefined,
         page,
       });
-      setApplications(res.applications);
-      setTotal(res.total);
-    } catch {
-      // エラー時は空表示
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab, search, page]);
-
-  useEffect(() => {
-    if (!requireAuth(["admin"], "/admin/applications")) return;
-    load();
-  }, [load]);
+    },
+  );
+  const applications = data?.applications ?? [];
+  const total = data?.total ?? 0;
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -74,7 +66,7 @@ export default function AdminApplicationsPage() {
   async function handleQuickStatusChange(id: string, newStatus: AdminApplicationStatus) {
     try {
       await updateApplicationStatus(id, newStatus);
-      load();
+      reload();
     } catch (err) {
       alert(err instanceof ApiError ? err.message : "ステータス更新に失敗しました");
     }
@@ -225,7 +217,7 @@ export default function AdminApplicationsPage() {
           onClose={() => setSelectedApp(null)}
           onStatusChanged={() => {
             setSelectedApp(null);
-            load();
+            reload();
           }}
         />
       )}

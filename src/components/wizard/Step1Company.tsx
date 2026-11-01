@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { INDUSTRIES, SERVICE_PREFECTURES } from "@/lib/constants";
 import { authFetch, ApiError } from "@/lib/api";
@@ -39,7 +39,7 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -49,8 +49,9 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
     reValidateMode: "onChange",
   });
 
-  const websiteUrl = watch("websiteUrl");
-  const watchedIndustry = watch("industry");
+  // watch() ではなく useWatch()（React Compiler が扱える API・react-hooks/incompatible-library）
+  const websiteUrl = useWatch({ control, name: "websiteUrl" });
+  const watchedIndustry = useWatch({ control, name: "industry" });
   const isJichikai = watchedIndustry === "自治会・町会";
 
   /**

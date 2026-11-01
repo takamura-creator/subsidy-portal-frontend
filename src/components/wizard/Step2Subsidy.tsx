@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   fetchSubsidies,
@@ -9,6 +9,7 @@ import {
   type AreaCheckResponse,
 } from "@/lib/api";
 import { errorMessage } from "@/lib/errorCopy";
+import { useAsyncData } from "@/lib/useAsyncData";
 import { isServicePrefecture } from "@/lib/constants";
 import { filterCameraOnly } from "@/lib/subsidyFilters";   // F1: 共通モジュール（NG_SUBSIDY_IDS 除外済み）
 import EmailCaptureForm from "@/components/leads/EmailCaptureForm";
@@ -81,66 +82,55 @@ interface Props {
 }
 
 export default function Step2Subsidy({ company, selected, onBack, onNext }: Props) {
-  const [subsidies, setSubsidies] = useState<Subsidy[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string>("");
-  // 表示中のデータが同梱フォールバック（API不達）かどうか。黙って古いデータを出さないための明示。
-  const [stale, setStale] = useState(true);
-  const [area, setArea] = useState<AreaCheckResponse | null>(null);
   const [choice, setChoice] = useState<string>(selected?.id ?? "");
 
-  useEffect(() => {
-    let cancelled = false;
-    // バンドルデータで即座に初期表示（API 待ち中も「0件」と表示しない。あくまで一時表示）
-    const bundled = filterBundledForCompany(company.prefecture, company.industry);
-    setSubsidies(bundled);
-    setStale(true);
-    async function load() {
-      setLoading(true);
-      setLoadError("");
-      try {
-        const [subRes, areaRes] = await Promise.allSettled([
-          fetchSubsidies({ prefecture: company.prefecture }),
-          checkArea(company.prefecture),
-        ]);
-        if (cancelled) return;
-        if (subRes.status === "fulfilled") {
-          // API成功時は常にAPI結果を正とする（件数比較で同梱データに差し替えていた旧ロジックは削除。
-          // 古いが件数の多い同梱データで新しいAPI結果を隠すと「黙って古いデータを出す」ことになるため）
-          setSubsidies(sortByStatus(filterCameraOnly(subRes.value.subsidies ?? [], company.industry)));
-          setStale(false);
-        } else {
-          // API 失敗時は同梱データで救うが、古い可能性があることを表示する
-          setSubsidies(bundled);
-          setStale(true);
-        }
-        if (areaRes.status === "fulfilled") {
-          setArea(areaRes.value);
-        } else {
-          // フォールバック: クライアント側判定
-          setArea({
-            in_service_area: isServicePrefecture(company.prefecture),
-            prefecture: company.prefecture,
-            service_prefectures: [
-              "東京都","神奈川県","静岡県","埼玉県","千葉県","山梨県",
-            ],
-          });
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setLoadError(
-            errorMessage(err, "データの取得に失敗しました。"),
-          );
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+  // 同梱データ（API 待ち中・API 失敗時の表示用。あくまで一時表示で「0件」と出さないため）
+  const bundled = useMemo(
+    () => filterBundledForCompany(company.prefecture, company.industry),
+    [company.prefecture, company.industry],
+  );
+
+  // 都道府県・業種が変わるたびに API の一覧とエリア判定を取り直す
+  // 差し戻し#5 (2026-09-15): company.industry も絞り込みに使うため条件に含める
+  const { data, loading, failed, error } = useAsyncData(
+    JSON.stringify([company.prefecture, company.industry]),
+    async () => {
+      const [subRes, areaRes] = await Promise.allSettled([
+        fetchSubsidies({ prefecture: company.prefecture }),
+        checkArea(company.prefecture),
+      ]);
+      const area: AreaCheckResponse =
+        areaRes.status === "fulfilled"
+          ? areaRes.value
+          : {
+              // フォールバック: クライアント側判定
+              in_service_area: isServicePrefecture(company.prefecture),
+              prefecture: company.prefecture,
+              service_prefectures: [
+                "東京都","神奈川県","静岡県","埼玉県","千葉県","山梨県",
+              ],
+            };
+      if (subRes.status === "fulfilled") {
+        // API成功時は常にAPI結果を正とする（件数比較で同梱データに差し替えていた旧ロジックは削除。
+        // 古いが件数の多い同梱データで新しいAPI結果を隠すと「黙って古いデータを出す」ことになるため）
+        return {
+          subsidies: sortByStatus(filterCameraOnly(subRes.value.subsidies ?? [], company.industry)),
+          stale: false,
+          area,
+        };
       }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [company.prefecture, company.industry]);  // 差し戻し#5 (2026-09-15): company.industry も effect 内で使用しているため依存に追加
+      // API 失敗時は同梱データで救うが、古い可能性があることを表示する
+      return { subsidies: null, stale: true, area };
+    },
+  );
+  // 今の条件の結果が届くまでは同梱データ（stale=true）。届いたら API 結果（失敗なら同梱データのまま）
+  const fresh = !loading && !failed ? data : undefined;
+  const subsidies: Subsidy[] = fresh?.subsidies ?? bundled;
+  // 表示中のデータが同梱フォールバック（API不達）かどうか。黙って古いデータを出さないための明示。
+  const stale = fresh?.stale ?? true;
+  // エリア判定は届いた最新のもの（条件が変わっても次が届くまでは前のまま＝旧実装と同じ）
+  const area: AreaCheckResponse | null = data?.area ?? null;
+  const loadError = failed ? errorMessage(error, "データの取得に失敗しました。") : "";
 
   const inServiceArea = area?.in_service_area ?? isServicePrefecture(company.prefecture);
 

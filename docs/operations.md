@@ -125,7 +125,7 @@ frontend 側の作業は要らない。利用者が「もう一度試す」を�
 NEXT_PUBLIC_API_URL=http://127.0.0.1:9 npx next dev -p 3000
 ```
 ```bash
-npx playwright test ai-unavailable timeouts my-resilience wizard-regenerate results-sidebar-guest
+npx playwright test ai-unavailable timeouts my-resilience wizard-regenerate results-sidebar-guest effects-refactor
 ```
 
 backend の呼び出しは各テストの中で `page.route` の偽応答にしている。Claude API も backend も呼ばない。
@@ -160,7 +160,7 @@ E2E_MINIMAL_BASE_URL=http://localhost:3100 npx playwright test lp-cache-tags
 
 | コマンド | 2026-11-01 時点の値 |
 |---|---|
-| `npm run lint` | 56 件（26 errors / 30 warnings）、すべて既存のコード。**件数が増えていないこと**を見る。2026-11-01 に `eslint-config-next` を 16.4.3 へ上げたとき、新しいルール（`react-hooks/set-state-in-effect` 15件・`@next/next/no-location-assign-relative-destination` 11件・`react-hooks/incompatible-library` 1件）の分だけ 29 件から増えた |
+| `npm run lint` | 29 件（11 errors / 18 warnings）、すべて既存。**件数が増えていないこと**を見る。2026-11-01 に `eslint-config-next` 16.4.3 で増えたルールの27件（`react-hooks/set-state-in-effect` 15件・`@next/next/no-location-assign-relative-destination` 11件・`react-hooks/incompatible-library` 1件）は直した。残る `set-state-in-effect` 10件は更新前からある分 |
 | `npx tsc --noEmit` | 97 件、すべて画面に組み込まれていない部品。**件数が増えていないこと**を見る（§7） |
 | `npm run build` | 外部フォントの取得（OG 画像）にネットワークが要る。取得できない環境では静的生成で止まる（Vercel では成功する） |
 

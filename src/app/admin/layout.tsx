@@ -13,6 +13,7 @@ import { isAuthenticated, getUser } from "@/lib/auth";
 import SidebarLayout from "@/components/shared/SidebarLayout";
 import StatusBar from "@/components/layout/StatusBar";
 import type { SidebarEntry } from "@/components/shared/Sidebar";
+import { hardNavigate } from "@/lib/navigation";
 
 const SIDEBAR_ITEMS: SidebarEntry[] = [
   { href: "/admin", label: "ダッシュボード", icon: LayoutDashboard },
@@ -29,12 +30,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      window.location.href = `/auth/login?returnUrl=${encodeURIComponent(pathname)}`;
+      hardNavigate(`/auth/login?returnUrl=${encodeURIComponent(pathname)}`);
       return;
     }
     const user = getUser();
     if (user && user.role !== "admin") {
-      window.location.href = "/";
+      hardNavigate("/");
       return;
     }
     setReady(true);

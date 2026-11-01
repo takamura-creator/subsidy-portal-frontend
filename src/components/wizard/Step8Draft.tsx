@@ -68,7 +68,13 @@ export default function Step8Draft({
   const [showDrillDown, setShowDrillDown] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
-  const [areaError, setAreaError] = useState(false);
+  // G3: 対応エリア制限チェック（直リンク対策）。開いたときに1回だけ判定する（旧実装は初回の effect で判定していた）
+  const [areaError] = useState(() => {
+    const pref = company.prefecture
+      ?? (hpExtracted?.prefecture as string | undefined)
+      ?? "";
+    return !!pref && !isServicePrefecture(pref);
+  });
   // draftId が無いまま開き直され、直前に生成を始めていた場合は自動で生成しない（設計書 D4・PR-E）
   const [interrupted, setInterrupted] = useState(
     () => !initialDraftId && isInterruptedGeneration(generationStartedAt, Date.now()),
@@ -81,14 +87,8 @@ export default function Step8Draft({
 
   useEffect(() => {
     if (draft || loading) return;
-    // G3: 対応エリア制限チェック（直リンク対策）
-    const pref = company.prefecture
-      ?? (hpExtracted?.prefecture as string | undefined)
-      ?? "";
-    if (pref && !isServicePrefecture(pref)) {
-      setAreaError(true);
-      return;
-    }
+    // 対応エリア外は読み込み・生成をしない（案内は areaError で出す）
+    if (areaError) return;
     if (initialDraftId) {
       load(appId, initialDraftId);
     } else if (!interrupted) {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { DraftChapter } from "@/lib/api";
 import { fetchDrillDownQuestions, type DrillDownQuestionItem } from "@/lib/api";
+import { useAsyncData } from "@/lib/useAsyncData";
 
 interface Props {
   chapters: DraftChapter[];
@@ -14,30 +15,19 @@ interface Props {
 export default function DrillDownChat({ chapters, applicationId, onComplete, onSkip }: Props) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [round] = useState(1);
-  const [questions, setQuestions] = useState<DrillDownQuestionItem[]>([]);
-  const [loadingQuestions, setLoadingQuestions] = useState(false);
-
   const targetChapters = chapters.filter(ch => ch.requires_info);
+  const chapterIds = targetChapters.length > 0
+    ? targetChapters.map(ch => ch.chapter_id)
+    : chapters.slice(0, 1).map(ch => ch.chapter_id);
 
-  useEffect(() => {
-    const chapterIds = targetChapters.length > 0
-      ? targetChapters.map(ch => ch.chapter_id)
-      : chapters.slice(0, 1).map(ch => ch.chapter_id);
-
-    if (chapterIds.length === 0) return;
-
-    setLoadingQuestions(true);
-    fetchDrillDownQuestions(applicationId, chapterIds)
-      .then(items => setQuestions(items))
-      .catch(() => {
-        // 通信エラー時はモックを差し込まずエラー状態へ
-        setQuestions([]);
-      })
-      .finally(() => setLoadingQuestions(false));
-  // chapterIds は applicationId 確定時の初回スナップショットで固定する設計
-  // （親の chapters 更新で再fetchすると回答中の入力が消えるため意図的に除外）
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applicationId]);
+  // 取りに行くのは applicationId が変わったときだけ。chapterIds はその時点のスナップショットで固定する設計
+  // （親の chapters 更新で再fetchすると回答中の入力が消えるため、key に chapters を入れない）
+  const { data, loading, failed } = useAsyncData<DrillDownQuestionItem[]>(applicationId, async () =>
+    chapterIds.length === 0 ? [] : fetchDrillDownQuestions(applicationId, chapterIds),
+  );
+  // 通信エラー時はモックを差し込まずエラー状態へ（空の質問リスト）
+  const questions: DrillDownQuestionItem[] = failed ? [] : (data ?? []);
+  const loadingQuestions = loading && chapterIds.length > 0;
 
   function handleChange(questionId: string, value: string) {
     setAnswers(prev => ({ ...prev, [questionId]: value }));

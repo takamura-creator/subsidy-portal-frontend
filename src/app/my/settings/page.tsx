@@ -11,6 +11,7 @@ import {
 } from "@/lib/api";
 import { getUser } from "@/lib/auth";
 import { SERVICE_PREFECTURES } from "@/lib/constants";
+import { hardNavigate } from "@/lib/navigation";
 
 const WIZARD_KEY = "hc_wizard_state_v2";
 function loadWizardCompany(): Record<string, string | number> | null {
@@ -287,7 +288,7 @@ function SettingsContent() {
     if (!confirm("本当に削除しますか？この操作は取り消せません。")) return;
     try {
       await deleteAccount(pw);
-      window.location.href = "/";
+      hardNavigate("/");
     } catch {
       alert("削除に失敗しました。パスワードを確認してください。");
     }
