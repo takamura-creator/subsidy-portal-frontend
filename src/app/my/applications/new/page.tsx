@@ -6,6 +6,7 @@ import Link from "next/link";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { useAutosave } from "@/lib/useAutosave";
 import { createApplication, fetchAiStatus, requestDraftAssist, fetchProfileDetail } from "@/lib/api";
+import { logApiError, reportAiUnavailable } from "@/lib/errorCopy";
 import { getUser } from "@/lib/auth";
 import { INDUSTRIES, PREFECTURES } from "@/lib/constants";
 
@@ -132,7 +133,9 @@ export default function ApplicationNewPage() {
       });
       updateField(dataField, res.draft_text);
       setAiTips((prev) => ({ ...prev, [field]: res.tips }));
-    } catch {
+    } catch (err) {
+      logApiError("assist", err);
+      reportAiUnavailable("assist", err);
       setAiTips((prev) => ({ ...prev, [field]: ["現在AI機能が利用できません。しばらくしてから再度お試しください。"] }));
     } finally {
       setAiLoading(null);

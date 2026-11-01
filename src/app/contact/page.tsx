@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { submitContact, ApiError, fetchProfileDetailIfLoggedIn } from "@/lib/api";
+import { submitContact, fetchProfileDetailIfLoggedIn } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import { getUser } from "@/lib/auth";
 import { PREFECTURES } from "@/lib/constants";
 
@@ -115,9 +116,7 @@ export default function ContactPage() {
       track("contact_submit", { inquiry_type: inquiryType });
     } catch (err) {
       setError(
-        err instanceof ApiError
-          ? err.message
-          : "送信に失敗しました。しばらくしてから再度お試しください。",
+        errorMessage(err, "送信に失敗しました。しばらくしてから再度お試しください。"),
       );
     } finally {
       setSubmitting(false);

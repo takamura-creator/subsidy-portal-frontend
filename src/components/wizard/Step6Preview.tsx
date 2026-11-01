@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { generateEstimatePdf, submitLead, ApiError } from "@/lib/api";
+import { generateEstimatePdf, submitLead } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import {
   detectDocumentTier,
   type CompanyInfo,
@@ -57,9 +58,7 @@ export default function Step6Preview({
       URL.revokeObjectURL(url);
     } catch (err) {
       setPdfError(
-        err instanceof ApiError
-          ? err.message
-          : "見積書PDFの取得に失敗しました。",
+        errorMessage(err, "見積書PDFの取得に失敗しました。"),
       );
     } finally {
       setPdfLoading(false);
@@ -306,9 +305,7 @@ function ReminderCard({
       onSaved(values.email);
     } catch (err) {
       setApiError(
-        err instanceof ApiError
-          ? err.message
-          : "リマインダー登録に失敗しました。時間をおいて再度お試しください。",
+        errorMessage(err, "リマインダー登録に失敗しました。時間をおいて再度お試しください。"),
       );
     }
   }

@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 export default function GlobalError({
   error,
   unstable_retry,
@@ -7,6 +9,10 @@ export default function GlobalError({
   error: Error & { digest?: string }
   unstable_retry: () => void
 }) {
+  useEffect(() => {
+    console.error(error)
+  }, [error])
+
   return (
     <html lang="ja">
       <head>
@@ -21,9 +27,15 @@ export default function GlobalError({
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '8px' }}>
               システムエラーが発生しました
             </h2>
-            <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '24px' }}>
-              {error.message || "予期しないエラーが発生しました。"}
+            {/* error.message は画面に出さない（console には出す・2026-11-01 PR-A） */}
+            <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: error.digest ? '8px' : '24px' }}>
+              予期しないエラーが発生しました。時間をおいて、もう一度お試しください。
             </p>
+            {error.digest && (
+              <p style={{ color: '#6b7280', fontSize: '0.75rem', marginBottom: '24px' }}>
+                エラーID: {error.digest}
+              </p>
+            )}
             <button
               onClick={() => unstable_retry()}
               style={{

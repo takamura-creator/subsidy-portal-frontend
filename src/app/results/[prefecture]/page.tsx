@@ -8,6 +8,7 @@ import {
   fetchRecipients,
   RecipientListResponse,
 } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 
 const CATEGORIES = ["IT導入", "ものづくり", "事業再構築", "防犯", "省エネ"];
 const FISCAL_YEARS = [2025, 2024, 2023, 2022, 2021];
@@ -51,7 +52,7 @@ export default function PrefecturePage() {
       });
       setData(result);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "データの取得に失敗しました");
+      setError(errorMessage(e, "データの取得に失敗しました"));
     } finally {
       setLoading(false);
     }

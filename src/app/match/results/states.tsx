@@ -70,32 +70,27 @@ export function EmptyState() {
   );
 }
 
-export function ErrorState({ message }: { message: string }) {
+/**
+ * backend が AI の代わりに簡易判定で結果を返したとき（MatchResponse.fallback === true）の注記（2026-11-01 PR-A・設計書 §2-4）。
+ * 失敗時の表示は components/shared/AiUnavailableNotice（旧 ErrorState は「ステータス番号」をそのまま出していたため置き換え）。
+ */
+export function FallbackNote() {
   return (
-    <div
+    <p
+      role="status"
+      data-testid="match-fallback-note"
       style={{
-        padding: "40px 24px",
-        textAlign: "center",
+        fontSize: 12,
+        color: "var(--hc-text-muted)",
         background: "var(--hc-card-bg)",
         border: "1px solid var(--hc-border)",
-        borderRadius: 10,
+        borderRadius: 8,
+        padding: "8px 12px",
+        margin: "0 0 16px",
       }}
-      role="alert"
     >
-      <p style={{ fontSize: 15, fontWeight: 600, color: "var(--hc-navy)", marginBottom: 8 }}>
-        結果を取得できませんでした
-      </p>
-      <p style={{ fontSize: 13, color: "var(--hc-text-muted)", marginBottom: 16 }}>
-        {message}
-      </p>
-      <Link
-        href="/match"
-        className="btn-primary"
-        style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600 }}
-      >
-        診断をやり直す
-      </Link>
-    </div>
+      ※ AIが混み合っているため、簡易的な判定で表示しています。
+    </p>
   );
 }
 

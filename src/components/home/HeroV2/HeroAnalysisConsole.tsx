@@ -86,12 +86,25 @@ const ERROR_COPY: Record<string, { text: string; primary: string; secondary: str
     primary: RETRY_LABEL,
     secondary: MANUAL_LABEL,
   },
+  // 2026-11-01 PR-A（設計書 docs/design/resilience.md §2-3）: 5xx・サーバーに届かないときに
+  // 利用者の回線のせいにする文言（旧「通信エラーが発生しました。接続をご確認ください。」）をやめる。
+  // 回線が切れていると分かるとき（navigator.onLine === false）だけ offline の文言にする。導線は変えない
   other: {
-    text: "通信エラーが発生しました。接続をご確認ください。",
+    text: "ただいま診断を利用できません。時間をおいて、もう一度お試しください。",
+    primary: RETRY_LABEL,
+    secondary: MANUAL_LABEL,
+  },
+  offline: {
+    text: "インターネットに接続されていないようです。接続を確認してください。",
     primary: RETRY_LABEL,
     secondary: MANUAL_LABEL,
   },
 };
+
+function errorCopyKey(status: number | null): string {
+  if ((status ?? 0) === 0 && typeof navigator !== "undefined" && navigator.onLine === false) return "offline";
+  return String(status ?? 0);
+}
 
 interface HeroAnalysisConsoleProps {
   snap: TimelineSnapshot;
@@ -154,7 +167,7 @@ export default function HeroAnalysisConsole({
   if (snap.tone === "error") titleCls.push("is-error");
   if (snap.tone === "aborted") titleCls.push("is-aborted");
 
-  const err = ERROR_COPY[String(status ?? 0)] ?? ERROR_COPY.other;
+  const err = ERROR_COPY[errorCopyKey(status)] ?? ERROR_COPY.other;
   const forced = consecutiveFailures >= 3;
   const primaryLabel = forced ? MANUAL_LABEL : err.primary;
   const secondaryLabel = forced ? RETRY_LABEL : err.secondary;

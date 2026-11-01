@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { INDUSTRIES, SERVICE_PREFECTURES } from "@/lib/constants";
 import { authFetch, ApiError } from "@/lib/api";
+import { errorKind, errorMessage, logApiError, reportAiUnavailable } from "@/lib/errorCopy";
 import type { CompanyInfo } from "./types";
 import { Field, Spinner } from "./FormField";
 import {
@@ -151,16 +152,17 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
           onHpExtracted(allFields);
         }
       } catch (err) {
+        // ステータス番号は画面に出さない（旧: 「自動取得に失敗しました（APIエラー…ステータス: 503）」・2026-11-01 PR-A）
+        logApiError("extract", err);
+        reportAiUnavailable("extract", err);
         const message =
-          err instanceof ApiError
-            ? err.status === 401
-              ? "ログインが必要です。ページを再読み込みしてログインし直してください。"
-              : err.status === 403
-                ? "アクセス権限がありません。"
-                : err.status === 408 || err.message?.includes("タイムアウト")
-                  ? "ホームページの取得がタイムアウトしました。URLを確認して再度お試しください。"
-                  : `自動取得に失敗しました（${err.message}）`
-            : "自動取得に失敗しました。しばらく待ってから再度お試しください。";
+          err instanceof ApiError && err.status === 401
+            ? "ログインが必要です。ページを再読み込みしてログインし直してください。"
+            : err instanceof ApiError && err.status === 403
+              ? "アクセス権限がありません。"
+              : errorKind(err) === "timeout"
+                ? "ホームページの取得がタイムアウトしました。URLを確認して再度お試しください。"
+                : `自動取得できませんでした。${errorMessage(err, "URLを確認して、もう一度お試しください。")}`;
         if (auto) {
           // ユーザーが押していない処理の失敗で驚かせない。フォームはそのまま手入力できる
           setAutoNotice("自動取得できませんでした。下のフォームに直接ご入力ください。");

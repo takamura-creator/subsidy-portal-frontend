@@ -9,8 +9,8 @@ import {
   type DocumentTemplate,
   type DraftGenerateResponse,
   type DraftSection,
-  ApiError,
 } from "@/lib/api";
+import { errorMessage, logApiError, reportAiUnavailable } from "@/lib/errorCopy";
 import {
   detectDocumentTier,
   type CompanyInfo,
@@ -154,9 +154,7 @@ function Tier1Panel({
       .catch((err) => {
         if (!active) return;
         setListError(
-          err instanceof ApiError
-            ? err.message
-            : "テンプレート一覧の取得に失敗しました。",
+          errorMessage(err, "テンプレート一覧の取得に失敗しました。"),
         );
       })
       .finally(() => {
@@ -205,9 +203,7 @@ function Tier1Panel({
       });
     } catch (err) {
       setGenError(
-        err instanceof ApiError
-          ? err.message
-          : "書類生成でエラーが発生しました。",
+        errorMessage(err, "書類生成でエラーが発生しました。"),
       );
     } finally {
       setGeneratingId(null);
@@ -431,10 +427,10 @@ function Tier2DraftPanel({
         tier1Generated: documents?.tier1Generated,
       });
     } catch (err) {
+      logApiError("draft", err);
+      reportAiUnavailable("draft", err);
       setError(
-        err instanceof ApiError
-          ? err.message
-          : "下書き生成でエラーが発生しました。しばらくしてから再度お試しください。",
+        errorMessage(err, "下書き生成でエラーが発生しました。しばらくしてから再度お試しください。"),
       );
     } finally {
       setLoading(false);

@@ -7,8 +7,8 @@ import {
   type Product,
   type InstallationCosts,
   type RecommendedPackage,
-  ApiError,
 } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import type { ProductSelection } from "./types";
 
 interface Props {
@@ -52,7 +52,7 @@ export default function Step3Products({ selected, onBack, onNext }: Props) {
       } catch (err) {
         if (!cancelled) {
           setLoadError(
-            err instanceof ApiError ? err.message : "製品情報の取得に失敗しました。",
+            errorMessage(err, "製品情報の取得に失敗しました。"),
           );
         }
       } finally {

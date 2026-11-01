@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Button from "@/components/shared/Button";
-import { deleteAccount, ApiError } from "@/lib/api";
+import { deleteAccount } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 
 export default function DangerZone() {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -35,9 +36,7 @@ export default function DangerZone() {
       window.location.href = "/auth/login";
     } catch (err) {
       setError(
-        err instanceof ApiError
-          ? err.message
-          : "アカウント削除に失敗しました"
+        errorMessage(err, "アカウント削除に失敗しました")
       );
     } finally {
       setLoading(false);

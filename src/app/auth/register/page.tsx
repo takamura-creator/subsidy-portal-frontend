@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout";
 import { register, updateProfile, ApiError } from "@/lib/api";
+import { errorMessage } from "@/lib/errorCopy";
 import { SERVICE_PREFECTURES } from "@/lib/constants";
 
 const WIZARD_KEY = "hc_wizard_state_v2";
@@ -176,17 +177,11 @@ function RegisterForm() {
 
       router.push("/my");
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(
-          err.status === 409
-            ? "このメールアドレスは既に登録されています。"
-            : err.status === 429
-              ? "しばらく時間をおいてから再度お試しください。"
-              : err.message,
-        );
-      } else {
-        setError("登録に失敗しました。しばらくしてから再度お試しください。");
-      }
+      setError(
+        err instanceof ApiError && err.status === 409
+          ? "このメールアドレスは既に登録されています。"
+          : errorMessage(err, "登録に失敗しました。しばらくしてから再度お試しください。"),
+      );
     } finally {
       setLoading(false);
     }
