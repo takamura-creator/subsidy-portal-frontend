@@ -9,7 +9,7 @@ import {
   deleteAccount,
   type UserProfileDetail,
 } from "@/lib/api";
-import { getUser } from "@/lib/auth";
+import { clearSession, getUser } from "@/lib/auth";
 import { SERVICE_PREFECTURES } from "@/lib/constants";
 import { hardNavigate } from "@/lib/navigation";
 
@@ -288,6 +288,8 @@ function SettingsContent() {
     if (!confirm("本当に削除しますか？この操作は取り消せません。")) return;
     try {
       await deleteAccount(pw);
+      // 削除したアカウントのトークン・ウィザードの状態を残さない（2026-11-01・旧実装は残したままトップへ移っていた）
+      clearSession();
       hardNavigate("/");
     } catch {
       alert("削除に失敗しました。パスワードを確認してください。");

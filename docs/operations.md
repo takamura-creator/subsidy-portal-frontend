@@ -125,7 +125,7 @@ frontend 側の作業は要らない。利用者が「もう一度試す」を�
 NEXT_PUBLIC_API_URL=http://127.0.0.1:9 npx next dev -p 3000
 ```
 ```bash
-npx playwright test ai-unavailable timeouts my-resilience wizard-regenerate results-sidebar-guest effects-refactor
+npx playwright test ai-unavailable timeouts my-resilience wizard-regenerate results-sidebar-guest effects-refactor account-delete
 ```
 
 backend の呼び出しは各テストの中で `page.route` の偽応答にしている。Claude API も backend も呼ばない。

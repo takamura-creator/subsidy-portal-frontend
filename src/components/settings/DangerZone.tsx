@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "@/components/shared/Button";
 import { deleteAccount } from "@/lib/api";
+import { clearSession } from "@/lib/auth";
 import { errorMessage } from "@/lib/errorCopy";
 import { hardNavigate } from "@/lib/navigation";
 
@@ -31,9 +32,7 @@ export default function DangerZone() {
     setError("");
     try {
       await deleteAccount(password);
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      localStorage.removeItem("hc_wizard_state_v2");
+      clearSession();
       hardNavigate("/auth/login");
     } catch (err) {
       setError(
