@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { authFetch, ApiError } from "@/lib/api";
+import { authFetch, ApiError, EXTRACT_TIMEOUT_MS } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -44,6 +44,8 @@ export default function HomepageExtractorPanel({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: websiteUrl, subsidy_id: subsidyId }),
+          // Step1 と同じ打ち切り（2026-11-01 PR-C。この部品は現在どの画面にも組み込まれていない）
+          timeoutMs: EXTRACT_TIMEOUT_MS,
         }
       );
       const count = Object.keys(res.extracted_fields).length;

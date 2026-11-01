@@ -7,6 +7,7 @@ import { INDUSTRIES, SERVICE_PREFECTURES } from "@/lib/constants";
 import { authFetch, ApiError } from "@/lib/api";
 import { errorKind, errorMessage, logApiError, reportAiUnavailable } from "@/lib/errorCopy";
 import type { CompanyInfo } from "./types";
+import { EXTRACT_TIMEOUT_MS } from "@/lib/api";
 import { Field, Spinner } from "./FormField";
 import {
   applyExtractedFields,
@@ -131,6 +132,8 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url: target, subsidy_id: "" }),
+            // 既定の10秒では backend の HP 取得（最大20秒）＋AI 読み取りが終わらない（2026-11-01 PR-C）
+            timeoutMs: EXTRACT_TIMEOUT_MS,
           },
         );
 
@@ -310,6 +313,9 @@ export default function Step1Company({ defaults, onNext, onHpExtracted }: Props)
         {/* Loading skeleton */}
         {extracting && (
           <div role="status" aria-label="情報を取得中です" className="space-y-2 mt-3">
+            <p className="text-[12px] text-text-muted">
+              ホームページを読み取っています。最大{Math.round(EXTRACT_TIMEOUT_MS / 1000)}秒ほどかかります。
+            </p>
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
