@@ -4,6 +4,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MATCH_TIMEOUT_MS } from "@/lib/api";
+import { toApiIndustry } from "@/lib/constants";
 
 export const SCORE_STYLES: Record<string, React.CSSProperties> = {
   高: {
@@ -35,9 +36,25 @@ export function parseEmployees(raw: string): number {
   return n;
 }
 
-export function EmptyState() {
+/** 事業者（自治会・町会・個人宅以外）か。backend の判定（routers/match.py _is_jichikai_industry）と同じ語で見る */
+function isBusinessIndustry(industry: string): boolean {
+  const api = toApiIndustry(industry);
+  return !["自治会", "町会", "町内会", "地域団体", "マンション管理組合", "個人宅"].some((kw) => api.includes(kw));
+}
+
+/**
+ * 候補0件（backend 404）の表示。
+ * 事業者には「単独で使える制度は少ない」ことと、次の手（商店街・商店会での申請／補助金一覧／相談）を出す
+ * （2026-11-01 調査: 6都県で、個々の事業者が単独で申請でき、カメラ機器が対象と公式資料で読める制度は見つからず、
+ * 見つかったのは商店街・商工団体向けだけ。backend docs/data/2026-11-01_bouhan-camera_candidates.md §3〜4）。
+ * 特定の制度が使えるとは言わない（「場合があります」）。
+ */
+export function EmptyState({ industry = "" }: { industry?: string }) {
+  const business = isBusinessIndustry(industry);
+  const listHref = industry ? `/subsidies?industry=${encodeURIComponent(industry)}` : "/subsidies";
   return (
     <div
+      data-testid="match-empty"
       style={{
         padding: "40px 24px",
         textAlign: "center",
@@ -56,16 +73,67 @@ export function EmptyState() {
       >
         条件に合う補助金が見つかりませんでした
       </p>
-      <p style={{ fontSize: 13, color: "var(--hc-text-muted)", marginBottom: 16 }}>
-        入力条件を変えて再度お試しください。
-      </p>
-      <Link
-        href="/match"
-        className="btn-primary"
-        style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600 }}
-      >
-        診断をやり直す
-      </Link>
+      {business ? (
+        <div data-testid="match-empty-business" style={{ textAlign: "left", maxWidth: 520, margin: "0 auto 20px" }}>
+          <p style={{ fontSize: 13, color: "var(--hc-text-muted)", lineHeight: 1.7, marginBottom: 12 }}>
+            事業者が単独で防犯カメラの購入に使える補助金は、いまは多くありません。次の方法もご検討ください。
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
+            <li style={{ fontSize: 13, lineHeight: 1.7, color: "var(--hc-text)" }}>
+              <strong>商店街・商店会で申請する</strong>
+              <br />
+              <span style={{ color: "var(--hc-text-muted)" }}>
+                商店街や商店会が設置する防犯カメラには、区市町村や都県の補助がある場合があります。加盟している団体にご相談ください。
+              </span>
+            </li>
+            <li style={{ fontSize: 13, lineHeight: 1.7, color: "var(--hc-text)" }}>
+              <strong>受付前・締切後の制度も見る</strong>
+              <br />
+              <span style={{ color: "var(--hc-text-muted)" }}>
+                受付期間の外にある制度は診断に出ません。補助金一覧では受付予定の制度も確認できます。
+              </span>
+            </li>
+            <li style={{ fontSize: 13, lineHeight: 1.7, color: "var(--hc-text)" }}>
+              <strong>専門スタッフに相談する</strong>
+              <br />
+              <span style={{ color: "var(--hc-text-muted)" }}>
+                補助金を使わない場合の導入方法や費用も含めて、ご相談いただけます。
+              </span>
+            </li>
+          </ul>
+        </div>
+      ) : (
+        <p style={{ fontSize: 13, color: "var(--hc-text-muted)", marginBottom: 16 }}>
+          入力条件を変えて再度お試しください。
+        </p>
+      )}
+      <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+        <Link
+          href="/match"
+          className="btn-primary"
+          style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, ...(business ? { width: "auto" } : {}) }}
+        >
+          診断をやり直す
+        </Link>
+        {business && (
+          <>
+            <Link
+              href={listHref}
+              className="btn-secondary"
+              style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600 }}
+            >
+              補助金一覧を見る
+            </Link>
+            <Link
+              href="/contact"
+              className="btn-secondary"
+              style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600 }}
+            >
+              専門スタッフに相談する
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }
