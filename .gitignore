@@ -3,3 +3,6 @@ node_modules/
 .env.local
 .vercel
 .ruff_cache/
+# Playwright の実行結果（e2e の出力・2026-11-01）
+test-results/
+playwright-report/

@@ -93,6 +93,16 @@ export class ApiError extends Error {
  */
 export const MATCH_TIMEOUT_MS = 60000;
 export const DIAGNOSE_TIMEOUT_MS = 90000;
+/**
+ * HP 自動取得（/api/extractions/homepage）の打ち切り（2026-11-01 設計書 docs/design/resilience.md PR-C・D2）。
+ * 旧: 既定の10秒。backend の HP 取得の打ち切り（20秒）＋ AI 読み取りより短く、backend が処理中でも
+ * 画面は「タイムアウト」になっていた。診断（HP取得＋AI読み取り＋マッチ）の90秒より短い60秒にする。
+ * backend の実測時間が分かれば、その約2倍に直す。
+ */
+export const EXTRACT_TIMEOUT_MS = 60000;
+/** タイムアウト指定の無かった直書き fetch に付ける上限（PR-C） */
+const AI_STATUS_TIMEOUT_MS = 5000;
+const LONG_TIMEOUT_MS = 60000;
 
 async function apiFetch<T>(
   url: string,
@@ -121,6 +131,22 @@ async function apiFetch<T>(
     if (err instanceof DOMException && err.name === "TimeoutError") {
       const sec = timeoutMs ? Math.round(timeoutMs / 1000) : "—";
       throw new ApiError(408, `リクエストがタイムアウトしました（${sec}秒）`);
+    }
+    throw new ApiError(0, "ネットワークエラーが発生しました");
+  }
+}
+
+/**
+ * apiFetch を通さない呼び出し（Blob・FormData・独自のエラー処理）用の fetch。
+ * 打ち切りと通信失敗を apiFetch と同じ ApiError（408 / 0）にそろえる（2026-11-01 PR-C）。
+ * HTTP エラーの扱いは呼び出し側に任せる（res.ok を見て各自の文言で投げる）。
+ */
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+  try {
+    return await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "TimeoutError") {
+      throw new ApiError(408, `リクエストがタイムアウトしました（${Math.round(timeoutMs / 1000)}秒）`);
     }
     throw new ApiError(0, "ネットワークエラーが発生しました");
   }
@@ -539,11 +565,11 @@ export async function importSubsidiesCSV(file: File): Promise<{ imported: number
   const formData = new FormData();
   formData.append("file", file);
   const token = localStorage.getItem("access_token");
-  const res = await fetch(`${API_URL}/api/admin/subsidies/import`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
-  });
+  const res = await fetchWithTimeout(
+    `${API_URL}/api/admin/subsidies/import`,
+    { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: formData },
+    LONG_TIMEOUT_MS,
+  );
   if (!res.ok) throw new ApiError(res.status, "CSVインポートに失敗しました");
   return res.json();
 }
@@ -651,7 +677,8 @@ export async function refreshToken(): Promise<LoginResponse> {
   });
 }
 
-type FetchOptions = RequestInit & { next?: { revalidate?: number } };
+/** timeoutMs: 既定（10秒）より長く待つ呼び出し用（例: HP 自動取得 EXTRACT_TIMEOUT_MS）。signal を渡したときは無視される */
+type FetchOptions = RequestInit & { next?: { revalidate?: number }; timeoutMs?: number };
 
 /**
  * 認証付きAPI呼び出し。401時にリフレッシュトークンで自動リトライする。
@@ -1135,17 +1162,18 @@ export interface DraftAssistResponse {
 }
 
 export async function fetchAiStatus(): Promise<{ available: boolean }> {
-  const res = await fetch(`${API_URL}/api/ai/status`);
+  // 応答が無いときに「AIに相談する」ボタンの判定が止まらないよう5秒で打ち切る（失敗＝使えない扱い・PR-C）
+  const res = await fetchWithTimeout(`${API_URL}/api/ai/status`, {}, AI_STATUS_TIMEOUT_MS);
   if (!res.ok) return { available: false };
   return res.json();
 }
 
 export async function requestDraftAssist(req: DraftAssistRequest): Promise<DraftAssistResponse> {
-  const res = await fetch(`${API_URL}/api/ai/draft-assist`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(req),
-  });
+  const res = await fetchWithTimeout(
+    `${API_URL}/api/ai/draft-assist`,
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) },
+    LONG_TIMEOUT_MS,
+  );
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     throw new ApiError(res.status, data.detail || "AI機能でエラーが発生しました");
@@ -1797,9 +1825,10 @@ export async function exportDraftBlob(
   format: "pdf" | "docx" = "pdf",
 ): Promise<Blob> {
   const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `${API_URL}/api/v1/applications/${appId}/draft/${draftId}/export?format=${format}`,
     { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {} },
+    LONG_TIMEOUT_MS,
   );
   if (!res.ok) throw new ApiError(res.status, `Export failed: ${res.statusText}`);
   return res.blob();
@@ -1817,7 +1846,7 @@ export async function fetchDrillDownQuestions(
   chapterIds: string[],
 ): Promise<DrillDownQuestionItem[]> {
   const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `${API_URL}/api/v1/applications/${applicationId}/drill-down-questions`,
     {
       method: "POST",
@@ -1827,6 +1856,7 @@ export async function fetchDrillDownQuestions(
       },
       body: JSON.stringify({ chapter_ids: chapterIds }),
     },
+    LONG_TIMEOUT_MS,
   );
   if (!res.ok) throw new ApiError(res.status, "Failed to fetch drill-down questions");
   const data = await res.json();
