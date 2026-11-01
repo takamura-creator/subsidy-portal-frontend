@@ -672,30 +672,58 @@ export async function authFetch<T>(
   try {
     return await apiFetch<T>(url, { ...options, headers });
   } catch (err) {
-    if (err instanceof ApiError && err.status === 401) {
-      // アクセストークン期限切れ → リフレッシュ試行
-      try {
-        const res = await refreshToken();
+    if (!(err instanceof ApiError && err.status === 401)) throw err;
+  }
+
+  // アクセストークン期限切れ → リフレッシュ（同時に何本 401 になっても更新の通信は1本・2026-11-01 PR-D）
+  const newToken = await ensureFreshToken();
+  if (newToken) {
+    const retryHeaders: Record<string, string> = {
+      ...(options.headers as Record<string, string>),
+      Authorization: `Bearer ${newToken}`,
+    };
+    try {
+      return await apiFetch<T>(url, { ...options, headers: retryHeaders });
+    } catch (retryErr) {
+      // 2026-11-01 PR-D: 旧実装は再送の失敗（5xx・タイムアウト等）でもログアウトしていた。
+      // 再送がまた 401 のときだけログアウト扱いにし、それ以外の失敗はそのまま呼び出し側へ返す
+      if (!(retryErr instanceof ApiError && retryErr.status === 401)) throw retryErr;
+    }
+  }
+
+  // リフレッシュも失敗（または再送も 401）→ ログアウトしてログインページへリダイレクト
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  if (redirectOnAuthFail && typeof window !== "undefined") {
+    const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `/auth/login?returnUrl=${returnUrl}`;
+  }
+  throw new ApiError(401, "セッションが期限切れです。再度ログインしてください。");
+}
+
+let refreshing: Promise<string | null> | null = null;
+
+/**
+ * refresh token で access token を取り直し、保存する（2026-11-01 PR-D）。
+ * - 同時に呼ばれても通信は1本（実行中の Promise を共有する）
+ * - 成功: 新しい access token を返す／失敗・refresh token 無し: null（トークンの削除と転送は呼び出し側が決める）
+ * 使う場所: authFetch の 401、/my のレイアウト（access token の期限切れで即ログイン画面へ送らないため）
+ */
+export function ensureFreshToken(): Promise<string | null> {
+  if (typeof window === "undefined") return Promise.resolve(null);
+  if (!refreshing) {
+    refreshing = refreshToken()
+      .then((res) => {
         localStorage.setItem("access_token", res.access_token);
         localStorage.setItem("refresh_token", res.refresh_token);
-        const retryHeaders: Record<string, string> = {
-          ...(options.headers as Record<string, string>),
-          Authorization: `Bearer ${res.access_token}`,
-        };
-        return await apiFetch<T>(url, { ...options, headers: retryHeaders });
-      } catch {
-        // リフレッシュも失敗 → ログアウトしてログインページへリダイレクト
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        if (redirectOnAuthFail && typeof window !== "undefined") {
-          const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-          window.location.href = `/auth/login?returnUrl=${returnUrl}`;
-        }
-        throw new ApiError(401, "セッションが期限切れです。再度ログインしてください。");
-      }
-    }
-    throw err;
+        return res.access_token;
+      })
+      .catch(() => null)
+      .finally(() => {
+        refreshing = null;
+      });
   }
+  return refreshing;
 }
 
 // --- 交付実績 ---

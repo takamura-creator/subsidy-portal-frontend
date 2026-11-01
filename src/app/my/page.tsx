@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { getUser } from "@/lib/auth";
 import { fetchProfileDetail, fetchMyApplications, type Application } from "@/lib/api";
@@ -53,6 +53,29 @@ export default function MyDashboardPage() {
   const [companyName, setCompanyName] = useState<string>(jwtName);
   const [snap, setSnap] = useState<WizardSnapshot | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
+  // 申請一覧の取得失敗（2026-11-01 PR-D）。旧: 失敗を空配列にしていたため、申請が消えたように見えていた
+  const [appsError, setAppsError] = useState(false);
+  const [appsRetrying, setAppsRetrying] = useState(false);
+
+  /** 直近の申請（最大5件）を取得。失敗は「読み込めなかった」として表示する（0件とは区別する） */
+  const loadApplications = useCallback(
+    () =>
+      fetchMyApplications()
+        .then((res) => {
+          setApplications((res.applications ?? []).slice(0, 5));
+          setAppsError(false);
+        })
+        .catch(() => {
+          setApplications([]);
+          setAppsError(true);
+        }),
+    [],
+  );
+
+  function retryApplications() {
+    setAppsRetrying(true);
+    void loadApplications().finally(() => setAppsRetrying(false));
+  }
 
   useEffect(() => {
     fetchProfileDetail()
@@ -64,10 +87,8 @@ export default function MyDashboardPage() {
     setSnap(loadWizardSnapshot());
 
     // 直近の申請（最大5件）を取得して表示
-    fetchMyApplications()
-      .then((res) => setApplications((res.applications ?? []).slice(0, 5)))
-      .catch(() => setApplications([]));
-  }, []);
+    void loadApplications();
+  }, [loadApplications]);
 
   // ウィザード進捗から表示値を算出
   const wizardStep = snap?.step ?? 0;
@@ -334,8 +355,51 @@ export default function MyDashboardPage() {
             </div>
           )}
 
+          {/* 申請一覧の取得失敗（0件とは区別して出す・2026-11-01 PR-D） */}
+          {appsError && (
+            <div style={{ marginTop: 24 }}>
+              <SectionTitle>申請一覧</SectionTitle>
+              <div
+                role="alert"
+                data-testid="my-apps-error"
+                style={{
+                  background: "var(--hc-card-bg)",
+                  border: BORDER_WHISPER,
+                  borderRadius: RADIUS_CARD,
+                  boxShadow: SHADOW_CARD,
+                  padding: "16px",
+                }}
+              >
+                <p style={{ fontSize: 13, color: "var(--hc-navy)", margin: "0 0 4px", fontWeight: 600 }}>
+                  申請一覧を読み込めませんでした
+                </p>
+                <p style={{ fontSize: 12, color: "var(--hc-text-muted)", margin: "0 0 12px" }}>
+                  申請のデータは消えていません。時間をおいて、もう一度お試しください。
+                </p>
+                <button
+                  type="button"
+                  onClick={retryApplications}
+                  disabled={appsRetrying}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: RADIUS_STANDARD,
+                    border: "1px solid var(--hc-primary)",
+                    background: "var(--hc-white)",
+                    color: "var(--hc-primary)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: appsRetrying ? "default" : "pointer",
+                    opacity: appsRetrying ? 0.6 : 1,
+                  }}
+                >
+                  {appsRetrying ? "読み込み中…" : "もう一度読み込む"}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* 申請一覧（最大5件・統合表示） */}
-          {applications.length > 0 && (
+          {!appsError && applications.length > 0 && (
             <div style={{ marginTop: 24 }}>
               <SectionTitle>申請一覧</SectionTitle>
               <div
