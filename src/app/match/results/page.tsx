@@ -184,7 +184,7 @@ function ResultsContent() {
         />
       )}
       {!loading && !error && matches.length > 0 && isFallback && <FallbackNote />}
-      {!loading && !error && matches.length === 0 && <EmptyState />}
+      {!loading && !error && matches.length === 0 && <EmptyState industry={industry} />}
       {!loading && !error && matches.length > 0 && (
         <StaggerChildren stagger={0.1}>
           {matches.map((item, idx) => (
