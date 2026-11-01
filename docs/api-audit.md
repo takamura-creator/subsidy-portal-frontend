@@ -242,7 +242,7 @@ backend が実際に Claude を何回呼ぶかは backend 側のコードで決�
 
 | パッケージ | 版 | ライセンス | 区分 |
 |---|---|---|---|
-| next | 16.2.2 | MIT | prod |
+| next | 16.4.3 | MIT | prod |
 | react / react-dom | 19.2.4 | MIT | prod |
 | @vercel/analytics | 2.0.1 | MIT | prod |
 | framer-motion | 12.38.0 | MIT | prod |

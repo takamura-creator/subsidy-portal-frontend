@@ -1,6 +1,6 @@
 # HOJYO CAME frontend 運用メモ
 
-- 対象: `takamura-creator/subsidy-portal-frontend`（Next.js 16.2.2・Vercel）
+- 対象: `takamura-creator/subsidy-portal-frontend`（Next.js 16.4.3・Vercel）
 - 作成: 2026-11-01（設計書 `docs/design/resilience.md` の PR-F）
 - 前提: 耐障害化の PR-A〜E（[#6](https://github.com/takamura-creator/subsidy-portal-frontend/pull/6)〜[#9](https://github.com/takamura-creator/subsidy-portal-frontend/pull/9)）と PR-B を merge した後の状態を書いている。未 merge の間は「変更前」の列のとおりに動く
 - このファイルには値（URL・キー・トークン）を書かない。名前と置き場所だけを書く
@@ -130,6 +130,23 @@ npx playwright test ai-unavailable timeouts my-resilience wizard-regenerate resu
 
 backend の呼び出しは各テストの中で `page.route` の偽応答にしている。Claude API も backend も呼ばない。
 
+### 都道府県LPのキャッシュタグ（`e2e/lp-cache-tags.test.ts`・2026-11-01）
+
+本番で `/lp/{県}` が `Invalid character in header content ["x-next-cache-tags"]` で 500 になっていた件の回帰テスト（Next.js 16.2.2 の不具合。16.4.3 へ更新して解消）。
+
+- 前半（47都道府県の soft tag がヘッダーに書けるか）はサーバー不要で、普段の `npx playwright test` で回る
+- 後半は Vercel と同じ minimal mode の本番ビルドが要る。開発サーバーではこのヘッダーが出ないので確かめられない（`E2E_MINIMAL_BASE_URL` が無ければ飛ばす）
+
+```bash
+NEXT_PUBLIC_API_URL=http://127.0.0.1:9 npx next build
+```
+```bash
+NEXT_PRIVATE_MINIMAL_MODE=1 NEXT_PUBLIC_API_URL=http://127.0.0.1:9 npx next start -p 3100
+```
+```bash
+E2E_MINIMAL_BASE_URL=http://localhost:3100 npx playwright test lp-cache-tags
+```
+
 ### 本物の backend が要るテスト（本番に向けて実行しない）
 
 | テスト | 必要なもの | 注意 |
@@ -143,7 +160,7 @@ backend の呼び出しは各テストの中で `page.route` の偽応答にし�
 
 | コマンド | 2026-11-01 時点の値 |
 |---|---|
-| `npm run lint` | 29 件（11 errors / 18 warnings）、すべて既存。**件数が増えていないこと**を見る |
+| `npm run lint` | 56 件（26 errors / 30 warnings）、すべて既存のコード。**件数が増えていないこと**を見る。2026-11-01 に `eslint-config-next` を 16.4.3 へ上げたとき、新しいルール（`react-hooks/set-state-in-effect` 15件・`@next/next/no-location-assign-relative-destination` 11件・`react-hooks/incompatible-library` 1件）の分だけ 29 件から増えた |
 | `npx tsc --noEmit` | 97 件、すべて画面に組み込まれていない部品。**件数が増えていないこと**を見る（§7） |
 | `npm run build` | 外部フォントの取得（OG 画像）にネットワークが要る。取得できない環境では静的生成で止まる（Vercel では成功する） |
 
@@ -155,7 +172,7 @@ backend の呼び出しは各テストの中で `page.route` の偽応答にし�
 
 | 制約 | 影響 | 場所 |
 |---|---|---|
-| `notFound()` が HTTP 200 になる（Next.js 16.2.2 の `loading.tsx` の仕様） | `/subsidies/{id}` と `/lp/{県}` だけ proxy で本物の 404 にしている。記事・事例・業種ページは 200 のまま | `src/proxy.ts` |
+| `notFound()` が HTTP 200 になる（Next.js 16.2.2 の `loading.tsx` の仕様） | `/subsidies/{id}` と `/lp/{県}` だけ proxy で本物の 404 にしている。記事・事例・業種ページは 200 のまま。16.4.3 では backend 不達でも `/subsidies/{存在しない id}` が 404 になることを手元で確認した（記事・事例・業種ページは未確認） | `src/proxy.ts` |
 | 型エラーを無視してビルドする | 型の崩れがあってもデプロイされる。既存の 97 件はすべて画面に組み込まれていない部品 | `next.config.ts` の `typescript.ignoreBuildErrors` |
 | 認証トークンは localStorage | XSS があると読まれる。画面のログイン判定はブラウザ側だけで、データは backend が JWT で守る前提 | `src/lib/auth.ts` |
 | 解析タグは Cookie 同意と無関係に読み込む | 法務判断が要る（未対応） | `src/app/layout.tsx` |
