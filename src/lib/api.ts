@@ -50,6 +50,8 @@ export interface Subsidy {
   indirect?: boolean | null;
   camera_eligibility?: "confirmed" | "unconfirmed" | null;
   regional_last_day?: Record<string, string> | null;
+  /** 受付前（upcoming）でも診断に出す期限＝来年度分の事前相談・申込の締切（ISO 日付・2026-11-01） */
+  prior_consultation_until?: string | null;
 }
 
 export interface MatchRequest {

@@ -33,9 +33,19 @@ function formatDeadline(deadline: string): { text: string; urgent: boolean; past
   return { text: `あと ${days} 日`, urgent: days <= 31, pastDue: false };
 }
 
+/** "2027-08-31" → "2027年8月31日"。読めなければ null */
+function isoToJapanese(value: string | null | undefined): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "");
+  return m ? `${m[1]}年${Number(m[2])}月${Number(m[3])}日` : null;
+}
+
 export default function MatchResultCard({ item, prefecture }: Props) {
   const inServiceArea = isServicePrefecture(prefecture);
-  const { text: deadlineText, urgent, pastDue } = formatDeadline(item.subsidy.deadline ?? "");
+  // 受付前（来年度分）の制度は、事前相談・申込の締切まで出る（backend 2026-11-01 決定 1-A）。
+  // 締切の欄は申請の締切ではなく事前相談・申込の締切を出す
+  const consultationUntil =
+    item.subsidy.status === "upcoming" ? isoToJapanese(item.subsidy.prior_consultation_until) : null;
+  const { text: deadlineText, urgent, pastDue } = formatDeadline(consultationUntil ?? item.subsidy.deadline ?? "");
   // カメラ対象が未確認の制度は「高」と出さない（試験 [1-f][2]）
   const score = displayMatchScore(item.match_score, item.subsidy);
   const isHighScore = score === "高";
@@ -196,7 +206,7 @@ export default function MatchResultCard({ item, prefecture }: Props) {
               }}
             >
               <div style={{ fontSize: 10, color: "var(--hc-text-muted)", marginBottom: 2 }}>
-                締切
+                {consultationUntil ? "事前相談の締切" : "締切"}
               </div>
               <div
                 style={{
@@ -234,6 +244,25 @@ export default function MatchResultCard({ item, prefecture }: Props) {
               </div>
             </div>
           </div>
+
+          {/* 受付前（来年度分）の制度の注記（2026-11-01 決定 1-A） */}
+          {consultationUntil && (
+            <p
+              role="note"
+              data-testid="upcoming-note"
+              style={{
+                margin: "0 0 10px",
+                padding: "4px 8px",
+                fontSize: 11,
+                lineHeight: 1.6,
+                color: "var(--hc-warning-text)",
+                background: "var(--hc-warning-subtle)",
+                borderRadius: 6,
+              }}
+            >
+              受付前の制度です。{consultationUntil}までに、制度の窓口へ事前相談・申込をしてください。
+            </p>
+          )}
 
           {/* カメラ機器が補助対象と確認できない制度の注記（審査 F-[7]） */}
           <CameraEligibilityNote subsidy={item.subsidy} compact />
