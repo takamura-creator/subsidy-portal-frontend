@@ -75,6 +75,7 @@ function WizardPageContent() {
             documents: undefined,
             documentId: undefined,
             draftId: undefined,
+            draftGenerationStartedAt: undefined,
           };
           restoredStep = isCompanyReady(restoredState.company) ? 2 : 1;
           notice = `前回選んでいた「${restoredSubsidy.name}」は、公式の資料で内容を確認できなかったため掲載を終了しました。お手数ですが、補助金を選び直してください。`;
@@ -228,8 +229,18 @@ function WizardPageContent() {
   }, []);
 
   // Step 6: AI生成（旧 Step 7）
+  // 事業計画書の AI 生成の開始・終了の印（生成中の再読み込みで黙って作り直さないため・2026-11-01 PR-E）
+  const markDraftGenerationStart = useCallback(() => {
+    setState((prev) => ({ ...prev, draftGenerationStartedAt: Date.now() }));
+  }, []);
+  const clearDraftGenerationMark = useCallback(() => {
+    setState((prev) =>
+      prev.draftGenerationStartedAt === undefined ? prev : { ...prev, draftGenerationStartedAt: undefined },
+    );
+  }, []);
+
   const handleGenerated = useCallback((draftId: string) => {
-    setState((prev) => ({ ...prev, draftId }));
+    setState((prev) => ({ ...prev, draftId, draftGenerationStartedAt: undefined }));
     setStep(7); // → 編集・出力
     scrollTop();
   }, []);
@@ -338,6 +349,9 @@ function WizardPageContent() {
           hpExtracted={state.hpExtracted ?? {}}
           qaAnswers={state.qaAnswers ?? {}}
           existingDraftId={state.draftId}
+          generationStartedAt={state.draftGenerationStartedAt}
+          onGenerationStart={markDraftGenerationStart}
+          onGenerationEnd={clearDraftGenerationMark}
           onGenerated={handleGenerated}
           onBack={() => setStep(5)}
         />
@@ -365,6 +379,9 @@ function WizardPageContent() {
           subsidy={state.subsidy}
           applicationId={state.estimate?.id}
           draftId={state.draftId}
+          generationStartedAt={state.draftGenerationStartedAt}
+          onGenerationStart={markDraftGenerationStart}
+          onGenerationEnd={clearDraftGenerationMark}
           hpExtracted={state.hpExtracted}
           qaAnswers={state.qaAnswers}
           onBack={() => setStep(6)}

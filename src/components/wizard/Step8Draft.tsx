@@ -9,6 +9,7 @@ import { isServicePrefecture } from "@/lib/constants";
 import type { CompanyInfo, SubsidySelection } from "./types";
 import type { DraftChapter } from "@/lib/api";
 import DrillDownChat from "./DrillDownChat";
+import { DraftInterruptedNotice, isInterruptedGeneration, useLeaveWarning } from "./draftGeneration";
 
 interface CollectedInfo {
   extracted?: Record<string, string>;
@@ -21,6 +22,10 @@ interface Props {
   collectedInfo?: CollectedInfo;
   applicationId?: string;
   draftId?: string;
+  /** 前回の生成を始めた時刻（ウィザードの状態に保存されたもの・PR-E） */
+  generationStartedAt?: number;
+  onGenerationStart?: () => void;
+  onGenerationEnd?: () => void;
   hpExtracted?: Record<string, string>;
   qaAnswers?: Record<string, string>;
   onBack: () => void;
@@ -48,6 +53,9 @@ export default function Step8Draft({
   collectedInfo,
   applicationId,
   draftId: initialDraftId,
+  generationStartedAt,
+  onGenerationStart,
+  onGenerationEnd,
   hpExtracted,
   qaAnswers,
   onBack,
@@ -61,6 +69,11 @@ export default function Step8Draft({
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
   const [areaError, setAreaError] = useState(false);
+  // draftId が無いまま開き直され、直前に生成を始めていた場合は自動で生成しない（設計書 D4・PR-E）
+  const [interrupted, setInterrupted] = useState(
+    () => !initialDraftId && isInterruptedGeneration(generationStartedAt, Date.now()),
+  );
+  useLeaveWarning(loading);
 
   const appId = applicationId ?? "draft-preview";
   const subsidyId = subsidy?.id ?? "jizokuka-2026";
@@ -78,18 +91,25 @@ export default function Step8Draft({
     }
     if (initialDraftId) {
       load(appId, initialDraftId);
-    } else {
-      generate(appId, {
-        subsidy_id: subsidyId,
-        subsidy_name: subsidy?.name ?? "",
-        company_name: company.companyName ?? "",
-        industry: company.industry ?? "",
-        company_info: hpExtracted ?? collectedInfo?.manual as Record<string, string> ?? {},
-        collected_answers: qaAnswers ?? collectedInfo?.extracted as Record<string, string> ?? {},
-      });
+    } else if (!interrupted) {
+      runGenerate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** 生成（開始・終了の印を付ける。drill_down_answers は深掘り質問の回答後のみ） */
+  function runGenerate(drillDownAnswers?: Array<{ question: string; answer: string }>) {
+    onGenerationStart?.();
+    void generate(appId, {
+      subsidy_id: subsidyId,
+      subsidy_name: subsidy?.name ?? "",
+      company_name: company.companyName ?? "",
+      industry: company.industry ?? "",
+      company_info: hpExtracted ?? collectedInfo?.manual as Record<string, string> ?? {},
+      collected_answers: qaAnswers ?? collectedInfo?.extracted as Record<string, string> ?? {},
+      ...(drillDownAnswers ? { drill_down_answers: drillDownAnswers } : {}),
+    }).finally(() => onGenerationEnd?.());
+  }
 
   const hasRequiresInfo = draft?.chapters.some(ch => ch.requires_info) ?? false;
 
@@ -124,15 +144,7 @@ export default function Step8Draft({
 
   function handleDrillDownComplete(answers: Array<{ question: string; answer: string }>) {
     setShowDrillDown(false);
-    generate(appId, {
-      subsidy_id: subsidyId,
-      subsidy_name: subsidy?.name ?? "",
-      company_name: company.companyName ?? "",
-      industry: company.industry ?? "",
-      company_info: hpExtracted ?? collectedInfo?.manual as Record<string, string> ?? {},
-      collected_answers: qaAnswers ?? collectedInfo?.extracted as Record<string, string> ?? {},
-      drill_down_answers: answers,
-    });
+    runGenerate(answers);
   }
 
   if (showDrillDown) {
@@ -178,6 +190,15 @@ export default function Step8Draft({
           <mark className="bg-amber-100 text-amber-900 px-1 rounded">サンプル値</mark>
           <span className="text-amber-800">= AIが推定した値です。クリックして実際の数値に修正してください。</span>
         </div>
+      )}
+
+      {interrupted && !loading && !draft && (
+        <DraftInterruptedNotice
+          onGenerate={() => {
+            setInterrupted(false);
+            runGenerate();
+          }}
+        />
       )}
 
       {loading && (
