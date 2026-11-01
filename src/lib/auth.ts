@@ -63,11 +63,18 @@ export function isAuthenticated(): boolean {
   return user.exp * 1000 > Date.now();
 }
 
-export function logout(): void {
+/**
+ * ブラウザに残るログイン情報を消す（ログアウト・アカウント削除のあと）。
+ * ウィザードの状態もクリアする（別アカウントのデータ残留を防止）。
+ */
+export function clearSession(): void {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
-  // ウィザードの状態もクリア（別アカウントのデータ残留を防止）
   localStorage.removeItem("hc_wizard_state_v2");
+}
+
+export function logout(): void {
+  clearSession();
   hardNavigate("/auth/login");
 }
 
